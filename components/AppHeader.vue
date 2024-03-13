@@ -11,7 +11,6 @@ const router = useRouter();
 
 onMounted(async () => {
   //   const { isAuth, isAuthFunc, currentUser, isNotAuthFunc, userFromLS } = store;
-
   //   if (!isAuth && !currentUser) {
   //     if (
   //       route.fullPath.includes("/dashboard") ||
@@ -24,7 +23,7 @@ onMounted(async () => {
   //       isNotAuthFunc();
   //     }
   //   }
-//   users.value = await getUsers();
+  //   users.value = await getUsers();
   //   if (users.value) {
   //     let user = users.value.find(
   //       (item: any) => item.uuid === localStorage.getItem("user")
@@ -110,9 +109,21 @@ onMounted(async () => {
           <router-link to="/login">Выйти</router-link>
         </div> -->
         <div>
-          <router-link to="/login">Войти</router-link>
+          <!-- <router-link to="/login">Войти</router-link> -->
           <!-- login -->
           <!-- logout -->
+          <button
+            v-if="!useAuthStore().loggedIn"
+            @click="useAuthStore().signIn()"
+          >
+            Sign in
+          </button>
+          <button
+            v-if="useAuthStore().loggedIn"
+            @click="useAuthStore().clear()"
+          >
+            Logout
+          </button>
         </div>
       </div>
     </Container>

@@ -19,7 +19,7 @@ useHead({
     ]
 })
 import { Container } from '@/shared/container'
-import { useCurrentUserStore } from '@/stores/auth'
+// import { useCurrentUserStore } from '@/stores/auth'
 
 const tempUser = ref({
     email: null,

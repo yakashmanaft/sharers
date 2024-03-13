@@ -1,14 +1,14 @@
 <script lang="ts" setup>
 // import IndexPage from '@/pages/index.vue'
-import { useCurrentUserStore } from '@/stores/auth'
+// import { useCurrentUserStore } from '@/stores/auth'
 
-const store = useCurrentUserStore()
+// const store = useCurrentUserStore()
 
   const checkLocalStorage = () => {
     console.log('App is ready')
   }
   onMounted(() => {
-    checkLocalStorage()
+    // checkLocalStorage()
   })
 </script>
 

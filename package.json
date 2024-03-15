@@ -26,6 +26,7 @@
     "vue-router": "^4.2.5"
   },
   "devDependencies": {
+    "@types/uuid": "^9.0.8",
     "nuxt-auth-utils": "^0.0.20"
   }
 }

@@ -147,7 +147,7 @@
         <h1>Проекты</h1><span>{{ projects.length }}</span>
 
         <div class="projects-container">
-
+            <!-- Нумерация проектов: несколько первых необходимо определить под технические (ремонт технники или инструмента )  -->
             <div class="projects-item" v-for="(project, index) in projects" :key="index" @click="$router.push(`/projects/${project.id}`)">
                 <h2>{{ project.title }}</h2>
                 <p>{{ project.address }}</p>

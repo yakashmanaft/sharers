@@ -29,4 +29,10 @@ useHead({
 
 <template>
   <h1>Складсклй item #{{ $route.params.id  }}</h1>
+
+  <ul>
+    <li>История</li>
+    <li>Стоимость закупа (руб.)</li>
+    <li>Ценность (руб.)</li>
+  </ul>
 </template>

@@ -24,6 +24,38 @@
 
     // В данном объекте owner - это user id из БД Users, далее функция переводчик
     // В данном объекте location - это project id из БД Projects, далее функция переводчик
+    // const items_table_head = ref([
+    //     // {
+    //     //     id: 1,
+    //     //     title: '#',
+    //     // },
+    //     // {
+    //     //     id: 1,
+    //     //     title: 'Uuid',
+    //     // },
+    //     {
+    //         id: 1,
+    //         title: 'Тип',
+    //     },
+    //     {
+    //         id: 2,
+    //         title: 'Наименование',
+    //     },
+    //     {
+    //         id: 3,
+    //         title: 'Кол-во',
+    //     },
+    //     {
+    //         id: 4,
+    //         title: 'Location',
+    //     },
+    //     {
+    //         id: 5,
+    //         title: 'Собственник',
+    //     }
+    // ])
+
+    // uuid во фронте не показываем, но надо иметь в принятой из бд объекте наверно в случае удаления
     const items = ref([
         {
             id: 1,
@@ -31,6 +63,7 @@
             type: 'tools',
             title: 'УШМ ELITECH 2623Э 230мм.',
             qty: 1,
+            measure: 'шт',
             location: 'Горького, 14',
             owner: 'ООО "Камини"'
         },
@@ -40,8 +73,49 @@
             type: 'tools',
             title: 'Клипсы',
             qty: 100,
+            measure: 'шт',
             location: 'Ленина, 36/1',
             owner: 'ООО "РусРазвтие"'
+        },
+        {
+            id: 3,
+            uuid: uuidv4(),
+            type: 'tools',
+            title: 'Удлинитель на катушке 30м KLAUS Bull Cabel Reel',
+            qty: 1,
+            measure: 'шт',
+            location: 'Ремонт',
+            owner: 'ООО "Камини"'
+        },
+        {
+            id: 4,
+            uuid: uuidv4(),
+            type: 'tools',
+            title: 'Уровень KAPRO 60cm 781-40P',
+            qty: 1,
+            measure: 'шт',
+            location: 'Склад',
+            owner: 'Папа Карло'
+        },
+        {
+            id: 5,
+            uuid: uuidv4(),
+            type: 'stuff',
+            title: 'Труба Сэндвич 220 / 280 320 / Оц',
+            qty: 1,
+            measure: 'шт',
+            location: 'Склад',
+            owner: 'Камини'
+        },
+        {
+            id: 6,
+            uuid: uuidv4(),
+            type: 'consumables',
+            title: 'Кровельный саморез Tech-Krep КР ZP сверло 4,8х51',
+            qty: 200,
+            measure: 'кг',
+            location: 'Склад',
+            owner: 'Камини'
         }
     ])
 </script>
@@ -92,59 +166,24 @@
             </select>
         </div> -->
 
-
-        <table>
+        <table class="container text-center">
             <thead>
-                <th>
-                    <td>#</td>
-                </th>
-                <th>
-                    <td>Uuid</td>
-                </th>
-                <th>
-                    <td>Тип</td>
-                </th>
-                <th>
-                    <td>Title</td>
-                </th>
-                <th>
-                    <td>Qty</td>
-                </th>
-                <th>
-                    <td>Location</td>
-                </th>
-                <th>
-                    <td>Собстввенник</td>
+                <th class="row align-items-start">
+                    <td class="col-1">Тип</td>
+                    <td class="col">Наименование</td>
+                    <td class="col-1">Кол-во</td>
+                    <td class="col-3">Местонахождение</td>
+                    <td class="col-2">Собственник</td>
                 </th>
             </thead>
             <tbody>
-                <!-- Удаляем выбранный элемент по его item.id -->
-                <tr v-for="(item, index) in items" :key="index">
-                     <td>
-                        {{ index }}
-                    </td>
-                    <td>
-                         {{ item.uuid }}
-                     </td>
-                     <td>
-                        {{ item.type }}
-                     </td>
-                     <td>
-                        <span @click="$router.push(`/warehouse/${item.id}`)">
-                            {{ item.title }}
-                        </span>
-                     </td>
-                     <td>
-                        {{ item.qty }}
-                     </td>
-                     <td>
-                        {{ item.location }}
-                     </td>
-                     <td>
-                        {{ item.owner }}
-                     </td>
+                <tr v-for="(item, index) in items" :key="index" class="row align-items-center">
+                    <td class="col-1">{{ item.type }}</td>
+                    <td @click="$router.push(`/warehouse/${item.id}`)" class="col">{{ item.title }}</td>
+                    <td class="col-1">{{ item.qty}} {{ item.measure }}.</td>
+                    <td @click="$router.push(`/projects/1`)" class="col-3">{{ item.location }}</td>
+                    <td class="col-2">{{ item.owner }}</td>
                 </tr>
-
             </tbody>
         </table>
 
@@ -153,5 +192,18 @@
 
 
 <style scoped>
-
+    table {
+        margin-top: 1rem;
+    }
+    th {
+        padding: 1rem 0;
+        border-top: 1px solid gray;
+    }
+    tr {
+        padding: 1rem 0;    
+        border-top: 1px solid gray;
+    }
+    td {
+        margin: 2px;
+    }
 </style>

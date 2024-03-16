@@ -22,6 +22,8 @@
         ]
     })
 
+    const router = useRouter()
+
     // В данном объекте owner - это user id из БД Users, далее функция переводчик
     // В данном объекте location - это project id из БД Projects, далее функция переводчик
     // const items_table_head = ref([
@@ -64,7 +66,8 @@
             title: 'УШМ ELITECH 2623Э 230мм.',
             qty: 1,
             measure: 'шт',
-            location: 'Горького, 14',
+            location: 'project',
+            positionID: 2,
             owner: 'ООО "Камини"'
         },
         {
@@ -74,7 +77,8 @@
             title: 'Клипсы',
             qty: 100,
             measure: 'шт',
-            location: 'Ленина, 36/1',
+            location: 'project',
+            positionID: 1,
             owner: 'ООО "РусРазвтие"'
         },
         {
@@ -84,7 +88,8 @@
             title: 'Удлинитель на катушке 30м KLAUS Bull Cabel Reel',
             qty: 1,
             measure: 'шт',
-            location: 'Ремонт',
+            location: 'repair',
+            positionID: '1',
             owner: 'ООО "Камини"'
         },
         {
@@ -94,7 +99,8 @@
             title: 'Уровень KAPRO 60cm 781-40P',
             qty: 1,
             measure: 'шт',
-            location: 'Склад',
+            location: 'sklad',
+            positionID: 'sklad_main_r2-c27-f1-f1',
             owner: 'Папа Карло'
         },
         {
@@ -104,7 +110,8 @@
             title: 'Труба Сэндвич 220 / 280 320 / Оц',
             qty: 1,
             measure: 'шт',
-            location: 'Склад',
+            location: 'sklad',
+            positionID: 'sklad_main_r1-c1-f1-f1',
             owner: 'Камини'
         },
         {
@@ -114,10 +121,108 @@
             title: 'Кровельный саморез Tech-Krep КР ZP сверло 4,8х51',
             qty: 200,
             measure: 'кг',
-            location: 'Склад',
+            location: 'sklad',
+            positionID: 'sklad_main_r1-c1-f2-f2',
             owner: 'Камини'
+        },
+        {
+            id: 7,
+            uuid: uuidv4(),
+            type: 'equipment',
+            title: 'Ботинки кирзачи с мехом внутри',
+            qty: 10,
+            measure: 'пар',
+            location: 'sklad',
+            positionID: 'sklad_main_r3-c6-f1-f3',
+            owner: 'Камини'
+        },
+        {
+            id: 8,
+            uuid: uuidv4(),
+            type: 'tools',
+            title: 'Болгарка 230 Metabo',
+            qty: 1,
+            measure: 'шт',
+            location: 'project',
+            positionID: 1,
+            owner: 'Камини'
+        },
+        {
+            id: 9,
+            uuid: uuidv4(),
+            type: 'tools',
+            title: 'Шуруповерт Калибр TOP0289900/2302',
+            qty: 1,
+            measure: 'шт',
+            location: 'archive',
+            positionID: 'sklad_archive-c1-f1-f1',
+            owner: 'В. Н. Клименко'
+        },
+        {
+            id: 10,
+            uuid: uuidv4(),
+            type: 'tools',
+            title: 'Электро-обогреватель 30НС - 2,0/1,5 - 41 5968',
+            qty: 1,
+            measure: 'шт',
+            location: 'deleted',
+            positionID: 'deleted',
+            owner: 'В. Н. Клименко'
         }
     ])
+
+    // Генерируем ссылки местонахождения 
+    const creatLocationLink = (object: any) => {
+        if(object) {
+
+            if(object.location === 'project') {
+                router.push(`/projects/${object.positionID}`)
+
+            } else if (object.location === 'sklad') {
+                alert(`Складской адрес: ${object.positionID}`)
+
+            } else if (object.location === 'repair') {
+                alert('В ремонте: как и где поселить сервисный центр? Относится ли он к проектам? Или же это другие сущности? ')
+
+            } else if (object.location === 'archive') {
+                alert(`В архиве. Складской адрес: ${object.positionID}`)
+
+            } else if (object.location === 'deleted') {
+                alert(`У вас нет прав, чтобы окончательно удалить предмет`)
+            } else {
+                alert('warehouse inidex.vue error - strange object.location in creatLocationLink function')
+            }
+        } else {
+            alert('warehouse inidex.vue creatLocationLink function error')
+        }
+    }
+    const translateLocation = (id: any, location: string) => {
+        if (location && id) {
+            if(location === 'project') {
+                return `projectID in db: (${id}, ${typeof(id)})`
+            } else if (location === 'sklad') {
+                return `На складе`
+            } else if (location === 'repair') {
+                return 'В ремонте'
+            }  else if (location === 'archive') {
+                return `Архив`
+            } else if (location === 'deleted') {
+                return 'Удалено'
+            } else {
+                return alert('warehouse inidex.vue error - strange object.location in translateLocation function')
+            }
+        } else {
+            alert('warehouse inidex.vue translateLocation function error')
+        }
+        return location
+    }
+    const translateOwner = (owner: string) => {
+        alert(`${owner}. Относится ли Owner, если он являтееся коллективом, user'ом... И каким обрзаом в объекте item указывать (id:number or id:string)`)
+    }
+    const locationLinkColorized = (location: string) => {
+        console.log(`location_link_${location}`)
+        return `location_link_${location}`
+    }
 </script>
 <template>
     <Container>
@@ -168,21 +273,31 @@
 
         <table class="container text-center">
             <thead>
-                <th class="row align-items-start">
-                    <td class="col-1">Тип</td>
-                    <td class="col">Наименование</td>
+                <tr class="th row align-items-start">
+                    <td class="col" style="text-align: start">Наименование</td>
                     <td class="col-1">Кол-во</td>
                     <td class="col-3">Местонахождение</td>
-                    <td class="col-2">Собственник</td>
-                </th>
+                    <td class="col-2" style="text-align: end;">Собственник</td>
+                    <td class="col-1">Тип</td>
+                </tr>
             </thead>
             <tbody>
                 <tr v-for="(item, index) in items" :key="index" class="row align-items-center">
-                    <td class="col-1">{{ item.type }}</td>
-                    <td @click="$router.push(`/warehouse/${item.id}`)" class="col">{{ item.title }}</td>
+                    <td class="col" style="text-align: start;">
+                        <span class="location_link" @click="$router.push(`/warehouse/${item.id}`)"  >
+                            {{ item.title }}
+                        </span>
+                    </td>
                     <td class="col-1">{{ item.qty}} {{ item.measure }}.</td>
-                    <td @click="$router.push(`/projects/1`)" class="col-3">{{ item.location }}</td>
-                    <td class="col-2">{{ item.owner }}</td>
+                    <td class="col-3">
+                        <span class="location_link" :class="`${locationLinkColorized(item.location)}`" @click="creatLocationLink(item)">{{ translateLocation(item.positionID, item.location) }}</span>
+                    </td>
+                    <td class="col-2" style="text-align: end;">
+                        <span class="location_link" @click="translateOwner(item.owner)">
+                            {{ item.owner }}
+                        </span>
+                    </td>
+                    <td class="col-1">{{ item.type }}</td>
                 </tr>
             </tbody>
         </table>
@@ -195,9 +310,8 @@
     table {
         margin-top: 1rem;
     }
-    th {
-        padding: 1rem 0;
-        border-top: 1px solid gray;
+    .th {
+        font-weight: bold;
     }
     tr {
         padding: 1rem 0;    
@@ -205,5 +319,40 @@
     }
     td {
         margin: 2px;
+    }
+    .location_link {
+        padding: 5px 10px;
+        border-radius: 16px;
+        border: 1px solid var(--bs-info);
+        transition: all .15s ease-out
+    }
+    .location_link:hover {  
+        cursor: pointer;
+        /* color: white; */
+        /* background-color: var(--bs-info);    */
+    }
+    .location_link_project {
+        color: var(--bs-success);
+        border: 1px solid var(--bs-success-bg-subtle);
+        background-color: var(--bs-success-bg-subtle)
+    }
+    .location_link_sklad {
+        /* color: var(bs-primary-bg-subtle); */
+        color: white;
+        border: none;
+        background-color: var(--bs-primary-bg-subtle)
+    }
+    .location_link_repair {
+        color: var(--bs-warning);
+        border: 1px solid var(--bs-warning-bg-subtle);
+        background-color: var(--bs-warning-bg-subtle)
+    }
+    .location_link_archive {
+        color: var(--bs-dark-bg-subtle);
+        border: none;
+    }
+    .location_link_deleted {
+        color: var(--bs-danger-bg-subtle);
+        border: none;
     }
 </style>

@@ -59,130 +59,160 @@ const router = useRouter();
 //     }
 // ])
 
+const item = ref({
+  uuid: null,
+  title: null,
+  type: null,
+  qty: 0,
+  measure: null,
+  location: null,
+  positionID: null,
+  owner: null,
+});
+// const item = ref({
+//   uuid: uuidv4(),
+//   title: null,
+//   type: null,
+//   qty: 0,
+//   measure: null,
+//   location: null,
+//   positionID: null,
+//   owner: null,
+// });
 // uuid во фронте не показываем, но надо иметь в принятой из бд объекте наверно в случае удаления
-const items = ref([
-  {
-    id: 1,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "УШМ ELITECH 2623Э 230мм.",
-    qty: 1,
-    measure: "шт",
-    location: "project",
-    positionID: 2,
-    owner: 'ООО "Камини"',
-  },
-  {
-    id: 2,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "Клипсы",
-    qty: 100,
-    measure: "шт",
-    location: "project",
-    positionID: 1,
-    owner: 'ООО "РусРазвтие"',
-  },
-  {
-    id: 3,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "Удлинитель на катушке 30м KLAUS Bull Cabel Reel",
-    qty: 1,
-    measure: "шт",
-    location: "repair",
-    positionID: "1",
-    owner: 'ООО "Камини"',
-  },
-  {
-    id: 4,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "Уровень KAPRO 60cm 781-40P",
-    qty: 1,
-    measure: "шт",
-    location: "sklad",
-    positionID: "sklad_main_r2-c27-f1-f1",
-    owner: "Папа Карло",
-  },
-  {
-    id: 5,
-    uuid: uuidv4(),
-    type: "stuff",
-    title: "Труба Сэндвич 220 / 280 320 / Оц",
-    qty: 1,
-    measure: "шт",
-    location: "sklad",
-    positionID: "sklad_main_r1-c1-f1-f1",
-    owner: 'ООО "Камини"',
-  },
-  {
-    id: 6,
-    uuid: uuidv4(),
-    type: "consumables",
-    title: "Кровельный саморез Tech-Krep КР ZP сверло 4,8х51",
-    qty: 200,
-    measure: "кг",
-    location: "sklad",
-    positionID: "sklad_main_r1-c1-f2-f2",
-    owner: 'ООО "Камини"',
-  },
-  {
-    id: 7,
-    uuid: uuidv4(),
-    type: "equipment",
-    title: "Ботинки кирзачи с мехом внутри",
-    qty: 10,
-    measure: "пар",
-    location: "sklad",
-    positionID: "sklad_main_r3-c6-f1-f3",
-    owner: 'ООО "Камини"',
-  },
-  {
-    id: 8,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "Болгарка 230 Metabo",
-    qty: 1,
-    measure: "шт",
-    location: "project",
-    positionID: 1,
-    owner: 'ООО "Камини"',
-  },
-  {
-    id: 9,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "Шуруповерт Калибр TOP0289900/2302",
-    qty: 1,
-    measure: "шт",
-    location: "archive",
-    positionID: "sklad_archive-c1-f1-f1",
-    owner: "В. Н. Клименко",
-  },
-  {
-    id: 10,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "Электро-обогреватель 30НС - 2,0/1,5 - 41 5968",
-    qty: 1,
-    measure: "шт",
-    location: "deleted",
-    positionID: "deleted",
-    owner: "В. Н. Клименко",
-  },
-  {
-    id: 11,
-    uuid: uuidv4(),
-    type: "tools",
-    title: "Комплект сварочника Wega 251 modelSTICK ",
-    qty: 1,
-    measure: "шт",
-    location: "project",
-    positionID: 2,
-    owner: "В. Н. Клименко",
-  },
-]);
+// const items = ref([
+//   {
+//     id: 1,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "УШМ ELITECH 2623Э 230мм.",
+//     qty: 1,
+//     measure: "шт",
+//     location: "project",
+//     positionID: 2,
+//     owner: 'ООО "Камини"',
+//   },
+//   {
+//     id: 2,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "Клипсы",
+//     qty: 100,
+//     measure: "шт",
+//     location: "project",
+//     positionID: 1,
+//     owner: 'ООО "РусРазвтие"',
+//   },
+//   {
+//     id: 3,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "Удлинитель на катушке 30м KLAUS Bull Cabel Reel",
+//     qty: 1,
+//     measure: "шт",
+//     location: "repair",
+//     positionID: 12,
+//     owner: 'ООО "Камини"',
+//   },
+//   {
+//     id: 4,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "Уровень KAPRO 60cm 781-40P",
+//     qty: 1,
+//     measure: "шт",
+//     location: "sklad",
+//     positionID: "sklad_main_r2-c27-f1-f1",
+//     owner: "Папа Карло",
+//   },
+//   {
+//     id: 5,
+//     uuid: uuidv4(),
+//     type: "stuff",
+//     title: "Труба Сэндвич 220 / 280 320 / Оц",
+//     qty: 1,
+//     measure: "шт",
+//     location: "sklad",
+//     positionID: "sklad_main_r1-c1-f1-f1",
+//     owner: 'ООО "Камини"',
+//   },
+//   {
+//     id: 6,
+//     uuid: uuidv4(),
+//     type: "consumables",
+//     title: "Кровельный саморез Tech-Krep КР ZP сверло 4,8х51",
+//     qty: 200,
+//     measure: "кг",
+//     location: "sklad",
+//     positionID: "sklad_main_r1-c1-f2-f2",
+//     owner: 'ООО "Камини"',
+//   },
+//   {
+//     id: 7,
+//     uuid: uuidv4(),
+//     type: "equipment",
+//     title: "Ботинки кирзачи с мехом внутри",
+//     qty: 10,
+//     measure: "пар",
+//     location: "sklad",
+//     positionID: "sklad_main_r3-c6-f1-f3",
+//     owner: 'ООО "Камини"',
+//   },
+//   {
+//     id: 8,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "Болгарка 230 Metabo",
+//     qty: 1,
+//     measure: "шт",
+//     location: "project",
+//     positionID: 1,
+//     owner: 'ООО "Камини"',
+//   },
+//   {
+//     id: 9,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "Шуруповерт Калибр TOP0289900/2302",
+//     qty: 1,
+//     measure: "шт",
+//     location: "archive",
+//     positionID: "sklad_archive-r1-c1-f1-f1",
+//     owner: "В. Н. Клименко",
+//   },
+//   {
+//     id: 10,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "Электро-обогреватель 30НС - 2,0/1,5 - 41 5968",
+//     qty: 1,
+//     measure: "шт",
+//     location: "deleted",
+//     positionID: "deleted",
+//     owner: "В. Н. Клименко",
+//   },
+//   {
+//     id: 11,
+//     uuid: uuidv4(),
+//     type: "tools",
+//     title: "Комплект сварочника Wega 251 modelSTICK ",
+//     qty: 1,
+//     measure: "шт",
+//     location: "project",
+//     positionID: 2,
+//     owner: "В. Н. Клименко",
+//   },
+// ]);
+const items = ref(null);
+onMounted(async () => {
+  items.value = await getWarehouseItems();
+});
+/**
+ * @desc Get warehouse items from BD
+ */
+async function getWarehouseItems() {
+  return await $fetch("api/warehouse/item");
+}
 
 // Генерируем ссылки местонахождения
 const creatLocationLink = (object: any) => {
@@ -236,9 +266,30 @@ const translateOwner = (owner: string) => {
   );
 };
 const locationLinkColorized = (location: string) => {
-  console.log(`location_link_${location}`);
   return `location_link_${location}`;
 };
+
+// ДОБАЛЯЕМ ITEM на SKLAD to BD
+async function addWarehouseItem(item) {
+  let addedItem = null;
+
+  if (item)
+    addedItem = await $fetch("api/warehouse/item", {
+      method: "POST",
+      body: {
+        uuid: uuidv4(),
+        title: item.title,
+        type: item.type,
+        qty: item.qty,
+        measure: item.measure,
+        location: item.location,
+        positionID: item.positionID,
+        owner: item.owner,
+      },
+    });
+
+  if (addedItem) items.value = await getWarehouseItems();
+}
 </script>
 <template>
   <Container>
@@ -250,6 +301,81 @@ const locationLinkColorized = (location: string) => {
         <div>Горького, 14</div>
         <div>Утренняя, 11</div>
         <div>Клиника</div> -->
+
+    <form>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label">Наименование</label>
+        <input
+          v-model="item.title"
+          type="text"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label">Тип</label>
+        <input
+          v-model="item.type"
+          type="text"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label">Кол-во</label>
+        <input
+          v-model="item.qty"
+          type="number"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label">Ед. Изм.</label>
+        <input
+          v-model="item.measure"
+          type="text"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label"
+          >Местонахождение</label
+        >
+        <input
+          v-model="item.location"
+          type="text"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label">PositionID</label>
+        <input
+          v-model="item.positionID"
+          type="text"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="exampleInputName1" class="form-label">Owner</label>
+        <input
+          v-model="item.owner"
+          type="number"
+          id="exampleInputName1"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        @click.prevent="addWarehouseItem(item)"
+      >
+        Add item to SKLAD
+      </button>
+    </form>
 
     <div>
       <ul style="display: flex; list-style: none; padding: 0">

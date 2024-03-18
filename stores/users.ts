@@ -16,7 +16,7 @@ export const useUsersStore = defineStore('Users', () => {
     const loadData = async () => {
         try {
             // Fetch data from the server
-            users.value = await $fetch('api/users')
+            users.value = await $fetch('/api/usersList/users')
         } catch (error: any) {
             alert({
 

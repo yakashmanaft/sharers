@@ -203,16 +203,38 @@ const item = ref({
 //     owner: "В. Н. Клименко",
 //   },
 // ]);
-const items = ref(null);
+// const items = ref(null);
 onMounted(async () => {
-  items.value = await getWarehouseItems();
+  // items.value = await getWarehouseItems();
 });
 /**
  * @desc Get warehouse items from BD
  */
-async function getWarehouseItems() {
-  return await $fetch("api/warehouse/item");
-}
+// async function getWarehouseItems() {
+//   return await $fetch("api/warehouse/item");
+// }
+
+//   const getWarehouseItems = async () => {
+//   return await $fetch("api/warehouse/item");
+// };
+
+/**
+ * @desc Get warehouse items from BD
+ */
+const {
+  pending,
+  error,
+  refresh,
+  data: items,
+} = useFetch("api/warehouse/item", {
+  lazy: false,
+  // transform: (items) => {
+  //   return items.map(item) => ({
+  //     id: item.id,
+  //     title: item.title,
+  //   })
+  // }
+});
 
 // Генерируем ссылки местонахождения
 const creatLocationLink = (object: any) => {
@@ -288,7 +310,8 @@ async function addWarehouseItem(item) {
       },
     });
 
-  if (addedItem) items.value = await getWarehouseItems();
+  // refetching
+  refresh();
 }
 </script>
 <template>
@@ -377,6 +400,13 @@ async function addWarehouseItem(item) {
       </button>
     </form>
 
+    <!-- fetch data is error -->
+    <div v-if="error">
+      <p>Error Code {{ error.statusCode }}</p>
+      <p>Error Message {{ error.message }}</p>
+    </div>
+
+    <!-- ФИЛЬТРЫ -->
     <div>
       <ul style="display: flex; list-style: none; padding: 0">
         <li>Склад</li>
@@ -391,9 +421,17 @@ async function addWarehouseItem(item) {
       </ul>
     </div>
 
+    <!-- ПОИСК -->
     <input type="text" class="form-control" placeholder="Поиск" />
 
-    <!-- <div style="display: flex;">
+    <!-- data is loading -->
+    <div v-if="pending">
+      <p>Loading...</p>
+    </div>
+
+    <!-- data is loaded -->
+    <div v-else>
+      <!-- <div style="display: flex;">
             <select class="form-select" aria-label="Default select example">
                 <option selected>Open this select menu</option>
                 <option value="1">One</option>
@@ -408,48 +446,50 @@ async function addWarehouseItem(item) {
             </select>
         </div> -->
 
-    <table class="container text-center">
-      <thead>
-        <tr class="th row align-items-start">
-          <td class="col" style="text-align: start">Наименование</td>
-          <td class="col-1">Кол-во</td>
-          <td class="col-3">Местонахождение</td>
-          <td class="col-2" style="text-align: end">Собственник</td>
-          <td class="col-1">Тип</td>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="(item, index) in items"
-          :key="index"
-          class="row align-items-center"
-        >
-          <td class="col" style="text-align: start">
-            <span
-              class="location_link"
-              @click="$router.push(`/warehouse/${item.id}`)"
-            >
-              {{ item.title }}
-            </span>
-          </td>
-          <td class="col-1">{{ item.qty }} {{ item.measure }}.</td>
-          <td class="col-3">
-            <span
-              class="location_link"
-              :class="`${locationLinkColorized(item.location)}`"
-              @click="creatLocationLink(item)"
-              >{{ translateLocation(item.positionID, item.location) }}</span
-            >
-          </td>
-          <td class="col-2" style="text-align: end">
-            <span class="location_link" @click="translateOwner(item.owner)">
-              {{ item.owner }}
-            </span>
-          </td>
-          <td class="col-1">{{ item.type }}</td>
-        </tr>
-      </tbody>
-    </table>
+      <!-- СПИСОК ITEMS -->
+      <table class="container text-center">
+        <thead>
+          <tr class="th row align-items-start">
+            <td class="col" style="text-align: start">Наименование</td>
+            <td class="col-1">Кол-во</td>
+            <td class="col-3">Местонахождение</td>
+            <td class="col-2" style="text-align: end">Собственник</td>
+            <td class="col-1">Тип</td>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(item, index) in items"
+            :key="index"
+            class="row align-items-center"
+          >
+            <td class="col" style="text-align: start">
+              <span
+                class="location_link"
+                @click="$router.push(`/warehouse/${item.id}`)"
+              >
+                {{ item.title }}
+              </span>
+            </td>
+            <td class="col-1">{{ item.qty }} {{ item.measure }}.</td>
+            <td class="col-3">
+              <span
+                class="location_link"
+                :class="`${locationLinkColorized(item.location)}`"
+                @click="creatLocationLink(item)"
+                >{{ translateLocation(item.positionID, item.location) }}</span
+              >
+            </td>
+            <td class="col-2" style="text-align: end">
+              <span class="location_link" @click="translateOwner(item.owner)">
+                {{ item.owner }}
+              </span>
+            </td>
+            <td class="col-1">{{ item.type }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </Container>
 </template>
 

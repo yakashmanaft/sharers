@@ -288,7 +288,7 @@ const translateOwner = (owner: string) => {
   );
 };
 const locationLinkColorized = (location: string) => {
-  return `location_link_${location}`;
+  return `link_${location}`;
 };
 
 // ДОБАЛЯЕМ ITEM на SKLAD to BD
@@ -447,45 +447,41 @@ async function addWarehouseItem(item) {
         </div> -->
 
       <!-- СПИСОК ITEMS -->
-      <table class="container text-center">
+      <table class="table">
         <thead>
-          <tr class="th row align-items-start">
-            <td class="col" style="text-align: start">Наименование</td>
-            <td class="col-1">Кол-во</td>
-            <td class="col-3">Местонахождение</td>
-            <td class="col-2" style="text-align: end">Собственник</td>
-            <td class="col-1">Тип</td>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Наименование</th>
+            <th scope="col">Кол-во</th>
+            <th scope="col">Местонахождение</th>
+            <th scope="col">Собственник</th>
+            <th scope="col">Тип</th>
           </tr>
         </thead>
         <tbody>
-          <tr
-            v-for="(item, index) in items"
-            :key="index"
-            class="row align-items-center"
-          >
-            <td class="col" style="text-align: start">
-              <span
-                class="location_link"
-                @click="$router.push(`/warehouse/${item.id}`)"
-              >
+          <tr v-for="(item, index) in items">
+            <td scope="col">{{ index + 1 }}</td>
+            <td scope="col">
+              <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
                 {{ item.title }}
               </span>
             </td>
-            <td class="col-1">{{ item.qty }} {{ item.measure }}.</td>
-            <td class="col-3">
+            <td scope="col">{{ item.qty }} {{ item.measure }}.</td>
+            <td scope="col">
               <span
-                class="location_link"
+                class="link"
                 :class="`${locationLinkColorized(item.location)}`"
                 @click="creatLocationLink(item)"
-                >{{ translateLocation(item.positionID, item.location) }}</span
               >
-            </td>
-            <td class="col-2" style="text-align: end">
-              <span class="location_link" @click="translateOwner(item.owner)">
-                {{ item.owner }}
+                {{ translateLocation(item.positionID, item.location) }}
               </span>
             </td>
-            <td class="col-1">{{ item.type }}</td>
+            <td scope="col">
+              <span class="link" @click="translateOwner(item.owner)">{{
+                item.owner
+              }}</span>
+            </td>
+            <td scope="col">{{ item.type }}</td>
           </tr>
         </tbody>
       </table>
@@ -502,43 +498,40 @@ table {
 }
 tr {
   padding: 1rem 0;
-  border-top: 1px solid gray;
 }
 td {
   margin: 2px;
 }
-.location_link {
-  padding: 5px 10px;
+.link {
+  padding: 4px 10px;
   border-radius: 16px;
-  border: 1px solid var(--bs-info);
-  transition: all 0.15s ease-out;
 }
-.location_link:hover {
+.link:hover {
   cursor: pointer;
   /* color: white; */
   /* background-color: var(--bs-info);    */
 }
-.location_link_project {
+.link_project {
   color: var(--bs-success);
   border: 1px solid var(--bs-success-bg-subtle);
   background-color: var(--bs-success-bg-subtle);
 }
-.location_link_sklad {
+.link_sklad {
   /* color: var(bs-primary-bg-subtle); */
   color: white;
   border: none;
   background-color: var(--bs-primary-bg-subtle);
 }
-.location_link_repair {
+.link_repair {
   color: var(--bs-warning);
   border: 1px solid var(--bs-warning-bg-subtle);
   background-color: var(--bs-warning-bg-subtle);
 }
-.location_link_archive {
+.link_archive {
   color: var(--bs-dark-bg-subtle);
   border: none;
 }
-.location_link_deleted {
+.link_deleted {
   color: var(--bs-danger-bg-subtle);
   border: none;
 }

@@ -2,7 +2,7 @@
   <!-- https://www.youtube.com/watch?v=3MPlTDgQaaE -->
   <div>
     <div>
-      <!-- Modal -->
+      <!-- Modal EDIT USER???-->
       <div
         class="modal fade"
         id="exampleModal"
@@ -51,6 +51,7 @@
         </div>
       </div>
 
+      <!-- РАЗОБРАТЬСЯ КАК РЕНДЕРИТЬ ОШИБКУ ЧТО ЛИ... -->
       <div
         v-if="error"
         class="alert alert-danger alert-dismissible fade show"
@@ -72,22 +73,32 @@
         <!-- Форма добавления соучастника (у кого права создания будут?) -->
         <form>
           <div class="mb-3">
-            <label for="exampleInputName1" class="form-label">Name</label>
+            <label for="userName" class="form-label">Name</label>
             <input
               v-model="user.name"
               type="text"
               class="form-control"
-              id="exampleInputName1"
+              id="userName"
               aria-describedby="nameHelp"
             />
           </div>
           <div class="mb-3">
-            <label for="exampleInputName1" class="form-label">Role</label>
+            <label for="userRole" class="form-label">Role</label>
             <input
               v-model="user.role"
               type="text"
               class="form-control"
-              id="exampleInputName1"
+              id="userRole"
+              aria-describedby="nameHelp"
+            />
+          </div>
+          <div class="mb-3">
+            <label for="userEmail" class="form-label">Email</label>
+            <input
+              v-model="user.email"
+              type="text"
+              class="form-control"
+              id="userEmail"
               aria-describedby="nameHelp"
             />
           </div>
@@ -96,7 +107,7 @@
             class="btn btn-primary"
             @click.prevent="addUser(user)"
           >
-            Add Name
+            Add User
           </button>
         </form>
 
@@ -104,22 +115,25 @@
         <div v-if="pending">
           <p>Loading...</p>
         </div>
+
         <div v-else>
           <table class="table">
             <thead>
               <tr>
                 <th scope="col">#</th>
-                <th scope="col">Name</th>
+                <th scope="col">User</th>
+                <th scope="col">Email</th>
                 <th scope="col">Edit</th>
                 <th scope="col">Delete</th>
               </tr>
             </thead>
             <tbody>
               <tr v-for="(user, index) in users" :key="index">
-                <th scope="row">{{ index + 1 }}</th>
+                <td scope="col">{{ index + 1 }}</td>
                 <td @click="$router.push(`/partners/${user.id}`)">
                   {{ user.name }} | {{ user.role }}
                 </td>
+                <td>{{ user.email }}</td>
                 <td>
                   <!-- Button trigger modal -->
                   <button
@@ -161,10 +175,10 @@ import { Container } from "@/shared/container";
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
 
-// const users = ref(null)
+// Шаблон нового user'a
 const user = ref({
   uuid: null,
-  email: "anfalov@camini-pk.ru",
+  email: null,
   password: "Anfalov123[eq",
   name: null,
   role: "USER",
@@ -216,7 +230,7 @@ async function addUser(user) {
     });
 
   // if (addedUser) users.value = await getUsers();
-  if(addedUser) refresh()
+  if (addedUser) refresh();
 }
 
 /**
@@ -241,7 +255,7 @@ async function deleteUser(id) {
   }
 
   // users.value = await getUsers();
-  refresh()
+  refresh();
 }
 
 /**
@@ -261,7 +275,7 @@ async function editUser(editedUser) {
     });
 
   // if (user) users.value = await getUsers();
-  if(user) refsresh()
+  if (user) refsresh();
 }
 
 useHead({

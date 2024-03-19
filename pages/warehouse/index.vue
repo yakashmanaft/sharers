@@ -70,8 +70,12 @@ const item = ref({
   owner: null,
 });
 
-const currentCategoryType = ref(null)
+const currentCategoryType = ref("all");
 const warehouseCategories = ref([
+  {
+    type: "all",
+    name: "Все",
+  },
   {
     type: "tools",
     name: "Инструмент",
@@ -242,6 +246,7 @@ const {
   error,
   refresh,
   data: items,
+  status,
 } = useFetch("api/warehouse/item", {
   lazy: false,
   // transform: (items) => {
@@ -332,8 +337,30 @@ async function addWarehouseItem(item) {
 
 // Переключение таблиц (инструмент / материалы / расходники)
 watch(currentCategoryType, () => {
-  console.log(currentCategoryType.value)
-})
+  console.log(currentCategoryType.value);
+  // items.value = 123;
+
+  // if (currentCategoryType.value === "all") {
+  //   refresh();
+  // } else if (currentCategoryType.value === "tools") {
+  //   items.value = items.value.filter((item) => item.type === "tools");
+  // } else if (currentCategoryType.value === "stuff") {
+  //   items.value = items.value.filter((item) => item.type === "stuff");
+  // } else if (currentCategoryType.value === "consumables") {
+  //   items.value = items.value.filter((item) => item.type === "consumables");
+  // }
+});
+
+const filterItemsType = async (type) => {
+  currentCategoryType.value = type;
+
+  if (type === "all") {
+    await refresh();
+  } else {
+    await refresh();
+    items.value = items.value.filter((item) => item.type === type);
+  }
+};
 </script>
 <template>
   <Container>
@@ -444,14 +471,20 @@ watch(currentCategoryType, () => {
 
     <!--  -->
     <div class="switch-type_container">
-      <span
-        class="switch-type_el"
+      <div
         v-for="(category, index) in warehouseCategories"
         :key="index"
-        @click="currentCategoryType = category.type"
+        class="switch-type_el"
+        @click="filterItemsType(category.type)"
       >
-        {{ category.name }}
-      </span>
+        <input
+          type="radio"
+          :id="index"
+          :value="category.type"
+          v-model="currentCategoryType"
+        />
+        <label :for="index">{{ category.name }}</label>
+      </div>
     </div>
 
     <!-- ПОИСК -->
@@ -575,7 +608,7 @@ td {
   gap: 1rem;
 }
 
-.switch-type_el:hover {
+.switch-type_el label {
   cursor: pointer;
 }
 </style>

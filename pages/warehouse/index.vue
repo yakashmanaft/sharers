@@ -69,6 +69,22 @@ const item = ref({
   positionID: null,
   owner: null,
 });
+
+const currentCategoryType = ref(null)
+const warehouseCategories = ref([
+  {
+    type: "tools",
+    name: "Инструмент",
+  },
+  {
+    type: "stuff",
+    name: "Материалы",
+  },
+  {
+    type: "consumables",
+    name: "Расходники",
+  },
+]);
 // const item = ref({
 //   uuid: uuidv4(),
 //   title: null,
@@ -313,6 +329,11 @@ async function addWarehouseItem(item) {
   // refetching
   refresh();
 }
+
+// Переключение таблиц (инструмент / материалы / расходники)
+watch(currentCategoryType, () => {
+  console.log(currentCategoryType.value)
+})
 </script>
 <template>
   <Container>
@@ -419,6 +440,18 @@ async function addWarehouseItem(item) {
           </select>
         </li>
       </ul>
+    </div>
+
+    <!--  -->
+    <div class="switch-type_container">
+      <span
+        class="switch-type_el"
+        v-for="(category, index) in warehouseCategories"
+        :key="index"
+        @click="currentCategoryType = category.type"
+      >
+        {{ category.name }}
+      </span>
     </div>
 
     <!-- ПОИСК -->
@@ -534,5 +567,15 @@ td {
 .link_deleted {
   color: var(--bs-danger-bg-subtle);
   border: none;
+}
+
+/* switch category type */
+.switch-type_container {
+  display: flex;
+  gap: 1rem;
+}
+
+.switch-type_el:hover {
+  cursor: pointer;
 }
 </style>

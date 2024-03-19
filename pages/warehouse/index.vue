@@ -71,6 +71,8 @@ const item = ref({
 });
 
 const currentCategoryType = ref("all");
+
+// Категории ТМЦ (пока хардкорно)
 const warehouseCategories = ref([
   {
     type: "all",
@@ -225,18 +227,10 @@ const warehouseCategories = ref([
 // ]);
 // const items = ref(null);
 onMounted(async () => {
-  // items.value = await getWarehouseItems();
+  
+  // makes refetching
+  refresh()
 });
-/**
- * @desc Get warehouse items from BD
- */
-// async function getWarehouseItems() {
-//   return await $fetch("api/warehouse/item");
-// }
-
-//   const getWarehouseItems = async () => {
-//   return await $fetch("api/warehouse/item");
-// };
 
 /**
  * @desc Get warehouse items from BD
@@ -312,11 +306,16 @@ const locationLinkColorized = (location: string) => {
   return `link_${location}`;
 };
 
-// ДОБАЛЯЕМ ITEM на SKLAD to BD
+// ****** ДОБАЛЯЕМ ITEM на SKLAD to BD в newWarehouseItemModal *******
+// флаг disabled для кнопки 
+const createNewItemBtnIsDisabled = ref(true)
+// функция добавления в БД
 async function addWarehouseItem(item) {
   let addedItem = null;
+    
+  if(item.title && item.type && item.qty > 0 && item.measure && item.location && item.positionID && item.owner) {
+    
 
-  if (item)
     addedItem = await $fetch("api/warehouse/item", {
       method: "POST",
       body: {
@@ -330,26 +329,48 @@ async function addWarehouseItem(item) {
         owner: item.owner,
       },
     });
+    
+    // clear all inputs in modal
+    clearModalInputs(item)
 
-  // refetching
-  refresh();
+    // refetching
+    refresh();
+  } 
 }
 
-// Переключение таблиц (инструмент / материалы / расходники)
+const clearModalInputs = (item: any) => {
+  item.uuid = null
+  item.title = null
+  item.type = null
+  item.qty = 0
+  item.measure = null
+  item.location = null
+  item.positionID = null
+  item.owner = null
+}
+
 watch(currentCategoryType, () => {
   console.log(currentCategoryType.value);
-  // items.value = 123;
 
-  // if (currentCategoryType.value === "all") {
-  //   refresh();
-  // } else if (currentCategoryType.value === "tools") {
-  //   items.value = items.value.filter((item) => item.type === "tools");
-  // } else if (currentCategoryType.value === "stuff") {
-  //   items.value = items.value.filter((item) => item.type === "stuff");
-  // } else if (currentCategoryType.value === "consumables") {
-  //   items.value = items.value.filter((item) => item.type === "consumables");
-  // }
 });
+
+
+// Проверка беред сабмитом
+watch(item.value, () => {
+  if(
+    item.value.title &&
+    item.value.type &&
+    item.value.qty > 0 &&
+    item.value.measure &&
+    item.value.location &&
+    item.value.positionID &&
+    item.value.owner
+  ) {
+    createNewItemBtnIsDisabled.value = false
+  } else {
+    createNewItemBtnIsDisabled.value = true
+  }
+})
 
 const filterItemsType = async (type) => {
   currentCategoryType.value = type;
@@ -373,80 +394,109 @@ const filterItemsType = async (type) => {
         <div>Утренняя, 11</div>
         <div>Клиника</div> -->
 
-    <form>
-      <div class="mb-3">
-        <label for="exampleInputName1" class="form-label">Наименование</label>
-        <input
-          v-model="item.title"
-          type="text"
-          id="exampleInputName1"
-          aria-describedby="nameHelp"
-        />
+    <!-- ADD NEW ITEM MODAL -->
+    <!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newWarehouseItemModal">
+      Создать 
+    </button>
+
+    <!-- Modal -->
+    <div class="modal fade" id="newWarehouseItemModal" tabindex="-1" aria-labelledby="newWarehouseItemLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <form class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="newWarehouseItemLabel">Создание ТМЦ</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+
+            <!-- TITLE -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label">Наименование</label>
+              <input
+                v-model="item.title"
+                type="text"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+            <!-- TYPE -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label">Тип</label>
+              <input
+                v-model="item.type"
+                type="text"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+            <!-- QTY -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label">Кол-во</label>
+              <input
+                v-model="item.qty"
+                type="number"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+            <!-- MEASURE -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label">Ед. Изм.</label>
+              <input
+                v-model="item.measure"
+                type="text"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+            <!-- LOCATION -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label"
+                >Местонахождение</label
+              >
+              <input
+                v-model="item.location"
+                type="text"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+            <!-- POSITION ID -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label">PositionID</label>
+              <input
+                v-model="item.positionID"
+                type="text"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+            <!-- OWNER -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label">Owner</label>
+              <input
+                v-model="item.owner"
+                type="number"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="clearModalInputs(item)">Отменить</button>
+            <button type="button" id="newItemCreateBtn" class="btn btn-primary" data-bs-dismiss="modal" :disabled="createNewItemBtnIsDisabled" @click.prevent="addWarehouseItem(item)">Создать</button>
+          </div>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="exampleInputName1" class="form-label">Тип</label>
-        <input
-          v-model="item.type"
-          type="text"
-          id="exampleInputName1"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputName1" class="form-label">Кол-во</label>
-        <input
-          v-model="item.qty"
-          type="number"
-          id="exampleInputName1"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputName1" class="form-label">Ед. Изм.</label>
-        <input
-          v-model="item.measure"
-          type="text"
-          id="exampleInputName1"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputName1" class="form-label"
-          >Местонахождение</label
-        >
-        <input
-          v-model="item.location"
-          type="text"
-          id="exampleInputName1"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputName1" class="form-label">PositionID</label>
-        <input
-          v-model="item.positionID"
-          type="text"
-          id="exampleInputName1"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="exampleInputName1" class="form-label">Owner</label>
-        <input
-          v-model="item.owner"
-          type="number"
-          id="exampleInputName1"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        @click.prevent="addWarehouseItem(item)"
-      >
-        Add item to SKLAD
-      </button>
-    </form>
+    </div>
 
     <!-- fetch data is error -->
     <div v-if="error">
@@ -497,20 +547,6 @@ const filterItemsType = async (type) => {
 
     <!-- data is loaded -->
     <div v-else>
-      <!-- <div style="display: flex;">
-            <select class="form-select" aria-label="Default select example">
-                <option selected>Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select>
-            <select class="form-select" aria-label="Default select example">
-                <option selected>Open this select menu</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-            </select>
-        </div> -->
 
       <!-- СПИСОК ITEMS -->
       <table class="table">

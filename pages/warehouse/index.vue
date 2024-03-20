@@ -227,9 +227,8 @@ const warehouseCategories = ref([
 // ]);
 // const items = ref(null);
 onMounted(async () => {
-  
   // makes refetching
-  refresh()
+  refresh();
 });
 
 /**
@@ -262,6 +261,10 @@ const creatLocationLink = (object: any) => {
       alert(
         "В ремонте: как и где поселить сервисный центр? Относится ли он к проектам? Или же это другие сущности? "
       );
+    } else if (object.location === "office") {
+      alert(
+        `В офисе №${object.positionID}. Адрес офиса (надо придумать как выдавать)`
+      );
     } else if (object.location === "archive") {
       alert(`В архиве. Складской адрес: ${object.positionID}`);
     } else if (object.location === "deleted") {
@@ -281,6 +284,8 @@ const translateLocation = (id: any, location: string) => {
       return `projectID in db: (${id}, ${typeof id})`;
     } else if (location === "sklad") {
       return `На складе`;
+    } else if (location === "office") {
+      return `В офисе №${id}, ${typeof id}`;
     } else if (location === "repair") {
       return "В ремонте";
     } else if (location === "archive") {
@@ -307,15 +312,21 @@ const locationLinkColorized = (location: string) => {
 };
 
 // ****** ДОБАЛЯЕМ ITEM на SKLAD to BD в newWarehouseItemModal *******
-// флаг disabled для кнопки 
-const createNewItemBtnIsDisabled = ref(true)
+// флаг disabled для кнопки
+const createNewItemBtnIsDisabled = ref(true);
 // функция добавления в БД
 async function addWarehouseItem(item) {
   let addedItem = null;
-    
-  if(item.title && item.type && item.qty > 0 && item.measure && item.location && item.positionID && item.owner) {
-    
 
+  if (
+    item.title &&
+    item.type &&
+    item.qty > 0 &&
+    item.measure &&
+    item.location &&
+    item.positionID &&
+    item.owner
+  ) {
     addedItem = await $fetch("api/warehouse/item", {
       method: "POST",
       body: {
@@ -329,35 +340,33 @@ async function addWarehouseItem(item) {
         owner: item.owner,
       },
     });
-    
+
     // clear all inputs in modal
-    clearModalInputs(item)
+    clearModalInputs(item);
 
     // refetching
     refresh();
-  } 
+  }
 }
 
 const clearModalInputs = (item: any) => {
-  item.uuid = null
-  item.title = null
-  item.type = null
-  item.qty = 0
-  item.measure = null
-  item.location = null
-  item.positionID = null
-  item.owner = null
-}
+  item.uuid = null;
+  item.title = null;
+  item.type = null;
+  item.qty = 0;
+  item.measure = null;
+  item.location = null;
+  item.positionID = null;
+  item.owner = null;
+};
 
 watch(currentCategoryType, () => {
   console.log(currentCategoryType.value);
-
 });
-
 
 // Проверка беред сабмитом
 watch(item.value, () => {
-  if(
+  if (
     item.value.title &&
     item.value.type &&
     item.value.qty > 0 &&
@@ -366,11 +375,11 @@ watch(item.value, () => {
     item.value.positionID &&
     item.value.owner
   ) {
-    createNewItemBtnIsDisabled.value = false
+    createNewItemBtnIsDisabled.value = false;
   } else {
-    createNewItemBtnIsDisabled.value = true
+    createNewItemBtnIsDisabled.value = true;
   }
-})
+});
 
 const filterItemsType = async (type) => {
   currentCategoryType.value = type;
@@ -396,23 +405,42 @@ const filterItemsType = async (type) => {
 
     <!-- ADD NEW ITEM MODAL -->
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newWarehouseItemModal">
-      Создать 
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#newWarehouseItemModal"
+    >
+      Создать
     </button>
 
     <!-- Modal -->
-    <div class="modal fade" id="newWarehouseItemModal" tabindex="-1" aria-labelledby="newWarehouseItemLabel" aria-hidden="true">
+    <div
+      class="modal fade"
+      id="newWarehouseItemModal"
+      tabindex="-1"
+      aria-labelledby="newWarehouseItemLabel"
+      aria-hidden="true"
+    >
       <div class="modal-dialog">
         <form class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="newWarehouseItemLabel">Создание ТМЦ</h1>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <h1 class="modal-title fs-5" id="newWarehouseItemLabel">
+              Создание ТМЦ
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
           </div>
           <div class="modal-body">
-
             <!-- TITLE -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label">Наименование</label>
+              <label for="exampleInputName1" class="form-label"
+                >Наименование</label
+              >
               <input
                 v-model="item.title"
                 type="text"
@@ -469,7 +497,9 @@ const filterItemsType = async (type) => {
 
             <!-- POSITION ID -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label">PositionID</label>
+              <label for="exampleInputName1" class="form-label"
+                >PositionID</label
+              >
               <input
                 v-model="item.positionID"
                 type="text"
@@ -488,11 +518,26 @@ const filterItemsType = async (type) => {
                 aria-describedby="nameHelp"
               />
             </div>
-
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="clearModalInputs(item)">Отменить</button>
-            <button type="button" id="newItemCreateBtn" class="btn btn-primary" data-bs-dismiss="modal" :disabled="createNewItemBtnIsDisabled" @click.prevent="addWarehouseItem(item)">Создать</button>
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              @click="clearModalInputs(item)"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              id="newItemCreateBtn"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              :disabled="createNewItemBtnIsDisabled"
+              @click.prevent="addWarehouseItem(item)"
+            >
+              Создать
+            </button>
           </div>
         </form>
       </div>
@@ -508,6 +553,7 @@ const filterItemsType = async (type) => {
     <div>
       <ul style="display: flex; list-style: none; padding: 0">
         <li>Склад</li>
+        <li>Офис</li>
         <li>Ремонт</li>
         <li>
           <select name="" id="">
@@ -521,6 +567,7 @@ const filterItemsType = async (type) => {
 
     <!--  -->
     <div class="switch-type_container">
+      <!-- SWITCH BTNs -->
       <div
         v-for="(category, index) in warehouseCategories"
         :key="index"
@@ -535,10 +582,10 @@ const filterItemsType = async (type) => {
         />
         <label :for="index">{{ category.name }}</label>
       </div>
-    </div>
 
-    <!-- ПОИСК -->
-    <input type="text" class="form-control" placeholder="Поиск" />
+      <!-- SEARCH -->
+      <input type="text" class="form-control" placeholder="Поиск" />
+    </div>
 
     <!-- data is loading -->
     <div v-if="pending">
@@ -547,7 +594,6 @@ const filterItemsType = async (type) => {
 
     <!-- data is loaded -->
     <div v-else>
-
       <!-- СПИСОК ITEMS -->
       <table class="table">
         <thead>
@@ -624,6 +670,11 @@ td {
   border: none;
   background-color: var(--bs-primary-bg-subtle);
 }
+.link_office {
+  color: white;
+  border: none;
+  background-color: var(--bs-primary-bg-subtle);
+}
 .link_repair {
   color: var(--bs-warning);
   border: 1px solid var(--bs-warning-bg-subtle);
@@ -644,7 +695,35 @@ td {
   gap: 1rem;
 }
 
+.switch-type_el {
+  display: flex;
+  align-items: center;
+}
+
+.switch-type_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+
 .switch-type_el label {
   cursor: pointer;
+  display: inline-block;
+  /* background-color: #d1d1d1; */
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+.switch-type_el label:hover {
+  background-color: #b1e3c1;
+  color: white;
+  transition: all 0.15s ease-in;
+}
+.switch-type_el input[type="radio"]:checked + label {
+  background-color: #b1e3c1;
+  color: white;
+}
+
+.form-control {
+  border-radius: 16px;
 }
 </style>

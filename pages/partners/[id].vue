@@ -260,7 +260,7 @@ usersInBand.value = [
  * @desc Get users
 */
 async function getUsers() {
-    return await $fetch('/api/users')
+    return await $fetch('/api/usersList/users')
 }
 
 

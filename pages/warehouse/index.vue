@@ -68,7 +68,7 @@ const item = ref({
   location: null,
   positionID: null,
   owner: null,
-  responsible: null
+  responsible: null,
 });
 
 const currentCategoryType = ref("all");
@@ -96,7 +96,7 @@ const warehouseCategories = ref([
 // Споты, где может находиться ТМЦ
 // const itemsLocations = ref([
 //   {
-    
+
 //   }
 // ])
 // const item = ref({
@@ -320,7 +320,7 @@ const locationLinkColorized = (location: string) => {
 };
 
 // ****** ДОБАЛЯЕМ ITEM на SKLAD to BD в newWarehouseItemModal *******
-// флаг disabled для кнопки
+// флаг disabled для кнопки submit
 const createNewItemBtnIsDisabled = ref(true);
 // функция добавления в БД
 async function addWarehouseItem(item) {
@@ -347,7 +347,7 @@ async function addWarehouseItem(item) {
         location: item.location,
         positionID: item.positionID,
         owner: item.owner,
-        responsible: item.responsible
+        responsible: item.responsible,
       },
     });
 
@@ -368,14 +368,14 @@ const clearModalInputs = (item: any) => {
   item.location = null;
   item.positionID = null;
   item.owner = null;
-  item.responsible = null
+  item.responsible = null;
 };
 
 watch(currentCategoryType, () => {
   console.log(currentCategoryType.value);
 });
 
-// Проверка беред сабмитом
+// Проверка перед сабмитом
 watch(item.value, () => {
   if (
     item.value.title &&
@@ -407,13 +407,6 @@ const filterItemsType = async (type) => {
 <template>
   <Container>
     <h1>ТМЦ</h1>
-
-    <!-- <div @click="$router.push(`/projects/${projects._id}`)">Машзавод (РусРазитие)</div> -->
-    <!-- <div>Машзавод (РусРазитие)</div>
-        <div>Машзавод (Атом-строй)</div>
-        <div>Горького, 14</div>
-        <div>Утренняя, 11</div>
-        <div>Клиника</div> -->
 
     <!-- ADD NEW ITEM MODAL -->
     <!-- Button trigger modal -->
@@ -450,98 +443,106 @@ const filterItemsType = async (type) => {
           <div class="modal-body">
             <!-- TITLE -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label"
-                >Наименование</label
-              >
+              <label for="itemTitle" class="form-label">Наименование</label>
               <input
                 v-model="item.title"
                 type="text"
-                id="exampleInputName1"
+                id="itemTitle"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
 
             <!-- TYPE -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label">Тип</label>
+              <label for="itemType" class="form-label">Тип</label>
               <input
                 v-model="item.type"
                 type="text"
-                id="exampleInputName1"
+                id="itemType"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
 
             <!-- QTY -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label">Кол-во</label>
+              <label for="itemQty" class="form-label">Кол-во</label>
               <input
                 v-model="item.qty"
                 type="number"
-                id="exampleInputName1"
+                id="itemQty"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
 
             <!-- MEASURE -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label">Ед. Изм.</label>
+              <label for="itemMeasure" class="form-label">Ед. Изм.</label>
               <input
                 v-model="item.measure"
                 type="text"
-                id="exampleInputName1"
+                id="itemMeasure"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
 
             <!-- LOCATION -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label"
+              <label for="itemLocation" class="form-label"
                 >Местонахождение</label
               >
               <input
                 v-model="item.location"
                 type="text"
-                id="exampleInputName1"
+                id="itemLocation"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
 
             <!-- POSITION ID -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label"
-                >PositionID</label
-              >
+              <label for="itemPositionID" class="form-label">PositionID</label>
               <input
                 v-model="item.positionID"
                 type="text"
-                id="exampleInputName1"
+                id="itemPositionID"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
 
             <!-- OWNER -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label">Owner</label>
+              <label for="itemOwner" class="form-label">Owner</label>
               <input
                 v-model="item.owner"
                 type="number"
-                id="exampleInputName1"
+                id="itemOwner"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
 
             <!-- RESPONSIBLE -->
             <div class="mb-3">
-              <label for="exampleInputName1" class="form-label">Responsible</label>
+              <label for="itemResponsible" class="form-label"
+                >Responsible</label
+              >
               <input
                 v-model="item.responsible"
                 type="number"
-                id="exampleInputName1"
+                id="itemResponsible"
+                class="form-control"
                 aria-describedby="nameHelp"
               />
             </div>
           </div>
+
+           <!-- MODAL FOOTER -->
           <div class="modal-footer">
             <button
               type="button"
@@ -654,7 +655,11 @@ const filterItemsType = async (type) => {
               }}</span>
             </td>
             <td scope="col">
-              <span class="link" @click="$router.push(`/partners/${item.responsible}`)">{{ item.responsible }}</span>
+              <span
+                class="link"
+                @click="$router.push(`/partners/${item.responsible}`)"
+                >{{ item.responsible }}</span
+              >
             </td>
             <td scope="col">{{ item.type }}</td>
           </tr>

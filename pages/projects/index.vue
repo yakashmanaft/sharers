@@ -3,7 +3,6 @@ import { Container } from "@/shared/container";
 
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
-import { onMounted } from "vue";
 
 // const projects = [
 //   {
@@ -90,7 +89,7 @@ import { onMounted } from "vue";
 //   {
 //     id: 10,
 //     title: "Клиника",
-//     address: "г. Пермь, ул. Мильчакова, д. 18",
+//     address: "г. Пермь, ул. Мильчакова, д. 19",
 //     partner: 'ООО "СупеПупер"',
 //     creator: "Игорь Александрович Смирнягин",
 //     workType: "Реализация дизайн проекта",
@@ -172,10 +171,21 @@ onMounted(async () => {
   refresh();
 });
 
+// *********** ДОБАВЛЯЕМ New Project newProjectModal ***********
+// флаг disabled для кнопки submit
+const createNewProjectBtnIsDisabled = ref(true);
+
 async function addProject(project) {
   let addedProject = null;
 
-  if (project) {
+  if (
+    project.title &&
+    project.address &&
+    project.partner &&
+    project.creator &&
+    project.workType &&
+    project.completion
+  ) {
     addedProject = await $fetch("api/projects/projects", {
       method: "POST",
       body: {
@@ -189,10 +199,40 @@ async function addProject(project) {
       },
     });
 
+    // clear all inputs in modal
+    clearModalInputs(project);
+
     // refetching
     refresh();
   }
 }
+
+//
+const clearModalInputs = (project: any) => {
+  project.uuid = null;
+  project.title = null;
+  project.address = null;
+  project.partner = null;
+  project.creator = null;
+  project.workType = null;
+  project.completion = null;
+};
+
+// Check before submit creating new project
+watch(project.value, () => {
+  if (
+    project.value.title &&
+    project.value.address &&
+    project.value.partner &&
+    project.value.creator &&
+    project.value.workType &&
+    project.value.completion
+  ) {
+    createNewProjectBtnIsDisabled.value = false;
+  } else {
+    createNewProjectBtnIsDisabled.value = true;
+  }
+});
 </script>
 <template>
   <Container>
@@ -204,133 +244,208 @@ async function addProject(project) {
       <p>Error Message {{ error.message }}</p>
     </div>
 
-    <!-- <span>{{ projects.length }}</span> -->
+    <!-- ADD NEW PROJECT MODAL -->
+    <!-- Button trigger modal -->
+    <button
+      type="button"
+      class="btn btn-primary"
+      data-bs-toggle="modal"
+      data-bs-target="#newProjectModal"
+    >
+      Создать
+    </button>
 
-    <br />
-    <form>
-      <div class="mb-3">
-        <label for="projectTitle" class="form-label">Title</label>
-        <input
-          v-model="project.title"
-          type="text"
-          class="form-control"
-          id="projectTitle"
-          aria-describedby="nameHelp"
-        />
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="newProjectModal"
+      tabindex="-1"
+      aria-labelledby="newProjectModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <form class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="newProjectModalLabel">
+              Новый проект
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <!-- TITLE -->
+            <div class="mb-3">
+              <label for="projectTitle" class="form-label"
+                >Название проекта</label
+              >
+              <input
+                v-model="project.title"
+                type="text"
+                class="form-control"
+                id="projectTitle"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- ADDRESS -->
+            <div class="mb-3">
+              <label for="projectAddress" class="form-label">Address</label>
+              <input
+                v-model="project.address"
+                type="text"
+                class="form-control"
+                id="projectAddress"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- PARTNER -->
+            <div class="mb-3">
+              <label for="projectPartner" class="form-label">Partner</label>
+              <input
+                v-model="project.partner"
+                type="number"
+                class="form-control"
+                id="projectPartner"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- CREATOR -->
+            <div class="mb-3">
+              <label for="projectCreator" class="form-label">Creator</label>
+              <input
+                v-model="project.creator"
+                type="number"
+                class="form-control"
+                id="projectCreator"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- WORK TYPE -->
+            <div class="mb-3">
+              <label for="projectWorkType" class="form-label">Work Type</label>
+              <input
+                v-model="project.workType"
+                type="string"
+                class="form-control"
+                id="projectWorkType"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- COMPLETION -->
+            <div class="mb-3">
+              <label for="projectCompletion" class="form-label"
+                >Completion</label
+              >
+              <input
+                v-model="project.completion"
+                type="number"
+                class="form-control"
+                id="projectCompletion"
+                aria-describedby="nameHelp"
+              />
+            </div>
+          </div>
+
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+              @click="clearModalInputs(project)"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              id="createNewProjectBtn"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              :disabled="createNewProjectBtnIsDisabled"
+              @click="addProject(project)"
+            >
+              Создать
+            </button>
+          </div>
+        </form>
       </div>
-      <div class="mb-3">
-        <label for="projectAddress" class="form-label">Address</label>
-        <input
-          v-model="project.address"
-          type="text"
-          class="form-control"
-          id="projectAddress"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="projectPartner" class="form-label">Partner</label>
-        <input
-          v-model="project.partner"
-          type="number"
-          class="form-control"
-          id="projectPartner"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="projectCreator" class="form-label">Creator</label>
-        <input
-          v-model="project.creator"
-          type="number"
-          class="form-control"
-          id="projectCreator"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="projectWorkType" class="form-label">Work Type</label>
-        <input
-          v-model="project.workType"
-          type="string"
-          class="form-control"
-          id="projectWorkType"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="projectCompletion" class="form-label">Completion</label>
-        <input
-          v-model="project.completion"
-          type="number"
-          class="form-control"
-          id="projectCompletion"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        @click.prevent="addProject(project)"
-      >
-        Add project
-      </button>
-    </form>
+    </div>
 
     <div v-if="pending">
       <p>Loading...</p>
     </div>
-    <div class="projects-container" v-else>
-      <!-- Нумерация проектов: несколько первых необходимо определить под технические (ремонт технники или инструмента )  -->
-      <div
-        class="projects-item"
-        v-for="(project, index) in projects"
-        :key="index"
-        @click="$router.push(`/projects/${project.id}`)"
-      >
-        <h2>{{ project.title }}</h2>
-        <p>{{ project.address }}</p>
-        <p>{{ project.workType }}</p>
-        <p>{{ project.partner }}</p>
-        <div class="completion-container">
+
+    <div
+      v-else
+      v-for="(project, index) in projects"
+      :key="index"
+      class="project-item_container"
+      @click="$router.push(`/projects/${project.id}`)"
+    >
+      <div class="project-item_left">
+        <div class="project-completion">
           <span>{{ (project.completion * 100).toFixed(0) }}%</span>
         </div>
+        <div>
+          <h2>{{ project.title }}</h2>
+          <span>{{ project.address }}</span>
+        </div>
+      </div>
+      <div class="project-item_right">
+        <span>{{ project.workType }}</span>
+        <span>Заказчик: {{ project.partner }}</span>
       </div>
     </div>
+
+    <br />
+    <br />
+    <br />
+    <br />
   </Container>
 </template>
 
 <style scoped>
-.projects-container {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 1rem;
-}
-.projects-item {
-  box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
-  border-radius: 10px;
+.project-item_container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.2);
+  margin-top: 1rem;
   padding: 1rem;
-  transition: all 0.3s;
-  position: relative;
-}
-.projects-item:hover {
   cursor: pointer;
-  box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.3);
+  transition: all 0.2s ease-in;
+}
+.project-item_container h2 {
+  margin: 0;
 }
 
-.completion-container {
-  width: 2rem;
-  height: 2rem;
-  background-color: gray;
+.project-item_container:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.project-item_left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.project-item_right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.project-completion {
+  /* background-color: rgba(0, 0, 0, 0.05); */
+  width: 3rem;
+  height: 3rem;
+  background-color: #b1e3c1;
   border-radius: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  position: absolute;
-  right: 1rem;
-  bottom: 1rem;
-}
-.completion-container span {
-  font-size: 12px;
 }
 </style>

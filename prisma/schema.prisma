@@ -54,6 +54,8 @@ model Projects {
   creator      Int       @default(1)
   workType      String    @db.VarChar(255)
   completion  Float @default(0.00)
+  created_at DateTime  @default(now()) @db.DateTime(0)
+  update_at  DateTime? @updatedAt
 }
 
 // generator client {

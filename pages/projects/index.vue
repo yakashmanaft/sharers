@@ -413,7 +413,7 @@ watch(project.value, () => {
   align-items: center;
   justify-content: space-between;
   box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.2);
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   padding: 1rem;
   cursor: pointer;
   transition: all 0.2s ease-in;

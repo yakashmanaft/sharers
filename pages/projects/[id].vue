@@ -25,10 +25,10 @@ useHead({
 
 //
 const route = useRoute();
-const router = useRouter();
+// const router = useRouter();
 //
-const users = ref(null);
-const user = ref(null);
+// const users = ref(null);
+// const user = ref(null);
 //
 const projects = ref(null);
 const project = ref(null);
@@ -41,9 +41,9 @@ onMounted(async () => {
 /**
  * @desc Get users
  */
-async function getUsers() {
-  return await $fetch("/api/usersList/users");
-}
+// async function getUsers() {
+//   return await $fetch("/api/usersList/users");
+// }
 /**
  * @desc Get projects
  */

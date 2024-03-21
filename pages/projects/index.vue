@@ -378,25 +378,26 @@ watch(project.value, () => {
       <p>Loading...</p>
     </div>
 
-    <div
-      v-else
-      v-for="(project, index) in projects"
-      :key="index"
-      class="project-item_container"
-      @click="$router.push(`/projects/${project.id}`)"
-    >
-      <div class="project-item_left">
-        <div class="project-completion">
-          <span>{{ (project.completion * 100).toFixed(0) }}%</span>
+    <div v-else class="projects_container">
+      <div
+        v-for="(project, index) in projects"
+        :key="index"
+        class="project-item_container"
+        @click="$router.push(`/projects/${project.id}`)"
+      >
+        <div class="project-item_left">
+          <div class="project-completion">
+            <span>{{ (project.completion * 100).toFixed(0) }}%</span>
+          </div>
+          <div>
+            <h2>{{ project.title }}</h2>
+            <span>{{ project.address }}</span>
+          </div>
         </div>
-        <div>
-          <h2>{{ project.title }}</h2>
-          <span>{{ project.address }}</span>
+        <div class="project-item_right">
+          <span>{{ project.workType }}</span>
+          <span>Заказчик: {{ project.partner }}</span>
         </div>
-      </div>
-      <div class="project-item_right">
-        <span>{{ project.workType }}</span>
-        <span>Заказчик: {{ project.partner }}</span>
       </div>
     </div>
 
@@ -408,6 +409,9 @@ watch(project.value, () => {
 </template>
 
 <style scoped>
+.projects_container {
+  margin-top: 2rem;
+}
 .project-item_container {
   display: flex;
   align-items: center;

@@ -15,7 +15,7 @@ export default defineEventHandler(async (event) => {
           qty: body.qty,
           measure: body.measure,
           location: body.location,
-          positionID: body.positionID,
+          locationID: body.locationID,
           owner: body.owner,
           responsible: body.responsible
         },

@@ -66,7 +66,7 @@ const item = ref({
   qty: 0,
   measure: null,
   location: null,
-  positionID: null,
+  locationID: null,
   owner: null,
   responsible: null,
 });
@@ -106,7 +106,7 @@ const warehouseCategories = ref([
 //   qty: 0,
 //   measure: null,
 //   location: null,
-//   positionID: null,
+//   locationID: null,
 //   owner: null,
 // });
 // uuid во фронте не показываем, но надо иметь в принятой из бд объекте наверно в случае удаления
@@ -119,7 +119,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "project",
-//     positionID: 2,
+//     locationID: 2,
 //     owner: 'ООО "Камини"',
 //   },
 //   {
@@ -130,7 +130,7 @@ const warehouseCategories = ref([
 //     qty: 100,
 //     measure: "шт",
 //     location: "project",
-//     positionID: 1,
+//     locationID: 1,
 //     owner: 'ООО "РусРазвтие"',
 //   },
 //   {
@@ -141,7 +141,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "repair",
-//     positionID: 12,
+//     locationID: 12,
 //     owner: 'ООО "Камини"',
 //   },
 //   {
@@ -152,7 +152,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "sklad",
-//     positionID: "sklad_main_r2-c27-f1-f1",
+//     locationID: "sklad_main_r2-c27-f1-f1",
 //     owner: "Папа Карло",
 //   },
 //   {
@@ -163,7 +163,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "sklad",
-//     positionID: "sklad_main_r1-c1-f1-f1",
+//     locationID: "sklad_main_r1-c1-f1-f1",
 //     owner: 'ООО "Камини"',
 //   },
 //   {
@@ -174,7 +174,7 @@ const warehouseCategories = ref([
 //     qty: 200,
 //     measure: "кг",
 //     location: "sklad",
-//     positionID: "sklad_main_r1-c1-f2-f2",
+//     locationID: "sklad_main_r1-c1-f2-f2",
 //     owner: 'ООО "Камини"',
 //   },
 //   {
@@ -185,7 +185,7 @@ const warehouseCategories = ref([
 //     qty: 10,
 //     measure: "пар",
 //     location: "sklad",
-//     positionID: "sklad_main_r3-c6-f1-f3",
+//     locationID: "sklad_main_r3-c6-f1-f3",
 //     owner: 'ООО "Камини"',
 //   },
 //   {
@@ -196,7 +196,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "project",
-//     positionID: 1,
+//     locationID: 1,
 //     owner: 'ООО "Камини"',
 //   },
 //   {
@@ -207,7 +207,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "archive",
-//     positionID: "sklad_archive-r1-c1-f1-f1",
+//     locationID: "sklad_archive-r1-c1-f1-f1",
 //     owner: "В. Н. Клименко",
 //   },
 //   {
@@ -218,7 +218,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "deleted",
-//     positionID: "deleted",
+//     locationID: "deleted",
 //     owner: "В. Н. Клименко",
 //   },
 //   {
@@ -229,7 +229,7 @@ const warehouseCategories = ref([
 //     qty: 1,
 //     measure: "шт",
 //     location: "project",
-//     positionID: 2,
+//     locationID: 2,
 //     owner: "В. Н. Клименко",
 //   },
 // ]);
@@ -262,19 +262,21 @@ const {
 const creatLocationLink = (object: any) => {
   if (object) {
     if (object.location === "project") {
-      router.push(`/projects/${object.positionID}`);
+      router.push(`/projects/${object.locationID}`);
     } else if (object.location === "sklad") {
-      alert(`Складской адрес: ${object.positionID}`);
+      alert(
+        `Складской адрес: ${object.locationID}. Поидее, следует показывать точный адрес полку, где лежит. Из БД warehouseItems - position`
+      );
     } else if (object.location === "repair") {
       alert(
-        "В ремонте: как и где поселить сервисный центр? Относится ли он к проектам? Или же это другие сущности? "
+        "В ремонте: сервисный центр поселили в БД locations. Что здесь при клике показывать?"
       );
     } else if (object.location === "office") {
       alert(
-        `В офисе №${object.positionID}. Адрес офиса (надо придумать как выдавать)`
+        `В офисе №${object.locationID}. Адрес офиса (надо придумать как выдавать)`
       );
     } else if (object.location === "archive") {
-      alert(`В архиве. Складской адрес: ${object.positionID}`);
+      alert(`В архиве. Складской адрес: ${object.locationID}`);
     } else if (object.location === "deleted") {
       alert(`У вас нет прав, чтобы окончательно удалить предмет`);
     } else {
@@ -289,13 +291,13 @@ const creatLocationLink = (object: any) => {
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
     if (location === "project") {
-      return `projectID in db: (${id}, ${typeof id})`;
+      return `project #${id}, ${typeof id}`;
     } else if (location === "sklad") {
-      return `На складе`;
+      return `На складе #${id}, ${typeof id}`;
     } else if (location === "office") {
-      return `В офисе №${id}, ${typeof id}`;
+      return `В офисе #${id}, ${typeof id}`;
     } else if (location === "repair") {
-      return "В ремонте";
+      return `В ремонте #${id}, ${typeof id}`;
     } else if (location === "archive") {
       return `Архив`;
     } else if (location === "deleted") {
@@ -332,7 +334,7 @@ async function addWarehouseItem(item) {
     item.qty > 0 &&
     item.measure &&
     item.location &&
-    item.positionID &&
+    item.locationID &&
     item.owner &&
     item.responsible
   ) {
@@ -345,7 +347,7 @@ async function addWarehouseItem(item) {
         qty: item.qty,
         measure: item.measure,
         location: item.location,
-        positionID: item.positionID,
+        locationID: item.locationID,
         owner: item.owner,
         responsible: item.responsible,
       },
@@ -366,7 +368,7 @@ const clearModalInputs = (item: any) => {
   item.qty = 0;
   item.measure = null;
   item.location = null;
-  item.positionID = null;
+  item.locationID = null;
   item.owner = null;
   item.responsible = null;
 };
@@ -383,7 +385,7 @@ watch(item.value, () => {
     item.value.qty > 0 &&
     item.value.measure &&
     item.value.location &&
-    item.value.positionID &&
+    item.value.locationID &&
     item.value.owner &&
     item.value.responsible
   ) {
@@ -505,11 +507,11 @@ const filterItemsType = async (type) => {
 
             <!-- POSITION ID -->
             <div class="mb-3">
-              <label for="itemPositionID" class="form-label">PositionID</label>
+              <label for="itemlocationID" class="form-label">locationID</label>
               <input
-                v-model="item.positionID"
+                v-model="item.locationID"
                 type="text"
-                id="itemPositionID"
+                id="itemlocationID"
                 class="form-control"
                 aria-describedby="nameHelp"
               />
@@ -542,7 +544,7 @@ const filterItemsType = async (type) => {
             </div>
           </div>
 
-           <!-- MODAL FOOTER -->
+          <!-- MODAL FOOTER -->
           <div class="modal-footer">
             <button
               type="button"
@@ -646,7 +648,7 @@ const filterItemsType = async (type) => {
                 :class="`${locationLinkColorized(item.location)}`"
                 @click="creatLocationLink(item)"
               >
-                {{ translateLocation(item.positionID, item.location) }}
+                {{ translateLocation(item.locationID, item.location) }}
               </span>
             </td>
             <td scope="col">

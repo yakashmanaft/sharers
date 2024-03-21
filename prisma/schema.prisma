@@ -31,31 +31,49 @@ enum Role {
 }
 
 model WarehouseItems {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique(map: "uuid") @db.VarChar(60)
+  title       String    @db.VarChar(255)
+  type        String    @db.VarChar(255)
+  qty         Int       @default(0)
+  measure     String    @db.VarChar(255)
+  location    String    @db.VarChar(255)
+  locationID  Int       @default(1) 
+  position    String?   @db.VarChar(255)
+  owner       Int       @default(1)
+  responsible Int       @default(1)
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  update_at   DateTime? @updatedAt
+}
+
+model Projects {
+  id          Int       @id @default(autoincrement())
+  uuid        String    @unique(map: "uuid") @db.VarChar(60)
+  title       String    @db.VarChar(255)
+  address     String    @db.VarChar(255)
+  partner     Int       @default(0)
+  creator     Int       @default(1)
+  workType    String    @db.VarChar(255)
+  completion  Float     @default(0.00)
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  update_at   DateTime? @updatedAt
+}
+
+// места хранения у компании (Склад, Офис, Ремонтные)
+model Locations {
   id         Int       @id @default(autoincrement())
   uuid       String    @unique(map: "uuid") @db.VarChar(60)
   title      String    @db.VarChar(255)
-  type       String    @db.VarChar(255)
-  qty        Int       @default(0)
-  measure    String    @db.VarChar(255)
-  location   String    @db.VarChar(255)
-  positionID String    @db.VarChar(255)
-  owner      Int       @default(1)
-  responsible Int      @default(1)
+  type       Type      @default(OFFICE)
+  address    String    @db.VarChar(255)
   created_at DateTime  @default(now()) @db.DateTime(0)
   update_at  DateTime? @updatedAt
 }
 
-model Projects {
-  id         Int       @id @default(autoincrement())
-  uuid       String    @unique(map: "uuid") @db.VarChar(60)
-  title      String    @db.VarChar(255)
-  address      String    @db.VarChar(255)
-  partner      Int       @default(0)
-  creator      Int       @default(1)
-  workType      String    @db.VarChar(255)
-  completion  Float @default(0.00)
-  created_at DateTime  @default(now()) @db.DateTime(0)
-  update_at  DateTime? @updatedAt
+enum Type {
+  OFFICE
+  SKLAD
+  REPAIR
 }
 
 // generator client {

@@ -25,4 +25,10 @@ html {
     width:100vw;
     overflow-x:hidden;
 }
+/* # Тестировать docker */
+/* # https://www.youtube.com/watch?v=w9Ls34MvZTs */
+/* # environment settings nuxt */
+/* # https://www.youtube.com/watch?v=eCKjCoWGCUA */
 </style>
+
+

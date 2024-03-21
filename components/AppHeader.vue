@@ -118,12 +118,17 @@ onMounted(async () => {
           >
             Sign in
           </button>
-          <button
-            v-if="useAuthStore().loggedIn"
-            @click="useAuthStore().clear()"
-          >
-            Logout
-          </button>
+
+          <!-- IF LOGGED IN -->
+          <div v-if="useAuthStore().loggedIn" class="logged-in_container">
+            <!-- ACCOUNT -->
+            <div>
+              <router-link to="/account">Аккаунт</router-link>
+            </div>
+
+            <!-- LOGOUT BTN -->
+            <button @click="useAuthStore().clear()">Logout</button>
+          </div>
         </div>
       </div>
     </Container>
@@ -169,5 +174,15 @@ onMounted(async () => {
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.logged-in_container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.logged-in_container a {
+  text-decoration: none;
 }
 </style>

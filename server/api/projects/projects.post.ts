@@ -4,26 +4,24 @@ const prisma = new PrismaClient()
 export default defineEventHandler(async (event) => {
     // ... Do whatever you want here
     const body = await readBody(event)
-    let item = null
+    let project = null
 
     if(body.title) 
-        await prisma.warehouseItems.create({
+        await prisma.projects.create({
         data: {
           uuid: body.uuid,
           title: body.title,
-          type: body.type,
-          qty: body.qty,
-          measure: body.measure,
-          location: body.location,
-          positionID: body.positionID,
-          owner: body.owner,
-          responsible: body.responsible
+          address: body.address,
+          partner: body.partner,
+          creator: body.creator,
+          workType: body.workType,
+          completion: body.completion,
         },
       }).then((response) => {
-        item = response
+        project = response
       })
 
     return {
-        item: item
+      project: project
     }
   })

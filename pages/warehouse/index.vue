@@ -68,6 +68,7 @@ const item = ref({
   location: null,
   positionID: null,
   owner: null,
+  responsible: null
 });
 
 const currentCategoryType = ref("all");
@@ -91,6 +92,13 @@ const warehouseCategories = ref([
     name: "Расходники",
   },
 ]);
+
+// Споты, где может находиться ТМЦ
+// const itemsLocations = ref([
+//   {
+    
+//   }
+// ])
 // const item = ref({
 //   uuid: uuidv4(),
 //   title: null,
@@ -325,7 +333,8 @@ async function addWarehouseItem(item) {
     item.measure &&
     item.location &&
     item.positionID &&
-    item.owner
+    item.owner &&
+    item.responsible
   ) {
     addedItem = await $fetch("api/warehouse/item", {
       method: "POST",
@@ -338,6 +347,7 @@ async function addWarehouseItem(item) {
         location: item.location,
         positionID: item.positionID,
         owner: item.owner,
+        responsible: item.responsible
       },
     });
 
@@ -358,6 +368,7 @@ const clearModalInputs = (item: any) => {
   item.location = null;
   item.positionID = null;
   item.owner = null;
+  item.responsible = null
 };
 
 watch(currentCategoryType, () => {
@@ -373,7 +384,8 @@ watch(item.value, () => {
     item.value.measure &&
     item.value.location &&
     item.value.positionID &&
-    item.value.owner
+    item.value.owner &&
+    item.value.responsible
   ) {
     createNewItemBtnIsDisabled.value = false;
   } else {
@@ -518,6 +530,17 @@ const filterItemsType = async (type) => {
                 aria-describedby="nameHelp"
               />
             </div>
+
+            <!-- RESPONSIBLE -->
+            <div class="mb-3">
+              <label for="exampleInputName1" class="form-label">Responsible</label>
+              <input
+                v-model="item.responsible"
+                type="number"
+                id="exampleInputName1"
+                aria-describedby="nameHelp"
+              />
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -603,6 +626,7 @@ const filterItemsType = async (type) => {
             <th scope="col">Кол-во</th>
             <th scope="col">Местонахождение</th>
             <th scope="col">Собственник</th>
+            <th scope="col">Ответственный</th>
             <th scope="col">Тип</th>
           </tr>
         </thead>
@@ -628,6 +652,9 @@ const filterItemsType = async (type) => {
               <span class="link" @click="translateOwner(item.owner)">{{
                 item.owner
               }}</span>
+            </td>
+            <td scope="col">
+              <span class="link" @click="$router.push(`/partners/${item.responsible}`)">{{ item.responsible }}</span>
             </td>
             <td scope="col">{{ item.type }}</td>
           </tr>

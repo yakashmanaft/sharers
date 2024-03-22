@@ -248,7 +248,7 @@ const {
   refresh,
   data: items,
   status,
-} = useFetch("api/warehouse/item", {
+} = await useFetch("api/warehouse/item", {
   lazy: false,
   // transform: (items) => {
   //   return items.map(item) => ({
@@ -256,6 +256,16 @@ const {
   //     title: item.title,
   //   })
   // }
+});
+
+const { data: projects } = await useFetch("api/projects/projects", {
+  lazy: false,
+  transform: (projects) => {
+    return projects.map((project) => ({
+      id: project.id,
+      title: project.title,
+    }));
+  },
 });
 
 // Генерируем ссылки местонахождения
@@ -290,8 +300,9 @@ const creatLocationLink = (object: any) => {
 };
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
-    if (location === "project") {
-      return `project #${id}, ${typeof id}`;
+    if (location === "project" && projects.value) {
+      let project = projects.value.find((project) => project.id == id);
+      return project.title;
     } else if (location === "sklad") {
       return `На складе #${id}, ${typeof id}`;
     } else if (location === "office") {
@@ -510,7 +521,7 @@ const filterItemsType = async (type) => {
               <label for="itemlocationID" class="form-label">locationID</label>
               <input
                 v-model="item.locationID"
-                type="text"
+                type="number"
                 id="itemlocationID"
                 class="form-control"
                 aria-describedby="nameHelp"
@@ -583,9 +594,14 @@ const filterItemsType = async (type) => {
         <li>Ремонт</li>
         <li>
           <select name="" id="">
-            <option selected value="0">Фильтр по проектам</option>
-            <option value="1">Горького, 14</option>
-            <option value="2">Утренняя, 11</option>
+            <option selected value="all">По всем проектам</option>
+            <option
+              v-for="(project, index) in projects"
+              :key="index"
+              :value="project.id"
+            >
+              {{ project.title }}
+            </option>
           </select>
         </li>
       </ul>

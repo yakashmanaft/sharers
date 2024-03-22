@@ -4,126 +4,6 @@ import { Container } from "@/shared/container";
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
 
-// const projects = [
-//   {
-//     id: 1,
-//     title: "Машзавод",
-//     address: "г. Пермь, ул. Новозвягинская, д. 57",
-//     partner: 'ООО "РусРазвитие"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Бетонные работы",
-//     completion: 0.15,
-//   },
-//   {
-//     id: 2,
-//     title: "Машзавод",
-//     address: "г. Пермь, ул. Новозвягинская, д. 57",
-//     partner: 'ООО "Атом Строй"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Бетонные работы",
-//     completion: 0.78,
-//   },
-//   {
-//     id: 3,
-//     title: "Монолит G14 THULE",
-//     address: "г. Пермь, ул. Горького, д. 14",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Бетонные работы",
-//     completion: 0.1,
-//   },
-//   {
-//     id: 4,
-//     title: "Вилла",
-//     address: "г. Пермь, ул. Утренняя, д. 11",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Реализация дизайн проекта",
-//     completion: 0.55,
-//   },
-//   {
-//     id: 5,
-//     title: "Клиника",
-//     address: "г. Пермь, ул. Мильчакова, д. 18",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Реализация дизайн проекта",
-//     completion: 0.32,
-//   },
-//   {
-//     id: 6,
-//     title: "Машзавод",
-//     address: "г. Пермь, ул. Новозвягинская, д. 57",
-//     partner: 'ООО "РусРазвитие"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Бетонные работы",
-//     completion: 0.66,
-//   },
-//   {
-//     id: 7,
-//     title: "Машзавод",
-//     address: "г. Пермь, ул. Новозвягинская, д. 57",
-//     partner: 'ООО "Атом Строй"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Бетонные работы",
-//     completion: 0.13,
-//   },
-//   {
-//     id: 8,
-//     title: "Горького, 14",
-//     address: "г. Пермь, ул. Горького, д. 14",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Бетонные работы",
-//     completion: 0.85,
-//   },
-//   {
-//     id: 9,
-//     title: "Вилла",
-//     address: "г. Пермь, ул. Утренняя, д. 11",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Реализация дизайн проекта",
-//     completion: 1,
-//   },
-//   {
-//     id: 10,
-//     title: "Клиника",
-//     address: "г. Пермь, ул. Мильчакова, д. 19",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Реализация дизайн проекта",
-//     completion: 1,
-//   },
-//   {
-//     id: 11,
-//     title: "Горького, 14",
-//     address: "г. Пермь, ул. Горького, д. 14",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Бетонные работы",
-//     completion: 0.15,
-//   },
-//   {
-//     id: 12,
-//     title: "Вилла",
-//     address: "г. Пермь, ул. Утренняя, д. 11",
-//     partner: 'ООО "СупеПупер"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Реализация дизайн проекта",
-//     completion: 0.45,
-//   },
-//   {
-//     id: 13,
-//     title: "Офис",
-//     address: "г. Пермь, ул. Героев Хасана, д. 48 корп. 1, офис 201",
-//     partner: 'ООО "Камини"',
-//     creator: "Игорь Александрович Смирнягин",
-//     workType: "Офис",
-//     completion: 0.37,
-//   },
-// ];
-
 useHead({
   title: "Мои проекты",
   link: [
@@ -163,6 +43,7 @@ const project = ref({
   address: null,
   partner: null,
   creator: null,
+  curator: null,
   workType: null,
   completion: null,
 });
@@ -183,6 +64,7 @@ async function addProject(project) {
     project.address &&
     project.partner &&
     project.creator &&
+    project.curator &&
     project.workType &&
     project.completion
   ) {
@@ -194,6 +76,7 @@ async function addProject(project) {
         address: project.address,
         partner: project.partner,
         creator: project.creator,
+        curator: project.curator,
         workType: project.workType,
         completion: project.completion,
       },
@@ -214,6 +97,7 @@ const clearModalInputs = (project: any) => {
   project.address = null;
   project.partner = null;
   project.creator = null;
+  project.curator = null;
   project.workType = null;
   project.completion = null;
 };
@@ -225,6 +109,7 @@ watch(project.value, () => {
     project.value.address &&
     project.value.partner &&
     project.value.creator &&
+    project.value.curator &&
     project.value.workType &&
     project.value.completion
   ) {
@@ -323,6 +208,17 @@ watch(project.value, () => {
                 aria-describedby="nameHelp"
               />
             </div>
+            <!-- CURATOR -->
+            <div class="mb-3">
+              <label for="projectCurator" class="form-label">Curator</label>
+              <input
+                v-model="project.curator"
+                type="number"
+                class="form-control"
+                id="projectCurator"
+                aria-describedby="nameHelp"
+              />
+            </div>
             <!-- WORK TYPE -->
             <div class="mb-3">
               <label for="projectWorkType" class="form-label">Work Type</label>
@@ -391,11 +287,13 @@ watch(project.value, () => {
           </div>
           <div>
             <h2>{{ project.title }}</h2>
-            <span>{{ project.address }}</span>
+            <span class="project-address"
+              >{{ project.address }} | {{ project.workType }}</span
+            >
           </div>
         </div>
         <div class="project-item_right">
-          <span>{{ project.workType }}</span>
+          <span>Куратор проекта: {{ project.curator }}</span>
           <span>Заказчик: {{ project.partner }}</span>
         </div>
       </div>
@@ -442,8 +340,12 @@ watch(project.value, () => {
   align-items: flex-end;
 }
 
+.project-item_right span,
+.project-address {
+  color: rgba(0, 0, 0, 0.6);
+}
+
 .project-completion {
-  /* background-color: rgba(0, 0, 0, 0.05); */
   width: 3rem;
   height: 3rem;
   background-color: #b1e3c1;

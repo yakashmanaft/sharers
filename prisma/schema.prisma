@@ -53,27 +53,22 @@ model Projects {
   address     String    @db.VarChar(255)
   partner     Int       @default(0)
   creator     Int       @default(1)
+  curator     Int       @default(1)
   workType    String    @db.VarChar(255)
   completion  Float     @default(0.00)
   created_at  DateTime  @default(now()) @db.DateTime(0)
   update_at   DateTime? @updatedAt
 }
 
-// места хранения у компании (Склад, Офис, Ремонтные)
+// места хранения компании (Склад, Офис, Ремонтные организации)
 model Locations {
   id         Int       @id @default(autoincrement())
   uuid       String    @unique(map: "uuid") @db.VarChar(60)
   title      String    @db.VarChar(255)
-  type       Type      @default(OFFICE)
+  type       String    @default("office")
   address    String    @db.VarChar(255)
   created_at DateTime  @default(now()) @db.DateTime(0)
   update_at  DateTime? @updatedAt
-}
-
-enum Type {
-  OFFICE
-  SKLAD
-  REPAIR
 }
 
 // generator client {

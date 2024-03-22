@@ -7,16 +7,12 @@ export default defineEventHandler(async (event) => {
   let project = null
 
   if (body.title)
-    await prisma.projects.create({
+    await prisma.locations.create({
       data: {
         uuid: body.uuid,
         title: body.title,
+        type: body.type,
         address: body.address,
-        partner: body.partner,
-        creator: body.creator,
-        curator: body.curator,
-        workType: body.workType,
-        completion: body.completion,
       },
     }).then((response) => {
       project = response

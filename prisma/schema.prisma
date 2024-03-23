@@ -8,7 +8,7 @@ generator client {
 datasource db {
   provider = "mysql"
   // url      = env("DATABASE_URL")
-  url = "mysql://caminipk_sb_2:Kashmanaft123[eq@caminipk.beget.tech/caminipk_sb_2"
+  url      = "mysql://caminipk_sb_2:Kashmanaft123[eq@caminipk.beget.tech/caminipk_sb_2"
 }
 
 model Users {
@@ -38,7 +38,7 @@ model WarehouseItems {
   qty         Int       @default(0)
   measure     String    @db.VarChar(255)
   location    String    @db.VarChar(255)
-  locationID  Int       @default(1) 
+  locationID  Int       @default(1)
   position    String?   @db.VarChar(255)
   owner       Int       @default(1)
   responsible Int       @default(1)
@@ -47,17 +47,17 @@ model WarehouseItems {
 }
 
 model Projects {
-  id          Int       @id @default(autoincrement())
-  uuid        String    @unique(map: "uuid") @db.VarChar(60)
-  title       String    @db.VarChar(255)
-  address     String    @db.VarChar(255)
-  partner     Int       @default(0)
-  creator     Int       @default(1)
-  curator     Int       @default(1)
-  workType    String    @db.VarChar(255)
-  completion  Float     @default(0.00)
-  created_at  DateTime  @default(now()) @db.DateTime(0)
-  update_at   DateTime? @updatedAt
+  id         Int       @id @default(autoincrement())
+  uuid       String    @unique(map: "uuid") @db.VarChar(60)
+  title      String    @db.VarChar(255)
+  address    String    @db.VarChar(255)
+  partner    Int       @default(0)
+  creator    Int       @default(1)
+  curator    Int       @default(1)
+  workType   String    @db.VarChar(255)
+  completion Float     @default(0.00)
+  created_at DateTime  @default(now()) @db.DateTime(0)
+  update_at  DateTime? @updatedAt
 }
 
 // места хранения компании (Склад, Офис, Ремонтные организации)

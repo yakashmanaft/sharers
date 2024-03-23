@@ -71,7 +71,8 @@ const item = ref({
   responsible: null,
 });
 
-const currentCategoryType = ref("all");
+const currentCategoryByType = ref("all");
+const currentCategoryByLocation = ref('all')
 
 // Категории ТМЦ (пока хардкорно)
 const warehouseCategories = ref([
@@ -238,9 +239,12 @@ onMounted(async () => {
   // makes refetching
   refresh();
   refreshProjects()
+  refreshLocations()
 });
 
 const refreshProjects = () => refreshNuxtData('projects')
+const refreshLocations = () => refreshNuxtData('locations')
+
 
 /**
  * @desc Get warehouse items from BD
@@ -273,6 +277,11 @@ const {
 
 const { data: projects } = useLazyAsyncData('projects', () => $fetch('api/projects/projects'))
 const { data: locations } = useLazyAsyncData('locations', () => $fetch('api/locations/locations'))
+// locations.value = locations.value.filter(item => item.type)
+// const unique = locations.value.filter(
+//   (obj, index) => 
+//     locations.value((item) => item.type === obj.type) === index
+// )  
 
 // const { pending, error, data: itemInfo, refresh } = await useAsyncData('itemInfo', async () => {
 //   const [items, projects, locations] = await Promise.all([
@@ -330,7 +339,7 @@ const translateLocation = (id: any, location: string) => {
     if (location === "project" && items.value ) {
       let project = projects.value.find((project) => project.id == id);
       return project.title;
-      return `project #${id}, ${typeof id}`
+      // return `project #${id}` 
     } else if (location === "sklad") {
       return `На складе #${id}, ${typeof id}`;
     } else if (location === "office") {
@@ -418,9 +427,47 @@ const clearModalInputs = (item: any) => {
   item.responsible = null;
 };
 
-watch(currentCategoryType, () => {
-  console.log(currentCategoryType.value);
+// WATHERS
+watch(currentCategoryByType, async () => {
+  console.log(`currentCategoryByType: ${currentCategoryByType.value }`)
+  await refresh()
+  if(currentCategoryByLocation.value === 'all') {
+    if(currentCategoryByType.value === 'all') {
+      await refresh()
+    } else {
+      await refresh() 
+      items.value = items.value.filter(item => item.type === currentCategoryByType.value)
+    }
+  } else if (currentCategoryByType.value === 'all') {
+    if(currentCategoryByLocation.value === 'all') {
+      await refresh()
+    } else {
+      items.value = items.value.filter(item => item.location === currentCategoryByLocation.value)
+    }
+  } 
+  else {
+    // await refresh()
+    items.value = items.value.filter(item => item.type === currentCategoryByType.value && item.location === currentCategoryByLocation.value)
+  }
 });
+
+watch(currentCategoryByLocation, async () => {
+  console.log(`currentCategoryByLocation: ${currentCategoryByLocation.value}`)
+  await refresh()
+  if(currentCategoryByType.value === 'all') {
+    if(currentCategoryByLocation.value === 'all') {
+      await refresh()
+    } else {
+      await refresh()
+      items.value = items.value.filter(item => item.location === currentCategoryByLocation.value)
+    }
+  } else if (currentCategoryByLocation.value === 'all') {
+    items.value = items.value.filter(item => item.type === currentCategoryByType.value)
+  } 
+  else {
+    items.value = items.value.filter(item => item.type === currentCategoryByType.value && item.location === currentCategoryByLocation.value)
+  }
+})
 
 // Проверка перед сабмитом
 watch(item.value, () => {
@@ -440,17 +487,6 @@ watch(item.value, () => {
   }
 });
 
-const filterItemsType = async (type) => {
-  currentCategoryType.value = type;
-
-  if (type === "all") {
-    await refresh();
-  } else {
-    await refresh();
-    items.value = items.value.filter((item) => item.type === type);
-    // itemInfo.value.items = itemInfo.value.items.filter((item) => item.type === type);
-  }
-};
 </script>
 <template>
   <Container>
@@ -616,42 +652,38 @@ const filterItemsType = async (type) => {
     </div>
 
 
-    <!-- ФИЛЬТРЫ -->
-    <div>
-      <ul style="display: flex; list-style: none; padding: 0">
-        <li>Склад</li>
-        <li>Офис</li>
-        <li>Ремонт</li>
-        <li>
-          <select name="" id="">
-            <option selected value="all">По всем проектам</option>
-            <!-- <option value="1">11</option> -->
-            <option
-              v-for="(project, index) in projects"
-              :key="index"
-              :value="project.id"
-            >
-              {{ project.title }}
-            </option>
-          </select>
-        </li>
-      </ul>
-    </div>
+    <!-- ********************* ФИЛЬТРЫ ********************** -->
+    <!-- BY LOCATIONS TYPES -->
+    <div class="switch-type_container">
+      <!-- SWITCH BTNs -->
+      <div class="switch-type_el">
+        <input type="radio" id="all" value="all" v-model="currentCategoryByLocation">
+        <label for="all">Все</label>
+      </div>
+      <div v-for="(location, i ) in locations" class="switch-type_el">
+        <input
+          type="radio"
+          :id="location.type"
+          :value="location.type"
+          v-model="currentCategoryByLocation"
+        />
+        <label :for="location.type">{{location.type}}</label>
+      </div>
+    </div> 
 
-    <!--  -->
+    <!-- BY CATEGORY TYPES -->
     <div class="switch-type_container">
       <!-- SWITCH BTNs -->
       <div
         v-for="(category, index) in warehouseCategories"
         :key="index"
         class="switch-type_el"
-        @click="filterItemsType(category.type)"
       >
         <input
           type="radio"
           :id="index"
           :value="category.type"
-          v-model="currentCategoryType"
+          v-model="currentCategoryByType"
         />
         <label :for="index">{{ category.name }}</label>
       </div>
@@ -783,7 +815,8 @@ td {
 /* switch category type */
 .switch-type_container {
   display: flex;
-  gap: 1rem;
+  margin-top: 1rem;
+  /* gap: 1rem; */
 }
 
 .switch-type_el {

@@ -236,27 +236,27 @@ const warehouseCategories = ref([
 // const items = ref(null);
 onMounted(async () => {
   // makes refetching
-  await refresh();
+  refresh();
 });
 
 /**
  * @desc Get warehouse items from BD
  */
-// const {
-//   // pending,
-//   error,
-//   // refresh,
-//   data: items,
-//   status,
-// } = await useFetch("api/warehouse/item", {
-//   lazy: false,
-//   // transform: (items) => {
-//   //   return items.map(item) => ({
-//   //     id: item.id,
-//   //     title: item.title,
-//   //   })
-//   // }
-// });
+const {
+  pending,
+  error,
+  refresh,
+  data: items,
+  status,
+} = await useFetch("api/warehouse/item", {
+  lazy: false,
+  // transform: (items) => {
+  //   return items.map(item) => ({
+  //     id: item.id,
+  //     title: item.title,
+  //   })
+  // }
+});
 
 // const { data: projects } = await useFetch("api/projects/projects", {
 //   lazy: false,
@@ -268,26 +268,26 @@ onMounted(async () => {
 //   },
 // });
 
-const { pending, error, data: itemInfo, refresh } = await useAsyncData('itemInfo', async () => {
-  const [items, projects, locations] = await Promise.all([
-    $fetch("api/warehouse/item"),
-    $fetch("api/projects/projects"),
-    $fetch("api/locations/locations")
-  ])
-  return { items, projects, locations }
-}, {
-  lazy: false,
-  transform: (itemInfo) => {
-    return {
-      items: itemInfo.items,
-      projects: itemInfo.projects.map((project) => ({
-        id: project.id,
-        title: project.title
-      })),
-      locations: itemInfo.locations
-    }
-  }
-}) 
+// const { pending, error, data: itemInfo, refresh } = await useAsyncData('itemInfo', async () => {
+//   const [items, projects, locations] = await Promise.all([
+//     $fetch("api/warehouse/item"),
+//     $fetch("api/projects/projects"),
+//     $fetch("api/locations/locations")
+//   ])
+//   return { items, projects, locations }
+// }, {
+//   lazy: false,
+//   transform: (itemInfo) => {
+//     return {
+//       items: itemInfo.items,
+//       projects: itemInfo.projects.map((project) => ({
+//         id: project.id,
+//         title: project.title
+//       })),
+//       locations: itemInfo.locations
+//     }
+//   }
+// }) 
 
 // Генерируем ссылки местонахождения
 const creatLocationLink = (object: any) => {
@@ -321,10 +321,10 @@ const creatLocationLink = (object: any) => {
 };
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
-    if (location === "project" && itemInfo.value ) {
-      let project = itemInfo.value.projects.find((project) => project.id == id);
-      return project.title;
-      return 1
+    if (location === "project" && items.value ) {
+      // let project = itemInfo.value.projects.find((project) => project.id == id);
+      // return project.title;
+      return `project #${id}, ${typeof id}`
     } else if (location === "sklad") {
       return `На складе #${id}, ${typeof id}`;
     } else if (location === "office") {
@@ -441,8 +441,8 @@ const filterItemsType = async (type) => {
     await refresh();
   } else {
     await refresh();
-    // ipl.value.items = ipl.value.items.filter((item) => item.type === type);
-    itemInfo.value.items = itemInfo.value.items.filter((item) => item.type === type);
+    items.value = items.value.filter((item) => item.type === type);
+    // itemInfo.value.items = itemInfo.value.items.filter((item) => item.type === type);
   }
 };
 </script>
@@ -609,11 +609,6 @@ const filterItemsType = async (type) => {
       </div>
     </div>
 
-    <!-- fetch data is error -->
-    <div v-if="error">
-      <p>Error Code {{ error.statusCode }}</p>
-      <p>Error Message {{ error.message }}</p>
-    </div>
 
     <!-- ФИЛЬТРЫ -->
     <div>
@@ -624,13 +619,14 @@ const filterItemsType = async (type) => {
         <li>
           <select name="" id="">
             <option selected value="all">По всем проектам</option>
-            <option
+            <option value="1">11</option>
+            <!-- <option
               v-for="(project, index) in itemInfo.projects"
               :key="index"
               :value="project.id"
             >
               {{ project.title }}
-            </option>
+            </option> -->
           </select>
         </li>
       </ul>
@@ -658,6 +654,12 @@ const filterItemsType = async (type) => {
       <input type="text" class="form-control" placeholder="Поиск" />
     </div>
 
+    <!-- fetch data is error -->
+    <div v-if="error">
+      <p>Error Code {{ error.statusCode }}</p>
+      <p>Error Message {{ error.message }}</p>
+    </div>
+
     <!-- data is loading -->
     <div v-if="pending">
       <p>Loading...</p>
@@ -665,9 +667,9 @@ const filterItemsType = async (type) => {
 
     <!-- data is loaded -->
     <div v-else>
-      <div>{{ itemInfo.projects }}</div>
+      <!-- <div>{{ itemInfo.projects }}</div> -->
       <br>
-      <div>{{ itemInfo.locations }}</div>
+      <!-- <div>{{ itemInfo.locations }}</div> -->
       <!-- СПИСОК ITEMS -->
       <table class="table">
         <thead>
@@ -683,7 +685,7 @@ const filterItemsType = async (type) => {
         </thead>
         
         <tbody>
-          <tr v-for="(item, index) in itemInfo.items">
+          <tr v-for="(item, index) in items">
             <td scope="col">{{ index + 1 }}</td>
             <td scope="col">
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">

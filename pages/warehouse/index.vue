@@ -237,7 +237,10 @@ const warehouseCategories = ref([
 onMounted(async () => {
   // makes refetching
   refresh();
+  refreshProjects()
 });
+
+const refreshProjects = () => refreshNuxtData('projects')
 
 /**
  * @desc Get warehouse items from BD
@@ -267,6 +270,9 @@ const {
 //     }));
 //   },
 // });
+
+const { data: projects } = useLazyAsyncData('projects', () => $fetch('api/projects/projects'))
+const { data: locations } = useLazyAsyncData('locations', () => $fetch('api/locations/locations'))
 
 // const { pending, error, data: itemInfo, refresh } = await useAsyncData('itemInfo', async () => {
 //   const [items, projects, locations] = await Promise.all([
@@ -322,8 +328,8 @@ const creatLocationLink = (object: any) => {
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
     if (location === "project" && items.value ) {
-      // let project = itemInfo.value.projects.find((project) => project.id == id);
-      // return project.title;
+      let project = projects.value.find((project) => project.id == id);
+      return project.title;
       return `project #${id}, ${typeof id}`
     } else if (location === "sklad") {
       return `На складе #${id}, ${typeof id}`;
@@ -619,14 +625,14 @@ const filterItemsType = async (type) => {
         <li>
           <select name="" id="">
             <option selected value="all">По всем проектам</option>
-            <option value="1">11</option>
-            <!-- <option
-              v-for="(project, index) in itemInfo.projects"
+            <!-- <option value="1">11</option> -->
+            <option
+              v-for="(project, index) in projects"
               :key="index"
               :value="project.id"
             >
               {{ project.title }}
-            </option> -->
+            </option>
           </select>
         </li>
       </ul>

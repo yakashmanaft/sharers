@@ -275,7 +275,7 @@ async function editUser(editedUser) {
     });
 
   // if (user) users.value = await getUsers();
-  if (user) refsresh();
+  if (user) refresh();
 }
 
 useHead({

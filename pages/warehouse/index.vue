@@ -483,12 +483,24 @@ watch(currentCategoryByType, async () => {
       );
     }
   } else {
+    if(currentCategoryByType.value !== "all") {
+      if(currentCategoryByLocationObj.value.id) {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === currentCategoryByLocationObj.value.type &&
+            item.locationID === currentCategoryByLocationObj.value.id
+        ); 
+      } else {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === currentCategoryByLocationObj.value.type
+        ); 
+      }
+    }
     // await refresh()
-    items.value = items.value.filter(
-      (item) =>
-        item.type === currentCategoryByType.value &&
-        item.location === currentCategoryByLocationObj.value.type
-    );
+
   }
 });
 

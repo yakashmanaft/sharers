@@ -72,7 +72,11 @@ const item = ref({
 });
 
 const currentCategoryByType = ref("all");
-const currentCategoryByLocation = ref('all')
+const currentCategoryByLocation = ref("all");
+const currentCategoryByLocationObj = ref({
+  type: "all",
+  id: null,
+});
 
 // Категории ТМЦ (пока хардкорно)
 const warehouseCategories = ref([
@@ -238,13 +242,12 @@ const warehouseCategories = ref([
 onMounted(async () => {
   // makes refetching
   refresh();
-  refreshProjects()
-  refreshLocations()
+  refreshProjects();
+  refreshLocations();
 });
 
-const refreshProjects = () => refreshNuxtData('projects')
-const refreshLocations = () => refreshNuxtData('locations')
-
+const refreshProjects = () => refreshNuxtData("projects");
+const refreshLocations = () => refreshNuxtData("locations");
 
 /**
  * @desc Get warehouse items from BD
@@ -275,13 +278,17 @@ const {
 //   },
 // });
 
-const { data: projects } = useLazyAsyncData('projects', () => $fetch('api/projects/projects'))
-const { data: locations } = useLazyAsyncData('locations', () => $fetch('api/locations/locations'))
+const { data: projects } = useLazyAsyncData("projects", () =>
+  $fetch("api/projects/projects")
+);
+const { data: locations } = useLazyAsyncData("locations", () =>
+  $fetch("api/locations/locations")
+);
 // locations.value = locations.value.filter(item => item.type)
 // const unique = locations.value.filter(
-//   (obj, index) => 
+//   (obj, index) =>
 //     locations.value((item) => item.type === obj.type) === index
-// )  
+// )
 
 // const { pending, error, data: itemInfo, refresh } = await useAsyncData('itemInfo', async () => {
 //   const [items, projects, locations] = await Promise.all([
@@ -302,7 +309,7 @@ const { data: locations } = useLazyAsyncData('locations', () => $fetch('api/loca
 //       locations: itemInfo.locations
 //     }
 //   }
-// }) 
+// })
 
 // Генерируем ссылки местонахождения
 const creatLocationLink = (object: any) => {
@@ -336,10 +343,10 @@ const creatLocationLink = (object: any) => {
 };
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
-    if (location === "project" && items.value ) {
-      let project = projects.value.find((project) => project.id == id);
-      return project.title;
-      // return `project #${id}` 
+    if (location === "project" && items.value) {
+      // let project = projects.value.find((project) => project.id == id);
+      // return project.title;
+      return `project #${id}`;
     } else if (location === "sklad") {
       return `На складе #${id}, ${typeof id}`;
     } else if (location === "office") {
@@ -361,16 +368,14 @@ const translateLocation = (id: any, location: string) => {
   return location;
 };
 const translateOwner = (owner: string) => {
-  if(owner) {
+  if (owner) {
     alert(
       `${owner}. Относится ли Owner, если он являтееся коллективом, user'ом... И каким обрзаом в объекте item указывать (id:number or id:string)`
     );
-
   }
 };
 const locationLinkColorized = (location: string) => {
-  if(location) {
-
+  if (location) {
     return `link_${location}`;
   }
 };
@@ -427,47 +432,150 @@ const clearModalInputs = (item: any) => {
   item.responsible = null;
 };
 
-// WATHERS
+// WATCHERS
+// watch(currentCategoryByType, async () => {
+//   console.log(`currentCategoryByType: ${currentCategoryByType.value}`);
+//   await refresh();
+//   if (currentCategoryByLocation.value === "all") {
+//     if (currentCategoryByType.value === "all") {
+//       await refresh();
+//     } else {
+//       await refresh();
+//       items.value = items.value.filter(
+//         (item) => item.type === currentCategoryByType.value
+//       );
+//     }
+//   } else if (currentCategoryByType.value === "all") {
+//     if (currentCategoryByLocation.value === "all") {
+//       await refresh();
+//     } else {
+//       items.value = items.value.filter(
+//         (item) => item.location === currentCategoryByLocation.value
+//       );
+//     }
+//   } else {
+//     // await refresh()
+//     items.value = items.value.filter(
+//       (item) =>
+//         item.type === currentCategoryByType.value &&
+//         item.location === currentCategoryByLocation.value
+//     );
+//   }
+// });
 watch(currentCategoryByType, async () => {
-  console.log(`currentCategoryByType: ${currentCategoryByType.value }`)
-  await refresh()
-  if(currentCategoryByLocation.value === 'all') {
-    if(currentCategoryByType.value === 'all') {
-      await refresh()
+  console.log(`currentCategoryByType: ${currentCategoryByType.value}`);
+  await refresh();
+  if (currentCategoryByLocationObj.value.type === "all") {
+    if (currentCategoryByType.value === "all") {
+      await refresh();
     } else {
-      await refresh() 
-      items.value = items.value.filter(item => item.type === currentCategoryByType.value)
+      await refresh();
+      items.value = items.value.filter(
+        (item) => item.type === currentCategoryByType.value
+      );
     }
-  } else if (currentCategoryByType.value === 'all') {
-    if(currentCategoryByLocation.value === 'all') {
-      await refresh()
+  } else if (currentCategoryByType.value === "all") {
+    if (currentCategoryByLocationObj.value.type === "all") {
+      await refresh();
     } else {
-      items.value = items.value.filter(item => item.location === currentCategoryByLocation.value)
+      items.value = items.value.filter(
+        (item) => item.location === currentCategoryByLocationObj.value.type
+      );
     }
-  } 
-  else {
+  } else {
     // await refresh()
-    items.value = items.value.filter(item => item.type === currentCategoryByType.value && item.location === currentCategoryByLocation.value)
+    items.value = items.value.filter(
+      (item) =>
+        item.type === currentCategoryByType.value &&
+        item.location === currentCategoryByLocationObj.value.type
+    );
   }
 });
 
-watch(currentCategoryByLocation, async () => {
-  console.log(`currentCategoryByLocation: ${currentCategoryByLocation.value}`)
-  await refresh()
-  if(currentCategoryByType.value === 'all') {
-    if(currentCategoryByLocation.value === 'all') {
-      await refresh()
+// watch(currentCategoryByLocation, async () => {
+//   console.log(`currentCategoryByLocation: ${currentCategoryByLocation.value}`);
+//   await refresh();
+//   if (currentCategoryByType.value === "all") {
+//     if (currentCategoryByLocation.value === "all") {
+//       await refresh();
+//     } else {
+//       await refresh();
+//       items.value = items.value.filter(
+//         (item) => item.location === currentCategoryByLocation.value
+//       );
+//     }
+//   } else if (currentCategoryByLocation.value === "all") {
+//     items.value = items.value.filter(
+//       (item) => item.type === currentCategoryByType.value
+//     );
+//   } else {
+//     items.value = items.value.filter(
+//       (item) =>
+//         item.type === currentCategoryByType.value &&
+//         item.location === currentCategoryByLocation.value
+//     );
+//   }
+// });
+
+//
+watch(currentCategoryByLocationObj, async () => {
+  console.log(currentCategoryByLocationObj.value);
+
+  await refresh();
+  if (currentCategoryByLocationObj.value.id === null) {
+    if (currentCategoryByType.value === "all") {
+      if (currentCategoryByLocationObj.value.type === "all") {
+        await refresh();
+      } else {
+        items.value = items.value.filter(
+          (item) => item.location === currentCategoryByLocationObj.value.type
+        );
+      }
     } else {
-      await refresh()
-      items.value = items.value.filter(item => item.location === currentCategoryByLocation.value)
+      if (currentCategoryByLocationObj.value.type === "all") {
+        items.value = items.value.filter(
+          (item) => item.type === currentCategoryByType.value
+        );
+      } else {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === currentCategoryByLocationObj.value.type
+        );
+      }
     }
-  } else if (currentCategoryByLocation.value === 'all') {
-    items.value = items.value.filter(item => item.type === currentCategoryByType.value)
-  } 
-  else {
-    items.value = items.value.filter(item => item.type === currentCategoryByType.value && item.location === currentCategoryByLocation.value)
+  } else {
+    if (currentCategoryByType.value === "all") {
+      items.value = items.value.filter(
+        (item) =>
+          item.location === currentCategoryByLocationObj.value.type &&
+          item.locationID === currentCategoryByLocationObj.value.id
+      );
+    } else {
+      items.value = items.value.filter(
+        (item) =>
+          item.type === currentCategoryByType.value &&
+          item.location === currentCategoryByLocationObj.value.type &&
+          item.locationID === currentCategoryByLocationObj.value.id
+      );
+    }
   }
-})
+
+  // if (currentCategoryByType.value === "all") {
+  //   items.value = items.value.filter(
+  //     (item) =>
+  //       item.location == currentCategoryByLocationObj.value.type &&
+  //       item.locationID == currentCategoryByLocationObj.value.id
+  //   );
+  // } else {
+  //   items.value = items.value.filter(
+  //     (item) =>
+  //       item.type === currentCategoryByType.value &&
+  //       item.location === currentCategoryByLocationObj.value.type &&
+  //       item.locationID == currentCategoryByLocationObj.value.id
+  //   );
+  // }
+});
 
 // Проверка перед сабмитом
 watch(item.value, () => {
@@ -486,7 +594,6 @@ watch(item.value, () => {
     createNewItemBtnIsDisabled.value = true;
   }
 });
-
 </script>
 <template>
   <Container>
@@ -651,25 +758,59 @@ watch(item.value, () => {
       </div>
     </div>
 
-
     <!-- ********************* ФИЛЬТРЫ ********************** -->
     <!-- BY LOCATIONS TYPES -->
-    <div class="switch-type_container">
-      <!-- SWITCH BTNs -->
+    <!-- <div class="switch-type_container">
       <div class="switch-type_el">
-        <input type="radio" id="all" value="all" v-model="currentCategoryByLocation">
+        <input
+          type="radio"
+          id="all"
+          value="all"
+          v-model="currentCategoryByLocation"
+        />
         <label for="all">Все</label>
       </div>
-      <div v-for="(location, i ) in locations" class="switch-type_el">
+      <div v-for="(location, i) in locations" class="switch-type_el">
         <input
           type="radio"
           :id="location.type"
           :value="location.type"
           v-model="currentCategoryByLocation"
         />
-        <label :for="location.type">{{location.type}}</label>
+        <label :for="location.type">{{ location.type }}</label>
       </div>
-    </div> 
+    </div> -->
+
+    <div style="display: flex; gap: 1rem; margin-top: 1rem">
+      <select
+        class="form-select form-select-sm"
+        aria-label=".form-select-sm example"
+        v-model="currentCategoryByLocationObj"
+      >
+        <option selected :value="{ type: 'all', id: null }">
+          All locations
+        </option>
+        <option :value="{ type: 'sklad', id: null }">Все склады</option>
+        <option :value="{ type: 'repair', id: null }">Все repair</option>
+        <option :value="{ type: 'office', id: null }">Все офисы</option>
+        <option
+          :value="{ type: location.type, id: location.id }"
+          v-for="(location, i) in locations"
+        >
+          {{ location.type }} | {{ location.title }} | {{ location.address }}
+        </option>
+      </select>
+
+      <select
+        class="form-select form-select-sm"
+        aria-label=".form-select-sm example"
+      >
+        <option selected value="all">All projects</option>
+        <option value="1" v-for="(project, index) in projects">
+          {{ project.id }} | {{ project.title }}
+        </option>
+      </select>
+    </div>
 
     <!-- BY CATEGORY TYPES -->
     <div class="switch-type_container">
@@ -706,7 +847,7 @@ watch(item.value, () => {
     <!-- data is loaded -->
     <div v-else>
       <!-- <div>{{ itemInfo.projects }}</div> -->
-      <br>
+      <br />
       <!-- <div>{{ itemInfo.locations }}</div> -->
       <!-- СПИСОК ITEMS -->
       <table class="table">
@@ -721,7 +862,7 @@ watch(item.value, () => {
             <th scope="col">Тип</th>
           </tr>
         </thead>
-        
+
         <tbody>
           <tr v-for="(item, index) in items">
             <td scope="col">{{ index + 1 }}</td>

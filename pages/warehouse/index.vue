@@ -478,9 +478,17 @@ watch(currentCategoryByType, async () => {
     if (currentCategoryByLocationObj.value.type === "all") {
       await refresh();
     } else {
-      items.value = items.value.filter(
-        (item) => item.location === currentCategoryByLocationObj.value.type
-      );
+      if(currentCategoryByLocationObj.value.id) {
+        items.value = items.value.filter(
+          (item) =>
+            item.location === currentCategoryByLocationObj.value.type &&
+            item.locationID === currentCategoryByLocationObj.value.id
+        ); 
+      } else {
+        items.value = items.value.filter(
+          (item) => item.location === currentCategoryByLocationObj.value.type
+        );
+      }
     }
   } else {
     if(currentCategoryByType.value !== "all") {
@@ -498,7 +506,7 @@ watch(currentCategoryByType, async () => {
             item.location === currentCategoryByLocationObj.value.type
         ); 
       }
-    }
+    } else {}
     // await refresh()
 
   }
@@ -793,52 +801,59 @@ watch(item.value, () => {
       </div>
     </div> -->
 
-    <div style="display: flex; gap: 1rem; margin-top: 1rem">
-      <select
-        class="form-select form-select-sm"
-        aria-label=".form-select-sm example"
-        v-model="currentCategoryByLocationObj"
-      >
-        <option selected :value="{ type: 'all', id: null }">
-          All locations
-        </option>
-        <option :value="{ type: 'sklad', id: null }">Все склады</option>
-        <option :value="{ type: 'repair', id: null }">Все repair</option>
-        <option :value="{ type: 'office', id: null }">Все офисы</option>
-        <option
-          :value="{ type: location.type, id: location.id }"
-          v-for="(location, i) in locations"
-        >
-          {{ location.type }} | {{ location.title }} | {{ location.address }}
-        </option>
-      </select>
-
-      <select
-        class="form-select form-select-sm"
-        aria-label=".form-select-sm example"
-      >
-        <option selected value="all">All projects</option>
-        <option value="1" v-for="(project, index) in projects">
-          {{ project.id }} | {{ project.title }}
-        </option>
-      </select>
-    </div>
-
+    
     <!-- BY CATEGORY TYPES -->
     <div class="switch-type_container">
-      <!-- SWITCH BTNs -->
-      <div
-        v-for="(category, index) in warehouseCategories"
-        :key="index"
-        class="switch-type_el"
-      >
-        <input
-          type="radio"
-          :id="index"
-          :value="category.type"
-          v-model="currentCategoryByType"
-        />
-        <label :for="index">{{ category.name }}</label>
+
+      <div>
+
+        <!--  -->
+        <select
+          class="form-select form-select-sm"
+          aria-label=".form-select-sm example"
+          v-model="currentCategoryByLocationObj"
+        >
+          <option selected :value="{ type: 'all', id: null }">
+            All locations
+          </option>
+          <option :value="{ type: 'sklad', id: null }">Все склады</option>
+          <option :value="{ type: 'repair', id: null }">Все repair</option>
+          <option :value="{ type: 'office', id: null }">Все офисы</option>
+          <option
+            :value="{ type: location.type, id: location.id }"
+            v-for="(location, i) in locations"
+          >
+            {{ location.type }} | {{ location.title }} | {{ location.address }}
+          </option>
+        </select>
+        
+        <!--  -->
+        <div style="display: flex; gap: 1rem; margin-top: 1rem">
+    
+          <!-- <select
+            class="form-select form-select-sm"
+            aria-label=".form-select-sm example"
+          >
+            <option selected value="all">All projects</option>
+            <option value="1" v-for="(project, index) in projects">
+              {{ project.id }} | {{ project.title }}
+            </option>
+          </select> -->
+          <!-- SWITCH BTNs -->
+          <div
+            v-for="(category, index) in warehouseCategories"
+            :key="index"
+            class="switch-type_el"
+          >
+            <input
+              type="radio"
+              :id="index"
+              :value="category.type"
+              v-model="currentCategoryByType"
+            />
+            <label :for="index">{{ category.name }}</label>
+          </div>
+        </div>
       </div>
 
       <!-- SEARCH -->
@@ -883,7 +898,7 @@ watch(item.value, () => {
                 {{ item.title }}
               </span>
             </td>
-            <td scope="col">{{ item.qty }} {{ item.measure }}.</td>
+            <td scope="col"><{{ item.qty }} {{ item.measure }}.></td>
             <td scope="col">
               <span
                 class="link link-location"
@@ -968,8 +983,9 @@ td {
 /* switch category type */
 .switch-type_container {
   display: flex;
+  align-items: center;
   margin-top: 1rem;
-  /* gap: 1rem; */
+  gap: 1rem;  
 }
 
 .switch-type_el {

@@ -72,8 +72,9 @@ const item = ref({
 });
 
 const currentCategoryByType = ref("all");
-const currentCategoryByLocation = ref("all");
+// const currentCategoryByLocation = ref("all");
 const currentCategoryByLocationObj = ref({
+  title: "all",
   type: "all",
   id: null,
 });
@@ -420,6 +421,7 @@ async function addWarehouseItem(item) {
   }
 }
 
+// Ччисти инпуты модалки создания ТМЦ
 const clearModalInputs = (item: any) => {
   item.uuid = null;
   item.title = null;
@@ -467,23 +469,38 @@ watch(currentCategoryByType, async () => {
   await refresh();
   if (currentCategoryByLocationObj.value.type === "all") {
     if (currentCategoryByType.value === "all") {
-      await refresh();
+      if(currentCategoryByLocationObj.value.title === "project") {
+                items.value = items.value.filter(
+          (item) => item.location === 'project'
+        );
+        } else {
+        await refresh();
+
+      }
     } else {
       await refresh();
-      items.value = items.value.filter(
-        (item) => item.type === currentCategoryByType.value
-      );
+      if (currentCategoryByLocationObj.value.title === "project") {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === "project"
+        );
+      } else {
+        items.value = items.value.filter(
+          (item) => item.type === currentCategoryByType.value
+        );
+      }
     }
   } else if (currentCategoryByType.value === "all") {
     if (currentCategoryByLocationObj.value.type === "all") {
       await refresh();
     } else {
-      if(currentCategoryByLocationObj.value.id) {
+      if (currentCategoryByLocationObj.value.id) {
         items.value = items.value.filter(
           (item) =>
             item.location === currentCategoryByLocationObj.value.type &&
             item.locationID === currentCategoryByLocationObj.value.id
-        ); 
+        );
       } else {
         items.value = items.value.filter(
           (item) => item.location === currentCategoryByLocationObj.value.type
@@ -491,24 +508,24 @@ watch(currentCategoryByType, async () => {
       }
     }
   } else {
-    if(currentCategoryByType.value !== "all") {
-      if(currentCategoryByLocationObj.value.id) {
+    if (currentCategoryByType.value !== "all") {
+      if (currentCategoryByLocationObj.value.id) {
         items.value = items.value.filter(
           (item) =>
             item.type === currentCategoryByType.value &&
             item.location === currentCategoryByLocationObj.value.type &&
             item.locationID === currentCategoryByLocationObj.value.id
-        ); 
+        );
       } else {
         items.value = items.value.filter(
           (item) =>
             item.type === currentCategoryByType.value &&
             item.location === currentCategoryByLocationObj.value.type
-        ); 
+        );
       }
-    } else {}
+    } else {
+    }
     // await refresh()
-
   }
 });
 
@@ -542,10 +559,17 @@ watch(currentCategoryByLocationObj, async () => {
   console.log(currentCategoryByLocationObj.value);
 
   await refresh();
+
   if (currentCategoryByLocationObj.value.id === null) {
     if (currentCategoryByType.value === "all") {
       if (currentCategoryByLocationObj.value.type === "all") {
-        await refresh();
+        if (currentCategoryByLocationObj.value.title === "project") {
+          items.value = items.value.filter(
+            (item) => item.location === currentCategoryByLocationObj.value.title
+          );
+        } else {
+          await refresh();
+        }
       } else {
         items.value = items.value.filter(
           (item) => item.location === currentCategoryByLocationObj.value.type
@@ -801,35 +825,55 @@ watch(item.value, () => {
       </div>
     </div> -->
 
-    
     <!-- BY CATEGORY TYPES -->
     <div class="switch-type_container">
-
       <div>
-
-        <!--  -->
+        <!-- set location & project -->
         <select
           class="form-select form-select-sm"
           aria-label=".form-select-sm example"
           v-model="currentCategoryByLocationObj"
         >
-          <option selected :value="{ type: 'all', id: null }">
-            All locations
+          <!-- all locations & projects -->
+          <option :value="{ title: 'all', type: 'all', id: null }">
+            Все места
           </option>
-          <option :value="{ type: 'sklad', id: null }">Все склады</option>
-          <option :value="{ type: 'repair', id: null }">Все repair</option>
-          <option :value="{ type: 'office', id: null }">Все офисы</option>
+
+          <!-- locations -->
+          <option :value="{ title: 'location', type: 'sklad', id: null }">
+            Все склады
+          </option>
+          <option :value="{ title: 'location', type: 'repair', id: null }">
+            Все repair
+          </option>
+          <option :value="{ title: 'location', type: 'office', id: null }">
+            Все офисы
+          </option>
           <option
-            :value="{ type: location.type, id: location.id }"
+            :value="{
+              title: 'location',
+              type: location.type,
+              id: location.id,
+            }"
             v-for="(location, i) in locations"
           >
             {{ location.type }} | {{ location.title }} | {{ location.address }}
           </option>
+
+          <!-- projects -->
+          <option :value="{ title: 'project', type: 'all', id: null }">
+            Все проекты
+          </option>
+          <option
+            :value="{ title: 'project', id: project.id }"
+            v-for="(project, i) in projects"
+          >
+            {{ project.title }} | {{ project.address }}
+          </option>
         </select>
-        
+
         <!--  -->
         <div style="display: flex; gap: 1rem; margin-top: 1rem">
-    
           <!-- <select
             class="form-select form-select-sm"
             aria-label=".form-select-sm example"
@@ -985,7 +1029,7 @@ td {
   display: flex;
   align-items: center;
   margin-top: 1rem;
-  gap: 1rem;  
+  gap: 1rem;
 }
 
 .switch-type_el {

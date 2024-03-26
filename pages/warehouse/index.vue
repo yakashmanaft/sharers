@@ -78,6 +78,7 @@ const currentCategoryByLocationObj = ref({
   type: "all",
   id: null,
 });
+const searchInput = ref("");
 
 // Категории ТМЦ (пока хардкорно)
 const warehouseCategories = ref([
@@ -436,6 +437,7 @@ const clearModalInputs = (item: any) => {
   item.responsible = null;
 };
 
+// Фильтрация по locations
 const filterItemsByLocationObj = async () => {
   await refresh();
 
@@ -517,7 +519,7 @@ const filterItemsByLocationObj = async () => {
     }
   }
 };
-
+// фильтрация по products
 const filterItemsByCategoryType = async () => {
   await refresh();
   if (currentCategoryByLocationObj.value.type === "all") {
@@ -595,9 +597,30 @@ const filterItemsByCategoryType = async () => {
     // await refresh()
   }
 };
+// фильтрация по search input
+// const filterItemsBySearchInput = async () => {
+//   console.log(searchInput.value);
+//   items.value.filter((item) => {
+//     item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1;
+//   });
+// };
 
 // ******** WATCHERS ********
 
+// Следим за изменением поиска
+watch(searchInput, async () => {
+  // console.log(searchInput.value);
+  if (searchInput.value === "") {
+    filterItemsByLocationObj();
+    filterItemsByCategoryType();
+  } else {
+    items.value = items.value.filter((item) => {
+      return (
+        item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1
+      );
+    });
+  }
+});
 // Следим за изменением фильтров и обновляем данные
 watch(currentCategoryByType, async () => {
   filterItemsByCategoryType();
@@ -628,7 +651,8 @@ watch(item.value, () => {
   <Container>
     <h1>ТМЦ</h1>
 
-    <!-- ADD NEW ITEM MODAL -->
+    <!-- ******** ADD NEW ITEM MODAL ******** -->
+
     <!-- Button trigger modal -->
     <button
       type="button"
@@ -788,30 +812,10 @@ watch(item.value, () => {
     </div>
 
     <!-- ********************* ФИЛЬТРЫ ********************** -->
-    <!-- BY LOCATIONS TYPES -->
-    <!-- <div class="switch-type_container">
-      <div class="switch-type_el">
-        <input
-          type="radio"
-          id="all"
-          value="all"
-          v-model="currentCategoryByLocation"
-        />
-        <label for="all">Все</label>
-      </div>
-      <div v-for="(location, i) in locations" class="switch-type_el">
-        <input
-          type="radio"
-          :id="location.type"
-          :value="location.type"
-          v-model="currentCategoryByLocation"
-        />
-        <label :for="location.type">{{ location.type }}</label>
-      </div>
-    </div> -->
 
     <!-- BY CATEGORY TYPES -->
     <div class="switch-type_container">
+      <!-- FILTERS RADIO BTN -->
       <div>
         <!-- set location & project -->
         <select
@@ -864,17 +868,8 @@ watch(item.value, () => {
           </optgroup>
         </select>
 
-        <!--  -->
+        <!-- set category type -->
         <div style="display: flex; gap: 1rem; margin-top: 1rem">
-          <!-- <select
-            class="form-select form-select-sm"
-            aria-label=".form-select-sm example"
-          >
-            <option selected value="all">All projects</option>
-            <option value="1" v-for="(project, index) in projects">
-              {{ project.id }} | {{ project.title }}
-            </option>
-          </select> -->
           <!-- SWITCH BTNs -->
           <div
             v-for="(category, index) in warehouseCategories"
@@ -893,7 +888,15 @@ watch(item.value, () => {
       </div>
 
       <!-- SEARCH -->
-      <input type="text" class="form-control" placeholder="Поиск" />
+      <div class="search-container">
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Поиск"
+          v-model="searchInput"
+        />
+        <Icon name="ic:baseline-search" size="24px" />
+      </div>
     </div>
 
     <!-- fetch data is error -->
@@ -1018,6 +1021,7 @@ td {
 .switch-type_container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-top: 1rem;
   gap: 1rem;
 }
@@ -1048,6 +1052,26 @@ td {
 .switch-type_el input[type="radio"]:checked + label {
   background-color: #b1e3c1;
   color: white;
+}
+
+.search-container {
+  position: relative;
+  align-self: flex-start;
+}
+
+.search-container input:focus {
+  /* background-color: black; */
+}
+
+.search-container input:focus + .search-container {
+  width: 100%;
+}
+
+.search-container .icon {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
 }
 
 .form-control,

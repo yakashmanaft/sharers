@@ -28,6 +28,7 @@
   },
   "devDependencies": {
     "@types/uuid": "^9.0.8",
-    "nuxt-auth-utils": "^0.0.20"
+    "nuxt-auth-utils": "^0.0.20",
+    "nuxt-icon": "^0.6.10"
   }
 }

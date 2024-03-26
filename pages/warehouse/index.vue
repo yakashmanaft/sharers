@@ -605,6 +605,16 @@ const filterItemsByCategoryType = async () => {
 //   });
 // };
 
+const computedItems = computed(() =>
+  searchInput.value === ""
+    ? items.value
+    : items.value.filter((item) =>
+        item.title
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
+      )
+);
 // ******** WATCHERS ********
 
 // Следим за изменением поиска
@@ -961,6 +971,12 @@ watch(item.value, () => {
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <br />
+    <br />
+    <div v-for="(item, index) in computedItems">
+      {{ item }}
     </div>
   </Container>
 </template>

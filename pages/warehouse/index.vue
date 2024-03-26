@@ -469,13 +469,10 @@ watch(currentCategoryByType, async () => {
   await refresh();
   if (currentCategoryByLocationObj.value.type === "all") {
     if (currentCategoryByType.value === "all") {
-      if(currentCategoryByLocationObj.value.title === "project") {
-                items.value = items.value.filter(
-          (item) => item.location === 'project'
-        );
-        } else {
+      if (currentCategoryByLocationObj.value.title === "project") {
+        items.value = items.value.filter((item) => item.location === "project");
+      } else {
         await refresh();
-
       }
     } else {
       await refresh();
@@ -496,11 +493,19 @@ watch(currentCategoryByType, async () => {
       await refresh();
     } else {
       if (currentCategoryByLocationObj.value.id) {
-        items.value = items.value.filter(
-          (item) =>
-            item.location === currentCategoryByLocationObj.value.type &&
-            item.locationID === currentCategoryByLocationObj.value.id
-        );
+        if (currentCategoryByLocationObj.value.title === "project") {
+          items.value = items.value.filter(
+            (item) =>
+              item.location === "project" &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        } else {
+          items.value = items.value.filter(
+            (item) =>
+              item.location === currentCategoryByLocationObj.value.type &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        }
       } else {
         items.value = items.value.filter(
           (item) => item.location === currentCategoryByLocationObj.value.type
@@ -510,12 +515,21 @@ watch(currentCategoryByType, async () => {
   } else {
     if (currentCategoryByType.value !== "all") {
       if (currentCategoryByLocationObj.value.id) {
-        items.value = items.value.filter(
-          (item) =>
-            item.type === currentCategoryByType.value &&
-            item.location === currentCategoryByLocationObj.value.type &&
-            item.locationID === currentCategoryByLocationObj.value.id
-        );
+        if (currentCategoryByLocationObj.value.title === "project") {
+          items.value = items.value.filter(
+            (item) =>
+              item.type === currentCategoryByType.value &&
+              item.location === "project" &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        } else {
+          items.value = items.value.filter(
+            (item) =>
+              item.type === currentCategoryByType.value &&
+              item.location === currentCategoryByLocationObj.value.type &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        }
       } else {
         items.value = items.value.filter(
           (item) =>
@@ -577,9 +591,17 @@ watch(currentCategoryByLocationObj, async () => {
       }
     } else {
       if (currentCategoryByLocationObj.value.type === "all") {
-        items.value = items.value.filter(
-          (item) => item.type === currentCategoryByType.value
-        );
+        if (currentCategoryByLocationObj.value.title === "project") {
+          items.value = items.value.filter(
+            (item) =>
+              item.type === currentCategoryByType.value &&
+              item.location === "project"
+          );
+        } else {
+          items.value = items.value.filter(
+            (item) => item.type === currentCategoryByType.value
+          );
+        }
       } else {
         items.value = items.value.filter(
           (item) =>
@@ -590,18 +612,43 @@ watch(currentCategoryByLocationObj, async () => {
     }
   } else {
     if (currentCategoryByType.value === "all") {
-      items.value = items.value.filter(
-        (item) =>
-          item.location === currentCategoryByLocationObj.value.type &&
-          item.locationID === currentCategoryByLocationObj.value.id
-      );
+      if (currentCategoryByLocationObj.value.id === null) {
+        items.value = items.value.filter(
+          (item) =>
+            item.location === currentCategoryByLocationObj.value.type &&
+            item.locationID === currentCategoryByLocationObj.value.id
+        );
+      } else {
+        if (currentCategoryByLocationObj.value.title === "location") {
+          items.value = items.value.filter(
+            (item) =>
+              item.location === currentCategoryByLocationObj.value.type &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        } else {
+          items.value = items.value.filter(
+            (item) =>
+              item.location === "project" &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        }
+      }
     } else {
-      items.value = items.value.filter(
-        (item) =>
-          item.type === currentCategoryByType.value &&
-          item.location === currentCategoryByLocationObj.value.type &&
-          item.locationID === currentCategoryByLocationObj.value.id
-      );
+      if (currentCategoryByLocationObj.value.title === "project") {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === "project" &&
+            item.locationID === currentCategoryByLocationObj.value.id
+        );
+      } else {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === currentCategoryByLocationObj.value.type &&
+            item.locationID === currentCategoryByLocationObj.value.id
+        );
+      }
     }
   }
 
@@ -835,41 +882,48 @@ watch(item.value, () => {
           v-model="currentCategoryByLocationObj"
         >
           <!-- all locations & projects -->
-          <option :value="{ title: 'all', type: 'all', id: null }">
-            Все места
-          </option>
+          <option :value="{ title: 'all', type: 'all', id: null }">Все</option>
 
-          <!-- locations -->
-          <option :value="{ title: 'location', type: 'sklad', id: null }">
-            Все склады
-          </option>
-          <option :value="{ title: 'location', type: 'repair', id: null }">
-            Все repair
-          </option>
-          <option :value="{ title: 'location', type: 'office', id: null }">
-            Все офисы
-          </option>
-          <option
-            :value="{
-              title: 'location',
-              type: location.type,
-              id: location.id,
-            }"
-            v-for="(location, i) in locations"
-          >
-            {{ location.type }} | {{ location.title }} | {{ location.address }}
-          </option>
+          <!-- All locations -->
+          <optgroup label="All locations">
+            <option :value="{ title: 'location', type: 'sklad', id: null }">
+              Все склады
+            </option>
+            <option :value="{ title: 'location', type: 'repair', id: null }">
+              Все repair
+            </option>
+            <option :value="{ title: 'location', type: 'office', id: null }">
+              Все офисы
+            </option>
+            <option :value="{ title: 'project', type: 'all', id: null }">
+              Все проекты
+            </option>
+          </optgroup>
+
+          <!-- Locations -->
+          <optgroup label="Locations">
+            <option
+              :value="{
+                title: 'location',
+                type: location.type,
+                id: location.id,
+              }"
+              v-for="(location, i) in locations"
+            >
+              {{ location.type }} | {{ location.title }} |
+              {{ location.address }}
+            </option>
+          </optgroup>
 
           <!-- projects -->
-          <option :value="{ title: 'project', type: 'all', id: null }">
-            Все проекты
-          </option>
-          <option
-            :value="{ title: 'project', id: project.id }"
-            v-for="(project, i) in projects"
-          >
-            {{ project.title }} | {{ project.address }}
-          </option>
+          <optgroup label="Проекты">
+            <option
+              :value="{ title: 'project', id: project.id }"
+              v-for="(project, i) in projects"
+            >
+              {{ project.title }} | {{ project.address }}
+            </option>
+          </optgroup>
         </select>
 
         <!--  -->
@@ -930,7 +984,6 @@ watch(item.value, () => {
             <th scope="col">Местонахождение</th>
             <th scope="col">Собственник</th>
             <th scope="col">Ответственный</th>
-            <th scope="col">Тип</th>
           </tr>
         </thead>
 
@@ -964,7 +1017,6 @@ watch(item.value, () => {
                 >{{ item.responsible }}</span
               >
             </td>
-            <td scope="col">{{ item.type }}</td>
           </tr>
         </tbody>
       </table>
@@ -1060,7 +1112,9 @@ td {
   color: white;
 }
 
-.form-control {
+.form-control,
+.form-select {
   border-radius: 16px;
+  padding: 4px 10px;
 }
 </style>

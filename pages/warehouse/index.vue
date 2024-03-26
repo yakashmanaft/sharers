@@ -620,16 +620,16 @@ const computedItems = computed(() =>
 // Следим за изменением поиска
 watch(searchInput, async () => {
   // console.log(searchInput.value);
-  if (searchInput.value === "") {
-    filterItemsByLocationObj();
-    filterItemsByCategoryType();
-  } else {
-    items.value = items.value.filter((item) => {
-      return (
-        item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1
-      );
-    });
-  }
+  // if (searchInput.value === "") {
+  //   filterItemsByLocationObj();
+  //   filterItemsByCategoryType();
+  // } else {
+  //   items.value = items.value.filter((item) => {
+  //     return (
+  //       item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1
+  //     );
+  //   });
+  // }
 });
 // Следим за изменением фильтров и обновляем данные
 watch(currentCategoryByType, async () => {
@@ -939,7 +939,7 @@ watch(item.value, () => {
         </thead>
 
         <tbody>
-          <tr v-for="(item, index) in items">
+          <tr v-for="(item, index) in computedItems">
             <td scope="col">{{ index + 1 }}</td>
             <td scope="col">
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
@@ -971,12 +971,6 @@ watch(item.value, () => {
           </tr>
         </tbody>
       </table>
-    </div>
-
-    <br />
-    <br />
-    <div v-for="(item, index) in computedItems">
-      {{ item }}
     </div>
   </Container>
 </template>

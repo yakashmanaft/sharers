@@ -417,7 +417,9 @@ async function addWarehouseItem(item) {
     clearModalInputs(item);
 
     // refetching
-    await refresh();
+    // await refresh();
+    filterItemsByCategoryType();
+    filterItemsByLocationObj();
   }
 }
 
@@ -434,144 +436,7 @@ const clearModalInputs = (item: any) => {
   item.responsible = null;
 };
 
-// WATCHERS
-// watch(currentCategoryByType, async () => {
-//   console.log(`currentCategoryByType: ${currentCategoryByType.value}`);
-//   await refresh();
-//   if (currentCategoryByLocation.value === "all") {
-//     if (currentCategoryByType.value === "all") {
-//       await refresh();
-//     } else {
-//       await refresh();
-//       items.value = items.value.filter(
-//         (item) => item.type === currentCategoryByType.value
-//       );
-//     }
-//   } else if (currentCategoryByType.value === "all") {
-//     if (currentCategoryByLocation.value === "all") {
-//       await refresh();
-//     } else {
-//       items.value = items.value.filter(
-//         (item) => item.location === currentCategoryByLocation.value
-//       );
-//     }
-//   } else {
-//     // await refresh()
-//     items.value = items.value.filter(
-//       (item) =>
-//         item.type === currentCategoryByType.value &&
-//         item.location === currentCategoryByLocation.value
-//     );
-//   }
-// });
-watch(currentCategoryByType, async () => {
-  console.log(`currentCategoryByType: ${currentCategoryByType.value}`);
-  await refresh();
-  if (currentCategoryByLocationObj.value.type === "all") {
-    if (currentCategoryByType.value === "all") {
-      if (currentCategoryByLocationObj.value.title === "project") {
-        items.value = items.value.filter((item) => item.location === "project");
-      } else {
-        await refresh();
-      }
-    } else {
-      await refresh();
-      if (currentCategoryByLocationObj.value.title === "project") {
-        items.value = items.value.filter(
-          (item) =>
-            item.type === currentCategoryByType.value &&
-            item.location === "project"
-        );
-      } else {
-        items.value = items.value.filter(
-          (item) => item.type === currentCategoryByType.value
-        );
-      }
-    }
-  } else if (currentCategoryByType.value === "all") {
-    if (currentCategoryByLocationObj.value.type === "all") {
-      await refresh();
-    } else {
-      if (currentCategoryByLocationObj.value.id) {
-        if (currentCategoryByLocationObj.value.title === "project") {
-          items.value = items.value.filter(
-            (item) =>
-              item.location === "project" &&
-              item.locationID === currentCategoryByLocationObj.value.id
-          );
-        } else {
-          items.value = items.value.filter(
-            (item) =>
-              item.location === currentCategoryByLocationObj.value.type &&
-              item.locationID === currentCategoryByLocationObj.value.id
-          );
-        }
-      } else {
-        items.value = items.value.filter(
-          (item) => item.location === currentCategoryByLocationObj.value.type
-        );
-      }
-    }
-  } else {
-    if (currentCategoryByType.value !== "all") {
-      if (currentCategoryByLocationObj.value.id) {
-        if (currentCategoryByLocationObj.value.title === "project") {
-          items.value = items.value.filter(
-            (item) =>
-              item.type === currentCategoryByType.value &&
-              item.location === "project" &&
-              item.locationID === currentCategoryByLocationObj.value.id
-          );
-        } else {
-          items.value = items.value.filter(
-            (item) =>
-              item.type === currentCategoryByType.value &&
-              item.location === currentCategoryByLocationObj.value.type &&
-              item.locationID === currentCategoryByLocationObj.value.id
-          );
-        }
-      } else {
-        items.value = items.value.filter(
-          (item) =>
-            item.type === currentCategoryByType.value &&
-            item.location === currentCategoryByLocationObj.value.type
-        );
-      }
-    } else {
-    }
-    // await refresh()
-  }
-});
-
-// watch(currentCategoryByLocation, async () => {
-//   console.log(`currentCategoryByLocation: ${currentCategoryByLocation.value}`);
-//   await refresh();
-//   if (currentCategoryByType.value === "all") {
-//     if (currentCategoryByLocation.value === "all") {
-//       await refresh();
-//     } else {
-//       await refresh();
-//       items.value = items.value.filter(
-//         (item) => item.location === currentCategoryByLocation.value
-//       );
-//     }
-//   } else if (currentCategoryByLocation.value === "all") {
-//     items.value = items.value.filter(
-//       (item) => item.type === currentCategoryByType.value
-//     );
-//   } else {
-//     items.value = items.value.filter(
-//       (item) =>
-//         item.type === currentCategoryByType.value &&
-//         item.location === currentCategoryByLocation.value
-//     );
-//   }
-// });
-
-//
-watch(currentCategoryByLocationObj, async () => {
-  console.log(currentCategoryByLocationObj.value);
-
+const filterItemsByLocationObj = async () => {
   await refresh();
 
   if (currentCategoryByLocationObj.value.id === null) {
@@ -651,21 +516,94 @@ watch(currentCategoryByLocationObj, async () => {
       }
     }
   }
+};
 
-  // if (currentCategoryByType.value === "all") {
-  //   items.value = items.value.filter(
-  //     (item) =>
-  //       item.location == currentCategoryByLocationObj.value.type &&
-  //       item.locationID == currentCategoryByLocationObj.value.id
-  //   );
-  // } else {
-  //   items.value = items.value.filter(
-  //     (item) =>
-  //       item.type === currentCategoryByType.value &&
-  //       item.location === currentCategoryByLocationObj.value.type &&
-  //       item.locationID == currentCategoryByLocationObj.value.id
-  //   );
-  // }
+const filterItemsByCategoryType = async () => {
+  await refresh();
+  if (currentCategoryByLocationObj.value.type === "all") {
+    if (currentCategoryByType.value === "all") {
+      if (currentCategoryByLocationObj.value.title === "project") {
+        items.value = items.value.filter((item) => item.location === "project");
+      } else {
+        await refresh();
+      }
+    } else {
+      await refresh();
+      if (currentCategoryByLocationObj.value.title === "project") {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === "project"
+        );
+      } else {
+        items.value = items.value.filter(
+          (item) => item.type === currentCategoryByType.value
+        );
+      }
+    }
+  } else if (currentCategoryByType.value === "all") {
+    if (currentCategoryByLocationObj.value.type === "all") {
+      await refresh();
+    } else {
+      if (currentCategoryByLocationObj.value.id) {
+        if (currentCategoryByLocationObj.value.title === "project") {
+          items.value = items.value.filter(
+            (item) =>
+              item.location === "project" &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        } else {
+          items.value = items.value.filter(
+            (item) =>
+              item.location === currentCategoryByLocationObj.value.type &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        }
+      } else {
+        items.value = items.value.filter(
+          (item) => item.location === currentCategoryByLocationObj.value.type
+        );
+      }
+    }
+  } else {
+    if (currentCategoryByType.value !== "all") {
+      if (currentCategoryByLocationObj.value.id) {
+        if (currentCategoryByLocationObj.value.title === "project") {
+          items.value = items.value.filter(
+            (item) =>
+              item.type === currentCategoryByType.value &&
+              item.location === "project" &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        } else {
+          items.value = items.value.filter(
+            (item) =>
+              item.type === currentCategoryByType.value &&
+              item.location === currentCategoryByLocationObj.value.type &&
+              item.locationID === currentCategoryByLocationObj.value.id
+          );
+        }
+      } else {
+        items.value = items.value.filter(
+          (item) =>
+            item.type === currentCategoryByType.value &&
+            item.location === currentCategoryByLocationObj.value.type
+        );
+      }
+    } else {
+    }
+    // await refresh()
+  }
+};
+
+// ******** WATCHERS ********
+
+// Следим за изменением фильтров и обновляем данные
+watch(currentCategoryByType, async () => {
+  filterItemsByCategoryType();
+});
+watch(currentCategoryByLocationObj, async () => {
+  filterItemsByLocationObj();
 });
 
 // Проверка перед сабмитом

@@ -598,13 +598,6 @@ const filterItemsByCategoryType = async () => {
   }
 };
 // фильтрация по search input
-// const filterItemsBySearchInput = async () => {
-//   console.log(searchInput.value);
-//   items.value.filter((item) => {
-//     item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1;
-//   });
-// };
-
 const computedItems = computed(() =>
   searchInput.value === ""
     ? items.value
@@ -618,19 +611,19 @@ const computedItems = computed(() =>
 // ******** WATCHERS ********
 
 // Следим за изменением поиска
-watch(searchInput, async () => {
-  // console.log(searchInput.value);
-  // if (searchInput.value === "") {
-  //   filterItemsByLocationObj();
-  //   filterItemsByCategoryType();
-  // } else {
-  //   items.value = items.value.filter((item) => {
-  //     return (
-  //       item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1
-  //     );
-  //   });
-  // }
-});
+// watch(searchInput, async () => {
+//   console.log(searchInput.value);
+//   if (searchInput.value === "") {
+//     filterItemsByLocationObj();
+//     filterItemsByCategoryType();
+//   } else {
+//     items.value = items.value.filter((item) => {
+//       return (
+//         item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1
+//       );
+//     });
+//   }
+// });
 // Следим за изменением фильтров и обновляем данные
 watch(currentCategoryByType, async () => {
   filterItemsByCategoryType();
@@ -656,6 +649,8 @@ watch(item.value, () => {
     createNewItemBtnIsDisabled.value = true;
   }
 });
+
+//
 </script>
 <template>
   <Container>
@@ -939,6 +934,11 @@ watch(item.value, () => {
         </thead>
 
         <tbody>
+          <div v-if="items">
+            <div v-if="!searchInput && !items.length">Ничего нет</div>
+            <div>По запросу ничего не найдено {{ items.length }}</div>
+          </div>
+
           <tr v-for="(item, index) in computedItems">
             <td scope="col">{{ index + 1 }}</td>
             <td scope="col">

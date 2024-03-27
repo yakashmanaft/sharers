@@ -98,6 +98,10 @@ const warehouseCategories = ref([
     type: "consumables",
     name: "Расходники",
   },
+  {
+    type: "technic",
+    name: "Техника",
+  },
 ]);
 
 // Споты, где может находиться ТМЦ
@@ -269,7 +273,16 @@ const {
   //   })
   // }
 });
+const { data: projects } = useLazyAsyncData("projects", () =>
+  $fetch("api/projects/projects")
+);
+const { data: locations } = useLazyAsyncData("locations", () =>
+  $fetch("api/locations/locations")
+);
 
+  // const computedProjects = computed(() => 
+  //   projects.value
+  // )
 // const { data: projects } = await useFetch("api/projects/projects", {
 //   lazy: false,
 //   transform: (projects) => {
@@ -279,39 +292,6 @@ const {
 //     }));
 //   },
 // });
-
-const { data: projects } = useLazyAsyncData("projects", () =>
-  $fetch("api/projects/projects")
-);
-const { data: locations } = useLazyAsyncData("locations", () =>
-  $fetch("api/locations/locations")
-);
-// locations.value = locations.value.filter(item => item.type)
-// const unique = locations.value.filter(
-//   (obj, index) =>
-//     locations.value((item) => item.type === obj.type) === index
-// )
-
-// const { pending, error, data: itemInfo, refresh } = await useAsyncData('itemInfo', async () => {
-//   const [items, projects, locations] = await Promise.all([
-//     $fetch("api/warehouse/item"),
-//     $fetch("api/projects/projects"),
-//     $fetch("api/locations/locations")
-//   ])
-//   return { items, projects, locations }
-// }, {
-//   lazy: false,
-//   transform: (itemInfo) => {
-//     return {
-//       items: itemInfo.items,
-//       projects: itemInfo.projects.map((project) => ({
-//         id: project.id,
-//         title: project.title
-//       })),
-//       locations: itemInfo.locations
-//     }
-//   }
-// })
 
 // Генерируем ссылки местонахождения
 const creatLocationLink = (object: any) => {

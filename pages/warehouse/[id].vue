@@ -39,7 +39,7 @@ const item = ref(null);
 onMounted(async () => {
   //
   items.value = await getItems();
-  item.value = items.value.find((item) => item.id == route.params.id);
+  item.value = items.value.find((item: any) => item.id == route.params.id);
 });
 
 //
@@ -53,9 +53,10 @@ async function getItems() {
 
 <template>
   <Container>
-    <h1>Складсклй item #{{ $route.params.id }}</h1>
+    <p>тмц #{{ $route.params.id }}</p>
 
-    <div>
+    <div v-if="item">
+      <h1>{{ item.title }}</h1>
       {{ item }}
     </div>
 

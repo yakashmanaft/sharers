@@ -818,9 +818,8 @@ watch(item.value, () => {
 
     <!-- ********************* ФИЛЬТРЫ ********************** -->
 
-    <!-- BY CATEGORY TYPES -->
+    <!-- FILTERS RADIO BTN -->
     <div class="switch-type_container">
-      <!-- FILTERS RADIO BTN -->
       <div>
         <!-- set location & project -->
         <select
@@ -921,6 +920,7 @@ watch(item.value, () => {
       <br />
       <!-- <div>{{ itemInfo.locations }}</div> -->
       <!-- СПИСОК ITEMS -->
+      <!-- <div>{{ computedItems.length }}</div> -->
       <table class="table">
         <thead>
           <tr>
@@ -934,9 +934,11 @@ watch(item.value, () => {
         </thead>
 
         <tbody>
-          <div v-if="items">
-            <div v-if="!searchInput && !items.length">Ничего нет</div>
-            <div>По запросу ничего не найдено {{ items.length }}</div>
+
+          <div v-if="computedItems">
+            
+            <div v-if="!searchInput && !computedItems.length">Ничего нет</div>
+            <div v-if="searchInput && !computedItems.length">По запросу ничего не найдено</div>
           </div>
 
           <tr v-for="(item, index) in computedItems">

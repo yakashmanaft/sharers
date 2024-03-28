@@ -5,6 +5,8 @@ type User = {
     uuid: string;
     email: string;
     name: string;
+    middleName: string;
+    surname: string;
     role: string
 }
 

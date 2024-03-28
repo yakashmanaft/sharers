@@ -1,7 +1,6 @@
 export default defineEventHandler(async (event) => {
     // get the url being called
     const url = getRequestURL(event)
-
     // get the pathname from the url
     const { pathname } = new URL(url)
 

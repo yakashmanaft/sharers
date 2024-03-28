@@ -395,12 +395,15 @@ const translateLocation = (id: any, location: string) => {
 const translateResponsibles = (id: any) => {
   // console.log(users);
   if (id) {
-    if (users.value.length) {
-      let responsible = users.value.find((user) => user.id === id);
-      if (responsible) {
-        return `${responsible.surname} ${responsible.name[0]}. ${responsible.middleName[0]}.`;
-      }
-    }
+      let responsible = users.value.find((user) => user.id === id)
+      return `${responsible?.surname} ${responsible?.name[0]}. ${responsible?.middleName[0]}.`
+    // if (users.value.length) {
+    //   let responsible = users.value.find((user) => user.id === id);
+    //   // return `${responsible.surname} ${responsible.name[0]}. ${responsible.middleName[0]}.`;
+    //   if (responsible) {
+    //   }
+    // }
+    // return 123
   }
 };
 

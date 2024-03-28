@@ -48,8 +48,12 @@ const project = ref({
   completion: null,
 });
 
+const { users } = storeToRefs(useUsersStore());
+const { loadData } = useUsersStore();
+
 onMounted(async () => {
   refresh();
+  await loadData();
 });
 
 // *********** ДОБАВЛЯЕМ New Project newProjectModal ***********
@@ -101,6 +105,15 @@ const clearModalInputs = (project: any) => {
   project.workType = null;
   project.completion = null;
 };
+
+// 
+const translateCurator = (curatorID: number) => {
+  if(curatorID) {
+    let curator = users.value.find((user) => +user.id === curatorID)
+    return `${curator}`
+  }
+  // return curatorID
+}
 
 // Check before submit creating new project
 watch(project.value, () => {
@@ -293,7 +306,7 @@ watch(project.value, () => {
           </div>
         </div>
         <div class="project-item_right">
-          <span>Куратор проекта: {{ project.curator }}</span>
+          <span>Куратор проекта: {{ translateCurator(project.curator) }}</span>
           <span>Заказчик: {{ project.partner }}</span>
         </div>
       </div>

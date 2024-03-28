@@ -2,6 +2,7 @@
 // import IndexPage from '@/pages/index.vue'
 // import { useCurrentUserStore } from '@/stores/auth'
 const router = useRouter();
+const route = useRoute();
 const { loggedIn, user, session, clear, fetch } = useUserSession();
 // const store = useCurrentUserStore()
 
@@ -11,7 +12,14 @@ const checkLocalStorage = () => {
 onMounted(() => {
   // checkLocalStorage()
   console.log(user.value);
-  if (!user.value) {
+
+  if (
+    !user.value &&
+    route.name !== "index" &&
+    route.name !== "about" &&
+    route.name !== "policy" &&
+    route.name !== "contract"
+  ) {
     router.replace("/login");
   }
 });

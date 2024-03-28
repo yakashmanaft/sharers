@@ -1,172 +1,196 @@
 <template>
   <!-- https://www.youtube.com/watch?v=3MPlTDgQaaE -->
-  <div>
-    <div>
-      <!-- Modal EDIT USER???-->
-      <div
-        class="modal fade"
-        id="exampleModal"
-        tabindex="-1"
-        aria-labelledby="exampleModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="exampleModalLabel">Edit user</h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <input
-                v-model="editedUser.name"
-                type="text"
-                class="form-control"
-                id="exampleInputName1"
-                aria-describedby="nameHelp"
-              />
-            </div>
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-dismiss="modal"
-                @click="editUser(editedUser)"
-              >
-                Save changes
-              </button>
-            </div>
+  <Container>
+    <!-- Modal EDIT USER???-->
+    <div
+      class="modal fade"
+      id="userEditModal"
+      tabindex="-1"
+      aria-labelledby="userEditModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="userEditModalLabel">Edit user</h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <input
+              v-model="editedUser.name"
+              type="text"
+              class="form-control"
+              id="exampleInputName1"
+              aria-describedby="nameHelp"
+            />
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="editUser(editedUser)"
+            >
+              Save changes
+            </button>
           </div>
         </div>
       </div>
-
-      <!-- РАЗОБРАТЬСЯ КАК РЕНДЕРИТЬ ОШИБКУ ЧТО ЛИ... -->
-      <div
-        v-if="error"
-        class="alert alert-danger alert-dismissible fade show"
-        role="alert"
-      >
-        <strong>Error:</strong> Delete Error
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="alert"
-          aria-lebel="Close"
-          @click="error = null"
-        ></button>
-      </div>
-
-      <Container>
-        <h1>Соучастники</h1>
-
-        <!-- Форма добавления соучастника (у кого права создания будут?) -->
-        <form>
-          <div class="mb-3">
-            <label for="userName" class="form-label">Name</label>
-            <input
-              v-model="user.name"
-              type="text"
-              class="form-control"
-              id="userName"
-              aria-describedby="nameHelp"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="userRole" class="form-label">Role</label>
-            <input
-              v-model="user.role"
-              type="text"
-              class="form-control"
-              id="userRole"
-              aria-describedby="nameHelp"
-            />
-          </div>
-          <div class="mb-3">
-            <label for="userEmail" class="form-label">Email</label>
-            <input
-              v-model="user.email"
-              type="text"
-              class="form-control"
-              id="userEmail"
-              aria-describedby="nameHelp"
-            />
-          </div>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            @click.prevent="addUser(user)"
-          >
-            Add User
-          </button>
-        </form>
-
-        <!-- Отображение списка соучастников -->
-        <div v-if="pending">
-          <p>Loading...</p>
-        </div>
-
-        <div v-else>
-          <table class="table">
-            <thead>
-              <tr>
-                <th scope="col">#</th>
-                <th scope="col">User</th>
-                <th scope="col">Email</th>
-                <th scope="col">Edit</th>
-                <th scope="col">Delete</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(user, index) in users" :key="index">
-                <td scope="col">{{ index + 1 }}</td>
-                <td @click="$router.push(`/partners/${user.id}`)">
-                  {{ user.name }} | {{ user.role }}
-                </td>
-                <td>{{ user.email }}</td>
-                <td>
-                  <!-- Button trigger modal -->
-                  <button
-                    type="button"
-                    class="btn btn-warning"
-                    data-bs-toggle="modal"
-                    data-bs-target="#exampleModal"
-                    @click="
-                      {
-                        editedUser.id = user.id;
-                        editedUser.name = user.name;
-                      }
-                    "
-                  >
-                    Edit
-                  </button>
-                </td>
-                <td>
-                  <button
-                    type="button"
-                    class="btn btn-danger btn-sm"
-                    @click="deleteUser(user.id)"
-                  >
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Container>
     </div>
-  </div>
+
+    <!-- РАЗОБРАТЬСЯ КАК РЕНДЕРИТЬ ОШИБКУ ЧТО ЛИ... -->
+    <!-- <div
+      v-if="error"
+      class="alert alert-danger alert-dismissible fade show"
+      role="alert"
+    >
+      <strong>Error:</strong> Delete Error
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="alert"
+        aria-lebel="Close"
+        @click="error = null"
+      ></button>
+    </div> -->
+    <h1>Соучастники</h1>
+
+    <!-- Форма добавления соучастника (у кого права создания будут?) -->
+    <form>
+      <div class="mb-3">
+        <label for="userName" class="form-label">Имя</label>
+        <input
+          v-model="user.name"
+          type="text"
+          class="form-control"
+          id="userName"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="userMiddleName" class="form-label">Отчество</label>
+        <input
+          v-model="user.middleName"
+          type="text"
+          class="form-control"
+          id="userMiddleName"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="userSurname" class="form-label">Фамилия</label>
+        <input
+          v-model="user.surname"
+          type="text"
+          class="form-control"
+          id="userSurname"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="userRole" class="form-label">Role</label>
+        <input
+          v-model="user.role"
+          type="text"
+          class="form-control"
+          id="userRole"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <div class="mb-3">
+        <label for="userEmail" class="form-label">Email</label>
+        <input
+          v-model="user.email"
+          type="text"
+          class="form-control"
+          id="userEmail"
+          aria-describedby="nameHelp"
+        />
+      </div>
+      <button
+        type="submit"
+        class="btn btn-primary"
+        @click.prevent="addUser(user)"
+      >
+        Add User
+      </button>
+    </form>
+
+    <!-- Отображение списка соучастников -->
+    <!-- fetch data is error -->
+    <div v-if="error">
+      <p>Error Code {{ error.statusCode }}</p>
+      <p>Error Message {{ error.message }}</p>
+    </div>
+
+    <!-- data is loading -->
+    <div v-if="pending">
+      <p>Loading...</p>
+    </div>
+
+    <!-- data is loaded -->
+    <div v-else>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">User</th>
+            <th scope="col">Email</th>
+            <th scope="col">Edit</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(user, index) in users" :key="index">
+            <td scope="col">{{ index + 1 }}</td>
+            <td @click="$router.push(`/partners/${user.id}`)">
+              {{ user.surname }} {{ user.name }} {{ user.middleName }} |
+              {{ user.role }}
+            </td>
+            <td>{{ user.email }}</td>
+            <td>
+              <!-- Button trigger edit user modal -->
+              <button
+                type="button"
+                class="btn btn-warning"
+                data-bs-toggle="modal"
+                data-bs-target="#userEditModal"
+                @click="
+                  {
+                    editedUser.id = user.id;
+                    editedUser.name = user.name;
+                  }
+                "
+              >
+                Edit
+              </button>
+            </td>
+            <td>
+              <button
+                type="button"
+                class="btn btn-danger btn-sm"
+                @click="deleteUser(user.id)"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </Container>
 </template>
 
 <script setup>
@@ -181,20 +205,25 @@ const user = ref({
   email: null,
   password: "Anfalov123[eq",
   name: null,
+  middleName: null,
+  surname: null,
   role: "USER",
 });
 
-const error = ref(null);
+// const error = ref(null);
 const editedUser = ref({
   id: 0,
   uuid: null,
   email: null,
   password: null,
   name: null,
+  middleName: null,
+  surname: null,
   role: null,
 });
 onMounted(async () => {
   // users.value = await getUsers()
+  await refresh();
 });
 /**
  * @desc Get users
@@ -206,6 +235,7 @@ const {
   pending,
   refresh,
   data: users,
+  error,
 } = useFetch("api/usersList/users", {
   lazy: false,
 });
@@ -225,6 +255,8 @@ async function addUser(user) {
         email: user.email,
         password: user.password,
         name: user.name,
+        middleName: user.middleName,
+        surname: user.surname,
         role: user.role,
       },
     });
@@ -271,6 +303,8 @@ async function editUser(editedUser) {
       body: {
         id: editedUser.id,
         name: editedUser.name,
+        middleName: editedUser.middleName,
+        surname: editedUser.surname,
       },
     });
 

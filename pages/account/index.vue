@@ -45,7 +45,9 @@
             <div class="modal-body">
               <!-- TITLE -->
               <div class="mb-3">
-                <label for="locationTitle" class="form-label">Название</label>
+                <label for="locationTitle" class="form-label"
+                  >Название (отображается в списке ТМЦ на складе)</label
+                >
                 <input
                   v-model="location.title"
                   type="text"

@@ -27,11 +27,11 @@ const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
 const headers = ["ID", "Name", "Email"];
 
-const { loggedIn, user, session, clear } = useUserSession()
+const { loggedIn, user, session, clear } = useUserSession();
 </script>
 <template>
   <Container>
-    <div
+    <!-- <div
       style="display: flex; align-items: center; justify-content: space-between"
     >
       <div>
@@ -41,15 +41,15 @@ const { loggedIn, user, session, clear } = useUserSession()
       </div>
       <button @click="loadData">Load users</button>
     </div>
-    <br />
-
+    <br /> -->
+    <h1>Landing page about "СОУЧАСТНИКИ"</h1>
     <!-- Show if no users loaded -->
-    <div v-if="!users.length">
+    <!-- <div v-if="!users.length">
       <p>No users loaded</p>
-    </div>
+    </div> -->
 
     <!-- Show when users are loaded -->
-    <div v-else>
+    <!-- <div v-else>
       <table>
         <thead>
           <tr>
@@ -64,7 +64,7 @@ const { loggedIn, user, session, clear } = useUserSession()
           </tr>
         </tbody>
       </table>
-    </div>
+    </div> -->
   </Container>
 </template>
 

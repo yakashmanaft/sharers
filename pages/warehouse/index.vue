@@ -250,10 +250,12 @@ onMounted(async () => {
   refresh();
   refreshProjects();
   refreshLocations();
+  // refreshUsers()
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
 const refreshLocations = () => refreshNuxtData("locations");
+// const refreshUsers = () => refreshNuxtData("users");
 
 /**
  * @desc Get warehouse items from BD
@@ -279,10 +281,16 @@ const { data: projects } = useLazyAsyncData("projects", () =>
 const { data: locations } = useLazyAsyncData("locations", () =>
   $fetch("api/locations/locations")
 );
+// const { data: users } = useLazyAsyncData("users", () => {
+//   $fetch("api/usersList/users");
+// });
+// const { users, loadData } = useUsersStore();
+// await loadData();
+// console.log(users);
 
-  // const computedProjects = computed(() => 
-  //   projects.value
-  // )
+// const computedProjects = computed(() =>
+//   projects.value
+// )
 // const { data: projects } = await useFetch("api/projects/projects", {
 //   lazy: false,
 //   transform: (projects) => {
@@ -323,18 +331,48 @@ const creatLocationLink = (object: any) => {
     alert("warehouse inidex.vue creatLocationLink function error");
   }
 };
+
+// Функции переводчики
+// locations
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
-    if (location === "project" && items.value) {
-      // let project = projects.value.find((project) => project.id == id);
-      // return project.title;
-      return `project #${id}`;
-    } else if (location === "sklad") {
-      return `На складе #${id}, ${typeof id}`;
-    } else if (location === "office") {
-      return `В офисе #${id}, ${typeof id}`;
-    } else if (location === "repair") {
-      return `В ремонте #${id}, ${typeof id}`;
+    // PROJECT
+    if (location === "project") {
+      if (projects.value) {
+        let project = projects.value.find((project) => project.id == id);
+        return project.title;
+      }
+    }
+
+    // SKLAD (locations)
+    else if (location === "sklad") {
+      if (locations.value) {
+        let locationItem = locations.value.find(
+          (locationItem) => locationItem.id == id
+        );
+        return `${locationItem.title}`;
+      }
+    }
+
+    // OFFICE (locations)
+    else if (location === "office") {
+      if (locations.value) {
+        let locationItem = locations.value.find(
+          (locationItem) => locationItem.id == id
+        );
+        return `${locationItem.title}`;
+      }
+    }
+
+    // REPAIR (locations)
+    else if (location === "repair") {
+      if (locations.value) {
+        let locationItem = locations.value.find(
+          (locationItem) => locationItem.id == id
+        );
+        return `Ремонт: ${locationItem.title}`;
+      }
+      // return `В ремонте #${id}, ${typeof id}`;
     } else if (location === "archive") {
       return `Архив`;
     } else if (location === "deleted") {
@@ -349,7 +387,16 @@ const translateLocation = (id: any, location: string) => {
   }
   return location;
 };
-const translateOwner = (owner: string) => {
+// responsibles
+const translateResponsibles = (id: any) => {
+  if (id) {
+    // if (users.value) {
+    //   }
+    return id;
+  }
+};
+
+const onClickOwner = (owner: string) => {
   if (owner) {
     alert(
       `${owner}. Относится ли Owner, если он являтееся коллективом, user'ом... И каким обрзаом в объекте item указывать (id:number or id:string)`
@@ -914,11 +961,11 @@ watch(item.value, () => {
         </thead>
 
         <tbody>
-
           <div v-if="computedItems">
-            
             <div v-if="!searchInput && !computedItems.length">Ничего нет</div>
-            <div v-if="searchInput && !computedItems.length">По запросу ничего не найдено</div>
+            <div v-if="searchInput && !computedItems.length">
+              По запросу ничего не найдено
+            </div>
           </div>
 
           <tr v-for="(item, index) in computedItems">
@@ -939,7 +986,7 @@ watch(item.value, () => {
               </span>
             </td>
             <td scope="col">
-              <span class="link" @click="translateOwner(item.owner)">{{
+              <span class="link" @click="onClickOwner(item.owner)">{{
                 item.owner
               }}</span>
             </td>
@@ -947,7 +994,7 @@ watch(item.value, () => {
               <span
                 class="link"
                 @click="$router.push(`/partners/${item.responsible}`)"
-                >{{ item.responsible }}</span
+                >{{ translateResponsibles(item.responsible) }}</span
               >
             </td>
           </tr>

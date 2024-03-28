@@ -7,9 +7,7 @@ export const useAuthStore = defineStore('Auth', () => {
     const signIn = async () => {
         await $fetch('/api/auth/login', { method: 'POST' })
         await fetch()
-        console.log(user)
     }
-
 
     return {
         signIn, loggedIn, user, session, clear, fetch

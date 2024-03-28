@@ -56,6 +56,14 @@ onMounted(async () => {
 // async function getUsers() {
 //   return await $fetch("api/users");
 // }
+const logout = () => {
+  router.replace("/login");
+  useAuthStore().clear();
+};
+
+const onClickRegister = () => {
+  alert("В разработке");
+};
 </script>
 
 <template>
@@ -67,7 +75,7 @@ onMounted(async () => {
             <span>stepbuild.ru</span>
           </router-link>
 
-          <ul class="header-features__list">
+          <ul v-if="useAuthStore().loggedIn" class="header-features__list">
             <li>
               <router-link to="/dashboard">Доска</router-link>
             </li>
@@ -87,17 +95,19 @@ onMounted(async () => {
               <router-link to="/bonds">bonds chart</router-link>
             </li>
           </ul>
-          <!-- <ul v-else class="header-features__list"b>
-                        <li>
-                            <router-link to="/about">О сервисе</router-link>
-                        </li>
-                        <li>
-                            <router-link to="/policy">Политика конфиденциальности</router-link>
-                        </li>
-                        <li>
-                            <router-link to="/contract">Соглашение</router-link>
-                        </li>
-                    </ul> -->
+          <ul v-else class="header-features__list" b>
+            <li>
+              <router-link to="/about">О сервисе</router-link>
+            </li>
+            <li>
+              <router-link to="/policy"
+                >Политика конфиденциальности</router-link
+              >
+            </li>
+            <li>
+              <router-link to="/contract">Соглашение</router-link>
+            </li>
+          </ul>
         </div>
 
         <!-- <div v-if="$auth.loggedIn">
@@ -113,10 +123,17 @@ onMounted(async () => {
           <!-- login -->
           <!-- logout -->
           <button
-            v-if="!useAuthStore().loggedIn"
-            @click="useAuthStore().signIn()"
+            v-if="!useAuthStore().loggedIn && route.name !== 'login'"
+            @click="router.push('/login')"
           >
             Sign in
+          </button>
+
+          <button
+            v-if="!useAuthStore().loggedIn && route.name === 'login'"
+            @click="onClickRegister"
+          >
+            Зарегистрироваться
           </button>
 
           <!-- IF LOGGED IN -->
@@ -127,7 +144,7 @@ onMounted(async () => {
             </div>
 
             <!-- LOGOUT BTN -->
-            <button @click="useAuthStore().clear()">Logout</button>
+            <button @click="logout()">Logout</button>
           </div>
         </div>
       </div>

@@ -5,8 +5,14 @@ export default defineEventHandler(async (event) => {
     // get the pathname from the url
     const { pathname } = new URL(url)
 
+
     // create a list of endpoints that we want to protect
-    const protectedRoutes = ['/api/usersList/users', '/api/warehouse/item', '/api/projects/projects'];
+    const protectedRoutes = [
+        '/api/usersList/users',
+        '/api/warehouse/item',
+        '/api/projects/projects',
+        '/api/locations/locations',
+    ];
 
     // check if th pathname is in the list of protected routes
     for (let i = 0; i < protectedRoutes.length; i++) {
@@ -16,7 +22,10 @@ export default defineEventHandler(async (event) => {
         if (pathname === r) {
 
             // ensure user is logged in before getting a response
-            await requireUserSession(event) 
+            await requireUserSession(event)
+
         }
     }
+
+
 })

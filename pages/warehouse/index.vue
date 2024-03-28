@@ -251,6 +251,7 @@ onMounted(async () => {
   refreshProjects();
   refreshLocations();
   // refreshUsers()
+  await loadData();
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
@@ -281,6 +282,9 @@ const { data: projects } = useLazyAsyncData("projects", () =>
 const { data: locations } = useLazyAsyncData("locations", () =>
   $fetch("api/locations/locations")
 );
+
+const { users } = storeToRefs(useUsersStore());
+const { loadData } = useUsersStore();
 // const { data: users } = useLazyAsyncData("users", () => {
 //   $fetch("api/usersList/users");
 // });
@@ -389,10 +393,14 @@ const translateLocation = (id: any, location: string) => {
 };
 // responsibles
 const translateResponsibles = (id: any) => {
+  // console.log(users);
   if (id) {
-    // if (users.value) {
-    //   }
-    return id;
+    if (users.value.length) {
+      let responsible = users.value.find((user) => user.id === id);
+      if (responsible) {
+        return `${responsible.surname} ${responsible.name[0]}. ${responsible.middleName[0]}.`;
+      }
+    }
   }
 };
 

@@ -61,9 +61,9 @@ const logout = () => {
   useAuthStore().clear();
 };
 
-const onClickRegister = () => {
-  alert("В разработке");
-};
+// const onClickRegister = () => {
+//   alert("В разработке");
+// };
 </script>
 
 <template>
@@ -129,12 +129,12 @@ const onClickRegister = () => {
             Sign in
           </button>
 
-          <button
+          <!-- <button
             v-if="!useAuthStore().loggedIn && route.name === 'login'"
             @click="onClickRegister"
           >
             Зарегистрироваться
-          </button>
+          </button> -->
 
           <!-- IF LOGGED IN -->
           <div v-if="useAuthStore().loggedIn" class="logged-in_container">

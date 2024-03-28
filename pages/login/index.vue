@@ -85,6 +85,9 @@ const loginloggedIn = () => {
   useAuthStore().signIn();
   router.push("/dashboard");
 };
+const onClickRegister = () => {
+  alert("В разработке");
+};
 </script>
 
 <template>
@@ -102,6 +105,7 @@ const loginloggedIn = () => {
       <h1>Login</h1>
       <button @click="loginloggedIn">Sign IN</button>
 
+      <button @click="onClickRegister">Зарегистрироваться</button>
       <!--     
             <div>
                 <label for="login">Введите имейл</label>

@@ -67,66 +67,91 @@
     </div> -->
     <h1>Соучастники</h1>
 
-    <!-- Форма добавления соучастника (у кого права создания будут?) -->
-    <form>
-      <div class="mb-3">
-        <label for="userName" class="form-label">Имя</label>
-        <input
-          v-model="user.name"
-          type="text"
-          class="form-control"
-          id="userName"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="userMiddleName" class="form-label">Отчество</label>
-        <input
-          v-model="user.middleName"
-          type="text"
-          class="form-control"
-          id="userMiddleName"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="userSurname" class="form-label">Фамилия</label>
-        <input
-          v-model="user.surname"
-          type="text"
-          class="form-control"
-          id="userSurname"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="userRole" class="form-label">Role</label>
-        <input
-          v-model="user.role"
-          type="text"
-          class="form-control"
-          id="userRole"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <div class="mb-3">
-        <label for="userEmail" class="form-label">Email</label>
-        <input
-          v-model="user.email"
-          type="text"
-          class="form-control"
-          id="userEmail"
-          aria-describedby="nameHelp"
-        />
-      </div>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        @click.prevent="addUser(user)"
-      >
-        Add User
-      </button>
-    </form>
+    <!-- FORMS ADD SMTHNG -->
+    <div style="display: flex; gap: 2rem; margin-top: 2rem">
+      <!-- Форма добавления соучастника (у кого права создания будут?) -->
+      <form>
+        <h2>Add User</h2>
+        <div class="mb-3">
+          <label for="userName" class="form-label">Имя</label>
+          <input
+            v-model="user.name"
+            type="text"
+            class="form-control"
+            id="userName"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="userMiddleName" class="form-label">Отчество</label>
+          <input
+            v-model="user.middleName"
+            type="text"
+            class="form-control"
+            id="userMiddleName"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="userSurname" class="form-label">Фамилия</label>
+          <input
+            v-model="user.surname"
+            type="text"
+            class="form-control"
+            id="userSurname"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="userRole" class="form-label">Role</label>
+          <input
+            v-model="user.role"
+            type="text"
+            class="form-control"
+            id="userRole"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <div class="mb-3">
+          <label for="userEmail" class="form-label">Email</label>
+          <input
+            v-model="user.email"
+            type="text"
+            class="form-control"
+            id="userEmail"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          @click.prevent="addUser(user)"
+        >
+          Add User
+        </button>
+      </form>
+      <!-- Форма добавления компании -->
+      <form>
+        <h2>Add Company</h2>
+        <div class="mb-3">
+          <label for="userName" class="form-label">Название</label>
+          <input
+            v-model="company.title"
+            type="text"
+            class="form-control"
+            id="userName"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          @click.prevent="addCompany(company)"
+        >
+          Add Company
+        </button>
+      </form>
+    </div>
 
     <!-- Отображение списка соучастников -->
     <!-- fetch data is error -->
@@ -142,6 +167,7 @@
 
     <!-- data is loaded -->
     <div v-else>
+      <!-- USERS -->
       <table class="table">
         <thead>
           <tr>
@@ -189,6 +215,29 @@
           </tr>
         </tbody>
       </table>
+
+      <!-- ORGANIZATIONS -->
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Банда</th>
+            <th scope="col">uuid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(companyItem, index) in companies">
+            <td scope="col">{{ index + 1 }}</td>
+            <td
+              @click="$router.push(`/organizations/${companyItem.id}`)"
+              scope="col"
+            >
+              {{ companyItem.title }}
+            </td>
+            <td scope="col">{{ companyItem.uuid }}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </Container>
 </template>
@@ -210,6 +259,11 @@ const user = ref({
   role: "USER",
 });
 
+const company = ref({
+  uuid: null,
+  title: null,
+});
+
 // const error = ref(null);
 const editedUser = ref({
   id: 0,
@@ -221,10 +275,13 @@ const editedUser = ref({
   surname: null,
   role: null,
 });
-onMounted(async () => {
+onMounted(() => {
   // users.value = await getUsers()
-  await refresh();
+  refresh();
+  refreshCompanies();
 });
+
+// const refreshCompanies = () => refreshNuxtData("companies");
 /**
  * @desc Get users
  */
@@ -239,6 +296,16 @@ const {
 } = useFetch("api/usersList/users", {
   lazy: false,
 });
+
+const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
+  "api/organizations/organizations"
+);
+// const { data: companies } = useFetch("api/organizations/organizations", {
+//   lazy: false,
+// });
+// watch(companies, (newData) => {
+//   console.log(newData);
+// });
 
 /**
  * @desc Add user
@@ -263,6 +330,21 @@ async function addUser(user) {
 
   // if (addedUser) users.value = await getUsers();
   if (addedUser) refresh();
+}
+
+async function addCompany(company) {
+  let addedCompany = null;
+
+  if (company)
+    addedCompany = await $fetch("api/organizations/organizations", {
+      method: "POST",
+      body: {
+        uuid: uuidv4(),
+        title: company.title,
+      },
+    });
+
+  if (addedCompany) refreshCompanies();
 }
 
 /**

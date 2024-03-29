@@ -16,7 +16,8 @@ export default defineEventHandler(async (event) => {
           measure: body.measure,
           location: body.location,
           locationID: body.locationID,
-          owner: body.owner,
+          ownerID: body.ownerID,
+          ownerType: body.ownerType,
           responsible: body.responsible
         },
       }).then((response) => {

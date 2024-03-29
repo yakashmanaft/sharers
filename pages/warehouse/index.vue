@@ -67,7 +67,8 @@ const item = ref({
   measure: null,
   location: null,
   locationID: null,
-  owner: null,
+  ownerID: null,
+  ownerType: null,
   responsible: null,
 });
 
@@ -395,8 +396,8 @@ const translateLocation = (id: any, location: string) => {
 const translateResponsibles = (id: any) => {
   // console.log(users);
   if (id) {
-      let responsible = users.value.find((user) => user.id === id)
-      return `${responsible?.surname} ${responsible?.name[0]}. ${responsible?.middleName[0]}.`
+    let responsible = users.value.find((user) => user.id === id);
+    return `${responsible?.surname} ${responsible?.name[0]}. ${responsible?.middleName[0]}.`;
     // if (users.value.length) {
     //   let responsible = users.value.find((user) => user.id === id);
     //   // return `${responsible.surname} ${responsible.name[0]}. ${responsible.middleName[0]}.`;
@@ -406,12 +407,21 @@ const translateResponsibles = (id: any) => {
     // return 123
   }
 };
+// owners
+const translateOwner = (ownerID, ownerType) => {
+  return `${ownerType} ${ownerID}`;
+};
 
-const onClickOwner = (owner: string) => {
-  if (owner) {
-    alert(
-      `${owner}. Относится ли Owner, если он являтееся коллективом, user'ом... И каким обрзаом в объекте item указывать (id:number or id:string)`
-    );
+const onClickOwner = (ownerID: number, ownerType: string) => {
+  if (ownerID && ownerType) {
+    // alert(
+    //   `${ownerType} ${ownerID}. Относится ли Owner, если он являтееся коллективом, user'ом... И каким обрзаом в объекте item указывать (id:number or id:string)`
+    // );
+    if (ownerType === "user") {
+      router.push(`/partners/${ownerID}`);
+    } else if (ownerType === "company") {
+      router.push(`/organizations/${ownerID}`);
+    }
   }
 };
 const locationLinkColorized = (location: string) => {
@@ -434,7 +444,8 @@ async function addWarehouseItem(item) {
     item.measure &&
     item.location &&
     item.locationID &&
-    item.owner &&
+    item.ownerID &&
+    item.ownerType &&
     item.responsible
   ) {
     addedItem = await $fetch("api/warehouse/item", {
@@ -447,7 +458,8 @@ async function addWarehouseItem(item) {
         measure: item.measure,
         location: item.location,
         locationID: item.locationID,
-        owner: item.owner,
+        ownerID: item.ownerID,
+        ownerType: item.ownerType,
         responsible: item.responsible,
       },
     });
@@ -471,7 +483,8 @@ const clearModalInputs = (item: any) => {
   item.measure = null;
   item.location = null;
   item.locationID = null;
-  item.owner = null;
+  item.ownerID = null;
+  item.ownerType = null;
   item.responsible = null;
 };
 
@@ -679,7 +692,8 @@ watch(item.value, () => {
     item.value.measure &&
     item.value.location &&
     item.value.locationID &&
-    item.value.owner &&
+    item.value.ownerID &&
+    item.value.ownerType &&
     item.value.responsible
   ) {
     createNewItemBtnIsDisabled.value = false;
@@ -706,7 +720,7 @@ watch(item.value, () => {
       Создать
     </button>
 
-    <!-- Modal -->
+    <!-- Modal create item-->
     <div
       class="modal fade"
       id="newWarehouseItemModal"
@@ -742,7 +756,10 @@ watch(item.value, () => {
 
             <!-- TYPE -->
             <div class="mb-3">
-              <label for="itemType" class="form-label">Тип</label>
+              <label for="itemType" class="form-label"
+                >Тип (tools | stuff | consumables | technic
+                (warehouseCategories))</label
+              >
               <input
                 v-model="item.type"
                 type="text"
@@ -766,7 +783,9 @@ watch(item.value, () => {
 
             <!-- MEASURE -->
             <div class="mb-3">
-              <label for="itemMeasure" class="form-label">Ед. Изм.</label>
+              <label for="itemMeasure" class="form-label"
+                >Ед. Изм. (шт. | погм.м. | рулон | кг. | т.?)</label
+              >
               <input
                 v-model="item.measure"
                 type="text"
@@ -779,7 +798,7 @@ watch(item.value, () => {
             <!-- LOCATION -->
             <div class="mb-3">
               <label for="itemLocation" class="form-label"
-                >Местонахождение</label
+                >Местонахождение (office | sklad | repair | project | archive | deleted)</label
               >
               <input
                 v-model="item.location"
@@ -802,13 +821,27 @@ watch(item.value, () => {
               />
             </div>
 
-            <!-- OWNER -->
+            <!-- OWNER ID-->
             <div class="mb-3">
-              <label for="itemOwner" class="form-label">Owner</label>
+              <label for="itemOwnerID" class="form-label">Owner ID</label>
               <input
-                v-model="item.owner"
+                v-model="item.ownerID"
                 type="number"
-                id="itemOwner"
+                id="itemOwnerID"
+                class="form-control"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
+            <!-- OWNER TYPE-->
+            <div class="mb-3">
+              <label for="itemOwnerType" class="form-label"
+                >Owner TYPE (user | company)</label
+              >
+              <input
+                v-model="item.ownerType"
+                type="text"
+                id="itemOwnerType"
                 class="form-control"
                 aria-describedby="nameHelp"
               />
@@ -817,7 +850,7 @@ watch(item.value, () => {
             <!-- RESPONSIBLE -->
             <div class="mb-3">
               <label for="itemResponsible" class="form-label"
-                >Responsible</label
+                >ResponsibleID</label
               >
               <input
                 v-model="item.responsible"
@@ -997,9 +1030,11 @@ watch(item.value, () => {
               </span>
             </td>
             <td scope="col">
-              <span class="link" @click="onClickOwner(item.owner)">{{
-                item.owner
-              }}</span>
+              <span
+                class="link"
+                @click="onClickOwner(item.ownerID, item.ownerType)"
+                >{{ translateOwner(item.ownerID, item.ownerType) }}
+              </span>
             </td>
             <td scope="col">
               <span

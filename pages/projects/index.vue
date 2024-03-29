@@ -41,7 +41,8 @@ const project = ref({
   uuid: null,
   title: null,
   address: null,
-  partner: null,
+  partnerID: null,
+  partnerType: null,
   creator: null,
   curator: null,
   workType: null,
@@ -51,8 +52,14 @@ const project = ref({
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
 
+const { data: organizations } = useLazyAsyncData("organizations", () =>
+  $fetch("api/organizations/organizations")
+);
+const refreshOrganizations = () => refreshNuxtData("organizations")
+
 onMounted(async () => {
   refresh();
+  refreshOrganizations()
   await loadData();
 });
 
@@ -66,7 +73,8 @@ async function addProject(project) {
   if (
     project.title &&
     project.address &&
-    project.partner &&
+    project.partnerID &&
+    project.partnerType &&
     project.creator &&
     project.curator &&
     project.workType &&
@@ -78,7 +86,8 @@ async function addProject(project) {
         uuid: uuidv4(),
         title: project.title,
         address: project.address,
-        partner: project.partner,
+        partnerID: project.partnerID,
+        partnerType: project.partnerType,
         creator: project.creator,
         curator: project.curator,
         workType: project.workType,
@@ -99,7 +108,8 @@ const clearModalInputs = (project: any) => {
   project.uuid = null;
   project.title = null;
   project.address = null;
-  project.partner = null;
+  project.partnerID = null;
+  project.partnerType = null;
   project.creator = null;
   project.curator = null;
   project.workType = null;
@@ -109,10 +119,22 @@ const clearModalInputs = (project: any) => {
 // 
 const translateCurator = (curatorID: number) => {
   if(curatorID) {
-    let curator = users.value.find((user) => +user.id === curatorID)
-    return `${curator}`
+    let curator = users.value.find((user) => user.id === curatorID)
+    return `${curator?.surname} ${curator?.name[0]}. ${curator?.middleName[0]}` 
   }
   // return curatorID
+}
+
+const translatePartner = (partnerID, partnerType) => {
+  if(partnerID) {
+    if(partnerType === 'user') {
+      let userItem = users.value.find(item => item.id === partnerID)
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.surname[0]}.`
+    } else if(partnerType === 'company') {
+      let organizationItem = organizations.value.find(item => item.id === partnerID)
+      return `${organizationItem.title}`
+    }
+  }
 }
 
 // Check before submit creating new project
@@ -120,7 +142,8 @@ watch(project.value, () => {
   if (
     project.value.title &&
     project.value.address &&
-    project.value.partner &&
+    project.value.partnerID &&
+    project.value.partnerType &&
     project.value.creator &&
     project.value.curator &&
     project.value.workType &&
@@ -199,14 +222,25 @@ watch(project.value, () => {
                 aria-describedby="nameHelp"
               />
             </div>
-            <!-- PARTNER -->
+            <!-- PARTNER TYPE-->
             <div class="mb-3">
-              <label for="projectPartner" class="form-label">Partner</label>
+              <label for="projectPartnerType" class="form-label">Partner Type (user | company)</label>
               <input
-                v-model="project.partner"
+                v-model="project.partnerType"
+                type="text"
+                class="form-control"
+                id="projectPartnerType"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- PARTNER ID -->
+            <div class="mb-3">
+              <label for="projectPartnerID" class="form-label">PartnerID</label>
+              <input
+                v-model="project.partnerID"
                 type="number"
                 class="form-control"
-                id="projectPartner"
+                id="projectPartnerID"
                 aria-describedby="nameHelp"
               />
             </div>
@@ -223,7 +257,7 @@ watch(project.value, () => {
             </div>
             <!-- CURATOR -->
             <div class="mb-3">
-              <label for="projectCurator" class="form-label">Curator</label>
+              <label for="projectCurator" class="form-label">Curator (user id)</label>
               <input
                 v-model="project.curator"
                 type="number"
@@ -307,7 +341,7 @@ watch(project.value, () => {
         </div>
         <div class="project-item_right">
           <span>Куратор проекта: {{ translateCurator(project.curator) }}</span>
-          <span>Заказчик: {{ project.partner }}</span>
+          <span>Заказчик: {{ translatePartner(project.partnerID, project.partnerType) }}</span>
         </div>
       </div>
     </div>

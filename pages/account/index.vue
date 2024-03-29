@@ -8,103 +8,151 @@
       <p>Error Message {{ error.message }}</p>
     </div>
 
-    <!-- УПРАВЛЕНИЕ locations -->
     <div>
-      <!-- ADD NEW LOCATION MODAL -->
-      <!-- Button trigger modal -->
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-toggle="modal"
-        data-bs-target="#newLocationModal"
-      >
-        Создать location
-      </button>
 
-      <!-- Modal -->
-      <div
-        class="modal fade"
-        id="newLocationModal"
-        tabindex="-1"
-        aria-labelledby="newLocationModalLabel"
-        aria-hidden="true"
-      >
-        <div class="modal-dialog">
-          <form class="modal-content">
-            <div class="modal-header">
-              <h1 class="modal-title fs-5" id="newLocationModalLabel">
-                Новый location
-              </h1>
-              <button
-                type="button"
-                class="btn-close"
-                data-bs-dismiss="modal"
-                aria-label="Close"
-              ></button>
-            </div>
-            <div class="modal-body">
-              <!-- TITLE -->
-              <div class="mb-3">
-                <label for="locationTitle" class="form-label"
-                  >Название (отображается в списке ТМЦ на складе)</label
-                >
-                <input
-                  v-model="location.title"
-                  type="text"
-                  class="form-control"
-                  id="locationTitle"
-                  aria-describedby="nameHelp"
-                />
-              </div>
-              <!-- TYPE -->
-              <div class="mb-3">
-                <label for="locationType" class="form-label"
-                  >Type ( sklad | office | repair )</label
-                >
-                <input
-                  v-model="location.type"
-                  type="text"
-                  class="form-control"
-                  id="locationType"
-                  aria-describedby="nameHelp"
-                />
-              </div>
-              <!-- ADDRESS -->
-              <div class="mb-3">
-                <label for="locationAddress" class="form-label">Address</label>
-                <input
-                  v-model="location.address"
-                  type="text"
-                  class="form-control"
-                  id="locationAddress"
-                  aria-describedby="nameHelp"
-                />
-              </div>
-            </div>
+      <!-- MODALS -->
+      <div style="display: flex; gap: 2rem;">
 
-            <!-- MODAL FOOTER -->
-            <div class="modal-footer">
-              <button
-                type="button"
-                class="btn btn-secondary"
-                data-bs-dismiss="modal"
-                @click="clearModalInputs(location)"
-              >
-                Отменить
-              </button>
-              <button
-                type="button"
-                id="createNewProjectBtn"
-                class="btn btn-primary"
-                data-bs-dismiss="modal"
-                :disabled="createNewLocationBtnIsDisabled"
-                @click="addLocation(location)"
-              >
-                Создать
-              </button>
+        <!-- ADD NEW LOCATION MODAL -->
+        <div>
+          <!-- Button trigger modal -->
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#newLocationModal"
+          >
+            Создать location
+          </button>
+    
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="newLocationModal"
+            tabindex="-1"
+            aria-labelledby="newLocationModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <form class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="newLocationModalLabel">
+                    Новый location
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <!-- TITLE -->
+                  <div class="mb-3">
+                    <label for="locationTitle" class="form-label"
+                      >Название (отображается в списке ТМЦ на складе)</label
+                    >
+                    <input
+                      v-model="location.title"
+                      type="text"
+                      class="form-control"
+                      id="locationTitle"
+                      aria-describedby="nameHelp"
+                    />
+                  </div>
+                  <!-- TYPE -->
+                  <div class="mb-3">
+                    <label for="locationType" class="form-label"
+                      >Type ( sklad | office | repair )</label
+                    >
+                    <input
+                      v-model="location.type"
+                      type="text"
+                      class="form-control"
+                      id="locationType"
+                      aria-describedby="nameHelp"
+                    />
+                  </div>
+                  <!-- ADDRESS -->
+                  <div class="mb-3">
+                    <label for="locationAddress" class="form-label">Address</label>
+                    <input
+                      v-model="location.address"
+                      type="text"
+                      class="form-control"
+                      id="locationAddress"
+                      aria-describedby="nameHelp"
+                    />
+                  </div>
+                </div>
+    
+                <!-- MODAL FOOTER -->
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                    @click="clearModalInputs(location)"
+                  >
+                    Отменить
+                  </button>
+                  <button
+                    type="button"
+                    id="createNewProjectBtn"
+                    class="btn btn-primary"
+                    data-bs-dismiss="modal"
+                    :disabled="createNewLocationBtnIsDisabled"
+                    @click="addLocation(location)"
+                  >
+                    Создать
+                  </button>
+                </div>
+              </form>
             </div>
-          </form>
+          </div>
         </div>
+  
+        <!-- ADD NEW WORK TYPE MODAL -->
+        <div>
+          <!-- Button trigger modal -->
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#newWorkTypeModal"
+          >
+            Добавить новый вид работ
+          </button>
+
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="newWorkTypeModal"
+            tabindex="-1"
+            aria-labelledby="newWorkTypeModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <form class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="newWorkTypeModalLabel">
+                    Новый вид работ
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  123 
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- waiting for a data -->
@@ -137,8 +185,15 @@
             </tbody>
           </table>
         </div>
+
+        <!-- список видов работ -->
+        <div style="margin-top: 2rem;">
+          <h3>Виды работ / прайс</h3>
+        </div>  
       </div>
     </div>
+
+
   </Container>
 </template>
 

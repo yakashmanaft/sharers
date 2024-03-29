@@ -251,6 +251,7 @@ onMounted(async () => {
   refresh();
   refreshProjects();
   refreshLocations();
+  refreshOrganizations();
   // refreshUsers()
   await loadData();
 });
@@ -258,6 +259,7 @@ onMounted(async () => {
 const refreshProjects = () => refreshNuxtData("projects");
 const refreshLocations = () => refreshNuxtData("locations");
 // const refreshUsers = () => refreshNuxtData("users");
+const refreshOrganizations = () => refreshNuxtData("organizations")
 
 /**
  * @desc Get warehouse items from BD
@@ -283,6 +285,9 @@ const { data: projects } = useLazyAsyncData("projects", () =>
 const { data: locations } = useLazyAsyncData("locations", () =>
   $fetch("api/locations/locations")
 );
+const { data: organizations } = useLazyAsyncData("organizations", () => 
+  $fetch("/api/organizations/organizations")
+)
 
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
@@ -409,7 +414,17 @@ const translateResponsibles = (id: any) => {
 };
 // owners
 const translateOwner = (ownerID, ownerType) => {
-  return `${ownerType} ${ownerID}`;
+  if(ownerID && ownerType && users.value && organizations.value) {
+    if(ownerType === "user") {
+      // return `USER #${ownerID}`
+      let userItem = users.value.find(item => item.id === ownerID)
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}`
+    } else if (ownerType === "company") {
+      // return `Компания #${ownerID}`
+      let organizationItem = organizations.value.find(item => item.id === ownerID)
+      return organizationItem.title
+    }
+  }
 };
 
 const onClickOwner = (ownerID: number, ownerType: string) => {

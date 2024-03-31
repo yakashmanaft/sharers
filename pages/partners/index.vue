@@ -72,26 +72,7 @@
       <!-- Форма добавления соучастника (у кого права создания будут?) -->
       <form>
         <h2>Add User</h2>
-        <div class="mb-3">
-          <label for="userName" class="form-label">Имя</label>
-          <input
-            v-model="user.name"
-            type="text"
-            class="form-control"
-            id="userName"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <div class="mb-3">
-          <label for="userMiddleName" class="form-label">Отчество</label>
-          <input
-            v-model="user.middleName"
-            type="text"
-            class="form-control"
-            id="userMiddleName"
-            aria-describedby="nameHelp"
-          />
-        </div>
+        <!-- Фамилия -->
         <div class="mb-3">
           <label for="userSurname" class="form-label">Фамилия</label>
           <input
@@ -102,6 +83,29 @@
             aria-describedby="nameHelp"
           />
         </div>
+        <!-- ИМЯ -->
+        <div class="mb-3">
+          <label for="userName" class="form-label">Имя</label>
+          <input
+            v-model="user.name"
+            type="text"
+            class="form-control"
+            id="userName"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <!-- Отчество -->
+        <div class="mb-3">
+          <label for="userMiddleName" class="form-label">Отчество</label>
+          <input
+            v-model="user.middleName"
+            type="text"
+            class="form-control"
+            id="userMiddleName"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <!-- Role in WEB SERVICE -->
         <div class="mb-3">
           <label for="userRole" class="form-label">Role</label>
           <input
@@ -109,6 +113,28 @@
             type="text"
             class="form-control"
             id="userRole"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <!-- GROUP ID -->
+        <div class="mb-3">
+          <label for="userGroupID" class="form-label">groupID (1 - Камини, 2 - банда Славы)</label>
+          <input
+            v-model="user.groupID"
+            type="number"
+            class="form-control"
+            id="userGroupID"
+            aria-describedby="nameHelp"
+          />
+        </div>
+        <!-- USER STATUS IN GROUP -->
+        <div class="mb-3">
+          <label for="userStatusInGroup" class="form-label">Status in Group (foreman - бригадир, sectionForeman - начальник участка, worker - рабочий, leader - лидер), projectManager - менеджер проекта (снабжение)</label>
+          <input
+            v-model="user.groupStatus"
+            type="text"
+            class="form-control"
+            id="userStatusInGroup"
             aria-describedby="nameHelp"
           />
         </div>
@@ -173,6 +199,7 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">User</th>
+            <th scope="col">Group | Status</th>
             <th scope="col">Email</th>
             <th scope="col">Edit</th>
             <th scope="col">Delete</th>
@@ -185,6 +212,7 @@
               {{ user.surname }} {{ user.name }} {{ user.middleName }} |
               {{ user.role }}
             </td>
+            <td>{{ user.groupID }} | {{ user.groupStatus }}</td>
             <td>{{ user.email }}</td>
             <td>
               <!-- Button trigger edit user modal -->
@@ -256,6 +284,8 @@ const user = ref({
   name: null,
   middleName: null,
   surname: null,
+  groupID: 0,
+  groupStatus: null,
   role: "USER",
 });
 
@@ -273,6 +303,8 @@ const editedUser = ref({
   name: null,
   middleName: null,
   surname: null,
+  groupID: null,
+  groupStatus: null,
   role: null,
 });
 onMounted(() => {
@@ -315,6 +347,7 @@ async function addUser(user) {
   let addedUser = null;
 
   if (user)
+    console.log(user)
     addedUser = await $fetch("api/usersList/users", {
       method: "POST",
       body: {
@@ -324,6 +357,8 @@ async function addUser(user) {
         name: user.name,
         middleName: user.middleName,
         surname: user.surname,
+        groupID: user.groupID,
+        groupStatus: user.groupStatus,
         role: user.role,
       },
     });

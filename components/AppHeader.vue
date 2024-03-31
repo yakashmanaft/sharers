@@ -122,12 +122,13 @@ const logout = () => {
           <!-- <router-link to="/login">Войти</router-link> -->
           <!-- login -->
           <!-- logout -->
-          <button
+          <router-link
             v-if="!useAuthStore().loggedIn && route.name !== 'login'"
-            @click="router.push('/login')"
+            to="/login"
+            class="account-btn"
           >
-            Sign in
-          </button>
+            Войти
+          </router-link>
 
           <!-- <button
             v-if="!useAuthStore().loggedIn && route.name === 'login'"
@@ -137,14 +138,16 @@ const logout = () => {
           </button> -->
 
           <!-- IF LOGGED IN -->
-          <div v-if="useAuthStore().loggedIn" class="logged-in_container">
-            <!-- ACCOUNT -->
-            <div>
-              <router-link to="/account">Аккаунт</router-link>
-            </div>
-
+          <div v-if="useAuthStore().loggedIn" class="account-container">
             <!-- LOGOUT BTN -->
-            <button @click="logout()">Logout</button>
+            <div class="account-btn" @click="logout()">Выйти</div>
+            <span>|</span>
+            <!-- ACCOUNT -->
+            <router-link to="/account" class="account-info_block">
+              <p>Анфалов С.В.</p>
+              <Icon name="material-symbols-light:account-circle" size="36px" />
+            </router-link>
+
           </div>
         </div>
       </div>
@@ -192,14 +195,23 @@ const logout = () => {
   align-items: center;
   gap: 1rem;
 }
-
-.logged-in_container {
+.account-container {
   display: flex;
   align-items: center;
   gap: 1rem;
 }
-
-.logged-in_container a {
+.account-container a{
   text-decoration: none;
+}
+.account-container p {
+  margin: 0;
+}
+.account-info_block {
+  display: flex;
+  align-items: center;
+}
+.account-btn {
+  text-decoration: none;
+  cursor: pointer;
 }
 </style>

@@ -129,7 +129,7 @@ const translatePartner = (partnerID, partnerType) => {
   if(partnerID) {
     if(partnerType === 'user') {
       let userItem = users.value.find(item => item.id === partnerID)
-      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.surname[0]}.`
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`
     } else if(partnerType === 'company') {
       let organizationItem = organizations.value.find(item => item.id === partnerID)
       return `${organizationItem.title}`

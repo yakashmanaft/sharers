@@ -2,8 +2,25 @@
   <Container>
     <h1>Банда #{{ $route.params.id }}</h1>
 
-    <div>
-      <p>{{ organization }}</p>
+    <div v-if="organization">
+      <p>{{ organization.title }}</p>
+      <p>Дата создания: {{ organization.created_at }}</p>
+      <!-- <div>
+        <p>{{ organization }}</p>
+      </div> -->
+
+    </div>
+
+    <div v-if="usersInBand">
+
+      <h2>Соучастники банды</h2>
+      <p>Количество соучастников: {{ usersInBand.length }}</p>
+      <div>
+        <div v-for="(user, index) in usersInBand">
+
+          <p>{{ user }}</p>
+        </div>
+      </div>
     </div>
   </Container>
 </template>
@@ -38,15 +55,36 @@ const route = useRoute();
 const organizations = ref(null);
 const organization = ref(null);
 
+const users = ref(null);
+const usersInBand = ref(null)
+
 onMounted(async () => {
+
+  // 
   organizations.value = await getOrganizations();
-  organization.value = organizations.value.find(
-    (company) => company.id == route.params.id
-  );
+  if(organizations.value) {
+
+    organization.value = organizations.value.find(
+      (company) => company.id == route.params.id
+    );
+
+  }
+
+  // 
+  users.value = await getAllUsers()
+  if(users.value) {
+    usersInBand.value = users.value.filter(
+      (user) => user.groupID === +route.params.id
+    )
+  }
 });
 
 async function getOrganizations() {
   return await $fetch("/api/organizations/organizations");
+}
+
+async function getAllUsers() {
+  return await $fetch("/api/usersList/users")
 }
 </script>
 

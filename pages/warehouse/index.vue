@@ -985,7 +985,7 @@ watch(item.value, () => {
           placeholder="Поиск"
           v-model="searchInput"
         />
-        <Icon name="ic:baseline-search" size="24px" />
+        <Icon name="ic:baseline-search" size="24px" color="var(--bs-body-color)"/>
       </div>
     </div>
 

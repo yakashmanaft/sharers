@@ -212,7 +212,7 @@
               {{ user.surname }} {{ user.name }} {{ user.middleName }} |
               {{ user.role }}
             </td>
-            <td>{{ user.groupID }} | {{ user.groupStatus }}</td>
+            <td>{{ translateGroupData(user.groupID, user.groupStatus) }}</td>
             <td>{{ user.email }}</td>
             <td>
               <!-- Button trigger edit user modal -->
@@ -427,6 +427,21 @@ async function editUser(editedUser) {
 
   // if (user) users.value = await getUsers();
   if (user) refresh();
+}
+
+// translate
+const translateGroupData = (groupID, groupStatus) => {
+  if(companies.value) {
+    if(!groupID) {
+      return `Одиночка`
+    } else {
+      let group = companies.value.find(
+        company => company.id === groupID
+      )
+      // return `${groupID} | ${groupStatus}`
+      return `${group.title} | ${groupStatus}`
+    }
+  }
 }
 
 useHead({

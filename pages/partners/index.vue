@@ -118,7 +118,9 @@
         </div>
         <!-- GROUP ID -->
         <div class="mb-3">
-          <label for="userGroupID" class="form-label">groupID (1 - Камини, 2 - банда Славы)</label>
+          <label for="userGroupID" class="form-label"
+            >groupID (1 - Камини, 2 - банда Славы)</label
+          >
           <input
             v-model="user.groupID"
             type="number"
@@ -129,7 +131,11 @@
         </div>
         <!-- USER STATUS IN GROUP -->
         <div class="mb-3">
-          <label for="userStatusInGroup" class="form-label">Status in Group (foreman - бригадир, sectionForeman - начальник участка, worker - рабочий, leader - лидер), projectManager - менеджер проекта (снабжение)</label>
+          <label for="userStatusInGroup" class="form-label"
+            >Status in Group (foreman - бригадир, sectionForeman - начальник
+            участка, worker - рабочий, leader - лидер), projectManager -
+            менеджер проекта (снабжение)</label
+          >
           <input
             v-model="user.groupStatus"
             type="text"
@@ -208,13 +214,17 @@
         <tbody>
           <tr v-for="(user, index) in users" :key="index">
             <td scope="col">{{ index + 1 }}</td>
-            <td @click="$router.push(`/partners/${user.id}`)">
-              {{ user.surname }} {{ user.name }} {{ user.middleName }} |
-              {{ user.role }}
+            <td scope="col">
+              <span @click="$router.push(`/partners/${user.id}`)" class="link">
+                {{ user.surname }} {{ user.name }} {{ user.middleName }} |
+                {{ user.role }}
+              </span>
             </td>
-            <td>{{ translateGroupData(user.groupID, user.groupStatus) }}</td>
-            <td>{{ user.email }}</td>
-            <td>
+            <td scope="col">
+              {{ translateGroupData(user.groupID, user.groupStatus) }}
+            </td>
+            <td scope="col">{{ user.email }}</td>
+            <td scope="col">
               <!-- Button trigger edit user modal -->
               <button
                 type="button"
@@ -231,7 +241,7 @@
                 Edit
               </button>
             </td>
-            <td>
+            <td scope="col">
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -256,11 +266,13 @@
         <tbody>
           <tr v-for="(companyItem, index) in companies">
             <td scope="col">{{ index + 1 }}</td>
-            <td
-              @click="$router.push(`/organizations/${companyItem.id}`)"
-              scope="col"
-            >
-              {{ companyItem.title }}
+            <td scope="col">
+              <span
+                @click="$router.push(`/organizations/${companyItem.id}`)"
+                class="link"
+              >
+                {{ companyItem.title }}
+              </span>
             </td>
             <td scope="col">{{ companyItem.uuid }}</td>
           </tr>
@@ -346,22 +358,21 @@ const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
 async function addUser(user) {
   let addedUser = null;
 
-  if (user)
-    console.log(user)
-    addedUser = await $fetch("api/usersList/users", {
-      method: "POST",
-      body: {
-        uuid: uuidv4(),
-        email: user.email,
-        password: user.password,
-        name: user.name,
-        middleName: user.middleName,
-        surname: user.surname,
-        groupID: user.groupID,
-        groupStatus: user.groupStatus,
-        role: user.role,
-      },
-    });
+  if (user) console.log(user);
+  addedUser = await $fetch("api/usersList/users", {
+    method: "POST",
+    body: {
+      uuid: uuidv4(),
+      email: user.email,
+      password: user.password,
+      name: user.name,
+      middleName: user.middleName,
+      surname: user.surname,
+      groupID: user.groupID,
+      groupStatus: user.groupStatus,
+      role: user.role,
+    },
+  });
 
   // if (addedUser) users.value = await getUsers();
   if (addedUser) refresh();
@@ -431,18 +442,16 @@ async function editUser(editedUser) {
 
 // translate
 const translateGroupData = (groupID, groupStatus) => {
-  if(companies.value) {
-    if(!groupID) {
-      return `Одиночка`
+  if (companies.value) {
+    if (!groupID) {
+      return `Одиночка`;
     } else {
-      let group = companies.value.find(
-        company => company.id === groupID
-      )
+      let group = companies.value.find((company) => company.id === groupID);
       // return `${groupID} | ${groupStatus}`
-      return `${group.title} | ${groupStatus}`
+      return `${group.title} | ${groupStatus}`;
     }
   }
-}
+};
 
 useHead({
   title: "Соучастники",
@@ -466,3 +475,9 @@ useHead({
   ],
 });
 </script>
+
+<style scoped>
+.link {
+  cursor: pointer;
+}
+</style>

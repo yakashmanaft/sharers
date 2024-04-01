@@ -254,12 +254,15 @@ onMounted(async () => {
   refreshOrganizations();
   // refreshUsers()
   await loadData();
+  items.value = items.value.filter(
+    (item) => item.location !== "archive" && item.location !== "deleted"
+  );
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
 const refreshLocations = () => refreshNuxtData("locations");
 // const refreshUsers = () => refreshNuxtData("users");
-const refreshOrganizations = () => refreshNuxtData("organizations")
+const refreshOrganizations = () => refreshNuxtData("organizations");
 
 /**
  * @desc Get warehouse items from BD
@@ -285,9 +288,9 @@ const { data: projects } = useLazyAsyncData("projects", () =>
 const { data: locations } = useLazyAsyncData("locations", () =>
   $fetch("api/locations/locations")
 );
-const { data: organizations } = useLazyAsyncData("organizations", () => 
+const { data: organizations } = useLazyAsyncData("organizations", () =>
   $fetch("/api/organizations/organizations")
-)
+);
 
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
@@ -414,24 +417,25 @@ const translateResponsibles = (id: any) => {
 };
 // owners
 const translateOwner = (ownerID, ownerType) => {
-  if(ownerID && ownerType && users.value && organizations.value) {
-    if(ownerType === "user") {
+  if (ownerID && ownerType && users.value && organizations.value) {
+    if (ownerType === "user") {
       // return `USER #${ownerID}`
-      let userItem = users.value.find(item => item.id === ownerID)
-      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}`
+      let userItem = users.value.find((item) => item.id === ownerID);
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}`;
     } else if (ownerType === "company") {
       // return `Компания #${ownerID}`
-      let organizationItem = organizations.value.find(item => item.id === ownerID)
-      return organizationItem.title
+      let organizationItem = organizations.value.find(
+        (item) => item.id === ownerID
+      );
+      return organizationItem.title;
     }
+  } else if (ownerID === 0 && !ownerType) {
+    return `Не соучастник`;
   }
 };
 
 const onClickOwner = (ownerID: number, ownerType: string) => {
   if (ownerID && ownerType) {
-    // alert(
-    //   `${ownerType} ${ownerID}. Относится ли Owner, если он являтееся коллективом, user'ом... И каким обрзаом в объекте item указывать (id:number or id:string)`
-    // );
     if (ownerType === "user") {
       router.push(`/partners/${ownerID}`);
     } else if (ownerType === "company") {
@@ -516,6 +520,9 @@ const filterItemsByLocationObj = async () => {
           );
         } else {
           await refresh();
+          items.value = items.value.filter(
+            (item) => item.location !== "archive" && item.location !== "deleted"
+          );
         }
       } else {
         items.value = items.value.filter(
@@ -523,6 +530,9 @@ const filterItemsByLocationObj = async () => {
         );
       }
     } else {
+            items.value = items.value.filter(
+        (item) => item.location !== "archive" && item.location !== "deleted"
+      );
       if (currentCategoryByLocationObj.value.type === "all") {
         if (currentCategoryByLocationObj.value.title === "project") {
           items.value = items.value.filter(
@@ -594,9 +604,15 @@ const filterItemsByCategoryType = async () => {
         items.value = items.value.filter((item) => item.location === "project");
       } else {
         await refresh();
+        items.value = items.value.filter(
+          (item) => item.location !== "archive" && item.location !== "deleted"
+        );
       }
     } else {
       await refresh();
+      items.value = items.value.filter(
+        (item) => item.location !== "archive" && item.location !== "deleted"
+      );
       if (currentCategoryByLocationObj.value.title === "project") {
         items.value = items.value.filter(
           (item) =>
@@ -662,6 +678,26 @@ const filterItemsByCategoryType = async () => {
     }
     // await refresh()
   }
+};
+// Фильтрация по архиву
+const showItemsInArchive = () => {
+  items.value = items.value.filter((item) => item.location === "archive");
+  currentCategoryByLocationObj.value = {
+    title: "location",
+    type: "archive",
+    id: null,
+  };
+  currentCategoryByType.value = "all";
+};
+// Фильтрация по удаленным
+const showItemsInDeleted = () => {
+  items.value = items.value.filter((item) => item.location === "deleted");
+  currentCategoryByLocationObj.value = {
+    title: "location",
+    type: "deleted",
+    id: null,
+  };
+  currentCategoryByType.value = "all";
 };
 // фильтрация по search input
 const computedItems = computed(() =>
@@ -813,7 +849,8 @@ watch(item.value, () => {
             <!-- LOCATION -->
             <div class="mb-3">
               <label for="itemLocation" class="form-label"
-                >Местонахождение (office | sklad | repair | project | archive | deleted)</label
+                >Местонахождение (office | sklad | repair | project | archive |
+                deleted)</label
               >
               <input
                 v-model="item.location"
@@ -977,15 +1014,51 @@ watch(item.value, () => {
         </div>
       </div>
 
-      <!-- SEARCH -->
-      <div class="search-container">
-        <input
-          type="text"
-          class="form-control"
-          placeholder="Поиск"
-          v-model="searchInput"
-        />
-        <Icon name="ic:baseline-search" size="24px" color="var(--bs-body-color)"/>
+      <div
+        style="
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 0.3rem;
+        "
+      >
+        <!-- SEARCH -->
+        <div class="search-container">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Поиск"
+            v-model="searchInput"
+          />
+          <Icon
+            name="ic:baseline-search"
+            size="24px"
+            color="var(--bs-body-color)"
+          />
+        </div>
+
+        <!-- FILTER BY ARCHIVE & DELETED -->
+        <div
+          style="
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+          "
+        >
+          <span
+            style="cursor: pointer; color: var(--bs-blue)"
+            @click="showItemsInArchive"
+            >Архив
+          </span>
+          <span style="color: var(--bs-blue)">|</span>
+          <span
+            style="cursor: pointer; color: var(--bs-blue)"
+            @click="showItemsInDeleted"
+            >Удаленные
+          </span>
+        </div>
       </div>
     </div>
 
@@ -1034,15 +1107,38 @@ watch(item.value, () => {
                 {{ item.title }}
               </span>
             </td>
-            <td scope="col"><{{ item.qty }} {{ item.measure }}.></td>
             <td scope="col">
-              <span
-                class="link link-location"
-                :class="`${locationLinkColorized(item.location)}`"
-                @click="creatLocationLink(item)"
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 1rem;
+                  justify-content: flex-start;
+                "
               >
-                {{ translateLocation(item.locationID, item.location) }}
-              </span>
+                <Icon
+                  class="link"
+                  name="material-symbols-light:remove-rounded"
+                />
+                <div>{{ item.qty }}{{ item.measure }}.</div>
+                <Icon class="link" name="material-symbols-light:add" />
+              </div>
+            </td>
+            <td scope="col">
+              <div style="display: flex; align-items: center; gap: 1rem">
+                <span
+                  class="link link-location"
+                  :class="`${locationLinkColorized(item.location)}`"
+                  @click="creatLocationLink(item)"
+                >
+                  {{ translateLocation(item.locationID, item.location) }}
+                </span>
+                <Icon
+                  class="link"
+                  name="material-symbols-light:move-up"
+                  size="24px"
+                />
+              </div>
             </td>
             <td scope="col">
               <span

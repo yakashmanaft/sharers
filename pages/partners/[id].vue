@@ -243,8 +243,8 @@ onMounted(async () => {
   users.value = await getUsers();
   user.value = users.value.find((item) => item.id == route.params.id);
 
-  console.log(users.value.length - 1);
-  console.log(users.value.indexOf(user.value));
+  // console.log(users.value.length - 1);
+  // console.log(users.value.indexOf(user.value));
 
   if (users.value.indexOf(user.value) === 0) {
     isFlipperPrevUserBtnExist.value = false;

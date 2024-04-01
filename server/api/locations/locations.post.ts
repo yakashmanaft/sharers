@@ -13,6 +13,8 @@ export default defineEventHandler(async (event) => {
         title: body.title,
         type: body.type,
         address: body.address,
+        ownerID: body.ownerID,
+        ownerType: body.ownerType
       },
     }).then((response) => {
       project = response

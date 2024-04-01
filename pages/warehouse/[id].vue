@@ -57,13 +57,36 @@ async function getItems() {
 
     <div v-if="item">
       <h1>{{ item.title }}</h1>
+      <p>{{ item.type }}</p>
+      <br />
       {{ item }}
-    </div>
+      <ul style="list-style: none; padding: 0">
+        <li>
+          <div>
+            <h2>История</h2>
 
-    <ul>
-      <li>История</li>
-      <li>Стоимость закупа (руб.)</li>
-      <li>Ценность (руб.)</li>
-    </ul>
+            <ul style="list-style: none; padding: 0">
+              <li style="display: flex; align-items: center; gap: 1rem">
+                <div>2024-03-23T13:54:12.000Z</div>
+                <div>"Склад на Бригадирской" (Камини собственник)</div>
+                <div>---></div>
+                <div>"Склад на Бригадирской" (Камини собственник)</div>
+                <div>Анфалов С.В.</div>
+              </li>
+              <li style="display: flex; align-items: center; gap: 1rem">
+                <div>{{ item.created_at }}</div>
+                <div>
+                  Добавлен на "Склад на Бригадирской" (Камини собственник)
+                </div>
+                <div>Анфалов С.В.</div>
+              </li>
+            </ul>
+          </div>
+        </li>
+        <br />
+        <li>Стоимость закупа (руб.)</li>
+        <li>Ценность (руб.)</li>
+      </ul>
+    </div>
   </Container>
 </template>

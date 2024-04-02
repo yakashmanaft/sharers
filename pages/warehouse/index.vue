@@ -105,6 +105,11 @@ const warehouseCategories = ref([
   },
 ]);
 
+const editedItem = ref({
+  id: null,
+  qty: null,
+});
+
 // Споты, где может находиться ТМЦ
 // const itemsLocations = ref([
 //   {
@@ -248,15 +253,15 @@ const warehouseCategories = ref([
 // const items = ref(null);
 onMounted(async () => {
   // makes refetching
-  refresh();
+  await refresh();
+  items.value = items.value.filter(
+    (item) => item.location !== "archive" && item.location !== "deleted"
+  );
   refreshProjects();
   refreshLocations();
   refreshOrganizations();
   // refreshUsers()
   await loadData();
-  items.value = items.value.filter(
-    (item) => item.location !== "archive" && item.location !== "deleted"
-  );
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
@@ -530,7 +535,7 @@ const filterItemsByLocationObj = async () => {
         );
       }
     } else {
-            items.value = items.value.filter(
+      items.value = items.value.filter(
         (item) => item.location !== "archive" && item.location !== "deleted"
       );
       if (currentCategoryByLocationObj.value.type === "all") {
@@ -710,6 +715,39 @@ const computedItems = computed(() =>
           .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
       )
 );
+
+// Изменения в количестве
+const changeQty = (action, id) => {
+  let item = items.value.find((item) => item.id === id);
+
+  if (action === "sub") {
+    if (item.qty > 0) {
+      item.qty--;
+    }
+  } else if (action === "add") {
+    item.qty++;
+  }
+  editedItem.value.id = item.id;
+  editedItem.value.qty = item.qty;
+
+  updateItem(editedItem.value);
+};
+
+async function updateItem(editedItem) {
+  let item = null;
+
+  if (editedItem.id) {
+    item = await $fetch("api/warehouse/item", {
+      method: "PUT",
+      body: {
+        id: editedItem.id,
+        qty: editedItem.qty,
+      },
+    });
+  }
+  console.log(editedItem);
+}
+
 // ******** WATCHERS ********
 
 // Следим за изменением поиска
@@ -1118,10 +1156,16 @@ watch(item.value, () => {
               >
                 <Icon
                   class="link"
+                  :class="{ isEmpty: !item.qty }"
                   name="material-symbols-light:remove-rounded"
+                  @click="changeQty('sub', item.id)"
                 />
-                <div>{{ item.qty }}{{ item.measure }}.</div>
-                <Icon class="link" name="material-symbols-light:add" />
+                <div>{{ item.qty }} {{ item.measure }}.</div>
+                <Icon
+                  class="link"
+                  name="material-symbols-light:add"
+                  @click="changeQty('add', item.id)"
+                />
               </div>
             </td>
             <td scope="col">
@@ -1274,5 +1318,13 @@ td {
 .form-select {
   border-radius: 16px;
   padding: 4px 10px;
+}
+
+.isEmpty {
+  background-color: white;
+  color: var(--bs-border-color);
+  cursor: unset !important;
+  /* width: 10px;
+  heigth: 10px; */
 }
 </style>

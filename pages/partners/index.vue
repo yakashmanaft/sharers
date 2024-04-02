@@ -21,13 +21,82 @@
             ></button>
           </div>
           <div class="modal-body">
-            <input
-              v-model="editedUser.name"
-              type="text"
-              class="form-control"
-              id="exampleInputName1"
-              aria-describedby="nameHelp"
-            />
+            <!-- SURNAME -->
+            <div class="mb-3">
+              <label for="editedUserSurname" class="form-label">Фамилия</label>
+              <input
+                v-model="editedUser.surname"
+                type="text"
+                class="form-control"
+                id="editedUserSurname"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- NAME -->
+            <div class="mb-3">
+              <label for="editedUserName" class="form-label">Имя</label>
+              <input
+                v-model="editedUser.name"
+                type="text"
+                class="form-control"
+                id="editedUserName"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- Отчество -->
+            <div class="mb-3">
+              <label for="editedUserMiddleName" class="form-label"
+                >Отчество</label
+              >
+              <input
+                v-model="editedUser.middleName"
+                type="text"
+                class="form-control"
+                id="editedUserMiddleName"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- Role -->
+            <div class="mb-3">
+              <label for="editedUserRole" class="form-label"
+                >Role в сервисе</label
+              >
+              <input
+                v-model="editedUser.role"
+                type="text"
+                class="form-control"
+                id="editedUserRole"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- GROUP ID -->
+            <div class="mb-3">
+              <label for="editedUserGroupID" class="form-label"
+                >groupID (1 - Камини, 2 - банда Славы)</label
+              >
+              <input
+                v-model="editedUser.groupID"
+                type="number"
+                class="form-control"
+                id="editedUserGroupID"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- User Status In Group -->
+            <div class="mb-3">
+              <label for="editedUserStatusInGroup" class="form-label"
+                >Status in Group (foreman - бригадир, sectionForeman - начальник
+                участка, worker - рабочий, leader - лидер), projectManager -
+                менеджер проекта (снабжение)</label
+              >
+              <input
+                v-model="editedUser.groupStatus"
+                type="text"
+                class="form-control"
+                id="editedUserStatusInGroup"
+                aria-describedby="nameHelp"
+              />
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -107,7 +176,7 @@
         </div>
         <!-- Role in WEB SERVICE -->
         <div class="mb-3">
-          <label for="userRole" class="form-label">Role</label>
+          <label for="userRole" class="form-label">Role в сервисе</label>
           <input
             v-model="user.role"
             type="text"
@@ -234,7 +303,12 @@
                 @click="
                   {
                     editedUser.id = user.id;
+                    editedUser.surname = user.surname;
                     editedUser.name = user.name;
+                    editedUser.middleName = user.middleName;
+                    editedUser.role = user.role;
+                    editedUser.groupID = user.groupID;
+                    editedUser.groupStatus = user.groupStatus;
                   }
                 "
               >
@@ -430,9 +504,12 @@ async function editUser(editedUser) {
       method: "PUT",
       body: {
         id: editedUser.id,
+        surname: editedUser.surname,
         name: editedUser.name,
         middleName: editedUser.middleName,
-        surname: editedUser.surname,
+        role: editedUser.role,
+        groupID: editedUser.groupID,
+        groupStatus: editedUser.groupStatus,
       },
     });
 

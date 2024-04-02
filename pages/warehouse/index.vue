@@ -1119,16 +1119,16 @@ watch(item.value, () => {
       <!-- СПИСОК ITEMS -->
       <!-- <div>{{ computedItems.length }}</div> -->
       <table class="table">
-        <thead>
+        <!-- <thead>
           <tr>
-            <th scope="col">#</th>
+            <th scope="col"></th>
             <th scope="col">Наименование</th>
             <th scope="col">Кол-во</th>
             <th scope="col">Местонахождение</th>
             <th scope="col">Собственник</th>
             <th scope="col">Ответственный</th>
           </tr>
-        </thead>
+        </thead> -->
 
         <tbody>
           <div v-if="computedItems">
@@ -1139,13 +1139,22 @@ watch(item.value, () => {
           </div>
 
           <tr v-for="(item, index) in computedItems">
-            <td scope="col">{{ index + 1 }}</td>
+            <td>
+              <Icon
+                class="link"
+                :class="{ isEmpty: !item.qty, isNotEmpty: item.qty }"
+                name="material-symbols-light:move-up"
+                size="24px"
+              />
+            </td>
             <td scope="col">
+              <span>{{ index + 1 }}. </span>
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
                 {{ item.title }}
               </span>
             </td>
             <td scope="col">
+              <div>{{ item.qty }} {{ item.measure }}.</div>
               <div
                 style="
                   display: flex;
@@ -1154,35 +1163,27 @@ watch(item.value, () => {
                   justify-content: flex-start;
                 "
               >
-                <Icon
+                <!-- <Icon
                   class="link"
                   :class="{ isEmpty: !item.qty }"
                   name="material-symbols-light:remove-rounded"
                   @click="changeQty('sub', item.id)"
-                />
-                <div>{{ item.qty }} {{ item.measure }}.</div>
-                <Icon
+                /> -->
+                <!-- <Icon
                   class="link"
                   name="material-symbols-light:add"
                   @click="changeQty('add', item.id)"
-                />
+                /> -->
               </div>
             </td>
             <td scope="col">
-              <div style="display: flex; align-items: center; gap: 1rem">
-                <span
-                  class="link link-location"
-                  :class="`${locationLinkColorized(item.location)}`"
-                  @click="creatLocationLink(item)"
-                >
-                  {{ translateLocation(item.locationID, item.location) }}
-                </span>
-                <Icon
-                  class="link"
-                  name="material-symbols-light:move-up"
-                  size="24px"
-                />
-              </div>
+              <span
+                class="link link-location"
+                :class="`${locationLinkColorized(item.location)}`"
+                @click="creatLocationLink(item)"
+              >
+                {{ translateLocation(item.locationID, item.location) }}
+              </span>
             </td>
             <td scope="col">
               <span
@@ -1326,5 +1327,8 @@ td {
   cursor: unset !important;
   /* width: 10px;
   heigth: 10px; */
+}
+.isNotEmpty {
+  color: var(--bs-blue);
 }
 </style>

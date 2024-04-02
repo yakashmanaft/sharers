@@ -1143,7 +1143,7 @@ watch(item.value, () => {
               <Icon
                 class="link"
                 :class="{ isEmpty: !item.qty, isNotEmpty: item.qty }"
-                name="material-symbols-light:move-up"
+                name="material-symbols-light:question-exchange-rounded"
                 size="24px"
               />
             </td>

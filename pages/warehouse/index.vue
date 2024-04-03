@@ -796,8 +796,8 @@ const itemActions = ref([
     title: "Редактировать",
   },
 ]);
-const currentItemActionModal = ref(null);
-const openItemActionModal = (itemID) => {
+const currentItemActionModal = ref('');
+const openItemActionModal = (itemID: number) => {
   // let modal = document.querySelector(`#item-${itemID}-action_modal`);
   // modal.classList.add("item-action-modal_opened");
   // console.log(`itemID: ${itemID}`);

@@ -105,6 +105,7 @@ const warehouseCategories = ref([
   },
 ]);
 
+const editedActionType = ref(null);
 const editedItem = ref({
   id: null,
   qty: null,
@@ -271,8 +272,8 @@ onMounted(async () => {
       if (modal && e.target.parentNode.id) {
         modal.classList.add("item-action-modal_opened");
       } else {
+        // modal.classList.remove("item-action-modal_opened");
         currentItemActionModal.value = null;
-        modal.classList.remove("item-action-modal_opened");
       }
     }
   });
@@ -762,8 +763,6 @@ async function updateItem(editedItem) {
   console.log(editedItem);
 }
 
-// ******** WATCHERS ********
-
 // Следим за изменением поиска
 // watch(searchInput, async () => {
 //   console.log(searchInput.value);
@@ -778,7 +777,25 @@ async function updateItem(editedItem) {
 //     });
 //   }
 // });
-// Item More Modal
+// Item ACTIONS Modal FUNC
+const itemActions = ref([
+  {
+    type: "add",
+    title: "Добавить к позиции",
+  },
+  {
+    type: "sub",
+    title: "Вычесть из позиции",
+  },
+  {
+    type: "move",
+    title: "Переместить",
+  },
+  {
+    type: "edit",
+    title: "Редактировать",
+  },
+]);
 const currentItemActionModal = ref(null);
 const openItemActionModal = (itemID) => {
   // let modal = document.querySelector(`#item-${itemID}-action_modal`);
@@ -787,6 +804,17 @@ const openItemActionModal = (itemID) => {
   currentItemActionModal.value = `item-${itemID}-action_modal`;
   // console.log(modal);
   // console.log(currentItemActionModal.value);
+};
+
+//
+const onClickAction = (action, item) => {
+  editedActionType.value = action;
+  editedItem.value = {
+    id: item.id,
+
+    qty: item.qty,
+  };
+  console.log(`action: ${action}, in item id: ${item.id}`);
 };
 
 // if (currentItemActionModal.value) {
@@ -798,9 +826,11 @@ const openItemActionModal = (itemID) => {
 //   //   }
 // });
 
+// ******** WATCHERS ********
+
 watch(currentItemActionModal, (newValue, prevValue) => {
   if (newValue) {
-    let modal = document.querySelector(`#${currentItemActionModal.value}`);
+    // let modal = document.querySelector(`#${currentItemActionModal.value}`);
     // modal.classList.add("item-action-modal_opened");
   }
   if (prevValue) {
@@ -810,6 +840,7 @@ watch(currentItemActionModal, (newValue, prevValue) => {
     if (modal) {
       // console.log(modal);
       modal.classList.remove("item-action-modal_opened");
+      // currentItemActionModal.value = null;
     }
   }
   // }
@@ -855,9 +886,51 @@ watch(item.value, () => {
   <Container>
     <h1>ТМЦ</h1>
 
+    <!-- EDIT ITEM MODAL-->
+    <!-- Button trigger modal -->
+
+    <!-- Modal -->
+    <div
+      class="modal fade"
+      id="editWarehouseItemModal"
+      tabindex="-1"
+      aria-labelledby="editWarehouseItemModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="editWarehouseItemModalLabel">
+              Редактирование ТМЦ
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            {{ editedActionType }}
+            <br />
+            {{ editedItem }}
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- ******** ADD NEW ITEM MODAL ******** -->
 
-    <!-- Button trigger modal -->
+    <!-- Button trigger modal create item -->
     <button
       type="button"
       class="btn btn-primary"
@@ -1202,10 +1275,21 @@ watch(item.value, () => {
                 :id="`item-${item.id}-action_modal`"
                 class="item-action-modal"
               >
-                <span>{{ item.id }}</span>
-                <span>Добавить сюда</span>
-                <span>Вычесть</span>
-                <span>Переместить частично или полностью</span>
+                <!-- <div>{{ item.id }}</div> -->
+                <!-- data-bs-toggle="modal" data-bs-target="editWarehouseItemModal" -->
+                <button
+                  v-for="(action, index) in itemActions"
+                  type="button"
+                  class="btn dropdown-item"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editWarehouseItemModal"
+                  @click="onClickAction(action.type, item)"
+                  :disabled="
+                    item.qty == 0 && action.type === 'sub' ? true : false
+                  "
+                >
+                  <span>{{ action.title }}</span>
+                </button>
               </div>
               <div id="icon">
                 <Icon
@@ -1370,10 +1454,6 @@ td {
   align-self: flex-start;
 }
 
-.search-container input:focus {
-  /* background-color: black; */
-}
-
 .search-container input:focus + .search-container {
   width: 100%;
 }
@@ -1403,15 +1483,33 @@ td {
 }
 .item-action-modal {
   z-index: -1;
-  display: none;
+  display: flex;
+  gap: 0.5rem;
+  flex-direction: column;
+  border: 1px solid var(--bs-border-color);
+  box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+  background-color: white;
+  pointer-events: none;
+  opacity: 0;
   position: absolute;
   top: 0;
   left: 0;
-  color: white;
-  background-color: black;
+  transition: all 0.35s ease-in-out;
+  padding: 1rem;
 }
+.item-action-modal div {
+  cursor: pointer;
+}
+.item-action-modal button:hover {
+  color: var(--bs-primary);
+}
+/* .item-action-modal div span {
+  text-wrap: nowrap;
+} */
 .item-action-modal_opened {
-  display: flex !important;
+  /* display: flex !important; */
+  pointer-events: all;
+  opacity: 1;
   z-index: 1;
 }
 </style>

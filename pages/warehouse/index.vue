@@ -262,6 +262,20 @@ onMounted(async () => {
   refreshOrganizations();
   // refreshUsers()
   await loadData();
+
+  // Используем для закрытия модалки item action modal
+  document.addEventListener("click", (e) => {
+    // console.log(e.target.parentNode.id);
+    let modal = document.querySelector(`#${currentItemActionModal.value}`);
+    if (currentItemActionModal.value) {
+      if (modal && e.target.parentNode.id) {
+        modal.classList.add("item-action-modal_opened");
+      } else {
+        currentItemActionModal.value = null;
+        modal.classList.remove("item-action-modal_opened");
+      }
+    }
+  });
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
@@ -764,6 +778,50 @@ async function updateItem(editedItem) {
 //     });
 //   }
 // });
+// Item More Modal
+const currentItemActionModal = ref(null);
+const openItemActionModal = (itemID) => {
+  // let modal = document.querySelector(`#item-${itemID}-action_modal`);
+  // modal.classList.add("item-action-modal_opened");
+  // console.log(`itemID: ${itemID}`);
+  currentItemActionModal.value = `item-${itemID}-action_modal`;
+  // console.log(modal);
+  // console.log(currentItemActionModal.value);
+};
+
+// if (currentItemActionModal.value) {
+// }
+// window.addEventListener("click", (e) => {
+//   console.log(e.target);
+//   //   if (e) {
+//   //     console.log(e.target.id);
+//   //   }
+// });
+
+watch(currentItemActionModal, (newValue, prevValue) => {
+  if (newValue) {
+    let modal = document.querySelector(`#${currentItemActionModal.value}`);
+    // modal.classList.add("item-action-modal_opened");
+  }
+  if (prevValue) {
+    // console.log(`newValue: ${newValue}`);
+    // console.log(`prevValue: ${prevValue}`);
+    let modal = document.querySelector(`#${prevValue}`);
+    if (modal) {
+      // console.log(modal);
+      modal.classList.remove("item-action-modal_opened");
+    }
+  }
+  // }
+  // if (prevValue) {
+  //   let modal = document.querySelector(`#${prevValue}`);
+  //   modal.classList.remove("item-action-modal_opened");
+  //   // console.log(modal);
+  // }
+  // if (prevValue && newValue) {
+  // }
+});
+
 // Следим за изменением фильтров и обновляем данные
 watch(currentCategoryByType, async () => {
   filterItemsByCategoryType();
@@ -1139,13 +1197,25 @@ watch(item.value, () => {
           </div>
 
           <tr v-for="(item, index) in computedItems">
-            <td>
-              <Icon
-                class="link"
-                :class="{ isEmpty: !item.qty, isNotEmpty: item.qty }"
-                name="material-symbols-light:question-exchange-rounded"
-                size="24px"
-              />
+            <td style="position: relative">
+              <div
+                :id="`item-${item.id}-action_modal`"
+                class="item-action-modal"
+              >
+                <span>{{ item.id }}</span>
+                <span>Добавить сюда</span>
+                <span>Вычесть</span>
+                <span>Переместить частично или полностью</span>
+              </div>
+              <div id="icon">
+                <Icon
+                  class="link"
+                  :class="{ isEmpty: !item.qty, isNotEmpty: item.qty }"
+                  name="material-symbols-light:question-exchange-rounded"
+                  size="24px"
+                  @click="openItemActionModal(item.id)"
+                />
+              </div>
             </td>
             <td scope="col">
               <span>{{ index + 1 }}. </span>
@@ -1330,5 +1400,18 @@ td {
 }
 .isNotEmpty {
   color: var(--bs-blue);
+}
+.item-action-modal {
+  z-index: -1;
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: white;
+  background-color: black;
+}
+.item-action-modal_opened {
+  display: flex !important;
+  z-index: 1;
 }
 </style>

@@ -307,8 +307,8 @@ label .menu {
   /* right: 80px;
   top: -100px; */
   z-index: 100;
-  width: 10px;
-  height: 10px;
+  width: 35px;
+  height: 35px;
   background: #fff;
   border-radius: 50% 50% 50% 50%;
   -webkit-transition: 0.5s ease-in-out;

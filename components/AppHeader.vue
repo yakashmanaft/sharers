@@ -307,8 +307,8 @@ label .menu {
   /* right: 80px;
   top: -100px; */
   z-index: 100;
-  width: 35px;
-  height: 35px;
+  width: 30px;
+  height: 30px;
   background: #fff;
   border-radius: 50% 50% 50% 50%;
   -webkit-transition: 0.5s ease-in-out;
@@ -323,7 +323,7 @@ label .hamburger {
   top: 50%;
   right: 1rem;
   /* left: 50px; */
-  width: 30px;
+  width: 32px;
   height: 2px;
   background: var(--bs-primary);
   display: block;
@@ -354,6 +354,8 @@ label .hamburger:after {
 }
 
 label input {
+  /* width: 30px; */
+  /* height: 30px; */
   display: none;
 }
 

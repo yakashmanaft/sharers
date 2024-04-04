@@ -354,8 +354,8 @@ label .hamburger:after {
 }
 
 label input {
-  /* width: 30px; */
-  /* height: 30px; */
+  width: 32px;
+  height: 10px;
   display: none;
 }
 

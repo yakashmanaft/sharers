@@ -91,7 +91,7 @@ watch(burgerIsOpened, () => {
       </div> -->
       <div class="header-container">
         <!-- LOGO -->
-        <router-link to="/" class="header-logo">
+        <router-link to="/" class="header-logo" @click="closeBurgerMenu">
           <span>stepbuild.ru</span>
         </router-link>
 

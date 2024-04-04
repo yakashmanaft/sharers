@@ -1,6 +1,6 @@
 <template>
   <Container>
-    <h1>Банда #{{ $route.params.id }}</h1>
+    <h1 style="margin-top: 5rem;">Банда #{{ $route.params.id }}</h1>
 
     <div v-if="organization">
       <p>{{ organization.title }}</p>

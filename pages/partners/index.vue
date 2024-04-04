@@ -134,7 +134,7 @@
         @click="error = null"
       ></button>
     </div> -->
-    <h1>Соучастники</h1>
+    <h1 class="mt-5rem">Соучастники</h1>
 
     <!-- FORMS ADD SMTHNG -->
     <div style="display: flex; gap: 2rem; margin-top: 2rem">
@@ -556,5 +556,8 @@ useHead({
 <style scoped>
 .link {
   cursor: pointer;
+}
+.mt-5rem {
+  margin-top: 5rem;
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
     <Container>
-        <h1>О сервисе</h1>
+        <h1 style="margin-top: 5rem;">О сервисе</h1>
     </Container>
 </template>
 

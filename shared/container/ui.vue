@@ -10,6 +10,12 @@
   max-width: 1399px;
   margin: 0 auto;
 }
+@media screen and (max-width: 575px) {
+  .container {
+    padding: 0;
+    margin: 0;
+  }
+}
 </style>
 
 <!-- https://github.com/vadimkaKharitonenko/severyanochka/tree/master -->

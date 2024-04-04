@@ -53,7 +53,7 @@ async function getItems() {
 
 <template>
   <Container>
-    <p>тмц #{{ $route.params.id }}</p>
+    <p style="margin-top: 5rem">тмц #{{ $route.params.id }}</p>
 
     <div v-if="item">
       <h1>{{ item.title }}</h1>

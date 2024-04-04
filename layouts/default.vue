@@ -1,22 +1,17 @@
 <template>
-
   <div>
     <!--  -->
-    <AppHeader/>
+    <AppHeader />
 
     <!--  -->
-    <div style="margin-top: 5rem;">
-      
+    <div>
       <!--  -->
-      <slot/>
+      <slot />
     </div>
-
   </div>
-  </template>
+</template>
 
-  <script setup>
-  
-  
-  // You might choose this based on an API call or logged-in status
-  // const layout = "custom";
-  </script>
+<script setup>
+// You might choose this based on an API call or logged-in status
+// const layout = "custom";
+</script>

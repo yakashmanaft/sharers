@@ -1,6 +1,6 @@
 <template>
     <Container>
-        <h1>Политика конфидценциальности</h1>
+        <h1 style="margin-top: 5rem;">Политика конфидценциальности</h1>
     </Container>
 </template>
 

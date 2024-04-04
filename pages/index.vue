@@ -42,7 +42,7 @@ const { loggedIn, user, session, clear } = useUserSession();
       <button @click="loadData">Load users</button>
     </div>
     <br /> -->
-    <h1>Landing page about "СОУЧАСТНИКИ"</h1>
+    <h1 style="margin-top: 5rem">Landing page about "СОУЧАСТНИКИ"</h1>
     <!-- Show if no users loaded -->
     <!-- <div v-if="!users.length">
       <p>No users loaded</p>

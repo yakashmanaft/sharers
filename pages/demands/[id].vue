@@ -51,7 +51,7 @@ useHead({
 <template>
     <Container>
 
-        <h1>Заявка #{{ $route.params.id  }}</h1> 
+        <h1 style="margin-top: 5rem;">Заявка #{{ $route.params.id  }}</h1> 
 
         <div v-for="(item, index) in currentDemand.itemsList">
                 {{ item }}

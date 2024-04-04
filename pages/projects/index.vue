@@ -55,11 +55,11 @@ const { loadData } = useUsersStore();
 const { data: organizations } = useLazyAsyncData("organizations", () =>
   $fetch("api/organizations/organizations")
 );
-const refreshOrganizations = () => refreshNuxtData("organizations")
+const refreshOrganizations = () => refreshNuxtData("organizations");
 
 onMounted(async () => {
   refresh();
-  refreshOrganizations()
+  await refreshOrganizations();
   await loadData();
 });
 
@@ -116,26 +116,28 @@ const clearModalInputs = (project: any) => {
   project.completion = null;
 };
 
-// 
+//
 const translateCurator = (curatorID: number) => {
-  if(curatorID) {
-    let curator = users.value.find((user) => user.id === curatorID)
-    return `${curator?.surname} ${curator?.name[0]}. ${curator?.middleName[0]}` 
+  if (curatorID) {
+    let curator = users.value.find((user) => user.id === curatorID);
+    return `${curator?.surname} ${curator?.name[0]}. ${curator?.middleName[0]}`;
   }
   // return curatorID
-}
+};
 
 const translatePartner = (partnerID, partnerType) => {
-  if(partnerID) {
-    if(partnerType === 'user') {
-      let userItem = users.value.find(item => item.id === partnerID)
-      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`
-    } else if(partnerType === 'company') {
-      let organizationItem = organizations.value.find(item => item.id === partnerID)
-      return `${organizationItem.title}`
+  if (partnerID) {
+    if (partnerType === "user") {
+      let userItem = users.value.find((item) => item.id === partnerID);
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`;
+    } else if (partnerType === "company" && organizations.value) {
+      let organizationItem = organizations.value.find(
+        (item) => item.id === partnerID
+      );
+      return `${organizationItem.title}`;
     }
   }
-}
+};
 
 // Check before submit creating new project
 watch(project.value, () => {
@@ -157,7 +159,7 @@ watch(project.value, () => {
 </script>
 <template>
   <Container>
-    <h1>Проекты</h1>
+    <h1 style="margin-top: 5rem">Проекты</h1>
 
     <!-- fetch data is error -->
     <div v-if="error">
@@ -224,7 +226,9 @@ watch(project.value, () => {
             </div>
             <!-- PARTNER TYPE-->
             <div class="mb-3">
-              <label for="projectPartnerType" class="form-label">Partner Type (user | company)</label>
+              <label for="projectPartnerType" class="form-label"
+                >Partner Type (user | company)</label
+              >
               <input
                 v-model="project.partnerType"
                 type="text"
@@ -257,7 +261,9 @@ watch(project.value, () => {
             </div>
             <!-- CURATOR -->
             <div class="mb-3">
-              <label for="projectCurator" class="form-label">Curator (user id)</label>
+              <label for="projectCurator" class="form-label"
+                >Curator (user id)</label
+              >
               <input
                 v-model="project.curator"
                 type="number"
@@ -341,7 +347,10 @@ watch(project.value, () => {
         </div>
         <div class="project-item_right">
           <span>Куратор проекта: {{ translateCurator(project.curator) }}</span>
-          <span>Заказчик: {{ translatePartner(project.partnerID, project.partnerType) }}</span>
+          <span
+            >Заказчик:
+            {{ translatePartner(project.partnerID, project.partnerType) }}</span
+          >
         </div>
       </div>
     </div>

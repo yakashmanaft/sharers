@@ -1,6 +1,6 @@
 <template>
   <Container>
-    <h1>Аккаунт</h1>
+    <h1 style="margin-top: 5rem">Аккаунт</h1>
 
     <!-- fetch data is error -->
     <div v-if="error">

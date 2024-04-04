@@ -54,7 +54,7 @@ async function getProjects() {
 
 <template>
   <Container>
-    <h1>Проект #{{ $route.params.id }}</h1>
+    <h1 style="margin-top: 5rem;">Проект #{{ $route.params.id }}</h1>
 
     <div>
       <p>{{ project }}</p>

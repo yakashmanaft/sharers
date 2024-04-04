@@ -102,7 +102,7 @@ const onClickRegister = () => {
         justify-content: center;
       "
     >
-      <h1>Login</h1>
+      <h1 style="margin-top: 5rem;">Login</h1>
       <button @click="loginloggedIn">Sign IN</button>
 
       <button @click="onClickRegister">Зарегистрироваться</button>

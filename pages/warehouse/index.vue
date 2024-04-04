@@ -267,13 +267,15 @@ onMounted(async () => {
   // Используем для закрытия модалки item action modal
   document.addEventListener("click", (e) => {
     // console.log(e.target.parentNode.id);
-    let modal = document.querySelector(`#${currentItemActionModal.value}`);
-    if (currentItemActionModal.value) {
-      if (modal && e.target.parentNode.id) {
-        modal.classList.add("item-action-modal_opened");
-      } else {
-        // modal.classList.remove("item-action-modal_opened");
-        currentItemActionModal.value = null;
+    let modal = document.getElementById(`${currentItemActionModal.value}`);
+    if (modal) {
+      if (currentItemActionModal.value) {
+        if (modal && e.target.parentNode.id) {
+          modal.classList.add("item-action-modal_opened");
+        } else {
+          // modal.classList.remove("item-action-modal_opened");
+          currentItemActionModal.value = null;
+        }
       }
     }
   });
@@ -796,7 +798,7 @@ const itemActions = ref([
     title: "Редактировать",
   },
 ]);
-const currentItemActionModal = ref('');
+const currentItemActionModal = ref("");
 const openItemActionModal = (itemID: number) => {
   // let modal = document.querySelector(`#item-${itemID}-action_modal`);
   // modal.classList.add("item-action-modal_opened");
@@ -816,15 +818,6 @@ const onClickAction = (action, item) => {
   };
   console.log(`action: ${action}, in item id: ${item.id}`);
 };
-
-// if (currentItemActionModal.value) {
-// }
-// window.addEventListener("click", (e) => {
-//   console.log(e.target);
-//   //   if (e) {
-//   //     console.log(e.target.id);
-//   //   }
-// });
 
 // ******** WATCHERS ********
 
@@ -884,7 +877,7 @@ watch(item.value, () => {
 </script>
 <template>
   <Container>
-    <h1>ТМЦ</h1>
+    <h1 class="mt-5rem">ТМЦ</h1>
 
     <!-- EDIT ITEM MODAL-->
     <!-- Button trigger modal -->
@@ -1165,7 +1158,7 @@ watch(item.value, () => {
         </select>
 
         <!-- set category type -->
-        <div style="display: flex; gap: 1rem; margin-top: 1rem">
+        <div class="set-categoty-type_wrapper">
           <!-- SWITCH BTNs -->
           <div
             v-for="(category, index) in warehouseCategories"
@@ -1269,7 +1262,7 @@ watch(item.value, () => {
             </div>
           </div>
 
-          <tr v-for="(item, index) in computedItems">
+          <tr class="table-row_wrapper" v-for="(item, index) in computedItems">
             <td style="position: relative">
               <div
                 :id="`item-${item.id}-action_modal`"
@@ -1361,6 +1354,14 @@ watch(item.value, () => {
 </template>
 
 <style scoped>
+.mt-5rem {
+  margin-top: 5rem;
+}
+@media screen and (max-width: 575px) {
+  h1 {
+    /* margin-top: unset; */
+  }
+}
 table {
   margin-top: 1rem;
 }
@@ -1449,6 +1450,12 @@ td {
   color: white;
 }
 
+@media screen and (max-width: 575px) {
+  .switch-type_container {
+    flex-direction: column;
+  }
+}
+
 .search-container {
   position: relative;
   align-self: flex-start;
@@ -1494,7 +1501,7 @@ td {
   position: absolute;
   top: 0;
   left: 0;
-  transition: all 0.35s ease-in-out;
+  transition: all 0.2s ease-in-out;
   padding: 1rem;
 }
 .item-action-modal div {
@@ -1511,5 +1518,22 @@ td {
   pointer-events: all;
   opacity: 1;
   z-index: 1;
+}
+
+.set-categoty-type_wrapper {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.table-row_wrapper {
+}
+@media screen and (max-width: 575px) {
+  .set-categoty-type_wrapper {
+    flex-direction: column;
+  }
+  .table-row_wrapper {
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

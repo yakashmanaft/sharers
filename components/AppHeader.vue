@@ -200,7 +200,6 @@ watch(accountMenuIsOpened, () => {
                   >
                     <!-- ПОльзвоательские кнопки -->
                     <div class="account-menu_user">
-                      <div class="line"></div>
                       <div class="user_info">
                         <span style="font-weight: bold">Анфалов</span>
                         <div class="user_name">
@@ -209,6 +208,7 @@ watch(accountMenuIsOpened, () => {
                           <span>Владимирович</span>
                         </div>
                       </div>
+                      <div class="line"></div>
 
                       <div class="user_list">
                         <!--  -->
@@ -267,7 +267,7 @@ watch(accountMenuIsOpened, () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1rem 0;
+  /* padding: 1rem 0; */
   gap: 1rem;
 }
 /* .burger {
@@ -310,7 +310,8 @@ watch(accountMenuIsOpened, () => {
 
 @media screen and (max-width: 767px) {
   .header-container {
-    padding: 1rem;
+    /* padding: 0 1rem; */
+    padding-left: 1rem;
   }
   .login_contaner {
     display: none;
@@ -384,6 +385,9 @@ watch(accountMenuIsOpened, () => {
     flex-direction: column;
     gap: 1rem;
   }
+  .account-menu_user .user_info {
+    order: -1;
+  }
   .account-menu_user .user_list {
     display: flex;
     flex-direction: column;
@@ -413,6 +417,11 @@ watch(accountMenuIsOpened, () => {
 
 /* @media screen and (min-width: 576px) and (max-width: 767px) {
 } */
+@media screen and (min-width: 576px) {
+  .header-container {
+    padding: 1rem 0;
+  }
+}
 
 @media screen and (min-width: 768px) {
   .burger {
@@ -503,6 +512,12 @@ watch(accountMenuIsOpened, () => {
 .header-logo {
   z-index: 100;
 }
+/* .burger пока что это label */
+.burger {
+  width: 3rem;
+  height: 3rem;
+  background: black;
+}
 label .menu {
   /* position: relative; */
   /* right: 80px;
@@ -510,6 +525,7 @@ label .menu {
   z-index: 100;
   width: 30px;
   height: 30px;
+  /* background: black; */
   background: #fff;
   border-radius: 50% 50% 50% 50%;
   -webkit-transition: 0.5s ease-in-out;
@@ -556,8 +572,8 @@ label .hamburger:after {
 
 label input {
   width: 32px;
-  height: 10px;
-  display: none;
+  height: 32px;
+  /* display: none;  */
 }
 
 /* label input:checked + .menu {

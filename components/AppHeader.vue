@@ -249,7 +249,7 @@ watch(accountMenuIsOpened, () => {
   text-wrap: nowrap;
 }
 
-@media screen and (max-width: 575px) {
+@media screen and (max-width: 767px) {
   .header-container {
     padding: 1rem;
   }
@@ -273,7 +273,7 @@ watch(accountMenuIsOpened, () => {
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 10rem;
+    /* gap: 10rem; */
     /* margin-left: 30%; */
   }
   .links_container .header-features__list,
@@ -314,15 +314,15 @@ watch(accountMenuIsOpened, () => {
   .display-block {
     display: block;
   }
-}
-
-@media screen and (min-width: 576px) and (max-width: 767px) {
   .account-btn {
     display: none;
   }
 }
 
-@media screen and (min-width: 576px) {
+/* @media screen and (min-width: 576px) and (max-width: 767px) {
+} */
+
+@media screen and (min-width: 768px) {
   .burger {
     display: none;
   }

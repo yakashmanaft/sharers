@@ -1493,7 +1493,7 @@ td {
   display: flex;
   gap: 0.5rem;
   flex-direction: column;
-  border: 1px solid var(--bs-border-color);
+  /* border: 1px solid var(--bs-border-color); */
   border-radius: 16px;
   box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
   background-color: white;

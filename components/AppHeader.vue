@@ -97,7 +97,29 @@ watch(burgerIsOpened, () => {
   }
 });
 watch(accountMenuIsOpened, () => {
-  console.log(accountMenuIsOpened.value);
+  // if (accountMenuIsOpened.value) {
+  //   document.addEventListener("click", (e) => {
+  //     console.log(e.target.parent);
+  //   });
+  // }
+  if (accountMenuIsOpened.value) {
+    document.addEventListener("click", (e) => {
+      if (
+        e.target.parentNode.classList &&
+        (e.target.parentNode.classList.contains("user_info") ||
+          e.target.parentNode.classList.contains("user_name") ||
+          e.target.parentNode.classList.contains("account-menu_list") ||
+          e.target.parentNode.classList.contains("account-menu_user") ||
+          e.target.parentNode.classList.contains("account-user_icon") ||
+          e.target.parentNode.classList.contains("account-menu") ||
+          e.target.parentNode.classList.contains("user_icon"))
+      ) {
+        // console.log(e.target.parentNode.classList);
+      } else {
+        accountMenuIsOpened.value = false;
+      }
+    });
+  }
 });
 </script>
 
@@ -166,30 +188,48 @@ watch(accountMenuIsOpened, () => {
                       name="material-symbols-light:account-circle"
                       size="42px"
                       color="var(--bs-primary)"
+                      class="user_icon"
                     />
-                    <!-- <div class="account-user_name"><p>Анфалов С.В.</p></div> -->
+                    <!-- <div class="account-user_info"><p>Анфалов С.В.</p></div> -->
                   </div>
                   <div
                     class="account-menu_list"
                     :class="
-                      accountMenuIsOpened ? 'opacity-1-576' : 'opacity-0-576'
+                      accountMenuIsOpened ? 'display-block' : 'display-none'
                     "
                   >
                     <!-- ПОльзвоательские кнопки -->
                     <div class="account-menu_user">
                       <div class="line"></div>
-                      <div class="user_name">
-                        <p><b>Анфалов Сергей Владимирович</b></p>
+                      <div class="user_info">
+                        <span style="font-weight: bold">Анфалов</span>
+                        <div class="user_name">
+                          <span>Сергей</span>
+
+                          <span>Владимирович</span>
+                        </div>
                       </div>
-                      <router-link to="/account" @click="closeBurgerMenu">
-                        <span>Аккаунт</span>
-                      </router-link>
+
+                      <div class="user_list">
+                        <!--  -->
+                        <div>
+                          <router-link to="/account" @click="closeBurgerMenu">
+                            <span>Настройки аккаунта</span>
+                          </router-link>
+                        </div>
+                        <!--  -->
+                        <div>
+                          <router-link
+                            to="/partners/1"
+                            @click="closeBurgerMenu"
+                          >
+                            <span>Моя страница</span>
+                          </router-link>
+                        </div>
+                      </div>
                       <!--  -->
-                      <router-link to="/partners/1" @click="closeBurgerMenu">
-                        <p>ссылка на личную страницу</p>
-                      </router-link>
-                      <div class="user_logout" @click="logout()">
-                        <p>Выйти</p>
+                      <div class="user_logout">
+                        <span @click="logout()">Выйти</span>
                       </div>
                     </div>
                   </div>
@@ -260,8 +300,12 @@ watch(accountMenuIsOpened, () => {
   text-decoration: none;
 }
 
-.user-name {
+/* .user-name {
   text-wrap: nowrap;
+} */
+.account-menu_user .user_name {
+  display: flex;
+  gap: 0.3rem;
 }
 
 @media screen and (max-width: 767px) {
@@ -340,6 +384,11 @@ watch(accountMenuIsOpened, () => {
     flex-direction: column;
     gap: 1rem;
   }
+  .account-menu_user .user_list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
   .user_logout {
     order: -1;
   }
@@ -385,17 +434,43 @@ watch(accountMenuIsOpened, () => {
     top: 2rem;
     right: 0;
     background-color: #fff;
-    transition: all 0.3s ease-in;
+    /* transition: all 0.3s ease-in; */
     /* border: 1px solid black; */
+  }
+  .account-menu_user {
+    /* padding: 1rem; */
+    /* width: 300px; */
+    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+    /* align-items: flex-end !important; */
+    padding: 1rem 10px;
+    border-radius: 16px;
+  }
+  .account-menu_user .user_info {
+    display: flex;
+    flex-direction: column;
+    /* align-items: flex-end; */
+  }
+
+  .account-menu_user .user_list {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .user_logout {
+    margin-top: 0.5rem;
   }
 
   /* Технические  */
-  .opacity-0-576 {
-    opacity: 0;
+  .display-none {
+    display: none;
+    /* opacity: 0; */
   }
 
-  .opacity-1-576 {
-    opacity: 1;
+  .display-block {
+    display: block;
+    /* opacity: 1; */
   }
 }
 

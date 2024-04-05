@@ -6,6 +6,7 @@ const route = useRoute();
 const router = useRouter();
 
 const burgerIsOpened = ref(false);
+const accountMenuIsOpened = ref(false);
 
 const featuresListAuth = ref([
   {
@@ -33,11 +34,11 @@ const featuresListAuth = ref([
     title: "Склад",
     auth: true,
   },
-  {
-    path: "/bonds",
-    title: "Бонды",
-    auth: true,
-  },
+  // {
+  //   path: "/bonds",
+  //   title: "Бонды",
+  //   auth: true,
+  // },
 ]);
 
 const featuresListNoAuth = ref([
@@ -63,6 +64,7 @@ onMounted(async () => {});
 const logout = () => {
   router.replace("/login");
   closeBurgerMenu();
+  accountMenuIsOpened.value = false;
   useAuthStore().clear();
 };
 
@@ -78,8 +80,15 @@ const closeBurgerMenu = () => {
   }
 };
 
+const toggleAccountMenu = () => {
+  accountMenuIsOpened.value = !accountMenuIsOpened.value;
+};
+
 watch(burgerIsOpened, () => {
   // console.log(`burgerIsOpened: ${burgerIsOpened.value}`);
+});
+watch(accountMenuIsOpened, () => {
+  console.log(accountMenuIsOpened.value);
 });
 </script>
 
@@ -141,21 +150,30 @@ watch(burgerIsOpened, () => {
 
               <!-- IF LOGGED IN -->
               <div v-if="useAuthStore().loggedIn" class="account-container">
-                <!-- LOGOUT BTN -->
-                <div class="account-btn" @click="logout()">Выйти</div>
-                <span>|</span>
                 <!-- ACCOUNT -->
-                <router-link
-                  to="/account"
-                  class="account-info_block"
-                  @click="closeBurgerMenu"
-                >
-                  <p>Анфалов С.В.</p>
-                  <Icon
-                    name="material-symbols-light:account-circle"
-                    size="36px"
-                  />
-                </router-link>
+                <div class="account-menu">
+                  <div class="account-user_icon" @click="toggleAccountMenu">
+                    <Icon
+                      name="material-symbols-light:account-circle"
+                      size="36px"
+                    />
+                  </div>
+                  <div
+                    class="account-menu_list"
+                    :class="
+                      accountMenuIsOpened
+                        ? 'display-block-576'
+                        : 'display-none-576'
+                    "
+                  >
+                    <div class="account-menu_user">
+                      <router-link to="/account" @click="closeBurgerMenu">
+                        <p>Анфалов С.В.</p>
+                      </router-link>
+                    </div>
+                    <p @click="logout()">Выйти</p>
+                  </div>
+                </div>
               </div>
               <!-- </div> -->
             </div>
@@ -225,6 +243,10 @@ watch(burgerIsOpened, () => {
   text-decoration: none;
 }
 
+.user-name {
+  text-wrap: nowrap;
+}
+
 @media screen and (max-width: 575px) {
   .header-container {
     padding: 1rem;
@@ -267,8 +289,15 @@ watch(burgerIsOpened, () => {
   .account-container {
     flex-direction: row !important;
   }
-  .account-info_block p {
-    text-wrap: nowrap;
+  .account-menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .account-menu_list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
 
   /* Технические стили max-width: 575px*/
@@ -278,6 +307,12 @@ watch(burgerIsOpened, () => {
 
   .display-block {
     display: block;
+  }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px) {
+  .account-btn {
+    display: none;
   }
 }
 
@@ -292,6 +327,28 @@ watch(burgerIsOpened, () => {
     display: flex;
     justify-content: space-between;
     width: 100%;
+  }
+  .account-menu {
+    position: relative;
+  }
+  .account-user_icon {
+    cursor: pointer;
+  }
+  .account-menu_list {
+    position: absolute;
+    top: 2rem;
+    right: 0;
+    background-color: #fff;
+    /* border: 1px solid black; */
+  }
+
+  /* Технические  */
+  .display-none-576 {
+    display: none;
+  }
+
+  .display-block-576 {
+    display: block;
   }
 }
 
@@ -311,7 +368,7 @@ watch(burgerIsOpened, () => {
 .account-container p {
   margin: 0;
 }
-.account-info_block {
+.account-user_icon {
   display: flex;
   align-items: center;
 }

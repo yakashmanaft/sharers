@@ -314,9 +314,9 @@ watch(accountMenuIsOpened, () => {
   .display-block {
     display: block;
   }
-  .account-btn {
+  /* .account-btn {
     display: none;
-  }
+  } */
 }
 
 /* @media screen and (min-width: 576px) and (max-width: 767px) {

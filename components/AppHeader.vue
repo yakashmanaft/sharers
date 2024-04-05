@@ -88,6 +88,13 @@ const toggleAccountMenu = () => {
 
 watch(burgerIsOpened, () => {
   // console.log(`burgerIsOpened: ${burgerIsOpened.value}`);
+  if (burgerIsOpened.value) {
+    document.addEventListener("click", (e) => {
+      if (e.target.classList.contains("links_container")) {
+        burgerIsOpened.value = false;
+      }
+    });
+  }
 });
 watch(accountMenuIsOpened, () => {
   console.log(accountMenuIsOpened.value);
@@ -109,7 +116,7 @@ watch(accountMenuIsOpened, () => {
         <!-- LIST of links -->
         <div
           class="links_container"
-          :class="burgerIsOpened ? 'display-block' : 'display-none'"
+          :class="burgerIsOpened ? 'opacity-1-767' : 'opacity-0-767'"
         >
           <div class="links_wrapper">
             <!-- Auth -->
@@ -158,22 +165,33 @@ watch(accountMenuIsOpened, () => {
                     <Icon
                       name="material-symbols-light:account-circle"
                       size="42px"
+                      color="var(--bs-primary)"
                     />
+                    <!-- <div class="account-user_name"><p>Анфалов С.В.</p></div> -->
                   </div>
                   <div
                     class="account-menu_list"
                     :class="
-                      accountMenuIsOpened
-                        ? 'display-block-576'
-                        : 'display-none-576'
+                      accountMenuIsOpened ? 'opacity-1-576' : 'opacity-0-576'
                     "
                   >
+                    <!-- ПОльзвоательские кнопки -->
                     <div class="account-menu_user">
+                      <div class="line"></div>
+                      <div class="user_name">
+                        <p><b>Анфалов Сергей Владимирович</b></p>
+                      </div>
                       <router-link to="/account" @click="closeBurgerMenu">
-                        <p>Анфалов С.В.</p>
+                        <span>Аккаунт</span>
                       </router-link>
+                      <!--  -->
+                      <router-link to="/partners/1" @click="closeBurgerMenu">
+                        <p>ссылка на личную страницу</p>
+                      </router-link>
+                      <div class="user_logout" @click="logout()">
+                        <p>Выйти</p>
+                      </div>
                     </div>
-                    <p @click="logout()">Выйти</p>
                   </div>
                 </div>
               </div>
@@ -223,9 +241,6 @@ watch(accountMenuIsOpened, () => {
 .header-logo {
   text-decoration: none;
 }
-/* .links_wrapper {
-  flex: 1;
-} */
 .links_container {
   /* flex: 1; */
   display: flex;
@@ -264,6 +279,7 @@ watch(accountMenuIsOpened, () => {
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
     /* display: flex !important; */
+    transition: opacity 0.3s ease-in;
   }
   .links_wrapper {
     background-color: #fff;
@@ -272,7 +288,7 @@ watch(accountMenuIsOpened, () => {
     display: flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     /* gap: 10rem; */
     /* margin-left: 30%; */
   }
@@ -281,42 +297,69 @@ watch(accountMenuIsOpened, () => {
     flex-direction: column;
   }
 
+  .header-features__list,
+  .account-menu_list {
+    align-items: flex-start;
+  }
+
   .login_wrapper {
-    position: absolute;
+    /* position: absolute; */
     /* order: -1; */
     top: 10rem;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    /* transform: translateX(-50%); */
+    position: unset;
+    order: -1;
+  }
+  .account-btn {
+    margin-left: 1rem;
   }
   .account-container {
     flex-direction: row !important;
   }
-  .login_wrapper {
-    position: unset;
-    order: -1;
-  }
   .account-menu {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
   .account-menu_list {
     display: flex;
     flex-direction: column;
     align-items: center;
   }
+  .account-menu,
+  .header-features__list {
+    padding-left: 1rem;
+  }
+  .header-features__list {
+    margin-top: 1rem;
+  }
+  .account-menu_user {
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .user_logout {
+    order: -1;
+  }
+
+  .line {
+    width: 100%;
+    height: 1px;
+    background-color: black;
+  }
 
   /* Технические стили max-width: 575px*/
-  .display-none {
+  .opacity-0-767 {
     display: none;
+    opacity: 0;
   }
 
-  .display-block {
+  .opacity-1-767 {
     display: block;
+    opacity: 1;
   }
-  /* .account-btn {
-    display: none;
-  } */
 }
 
 /* @media screen and (min-width: 576px) and (max-width: 767px) {
@@ -337,24 +380,22 @@ watch(accountMenuIsOpened, () => {
   .account-menu {
     position: relative;
   }
-  .account-user_icon {
-    cursor: pointer;
-  }
   .account-menu_list {
     position: absolute;
     top: 2rem;
     right: 0;
     background-color: #fff;
+    transition: all 0.3s ease-in;
     /* border: 1px solid black; */
   }
 
   /* Технические  */
-  .display-none-576 {
-    display: none;
+  .opacity-0-576 {
+    opacity: 0;
   }
 
-  .display-block-576 {
-    display: block;
+  .opacity-1-576 {
+    opacity: 1;
   }
 }
 
@@ -375,9 +416,11 @@ watch(accountMenuIsOpened, () => {
   margin: 0;
 }
 .account-user_icon {
-  display: flex;
-  align-items: center;
+  /* display: flex; */
+  /* align-items: center; */
+  cursor: pointer;
 }
+
 .account-btn {
   text-decoration: none;
   cursor: pointer;

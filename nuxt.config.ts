@@ -1,6 +1,12 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  modules: ['@pinia/nuxt', 'nuxt-auth-utils', 'nuxt-icon'],
+  modules: ['@pinia/nuxt', 'nuxt-auth-utils', 'nuxt-icon', '@kevinmarrec/nuxt-pwa'],
+  pwa: {
+    workbox: {
+      enabled: true
+    }
+    // https://www.npmjs.com/package/@kevinmarrec/nuxt-pwa
+  },
   devtools: { enabled: true },
   // build: {
   //   transpile: ['NuxtExample']

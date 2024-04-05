@@ -75,6 +75,8 @@ const logout = () => {
 const closeBurgerMenu = () => {
   if (burgerIsOpened.value) {
     setTimeout(((burgerIsOpened.value = false), 2000));
+  } else if (accountMenuIsOpened.value) {
+    accountMenuIsOpened.value = false;
   } else {
     return;
   }
@@ -155,7 +157,7 @@ watch(accountMenuIsOpened, () => {
                   <div class="account-user_icon" @click="toggleAccountMenu">
                     <Icon
                       name="material-symbols-light:account-circle"
-                      size="36px"
+                      size="42px"
                     />
                   </div>
                   <div
@@ -265,7 +267,7 @@ watch(accountMenuIsOpened, () => {
   }
   .links_wrapper {
     background-color: #fff;
-    width: 100%;
+    width: 70%;
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -288,6 +290,10 @@ watch(accountMenuIsOpened, () => {
   }
   .account-container {
     flex-direction: row !important;
+  }
+  .login_wrapper {
+    position: unset;
+    order: -1;
   }
   .account-menu {
     display: flex;
@@ -445,18 +451,21 @@ label input {
 label input:checked + .menu .hamburger {
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
+  background-color: #fff;
 }
 
 label input:checked + .menu .hamburger:after {
   -webkit-transform: rotate(90deg);
   transform: rotate(90deg);
   bottom: 0;
+  background-color: #fff;
 }
 
 label input:checked + .menu .hamburger:before {
   -webkit-transform: rotate(90deg);
   transform: rotate(90deg);
   top: 0;
+  background-color: #fff;
 }
 
 label input:checked + .menu + ul {

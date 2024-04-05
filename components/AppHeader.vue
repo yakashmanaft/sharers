@@ -239,16 +239,33 @@ watch(burgerIsOpened, () => {
     width: 100%;
     height: 100vh;
     background: rgba(0, 0, 0, 0.5);
+    /* display: flex !important; */
   }
   .links_wrapper {
     background-color: #fff;
     width: 100%;
     height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10rem;
     /* margin-left: 30%; */
   }
   .links_container .header-features__list,
   .links_container .login_wrapper .account-container {
     flex-direction: column;
+  }
+
+  .login_wrapper {
+    position: absolute;
+    /* order: -1; */
+    top: 10rem;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  .account-container {
+    flex-direction: row !important;
   }
 
   /* Технические стили max-width: 575px*/

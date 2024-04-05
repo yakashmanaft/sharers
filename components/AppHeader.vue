@@ -267,6 +267,9 @@ watch(burgerIsOpened, () => {
   .account-container {
     flex-direction: row !important;
   }
+  .account-info_block p {
+    text-wrap: nowrap;
+  }
 
   /* Технические стили max-width: 575px*/
   .display-none {

@@ -418,12 +418,15 @@ watch(accountMenuIsOpened, () => {
 /* @media screen and (min-width: 576px) and (max-width: 767px) {
 } */
 @media screen and (min-width: 576px) {
-  .header-container {
+  /* .header-container {
     padding: 1rem 0;
-  }
+  } */
 }
 
 @media screen and (min-width: 768px) {
+  .header-container {
+    padding: 1rem 0;
+  }
   .burger {
     display: none;
   }
@@ -516,7 +519,7 @@ watch(accountMenuIsOpened, () => {
 .burger {
   width: 3rem;
   height: 3rem;
-  background: black;
+  /* background: black; */
 }
 label .menu {
   /* position: relative; */
@@ -573,7 +576,7 @@ label .hamburger:after {
 label input {
   width: 32px;
   height: 32px;
-  /* display: none;  */
+  display: none; 
 }
 
 /* label input:checked + .menu {

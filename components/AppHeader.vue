@@ -307,6 +307,31 @@ watch(accountMenuIsOpened, () => {
   display: flex;
   gap: 0.3rem;
 }
+@media screen and (max-width: 767px) and (max-height: 540px) {
+  .header-container {
+    padding-left: unset!important;
+  }
+  .header-logo {
+    /* background-color: red; */
+  }
+  .header-logo span {
+    background-color: #fff;
+    padding: 1rem 15rem 0.8rem 0;
+  }
+
+  .links_wrapper {
+    overflow: scroll;
+    padding-top: 8rem;
+    padding-bottom: 2rem;
+  }
+  .account-user_icon {
+    display: none;
+  }
+  .account-menu {
+    /* margin-left: 1rem; */
+    padding-left: 32px;
+  }
+}
 
 @media screen and (max-width: 767px) {
   .header-container {
@@ -334,6 +359,8 @@ watch(accountMenuIsOpened, () => {
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
+    /* overflow: scroll; */
+    /* padding-top: 5rem; */
     /* gap: 10rem; */
     /* margin-left: 30%; */
   }
@@ -576,7 +603,7 @@ label .hamburger:after {
 label input {
   width: 32px;
   height: 32px;
-  display: none; 
+  display: none;
 }
 
 /* label input:checked + .menu {

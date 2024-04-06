@@ -1243,7 +1243,7 @@ watch(item.value, () => {
       <!-- СПИСОК ITEMS -->
       <!-- <div>{{ computedItems.length }}</div> -->
       <table class="table">
-        <!-- <thead>
+        <thead class="item-table_header">
           <tr>
             <th scope="col"></th>
             <th scope="col">Наименование</th>
@@ -1252,7 +1252,7 @@ watch(item.value, () => {
             <th scope="col">Собственник</th>
             <th scope="col">Ответственный</th>
           </tr>
-        </thead> -->
+        </thead>
 
         <tbody>
           <div v-if="computedItems">
@@ -1358,8 +1358,8 @@ watch(item.value, () => {
   margin-top: 5rem;
 }
 @media screen and (max-width: 575px) {
-  h1 {
-    /* margin-top: unset; */
+  .item-table_header {
+    display: none;
   }
 }
 table {

@@ -442,14 +442,6 @@ watch(accountMenuIsOpened, () => {
   }
 }
 
-/* @media screen and (min-width: 576px) and (max-width: 767px) {
-} */
-@media screen and (min-width: 576px) {
-  /* .header-container {
-    padding: 1rem 0;
-  } */
-}
-
 @media screen and (min-width: 768px) {
   .header-container {
     padding: 1rem 0;
@@ -499,6 +491,10 @@ watch(accountMenuIsOpened, () => {
 
   .user_logout {
     margin-top: 0.5rem;
+    /* cursor: pointer; */
+  }
+  .user_logout span {
+    cursor: pointer;
   }
 
   /* Технические  */
@@ -606,12 +602,6 @@ label input {
   display: none;
 }
 
-/* label input:checked + .menu {
-  box-shadow: 0 0 0 100vw #fff, 0 0 0 100vh #fff;
-  border-radius: 0;
-  height: 100vh;
-} */
-
 label input:checked + .menu .hamburger {
   -webkit-transform: rotate(45deg);
   transform: rotate(45deg);
@@ -634,18 +624,6 @@ label input:checked + .menu .hamburger:before {
 
 label input:checked + .menu + ul {
   opacity: 1;
-}
-
-label ul {
-  /* z-index: 200; */
-  /* position: absolute; */
-  /* top: 50%;
-  left: 50%; */
-  /* -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
-  opacity: 0;
-  -webkit-transition: 0.25s 0s ease-in-out;
-  transition: 0.25s 0s ease-in-out; */
 }
 
 label a {

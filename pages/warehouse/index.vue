@@ -104,7 +104,40 @@ const warehouseCategories = ref([
     name: "Техника",
   },
 ]);
+//
+const categoriesCopy = (array) => {
+  if (array) {
+    let newArray = array.filter((item) => item.type !== "all");
 
+    return newArray;
+  }
+};
+
+// Единицы измерения (пока хардкорно)
+const measureTypes = ref([
+  {
+    type: "шт.",
+    name: "шт.",
+  },
+  {
+    type: "пог. м.",
+    name: "пог. м.",
+  },
+  {
+    type: "рулон",
+    name: "рулон",
+  },
+  {
+    type: "пачка",
+    name: "пачка",
+  },
+  {
+    type: "кг.",
+    name: "кг.",
+  },
+]);
+
+// Для действий по редактированию предметов (добавление, вычитание, перемещение редактирование конкретного)
 const editedActionType = ref(null);
 const editedItem = ref({
   id: null,
@@ -881,7 +914,6 @@ watch(item.value, () => {
 
     <!-- EDIT ITEM MODAL-->
     <!-- Button trigger modal -->
-
     <!-- Modal -->
     <div
       class="modal fade"
@@ -921,8 +953,8 @@ watch(item.value, () => {
         </div>
       </div>
     </div>
-    <!-- ******** ADD NEW ITEM MODAL ******** -->
 
+    <!-- ******** ADD NEW ITEM MODAL ******** -->
     <!-- Button trigger modal create item -->
     <button
       type="button"
@@ -955,6 +987,9 @@ watch(item.value, () => {
             ></button>
           </div>
           <div class="modal-body">
+            <div>
+              {{ item }}
+            </div>
             <!-- TITLE -->
             <div class="mb-3">
               <label for="itemTitle" class="form-label">Наименование</label>
@@ -968,7 +1003,7 @@ watch(item.value, () => {
             </div>
 
             <!-- TYPE -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label for="itemType" class="form-label"
                 >Тип (tools | stuff | consumables | technic
                 (warehouseCategories))</label
@@ -980,32 +1015,77 @@ watch(item.value, () => {
                 class="form-control"
                 aria-describedby="nameHelp"
               />
-            </div>
-
-            <!-- QTY -->
+            </div> -->
             <div class="mb-3">
-              <label for="itemQty" class="form-label">Кол-во</label>
-              <input
-                v-model="item.qty"
-                type="number"
-                id="itemQty"
-                class="form-control"
-                aria-describedby="nameHelp"
-              />
-            </div>
-
-            <!-- MEASURE -->
-            <div class="mb-3">
-              <label for="itemMeasure" class="form-label"
-                >Ед. Изм. (шт. | погм.м. | рулон | кг. | т.?)</label
+              <label for="itemType" class="form-label">Тип </label>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                id="itemType"
+                v-model="item.type"
               >
-              <input
-                v-model="item.measure"
-                type="text"
-                id="itemMeasure"
-                class="form-control"
-                aria-describedby="nameHelp"
-              />
+                <option value="null" selected>Выберите</option>
+                <option
+                  v-for="(type, index) in categoriesCopy(warehouseCategories)"
+                  :value="type.type"
+                >
+                  {{ type.name }}
+                </option>
+              </select>
+            </div>
+
+            <!-- MEASURE & QTY -->
+            <div
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 2rem;
+              "
+            >
+              <!-- MEASURE -->
+              <!-- <div class="mb-3">
+                <label for="itemMeasure" class="form-label"
+                  >Ед. Изм. (шт. | погм.м. | рулон | кг. | т.?)</label
+                >
+                <input
+                  v-model="item.measure"
+                  type="text"
+                  id="itemMeasure"
+                  class="form-control"
+                  aria-describedby="nameHelp"
+                />
+              </div> -->
+              <div class="mb-3" style="width: 100%">
+                <label for="itemMeasure" class="form-label"
+                  >Ед. измерения</label
+                >
+                <select
+                  class="form-select"
+                  aria-label="Default select example"
+                  id="itemMeasure"
+                  v-model="item.measure"
+                >
+                  <option value="null" selected>Выберите</option>
+                  <option
+                    v-for="(type, index) in measureTypes"
+                    :value="type.type"
+                  >
+                    {{ type.name }}
+                  </option>
+                </select>
+              </div>
+              <!-- QTY -->
+              <div class="mb-3">
+                <label for="itemQty" class="form-label">Кол-во</label>
+                <input
+                  v-model="item.qty"
+                  type="number"
+                  id="itemQty"
+                  class="form-control"
+                  aria-describedby="nameHelp"
+                />
+              </div>
             </div>
 
             <!-- LOCATION -->
@@ -1021,6 +1101,19 @@ watch(item.value, () => {
                 class="form-control"
                 aria-describedby="nameHelp"
               />
+            </div>
+
+            <div class="mb-3">
+              <label for="itemLocation" class="form-label"
+                >Местонахождение</label
+              >
+              <select class="form-select" aria-label="Default select example">
+                <option value="null" selected>Выберите</option>
+                
+                <option value="1">One</option>
+                <option value="2">Two</option>
+                <option value="3">Three</option>
+              </select>
             </div>
 
             <!-- POSITION ID -->
@@ -1301,7 +1394,7 @@ watch(item.value, () => {
               </span>
             </td>
             <td scope="col">
-              <div>{{ item.qty }} {{ item.measure }}.</div>
+              <div>{{ item.qty }} {{ item.measure }}</div>
               <div
                 style="
                   display: flex;
@@ -1356,11 +1449,6 @@ watch(item.value, () => {
 <style scoped>
 .mt-5rem {
   margin-top: 5rem;
-}
-@media screen and (max-width: 575px) {
-  .item-table_header {
-    display: none;
-  }
 }
 table {
   margin-top: 1rem;
@@ -1449,10 +1537,19 @@ td {
   background-color: #b1e3c1;
   color: white;
 }
-
 @media screen and (max-width: 575px) {
+  .set-categoty-type_wrapper {
+    flex-direction: column;
+  }
+  .table-row_wrapper {
+    display: flex;
+    flex-direction: column;
+  }
   .switch-type_container {
     flex-direction: column;
+  }
+  .item-table_header {
+    display: none;
   }
 }
 
@@ -1527,14 +1624,5 @@ td {
   margin-top: 1rem;
 }
 .table-row_wrapper {
-}
-@media screen and (max-width: 575px) {
-  .set-categoty-type_wrapper {
-    flex-direction: column;
-  }
-  .table-row_wrapper {
-    display: flex;
-    flex-direction: column;
-  }
 }
 </style>

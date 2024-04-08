@@ -384,7 +384,7 @@ useHead({
     </div>
 
     <div>
-      <h2>{{ user.surname }} {{ user.name }} {{ user.middleName }}</h2>
+      <h2>{{ user.surname }} {{ user.name }} <br>{{ user.middleName }}</h2>
       <p>{{ user.role }}</p>
     </div>
 
@@ -409,8 +409,8 @@ useHead({
           <th>КТУ</th>
           <th>Час * КТУ</th>
           <th>ЗП (выработка)</th>
-          <th>ЗП (начисленная)</th>
-          <th>Налог</th>
+          <!-- <th>ЗП (начисленная)</th>
+          <th>Налог</th> -->
         </tr>
         <tr v-for="item in usersInBand" :key="item.id" style="">
           <td>
@@ -442,14 +442,14 @@ useHead({
           </td>
           <td>
             <!-- ЗП (начисленная) -->
-            {{ item.salary }}
+            <!-- {{ item.salary }} -->
           </td>
           <td>
             <!-- НАЛОГ -->
-            <span v-if="item.category !== '#2'">{{
+            <!-- <span v-if="item.category !== '#2'">{{
               (item.hours * item.stakeIndex * wageRate - item.salary).toFixed(2)
             }}</span>
-            <span v-else>-</span>
+            <span v-else>-</span> -->
           </td>
         </tr>
         <tr style="font-weight: bold">
@@ -458,8 +458,8 @@ useHead({
           <td></td>
           <td>{{ sumUserHourStakeIndex() }}</td>
           <td>{{ sumUserProductionSalary() }}</td>
-          <td>{{ sumUserSalary() }}</td>
-          <td>{{ sumCommunityTax() }}</td>
+          <!-- <td>{{ sumUserSalary() }}</td>
+          <td>{{ sumCommunityTax() }}</td> -->
         </tr>
       </table>
 

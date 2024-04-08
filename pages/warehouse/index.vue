@@ -958,11 +958,14 @@ watch(item.value, () => {
     <!-- Button trigger modal create item -->
     <button
       type="button"
-      class="btn btn-primary"
+      class="btn btn-primary btn-create-modal-open-575"
       data-bs-toggle="modal"
       data-bs-target="#newWarehouseItemModal"
     >
+    <span>
+
       Создать
+    </span>
     </button>
 
     <!-- Modal create item-->
@@ -1201,13 +1204,13 @@ watch(item.value, () => {
       <div>
         <!-- set location & project -->
         <select
-          class="form-select form-select-sm"
+          class="form-select form-select-sm filter-location_select"
           aria-label=".form-select-sm example"
           v-model="currentCategoryByLocationObj"
         >
           <!-- all locations & projects -->
           <option :value="{ title: 'all', type: 'all', id: null }">Все</option>
-
+  
           <!-- All locations -->
           <optgroup label="All locations">
             <option :value="{ title: 'location', type: 'sklad', id: null }">
@@ -1223,7 +1226,7 @@ watch(item.value, () => {
               Все проекты
             </option>
           </optgroup>
-
+  
           <!-- Locations -->
           <optgroup label="Locations">
             <option
@@ -1238,7 +1241,7 @@ watch(item.value, () => {
               {{ location.address }}
             </option>
           </optgroup>
-
+  
           <!-- projects -->
           <optgroup label="Проекты">
             <option
@@ -1249,7 +1252,7 @@ watch(item.value, () => {
             </option>
           </optgroup>
         </select>
-
+  
         <!-- set category type -->
         <div class="set-categoty-type_wrapper">
           <!-- SWITCH BTNs -->
@@ -1550,6 +1553,55 @@ td {
   .item-table_header {
     display: none;
   }
+  .btn-create-modal-open-575 {
+    z-index: 100;
+    position: fixed;  
+    bottom: 1.5rem;
+    right: 1.5rem;
+    /* background-color: black; */
+    /* color: black; */
+    width: 72px;
+    height: 72px;
+    border-radius: 100%;
+    text-align: center;
+    color: transparent;
+    /* position: relative; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+  }
+  .btn-create-modal-open-575:active {
+    color: transparent;
+  }
+  .btn-create-modal-open-575:after,
+  .btn-create-modal-open-575:before {
+    content: '';
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    width: 3px;
+    border-radius: 16px;  
+    height: 36px;
+  }
+  .btn-create-modal-open-575:after {
+    transform: rotate(90deg)
+  }
+  .filter-location_select {
+    background-color: red;
+  }
+  /* .filter-location_select {
+    width: 150px;
+    position: relative;
+  } */
+  /* .filter-location_select:before {
+    content: '1123';
+    position: absolute;
+    top: 0;
+    left: 0;
+  } */
 }
 
 .search-container {

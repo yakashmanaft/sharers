@@ -86,6 +86,11 @@ const toggleAccountMenu = () => {
   accountMenuIsOpened.value = !accountMenuIsOpened.value;
 };
 
+// translaters
+const translateRoutePath = (path:string) => {
+  return path
+}
+
 watch(burgerIsOpened, () => {
   // console.log(`burgerIsOpened: ${burgerIsOpened.value}`);
   if (burgerIsOpened.value) {
@@ -161,6 +166,10 @@ watch(
           <router-link to="/" class="header-logo" @click="closeBurgerMenu">
             <span>stepbuild.ru</span>
           </router-link>
+
+          <div class="current-route_container">
+            {{ translateRoutePath(route.path) }}
+          </div>
         </div>
 
         <!-- LIST of links -->
@@ -319,6 +328,7 @@ a:visited {
 }
 .back-btn {
   cursor: pointer;
+  /* z-index: 100; */
 }
 .header-logo {
   text-decoration: none;
@@ -488,6 +498,9 @@ a:visited {
   .header-container {
     padding: 1rem 0;
   }
+  .current-route_container {
+    display: none;
+  }
   .burger {
     display: none;
   }
@@ -578,7 +591,7 @@ a:visited {
   cursor: pointer;
 }
 .header-logo {
-  z-index: 100;
+  /* z-index: 100; */
 }
 /* .burger пока что это label */
 .burger {

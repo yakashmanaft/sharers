@@ -131,7 +131,7 @@ watch(accountMenuIsOpened, () => {
 const prevPage = ref(null);
 watch(
   () => route.path,
-  (newRoute, prevRoute) => {
+  (newRoute, prevRoute: any) => {
     prevPage.value = prevRoute;
     console.log(route);
   }
@@ -148,7 +148,7 @@ watch(
         <div class="nav-block_left">
           <!-- Back BTN -->
           <!-- <div  > -->
-          <router-link
+          <!-- <router-link
             :to="prevPage"
             class="back-btn"
             v-if="prevPage !== null && route.path !== '/'"
@@ -159,8 +159,15 @@ watch(
               size="24px"
               color="var(--bs-primary)"
             />
-            <!-- @click="openItemActionModal(item.id)" -->
-          </router-link>
+          </router-link> -->
+          <div class="back-btn" v-if="prevPage !== null && route.path !== '/'" @click="router.go(-1)">
+            <Icon
+              class="link"
+              name="material-symbols-light:arrow-back-ios"
+              size="24px"
+              color="var(--bs-primary)"
+            />
+          </div>
           <!-- </div> -->
           <!-- LOGO -->
           <router-link to="/" class="header-logo" @click="closeBurgerMenu">

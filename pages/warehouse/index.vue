@@ -1109,7 +1109,7 @@ watch(item.value, () => {
               >
               <select class="form-select" aria-label="Default select example">
                 <option value="null" selected>Выберите</option>
-                
+
                 <option value="1">One</option>
                 <option value="2">Two</option>
                 <option value="3">Three</option>
@@ -1377,13 +1377,12 @@ watch(item.value, () => {
                   <span>{{ action.title }}</span>
                 </button>
               </div>
-              <div id="icon">
+              <div id="icon" @click="openItemActionModal(item.id)">
                 <Icon
                   class="link"
                   :class="{ isEmpty: !item.qty, isNotEmpty: item.qty }"
                   name="material-symbols-light:question-exchange-rounded"
                   size="24px"
-                  @click="openItemActionModal(item.id)"
                 />
               </div>
             </td>

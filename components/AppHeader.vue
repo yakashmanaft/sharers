@@ -121,6 +121,16 @@ watch(accountMenuIsOpened, () => {
     });
   }
 });
+
+// Следим за роутами
+const prevPage = ref(null);
+watch(
+  () => route.path,
+  (newRoute, prevRoute) => {
+    prevPage.value = prevRoute;
+    console.log(route)
+  }
+);
 </script>
 
 <template>
@@ -130,10 +140,24 @@ watch(accountMenuIsOpened, () => {
         <span></span>
       </div> -->
       <div class="header-container">
-        <!-- LOGO -->
-        <router-link to="/" class="header-logo" @click="closeBurgerMenu">
-          <span>stepbuild.ru</span>
-        </router-link>
+        <div class="nav-block_left">
+          <!-- Back BTN -->
+          <!-- <div  > -->
+          <router-link :to="prevPage" class="back-btn" v-if="prevPage !== null && route.path !== '/'">
+            <Icon
+              class="link"
+              name="material-symbols-light:arrow-back-ios"
+              size="24px"
+              color="var(--bs-primary)"
+            />
+            <!-- @click="openItemActionModal(item.id)" -->
+          </router-link>
+          <!-- </div> -->
+          <!-- LOGO -->
+          <router-link to="/" class="header-logo" @click="closeBurgerMenu">
+            <span>stepbuild.ru</span>
+          </router-link>
+        </div>
 
         <!-- LIST of links -->
         <div
@@ -201,12 +225,14 @@ watch(accountMenuIsOpened, () => {
                     <!-- ПОльзвоательские кнопки -->
                     <div class="account-menu_user">
                       <div class="user_info">
-                        <span style="font-weight: bold">Анфалов</span>
-                        <div class="user_name">
-                          <span>Сергей</span>
+                        <router-link to="/partners/1" @click="closeBurgerMenu">
+                          <span style="font-weight: bold">Анфалов</span>
+                          <div class="user_name">
+                            <span>Сергей</span>
 
-                          <span>Владимирович</span>
-                        </div>
+                            <span>Владимирович</span>
+                          </div>
+                        </router-link>
                       </div>
                       <div class="line"></div>
 
@@ -218,14 +244,14 @@ watch(accountMenuIsOpened, () => {
                           </router-link>
                         </div>
                         <!--  -->
-                        <div>
+                        <!-- <div>
                           <router-link
                             to="/partners/1"
                             @click="closeBurgerMenu"
                           >
                             <span>Моя страница</span>
                           </router-link>
-                        </div>
+                        </div> -->
                       </div>
                       <!--  -->
                       <div class="user_logout">
@@ -278,6 +304,14 @@ watch(accountMenuIsOpened, () => {
   align-items: center;
   gap: 1rem;
 } */
+.nav-block_left {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.back-btn {
+  cursor: pointer;
+}
 .header-logo {
   text-decoration: none;
 }
@@ -309,7 +343,7 @@ watch(accountMenuIsOpened, () => {
 }
 @media screen and (max-width: 767px) and (max-height: 540px) {
   .header-container {
-    padding-left: unset!important;
+    padding-left: unset !important;
   }
   .header-logo {
     /* background-color: red; */

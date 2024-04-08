@@ -1382,7 +1382,7 @@ watch(item.value, () => {
                   class="link"
                   :class="{ isEmpty: !item.qty, isNotEmpty: item.qty }"
                   name="material-symbols-light:question-exchange-rounded"
-                  size="24px"
+                  size="28px"
                 />
               </div>
             </td>

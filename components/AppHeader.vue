@@ -128,7 +128,7 @@ watch(
   () => route.path,
   (newRoute, prevRoute) => {
     prevPage.value = prevRoute;
-    console.log(route)
+    console.log(route);
   }
 );
 </script>
@@ -143,7 +143,11 @@ watch(
         <div class="nav-block_left">
           <!-- Back BTN -->
           <!-- <div  > -->
-          <router-link :to="prevPage" class="back-btn" v-if="prevPage !== null && route.path !== '/'">
+          <router-link
+            :to="prevPage"
+            class="back-btn"
+            v-if="prevPage !== null && route.path !== '/'"
+          >
             <Icon
               class="link"
               name="material-symbols-light:arrow-back-ios"
@@ -279,6 +283,10 @@ watch(
 </template>
 
 <style scoped>
+a,
+a:visited {
+  color: var(--bs-primary);
+}
 .header-wrapper {
   position: fixed;
   top: 0;

@@ -87,9 +87,68 @@ const toggleAccountMenu = () => {
 };
 
 // translaters
-const translateRoutePath = (path:string) => {
-  return path
-}
+const translateRoutePath = (path: string) => {
+  // INDEX, LOGIN, REGISTER
+  if (path === "/" || path === '/login') {
+    return;
+  } 
+  // ABOUT, POLICY, CONTRACT, SETTINGS, DASHBOARD
+  else if (path === '/about') {
+    return 'О сервисе'
+  } else if (path === '/policy') {
+    return 'Политика'
+  } else if (path === '/contract') {
+    return 'Соглашение'
+  } else if (path === '/account') { 
+    return 'Настройки'
+  } else if (path === '/dashboard') {
+    return 'Доска'
+  } 
+  // PROJECTS
+  else if (path === '/projects') {
+    return "Проекты"
+  } else if (path.includes('/projects/')) {
+    let startIndex = path.lastIndexOf('/')
+    let id = path.substr(startIndex + 1)
+    return `Проект #${id}`
+  } 
+  // PARTNERS
+  else if (path === '/partners') {
+    return 'Соучастники'
+  } else if (path.includes('/partners/')) {
+    let startIndex = path.lastIndexOf('/')
+    let id = path.substr(startIndex + 1)
+    return `Cоучастник #${id}`
+  } 
+  // DEMANDS
+  else if (path === '/demands') {
+    return 'Заявки'
+  } else if (path.includes('/demands/')) {
+    let startIndex = path.lastIndexOf('/')
+    let id = path.substr(startIndex + 1)
+    return `Заявка #${id}`
+  } 
+  // WAREHOUSE
+  else if (path === '/warehouse') {
+    return 'ТМЦ'
+  } else if (path.includes('/warehouse/')) {
+    let startIndex = path.lastIndexOf('/')
+    let id = path.substr(startIndex + 1)
+    return `ТМЦ #${id}`
+  } 
+  // COMPANIES 
+  else if (path === '/organizations') {
+    return 'Банды'
+  } else if (path.includes('/organizations/')) {
+    let startIndex = path.lastIndexOf('/')
+    let id = path.substr(startIndex + 1)
+    return `Банда #${id}`
+  } 
+  // ELSE
+  else {
+    return path;
+  }
+};
 
 watch(burgerIsOpened, () => {
   // console.log(`burgerIsOpened: ${burgerIsOpened.value}`);
@@ -160,7 +219,11 @@ watch(
               color="var(--bs-primary)"
             />
           </router-link> -->
-          <div class="back-btn" v-if="prevPage !== null && route.path !== '/'" @click="router.go(-1)">
+          <div
+            class="back-btn"
+            v-if="prevPage !== null && route.path !== '/'"
+            @click="router.go(-1)"
+          >
             <Icon
               class="link"
               name="material-symbols-light:arrow-back-ios"
@@ -173,10 +236,9 @@ watch(
           <router-link to="/" class="header-logo" @click="closeBurgerMenu">
             <span>stepbuild.ru</span>
           </router-link>
-
-          <div class="current-route_container">
+          <h1 class="current-route_container">
             {{ translateRoutePath(route.path) }}
-          </div>
+          </h1>
         </div>
 
         <!-- LIST of links -->
@@ -399,6 +461,23 @@ a:visited {
   }
   .login_contaner {
     display: none;
+  }
+  .current-route_container {
+    position: relative;
+    margin: 0;
+    font-size: 1rem;
+    font-weight: normal;
+    margin-left: 0.3rem;
+  }
+  .current-route_container:before {
+    content: "";
+    position: absolute;
+    top: 55%;
+    transform: translateY(-50%);
+    left: -0.4rem;
+    width: 1px;
+    height: 80%;
+    background-color: var(--bs-primary);
   }
   .links_container {
     position: absolute;

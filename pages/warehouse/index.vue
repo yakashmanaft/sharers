@@ -910,7 +910,9 @@ watch(item.value, () => {
 </script>
 <template>
   <Container>
-    <h1 class="mt-5rem">ТМЦ</h1>
+    <div class="mt-5rem">
+      <h1 class="header-h1">ТМЦ</h1>
+    </div>
 
     <!-- EDIT ITEM MODAL-->
     <!-- Button trigger modal -->
@@ -958,14 +960,11 @@ watch(item.value, () => {
     <!-- Button trigger modal create item -->
     <button
       type="button"
-      class="btn btn-primary btn-create-modal-open-575"
+      class="btn btn-primary btn-create-modal-open-767"
       data-bs-toggle="modal"
       data-bs-target="#newWarehouseItemModal"
     >
-    <span>
-
-      Создать
-    </span>
+      <span> Создать </span>
     </button>
 
     <!-- Modal create item-->
@@ -1201,7 +1200,7 @@ watch(item.value, () => {
 
     <!-- FILTERS RADIO BTN -->
     <div class="switch-type_container">
-      <div>
+      <div style="max-width: 100%">
         <!-- set location & project -->
         <select
           class="form-select form-select-sm filter-location_select"
@@ -1210,7 +1209,7 @@ watch(item.value, () => {
         >
           <!-- all locations & projects -->
           <option :value="{ title: 'all', type: 'all', id: null }">Все</option>
-  
+
           <!-- All locations -->
           <optgroup label="All locations">
             <option :value="{ title: 'location', type: 'sklad', id: null }">
@@ -1226,7 +1225,7 @@ watch(item.value, () => {
               Все проекты
             </option>
           </optgroup>
-  
+
           <!-- Locations -->
           <optgroup label="Locations">
             <option
@@ -1241,7 +1240,7 @@ watch(item.value, () => {
               {{ location.address }}
             </option>
           </optgroup>
-  
+
           <!-- projects -->
           <optgroup label="Проекты">
             <option
@@ -1252,7 +1251,7 @@ watch(item.value, () => {
             </option>
           </optgroup>
         </select>
-  
+
         <!-- set category type -->
         <div class="set-categoty-type_wrapper">
           <!-- SWITCH BTNs -->
@@ -1547,51 +1546,13 @@ td {
     display: flex;
     flex-direction: column;
   }
-  .switch-type_container {
-    flex-direction: column;
-  }
   .item-table_header {
     display: none;
   }
-  .btn-create-modal-open-575 {
-    z-index: 100;
-    position: fixed;  
-    bottom: 1.5rem;
-    right: 1.5rem;
-    /* background-color: black; */
-    /* color: black; */
-    width: 72px;
-    height: 72px;
-    border-radius: 100%;
-    text-align: center;
-    color: transparent;
-    /* position: relative; */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+  .set-categoty-type_wrapper {
+    padding: 0 0.5rem;
   }
-  .btn-create-modal-open-575:active {
-    color: transparent;
-  }
-  .btn-create-modal-open-575:after,
-  .btn-create-modal-open-575:before {
-    content: '';
-    position: absolute;
-    top: 25%;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #fff;
-    width: 3px;
-    border-radius: 16px;  
-    height: 36px;
-  }
-  .btn-create-modal-open-575:after {
-    transform: rotate(90deg)
-  }
-  .filter-location_select {
-    background-color: red;
-  }
+  /* .filter-location_select {} */
   /* .filter-location_select {
     width: 150px;
     position: relative;
@@ -1602,6 +1563,74 @@ td {
     top: 0;
     left: 0;
   } */
+}
+
+@media screen and (max-width: 767px) {
+  .header-h1 {
+    display: none;
+  }
+  .btn-create-modal-open-767 {
+    z-index: 100;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    /* background-color: black; */
+    /* color: black; */
+    width: 64px;
+    height: 64px;
+    border-radius: 100%;
+    text-align: center;
+    color: transparent;
+    /* position: relative; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+  }
+  .btn-create-modal-open-767:active {
+    color: transparent;
+  }
+  .btn-create-modal-open-767:after,
+  .btn-create-modal-open-767:before {
+    content: "";
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+    width: 3px;
+    border-radius: 16px;
+    height: 32px;
+  }
+  .btn-create-modal-open-767:after {
+    transform: rotate(90deg);
+  }
+  .switch-type_container {
+    flex-direction: column;
+  }
+  .filter-location_select {
+    background-color: red;
+    background: url("~/assets/icons/filter-icon.svg") no-repeat right center;
+    font-size: 1rem;
+    /* background-size: 32px 32px; */
+    /* color: var(--bs-primary) */
+  }
+  .set-categoty-type_wrapper {
+    /* padding: 0 0.5rem; */
+    width: 100%;
+    gap: 0 !important;
+    /* background-color: blue; */
+    overflow-x: scroll;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    /* width: 400px;
+    overflow-x: scroll;
+    gap: 0; */
+  }
+  .set-categoty-type_wrapper::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .search-container {

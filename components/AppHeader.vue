@@ -39,6 +39,11 @@ const featuresListAuth = ref([
   //   title: "Бонды",
   //   auth: true,
   // },
+  {
+    path: "/about",
+    title: "О сервисе",
+    auth: true,
+  },
 ]);
 
 const featuresListNoAuth = ref([
@@ -89,61 +94,61 @@ const toggleAccountMenu = () => {
 // translaters
 const translateRoutePath = (path: string) => {
   // INDEX, LOGIN, REGISTER
-  if (path === "/" || path === '/login') {
+  if (path === "/" || path === "/login") {
     return;
-  } 
+  }
   // ABOUT, POLICY, CONTRACT, SETTINGS, DASHBOARD
-  else if (path === '/about') {
-    return 'О сервисе'
-  } else if (path === '/policy') {
-    return 'Политика'
-  } else if (path === '/contract') {
-    return 'Соглашение'
-  } else if (path === '/account') { 
-    return 'Настройки'
-  } else if (path === '/dashboard') {
-    return 'Доска'
-  } 
+  else if (path === "/about") {
+    return "О сервисе";
+  } else if (path === "/policy") {
+    return "Политика";
+  } else if (path === "/contract") {
+    return "Соглашение";
+  } else if (path === "/account") {
+    return "Настройки";
+  } else if (path === "/dashboard") {
+    return "Доска";
+  }
   // PROJECTS
-  else if (path === '/projects') {
-    return "Проекты"
-  } else if (path.includes('/projects/')) {
-    let startIndex = path.lastIndexOf('/')
-    let id = path.substr(startIndex + 1)
-    return `Проект #${id}`
-  } 
+  else if (path === "/projects") {
+    return "Проекты";
+  } else if (path.includes("/projects/")) {
+    let startIndex = path.lastIndexOf("/");
+    let id = path.substr(startIndex + 1);
+    return `Проект #${id}`;
+  }
   // PARTNERS
-  else if (path === '/partners') {
-    return 'Соучастники'
-  } else if (path.includes('/partners/')) {
-    let startIndex = path.lastIndexOf('/')
-    let id = path.substr(startIndex + 1)
-    return `Cоучастник #${id}`
-  } 
+  else if (path === "/partners") {
+    return "Соучастники";
+  } else if (path.includes("/partners/")) {
+    let startIndex = path.lastIndexOf("/");
+    let id = path.substr(startIndex + 1);
+    return `Cоучастник #${id}`;
+  }
   // DEMANDS
-  else if (path === '/demands') {
-    return 'Заявки'
-  } else if (path.includes('/demands/')) {
-    let startIndex = path.lastIndexOf('/')
-    let id = path.substr(startIndex + 1)
-    return `Заявка #${id}`
-  } 
+  else if (path === "/demands") {
+    return "Заявки";
+  } else if (path.includes("/demands/")) {
+    let startIndex = path.lastIndexOf("/");
+    let id = path.substr(startIndex + 1);
+    return `Заявка #${id}`;
+  }
   // WAREHOUSE
-  else if (path === '/warehouse') {
-    return 'ТМЦ'
-  } else if (path.includes('/warehouse/')) {
-    let startIndex = path.lastIndexOf('/')
-    let id = path.substr(startIndex + 1)
-    return `ТМЦ #${id}`
-  } 
-  // COMPANIES 
-  else if (path === '/organizations') {
-    return 'Банды'
-  } else if (path.includes('/organizations/')) {
-    let startIndex = path.lastIndexOf('/')
-    let id = path.substr(startIndex + 1)
-    return `Банда #${id}`
-  } 
+  else if (path === "/warehouse") {
+    return "ТМЦ";
+  } else if (path.includes("/warehouse/")) {
+    let startIndex = path.lastIndexOf("/");
+    let id = path.substr(startIndex + 1);
+    return `ТМЦ #${id}`;
+  }
+  // COMPANIES
+  else if (path === "/organizations") {
+    return "Банды";
+  } else if (path.includes("/organizations/")) {
+    let startIndex = path.lastIndexOf("/");
+    let id = path.substr(startIndex + 1);
+    return `Банда #${id}`;
+  }
   // ELSE
   else {
     return path;
@@ -206,19 +211,6 @@ watch(
       <div class="header-container">
         <div class="nav-block_left">
           <!-- Back BTN -->
-          <!-- <div  > -->
-          <!-- <router-link
-            :to="prevPage"
-            class="back-btn"
-            v-if="prevPage !== null && route.path !== '/'"
-          >
-            <Icon
-              class="link"
-              name="material-symbols-light:arrow-back-ios"
-              size="24px"
-              color="var(--bs-primary)"
-            />
-          </router-link> -->
           <div
             class="back-btn"
             v-if="prevPage !== null && route.path !== '/'"
@@ -233,13 +225,18 @@ watch(
           </div>
           <!-- </div> -->
           <!-- LOGO -->
-          <router-link to="/" class="header-logo" @click="closeBurgerMenu">
+          <router-link
+            v-if="useAuthStore().loggedIn !== true"
+            to="/"
+            class="header-logo"
+            @click="closeBurgerMenu"
+          >
             <span>stepbuild.ru</span>
           </router-link>
-          <h1 class="current-route_container">
-            {{ translateRoutePath(route.path) }}
-          </h1>
         </div>
+        <h1 class="current-route_container">
+          {{ translateRoutePath(route.path) }}
+        </h1>
 
         <!-- LIST of links -->
         <div
@@ -466,10 +463,12 @@ a:visited {
     position: relative;
     margin: 0;
     font-size: 1rem;
-    font-weight: normal;
-    margin-left: 0.3rem;
+    /* font-weight: normal; */
+    /* margin-left: 0.3rem; */
+    flex: 1;
+    /* text-align: center; */
   }
-  .current-route_container:before {
+  /* .current-route_container:before {
     content: "";
     position: absolute;
     top: 55%;
@@ -478,7 +477,7 @@ a:visited {
     width: 1px;
     height: 80%;
     background-color: var(--bs-primary);
-  }
+  } */
   .links_container {
     position: absolute;
     right: 0;

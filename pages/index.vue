@@ -43,6 +43,13 @@ const { loggedIn, user, session, clear } = useUserSession();
     </div>
     <br /> -->
     <h1 style="margin-top: 5rem">Landing page about "СОУЧАСТНИКИ"</h1>
+    <br />
+    <div v-if="user">
+      <router-link to="/dashboard">Доска</router-link>
+    </div>
+    <div v-else>
+      <router-link to="/login">Войти</router-link>
+    </div>
     <!-- Show if no users loaded -->
     <!-- <div v-if="!users.length">
       <p>No users loaded</p>

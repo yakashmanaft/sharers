@@ -213,7 +213,7 @@ watch(
           <!-- Back BTN -->
           <div
             class="back-btn"
-            v-if="prevPage !== null && route.path !== '/'"
+            v-if="prevPage !== null && route.path !== '/' && route.path !== '/login'"
             @click="router.go(-1)"
           >
             <Icon

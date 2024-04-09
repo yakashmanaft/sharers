@@ -1236,8 +1236,9 @@ watch(item.value, () => {
               }"
               v-for="(location, i) in locations"
             >
-              {{ location.type }} | {{ location.title }} |
-              {{ location.address }}
+              <!-- {{ location.type }} |  -->
+              {{ location.title }} 
+              <!-- | {{ location.address }} -->
             </option>
           </optgroup>
 
@@ -1247,7 +1248,8 @@ watch(item.value, () => {
               :value="{ title: 'project', id: project.id }"
               v-for="(project, i) in projects"
             >
-              {{ project.title }} | {{ project.address }}
+              {{ project.title }} 
+              <!-- | {{ project.address }} -->
             </option>
           </optgroup>
         </select>
@@ -1388,15 +1390,15 @@ watch(item.value, () => {
                 />
               </div>
             </td>
-            <td scope="col">
+            <td class="span-3" scope="col">
               <span>{{ index + 1 }}. </span>
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
                 {{ item.title }}
               </span>
             </td>
-            <td scope="col">
-              <div>{{ item.qty }} {{ item.measure }}</div>
-              <div
+            <td class="item-qty" scope="col">
+              <span>{{ item.qty }} {{ item.measure }}</span>
+              <!-- <div
                 style="
                   display: flex;
                   align-items: center;
@@ -1404,20 +1406,20 @@ watch(item.value, () => {
                   justify-content: flex-start;
                 "
               >
-                <!-- <Icon
+                <Icon
                   class="link"
                   :class="{ isEmpty: !item.qty }"
                   name="material-symbols-light:remove-rounded"
                   @click="changeQty('sub', item.id)"
-                /> -->
-                <!-- <Icon
+                />
+                <Icon
                   class="link"
                   name="material-symbols-light:add"
                   @click="changeQty('add', item.id)"
-                /> -->
-              </div>
+                />
+              </div> -->
             </td>
-            <td scope="col">
+            <td class="span-5" scope="col">
               <span
                 class="link link-location"
                 :class="`${locationLinkColorized(item.location)}`"
@@ -1426,14 +1428,14 @@ watch(item.value, () => {
                 {{ translateLocation(item.locationID, item.location) }}
               </span>
             </td>
-            <td scope="col">
+            <td class="span-2" scope="col">
               <span
                 class="link"
                 @click="onClickOwner(item.ownerID, item.ownerType)"
                 >{{ translateOwner(item.ownerID, item.ownerType) }}
               </span>
             </td>
-            <td scope="col">
+            <td class="span-2" scope="col">
               <span
                 class="link"
                 @click="$router.push(`/partners/${item.responsible}`)"
@@ -1542,10 +1544,6 @@ td {
   .set-categoty-type_wrapper {
     flex-direction: column;
   }
-  .table-row_wrapper {
-    display: flex;
-    flex-direction: column;
-  }
   .item-table_header {
     display: none;
   }
@@ -1609,12 +1607,30 @@ td {
     flex-direction: column;
   }
   .filter-location_select {
-    background-color: red;
-    background: url("~/assets/icons/filter-icon.svg") no-repeat right center;
+    margin: 0 0.5rem;
+    width: 60%;
+    /* background-color: red; */
+    /* background: url("~/assets/icons/filter-icon.svg") no-repeat right center; */
     font-size: 1rem;
     /* background-size: 32px 32px; */
     /* color: var(--bs-primary) */
+    display: block;
+    /* width: 100%; */
+    padding: .75rem 2.5rem .75rem 1rem;/* отступы от текста до рамки */
+    /* background: none; */
+    border: 1px solid var(--bs-primary-bg-subtle); 
+    border-radius: 3px;/* скругление полей формы */
+    -webkit-appearance: none;/* Chrome */
+    -moz-appearance: none;/* Firefox */
+    appearance: none;/* убираем дефолнтные стрелочки */
+    font-family: inherit;/* наследует от родителя */
+    font-size: 1rem;
+    /* color: #444;       */
+    color: var(--bs-blue)
   }
+  /* .filter-location_select:focus {
+    border: none;
+  } */
   .set-categoty-type_wrapper {
     /* padding: 0 0.5rem; */
     width: 100%;
@@ -1630,6 +1646,34 @@ td {
   }
   .set-categoty-type_wrapper::-webkit-scrollbar {
     display: none;
+  }
+  .table-row_wrapper {
+    padding: 0;
+    padding-top: 0.5rem;
+    width: 100%;
+    display: inline-grid;
+    grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+  }
+  .table-row_wrapper td {
+    background-color: red;
+    /* padding: 0; */
+    grid-gap: 1px;
+  }
+  .table-row_wrapper td.item-qty {
+    text-wrap: nowrap;
+    text-align: right;
+  }
+  .table-row_wrapper td.span-3 {
+    background-color: green!important;
+    grid-column: span 3
+  }
+  .table-row_wrapper td.span-2 {
+    background-color: purple!important;
+    grid-column: span 2
+  }
+  .table-row_wrapper td.span-5 {
+    background-color: yellow!important;
+    grid-column: span 5
   }
 }
 
@@ -1702,7 +1746,5 @@ td {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-}
-.table-row_wrapper {
 }
 </style>

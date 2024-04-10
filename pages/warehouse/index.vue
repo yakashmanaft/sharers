@@ -298,20 +298,43 @@ onMounted(async () => {
   await loadData();
 
   // Используем для закрытия модалки item action modal
-  document.addEventListener("click", (e) => {
-    // console.log(e.target.parentNode.id);
-    let modal = document.getElementById(`${currentItemActionModal.value}`);
-    if (modal) {
-      if (currentItemActionModal.value) {
-        if (modal && e.target.parentNode.id) {
-          modal.classList.add("item-action-modal_opened");
-        } else {
-          // modal.classList.remove("item-action-modal_opened");
-          currentItemActionModal.value = null;
-        }
-      }
-    }
-  });
+  // document.addEventListener("click", (e) => {
+  //   e.stopPropagation();
+  //   if(currentExpendedItemBlock.value) {
+  //     if(e.target.id === currentExpendedItemBlock.value) {
+  //       console.log('ДАДАДАД')
+  //     }
+  //   }
+    // if (currentExpendedItemBlock.value) {
+    //   if (e.target.id === "expend-item") {
+    //     let block = document.getElementById(
+    //       `${currentExpendedItemBlock.value}`
+    //     );
+    //     if (block.classList.contains("expended-item_opened")) {
+    //       block.classList.remove("expended-item_opened");
+    //       // currentExpendedItemBlock.value = null;
+    //     } else {
+    //       block.classList.add("expended-item_opened");
+    //     }
+    //   }
+    // } else {
+    //   currentExpendedItemBlock.value = null;
+    // }
+    //   let block = document.getElementById(`${currentExpendedItemBlock.value}`);
+    //   if (e.target.id === "expend-item") {
+    //     if (block === currentExpendedItemBlock.value) {
+    //     } else {
+    //     }
+    //   }
+    //   // console.log(currentExpendedItemBlock.value);
+    //   //   if (currentExpendedItemBlock.value) {
+    //   //     if (block && e.target) {
+    //   //     } else {
+    //   //       currentExpendedItemBlock.value = null;
+    //   //     }
+    //   //   }
+    // }
+  // });
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
@@ -831,14 +854,32 @@ const itemActions = ref([
     title: "Редактировать",
   },
 ]);
-const currentItemActionModal = ref("");
-const openItemActionModal = (itemID: number) => {
-  // let modal = document.querySelector(`#item-${itemID}-action_modal`);
-  // modal.classList.add("item-action-modal_opened");
-  // console.log(`itemID: ${itemID}`);
-  currentItemActionModal.value = `item-${itemID}-action_modal`;
-  // console.log(modal);
-  // console.log(currentItemActionModal.value);
+const currentExpendedItemBlock = ref(null);
+// const actionModalOpened = ref(false)
+// const openItemActionModal = (itemID: number) => {
+//   // let modal = document.querySelector(`#item-${itemID}-action_modal`);
+//   // modal.classList.add("item-action-modal_opened");
+//   console.log(`itemID: ${itemID}`);
+//   currentExpendedItemBlock.value = `item-${itemID}-action_modal`;
+//   // console.log(modal);
+//   // console.log(currentExpendedItemBlock.value);
+//   // expend-item-${item.id}_block
+// };
+const toggleExpendedItemBlock = (itemID: number) => {
+  if (itemID) {
+    currentExpendedItemBlock.value = `expended-item-${itemID}_block`;
+    let block = document.querySelector(`#${currentExpendedItemBlock.value}`);
+    console.log(block);
+    console.log(currentExpendedItemBlock.value);
+    if(block) {
+    //   console.log(block)
+      if(block.classList.contains('expended-item_opened')) {
+        block.classList.remove("expended-item_opened");
+      } else {
+        block.classList.add("expended-item_opened");
+      }
+    }
+  }
 };
 
 //
@@ -854,20 +895,20 @@ const onClickAction = (action, item) => {
 
 // ******** WATCHERS ********
 
-watch(currentItemActionModal, (newValue, prevValue) => {
+watch(currentExpendedItemBlock, (newValue, prevValue) => {
+  // console.log(`newValue: ${newValue}`);
+  // console.log(`prevValue: ${prevValue}`);
   if (newValue) {
-    // let modal = document.querySelector(`#${currentItemActionModal.value}`);
-    // modal.classList.add("item-action-modal_opened");
+    // let newBlock = document.querySelector(`#${currentExpendedItemBlock.value}`);
+    // newBlock.classList.add("expended-item_opened");
   }
   if (prevValue) {
-    // console.log(`newValue: ${newValue}`);
-    // console.log(`prevValue: ${prevValue}`);
-    let modal = document.querySelector(`#${prevValue}`);
-    if (modal) {
-      // console.log(modal);
-      modal.classList.remove("item-action-modal_opened");
-      // currentItemActionModal.value = null;
-    }
+    // let prevBlock = document.querySelector(`#${prevValue}`);
+    // if (prevBlock) {
+    //   //   console.log(modal);
+    //   prevBlock.classList.remove("expended-item_opened");
+    //   currentExpendedItemBlock.value = null;
+    // }
   }
   // }
   // if (prevValue) {
@@ -905,6 +946,10 @@ watch(item.value, () => {
     createNewItemBtnIsDisabled.value = true;
   }
 });
+
+// watch(actionModalOpened, () => {
+//   console.log(actionModalOpened.value)
+// })
 
 //
 </script>
@@ -1237,7 +1282,7 @@ watch(item.value, () => {
               v-for="(location, i) in locations"
             >
               <!-- {{ location.type }} |  -->
-              {{ location.title }} 
+              {{ location.title }}
               <!-- | {{ location.address }} -->
             </option>
           </optgroup>
@@ -1248,7 +1293,7 @@ watch(item.value, () => {
               :value="{ title: 'project', id: project.id }"
               v-for="(project, i) in projects"
             >
-              {{ project.title }} 
+              {{ project.title }}
               <!-- | {{ project.address }} -->
             </option>
           </optgroup>
@@ -1360,66 +1405,38 @@ watch(item.value, () => {
           </div>
 
           <tr class="table-row_wrapper" v-for="(item, index) in computedItems">
-            <td style="position: relative">
-              <div
-                :id="`item-${item.id}-action_modal`"
-                class="item-action-modal"
-              >
-                <!-- <div>{{ item.id }}</div> -->
-                <!-- data-bs-toggle="modal" data-bs-target="editWarehouseItemModal" -->
-                <button
-                  v-for="(action, index) in itemActions"
-                  type="button"
-                  class="btn dropdown-item"
-                  data-bs-toggle="modal"
-                  data-bs-target="#editWarehouseItemModal"
-                  @click="onClickAction(action.type, item)"
-                  :disabled="
-                    item.qty == 0 && action.type === 'sub' ? true : false
-                  "
-                >
-                  <span>{{ action.title }}</span>
-                </button>
-              </div>
-              <div id="icon" @click="openItemActionModal(item.id)">
+            <!-- 1 -->
+            <td>
+              <label>
+                <input
+                  type="checkbox"
+                  id="expend-item"
+                  :class="`expended-item-${item.id}_block`"
+                />
                 <Icon
-                  class="link"
-                  :class="{ isEmpty: !item.qty, isNotEmpty: item.qty }"
-                  name="material-symbols-light:question-exchange-rounded"
+                  @click="toggleExpendedItemBlock(item.id)"
+                  class="expand-item_icon"
+                  name="material-symbols-light:expand-more"
                   size="28px"
                 />
-              </div>
+              </label>
             </td>
+
+            <!-- 2 -->
             <td class="span-3" scope="col">
               <span>{{ index + 1 }}. </span>
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
                 {{ item.title }}
               </span>
             </td>
+
+            <!-- 3 -->
             <td class="item-qty" scope="col">
               <span>{{ item.qty }} {{ item.measure }}</span>
-              <!-- <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  gap: 1rem;
-                  justify-content: flex-start;
-                "
-              >
-                <Icon
-                  class="link"
-                  :class="{ isEmpty: !item.qty }"
-                  name="material-symbols-light:remove-rounded"
-                  @click="changeQty('sub', item.id)"
-                />
-                <Icon
-                  class="link"
-                  name="material-symbols-light:add"
-                  @click="changeQty('add', item.id)"
-                />
-              </div> -->
             </td>
-            <td class="span-5" scope="col">
+
+            <!-- 4 -->
+            <td class="span-5 hide-767" scope="col">
               <span
                 class="link link-location"
                 :class="`${locationLinkColorized(item.location)}`"
@@ -1428,19 +1445,69 @@ watch(item.value, () => {
                 {{ translateLocation(item.locationID, item.location) }}
               </span>
             </td>
-            <td class="span-2" scope="col">
+
+            <!-- 5 -->
+            <td class="span-2 hide-767" scope="col">
               <span
                 class="link"
                 @click="onClickOwner(item.ownerID, item.ownerType)"
                 >{{ translateOwner(item.ownerID, item.ownerType) }}
               </span>
             </td>
-            <td class="span-2" scope="col">
+
+            <!-- 6 -->
+            <td class="span-2 hide-767" scope="col">
               <span
                 class="link"
                 @click="$router.push(`/partners/${item.responsible}`)"
                 >{{ translateResponsibles(item.responsible) }}</span
               >
+            </td>
+
+            <!-- 7 -->
+            <!-- Item actions -->
+            <td
+              class="span-5 expended-item"
+              :id="`expended-item-${item.id}_block`"
+            >
+              <div style="display: flex; justify-content: space-between">
+                <div>
+                  <button
+                    v-for="(action, index) in itemActions"
+                    type="button"
+                    class="btn dropdown-item"
+                    data-bs-toggle="modal"
+                    data-bs-target="#editWarehouseItemModal"
+                    @click="onClickAction(action.type, item)"
+                    :disabled="
+                      item.qty == 0 && action.type === 'sub' ? true : false
+                    "
+                  >
+                    <span>{{ action.title }}</span>
+                  </button>
+                </div>
+
+                <!--  -->
+                <div class="show-767">
+                  <span
+                    class="link link-location"
+                    :class="`${locationLinkColorized(item.location)}`"
+                    @click="creatLocationLink(item)"
+                  >
+                    {{ translateLocation(item.locationID, item.location) }}
+                  </span>
+                  <span
+                    class="link"
+                    @click="onClickOwner(item.ownerID, item.ownerType)"
+                    >{{ translateOwner(item.ownerID, item.ownerType) }}
+                  </span>
+                  <span
+                    class="link"
+                    @click="$router.push(`/partners/${item.responsible}`)"
+                    >{{ translateResponsibles(item.responsible) }}</span
+                  >
+                </div>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -1540,12 +1607,40 @@ td {
   background-color: #b1e3c1;
   color: white;
 }
+.item-table_header tr,
+.table-row_wrapper {
+  display: inline-grid;
+  padding: 0;
+  width: 100%;
+  grid-template-columns: 50px 1fr 100px 1fr 200px 200px;
+}
+.expand-item_icon {
+  cursor: pointer;
+}
+label #expend-item {
+  display: none;
+}
+label #expend-item:checked + .expand-item_icon {
+  transform: rotate(180deg);
+}
+.expended-item {
+  display: none;
+}
+.expended-item_opened {
+  display: block;
+}
+/* label #expend-item:checked .expend-item_block {
+  display: block;
+} */
+.hide-767 {
+  display: block;
+}
+.show-767 {
+  display: none;
+}
 @media screen and (max-width: 575px) {
   .set-categoty-type_wrapper {
     flex-direction: column;
-  }
-  .item-table_header {
-    display: none;
   }
   .set-categoty-type_wrapper {
     padding: 0 0.5rem;
@@ -1616,17 +1711,17 @@ td {
     /* color: var(--bs-primary) */
     display: block;
     /* width: 100%; */
-    padding: .75rem 2.5rem .75rem 1rem;/* отступы от текста до рамки */
+    padding: 0.75rem 2.5rem 0.75rem 1rem; /* отступы от текста до рамки */
     /* background: none; */
-    border: 1px solid var(--bs-primary-bg-subtle); 
-    border-radius: 3px;/* скругление полей формы */
-    -webkit-appearance: none;/* Chrome */
-    -moz-appearance: none;/* Firefox */
-    appearance: none;/* убираем дефолнтные стрелочки */
-    font-family: inherit;/* наследует от родителя */
+    border: 1px solid var(--bs-primary-bg-subtle);
+    border-radius: 3px; /* скругление полей формы */
+    -webkit-appearance: none; /* Chrome */
+    -moz-appearance: none; /* Firefox */
+    appearance: none; /* убираем дефолнтные стрелочки */
+    font-family: inherit; /* наследует от родителя */
     font-size: 1rem;
     /* color: #444;       */
-    color: var(--bs-blue)
+    color: var(--bs-blue);
   }
   /* .filter-location_select:focus {
     border: none;
@@ -1647,6 +1742,9 @@ td {
   .set-categoty-type_wrapper::-webkit-scrollbar {
     display: none;
   }
+  .item-table_header {
+    display: none;
+  }
   .table-row_wrapper {
     padding: 0;
     padding-top: 0.5rem;
@@ -1656,24 +1754,33 @@ td {
   }
   .table-row_wrapper td {
     background-color: red;
+    margin: 0;
     /* padding: 0; */
-    grid-gap: 1px;
   }
   .table-row_wrapper td.item-qty {
     text-wrap: nowrap;
     text-align: right;
   }
   .table-row_wrapper td.span-3 {
-    background-color: green!important;
-    grid-column: span 3
+    background-color: green !important;
+    grid-column: span 3;
   }
   .table-row_wrapper td.span-2 {
-    background-color: purple!important;
-    grid-column: span 2
+    background-color: purple !important;
+    grid-column: span 2;
   }
   .table-row_wrapper td.span-5 {
-    background-color: yellow!important;
-    grid-column: span 5
+    background-color: yellow !important;
+    grid-column: span 5;
+  }
+  .hide-767 {
+    display: none;
+  }
+  .show-767 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: space-around;
   }
 }
 
@@ -1709,12 +1816,11 @@ td {
 .isNotEmpty {
   color: var(--bs-blue);
 }
-.item-action-modal {
+/* .item-action-modal {
   z-index: -1;
   display: flex;
   gap: 0.5rem;
   flex-direction: column;
-  /* border: 1px solid var(--bs-border-color); */
   border-radius: 16px;
   box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
   background-color: white;
@@ -1725,7 +1831,7 @@ td {
   left: 0;
   padding: 1rem;
   transition: all 0.2s ease-in-out;
-}
+} */
 .item-action-modal div {
   cursor: pointer;
 }

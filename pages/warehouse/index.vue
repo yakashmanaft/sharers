@@ -465,9 +465,9 @@ const translateLocation = (id: any, location: string) => {
       }
       // return `В ремонте #${id}, ${typeof id}`;
     } else if (location === "archive") {
-      return `Архив`;
+      return `В архиве`;
     } else if (location === "deleted") {
-      return "Удалено";
+      return "Списание";
     } else {
       return alert(
         "warehouse inidex.vue error - strange object.location in translateLocation function"
@@ -499,7 +499,7 @@ const translateOwner = (ownerID, ownerType) => {
     if (ownerType === "user") {
       // return `USER #${ownerID}`
       let userItem = users.value.find((item) => item.id === ownerID);
-      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}`;
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`;
     } else if (ownerType === "company") {
       // return `Компания #${ownerID}`
       let organizationItem = organizations.value.find(
@@ -839,20 +839,20 @@ async function updateItem(editedItem) {
 const itemActions = ref([
   {
     type: "add",
-    title: "Добавить к позиции",
+    title: "Добавить",
   },
   {
     type: "sub",
-    title: "Вычесть из позиции",
+    title: "Вычесть",
   },
   {
     type: "move",
     title: "Переместить",
   },
-  {
-    type: "edit",
-    title: "Редактировать",
-  },
+  // {
+  //   type: "edit",
+  //   title: "Редактировать",
+  // },
 ]);
 const currentExpendedItemBlock = ref(null);
 // const actionModalOpened = ref(false)
@@ -1316,7 +1316,7 @@ watch(item.value, () => {
                 id: null,
               }"
             >
-              Списано
+              Списание
             </option>
           </optgroup>
         </select>
@@ -1358,9 +1358,9 @@ watch(item.value, () => {
 
         <!-- FILTER BY ARCHIVE & DELETED -->
         <div class="filter-archive_container">
-          <span @click="showItemsInArchive">Архив </span>
+          <span @click="showItemsInArchive">В архиве </span>
           <span>|</span>
-          <span @click="showItemsInDeleted">Удаленные </span>
+          <span @click="showItemsInDeleted">Списание</span>
         </div>
       </div>
     </div>
@@ -1469,8 +1469,8 @@ watch(item.value, () => {
               class="span-5 expended-item"
               :id="`expended-item-${item.id}_block`"
             >
-              <div style="display: flex; justify-content: space-between">
-                <div>
+              <div class="expended-item_container">
+                <div class="expended-item_btns">
                   <button
                     v-for="(action, index) in itemActions"
                     type="button"
@@ -1487,24 +1487,33 @@ watch(item.value, () => {
                 </div>
 
                 <!--  -->
-                <div class="show-767">
-                  <span
-                    class="link link-location"
-                    :class="`${locationLinkColorized(item.location)}`"
-                    @click="creatLocationLink(item)"
-                  >
-                    {{ translateLocation(item.locationID, item.location) }}
-                  </span>
-                  <span
-                    class="link"
-                    @click="onClickOwner(item.ownerID, item.ownerType)"
-                    >{{ translateOwner(item.ownerID, item.ownerType) }}
-                  </span>
-                  <span
-                    class="link"
-                    @click="$router.push(`/partners/${item.responsible}`)"
-                    >{{ translateResponsibles(item.responsible) }}</span
-                  >
+                <div class="show-767 expended-item_content">
+                  <div class="expended-content_article">
+                    <p>Где</p>
+                    <span
+                      class="link link-location"
+                      :class="`${locationLinkColorized(item.location)}`"
+                      @click="creatLocationLink(item)"
+                    >
+                      {{ translateLocation(item.locationID, item.location) }}
+                    </span>
+                  </div>
+                  <div class="expended-content_article article_block">
+                    <p>Собственник</p>
+                    <span
+                      class="link"
+                      @click="onClickOwner(item.ownerID, item.ownerType)"
+                      >{{ translateOwner(item.ownerID, item.ownerType) }}
+                    </span>
+                  </div>
+                  <div class="expended-content_article article_block">
+                    <p>Ответственный</p>
+                    <span
+                      class="link"
+                      @click="$router.push(`/partners/${item.responsible}`)"
+                      >{{ translateResponsibles(item.responsible) }}</span
+                    >
+                  </div>
                 </div>
               </div>
             </td>
@@ -1812,27 +1821,39 @@ label #expend-item:checked + .expand-item_icon {
     padding-top: 0.5rem;
     width: 100%;
     display: inline-grid;
+    align-items: center;
     grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+    border-bottom: 1px solid var(--bs-border-color);
+    /* border-top: 1px solid cyan; */
   }
   .table-row_wrapper td {
-    background-color: red;
+    /* background-color: red; */
+    /* padding: 0; */
     margin: 0;
     /* padding: 0; */
+    border: none;
+  }
+  /* .table-row_wrapper td label {
+    background-color: red;
+  } */
+  .table-row_wrapper td label svg{
+    color: var(	--bs-primary);
+    margin: auto;
   }
   .table-row_wrapper td.item-qty {
     text-wrap: nowrap;
     text-align: right;
   }
   .table-row_wrapper td.span-3 {
-    background-color: green !important;
+    /* background-color: green !important; */
     grid-column: span 3;
   }
   .table-row_wrapper td.span-2 {
-    background-color: purple !important;
+    /* background-color: purple !important; */
     grid-column: span 2;
   }
   .table-row_wrapper td.span-5 {
-    background-color: yellow !important;
+    /* background-color: yellow !important; */
     grid-column: span 5;
   }
   .hide-767 {
@@ -1841,8 +1862,54 @@ label #expend-item:checked + .expand-item_icon {
   .show-767 {
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    /* align-items: flex-end; */
     justify-content: space-around;
+  }
+  .expended-item_container {
+    /* background-color: cyan; */
+    /* display: flex; */
+    justify-content: space-between;
+  }
+  .expended-item_btns {
+    /* background-color: red; */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .expended-item_btns button {
+    color: var(--bs-primary);
+    background-color: var(--bs-primary-bg-subtle);
+    border-radius: 16px;
+    padding: 6px 12px;
+    /* border-radius: 16px; */
+    /* padding: 4px 10px; */
+    /* background-color: gray; */
+    /* text-align: center; */
+  }
+  .expended-item_content {
+    margin-top: 1rem;
+    /* background-color: green; */
+    display: flex;
+  }
+  .expended-content_article {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .expended-content_article p {
+    margin: 0;
+    margin-left: 0.5rem;
+  }
+  .expended-content_article span {
+    /* background-color: var(	--bs-danger-bg-subtle) */
+  }
+  .article_block {
+    margin-top: 1rem;
+  }
+  .article_block span {
+    border-radius: 16px;
+    padding: 4px 10px;
+    background-color: var(--bs-danger-bg-subtle);
   }
 }
 

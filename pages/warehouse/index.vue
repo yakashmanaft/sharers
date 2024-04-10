@@ -305,35 +305,35 @@ onMounted(async () => {
   //       console.log('ДАДАДАД')
   //     }
   //   }
-    // if (currentExpendedItemBlock.value) {
-    //   if (e.target.id === "expend-item") {
-    //     let block = document.getElementById(
-    //       `${currentExpendedItemBlock.value}`
-    //     );
-    //     if (block.classList.contains("expended-item_opened")) {
-    //       block.classList.remove("expended-item_opened");
-    //       // currentExpendedItemBlock.value = null;
-    //     } else {
-    //       block.classList.add("expended-item_opened");
-    //     }
-    //   }
-    // } else {
-    //   currentExpendedItemBlock.value = null;
-    // }
-    //   let block = document.getElementById(`${currentExpendedItemBlock.value}`);
-    //   if (e.target.id === "expend-item") {
-    //     if (block === currentExpendedItemBlock.value) {
-    //     } else {
-    //     }
-    //   }
-    //   // console.log(currentExpendedItemBlock.value);
-    //   //   if (currentExpendedItemBlock.value) {
-    //   //     if (block && e.target) {
-    //   //     } else {
-    //   //       currentExpendedItemBlock.value = null;
-    //   //     }
-    //   //   }
-    // }
+  // if (currentExpendedItemBlock.value) {
+  //   if (e.target.id === "expend-item") {
+  //     let block = document.getElementById(
+  //       `${currentExpendedItemBlock.value}`
+  //     );
+  //     if (block.classList.contains("expended-item_opened")) {
+  //       block.classList.remove("expended-item_opened");
+  //       // currentExpendedItemBlock.value = null;
+  //     } else {
+  //       block.classList.add("expended-item_opened");
+  //     }
+  //   }
+  // } else {
+  //   currentExpendedItemBlock.value = null;
+  // }
+  //   let block = document.getElementById(`${currentExpendedItemBlock.value}`);
+  //   if (e.target.id === "expend-item") {
+  //     if (block === currentExpendedItemBlock.value) {
+  //     } else {
+  //     }
+  //   }
+  //   // console.log(currentExpendedItemBlock.value);
+  //   //   if (currentExpendedItemBlock.value) {
+  //   //     if (block && e.target) {
+  //   //     } else {
+  //   //       currentExpendedItemBlock.value = null;
+  //   //     }
+  //   //   }
+  // }
   // });
 });
 
@@ -871,9 +871,9 @@ const toggleExpendedItemBlock = (itemID: number) => {
     let block = document.querySelector(`#${currentExpendedItemBlock.value}`);
     console.log(block);
     console.log(currentExpendedItemBlock.value);
-    if(block) {
-    //   console.log(block)
-      if(block.classList.contains('expended-item_opened')) {
+    if (block) {
+      //   console.log(block)
+      if (block.classList.contains("expended-item_opened")) {
         block.classList.remove("expended-item_opened");
       } else {
         block.classList.add("expended-item_opened");
@@ -1297,6 +1297,28 @@ watch(item.value, () => {
               <!-- | {{ project.address }} -->
             </option>
           </optgroup>
+
+          <!-- Archive & deleted -->
+          <optgroup label="Прочее">
+            <option
+              :value="{
+                title: 'location',
+                type: 'archive',
+                id: null,
+              }"
+            >
+              В архиве
+            </option>
+            <option
+              :value="{
+                title: 'location',
+                type: 'deleted',
+                id: null,
+              }"
+            >
+              Списано
+            </option>
+          </optgroup>
         </select>
 
         <!-- set category type -->
@@ -1318,19 +1340,12 @@ watch(item.value, () => {
         </div>
       </div>
 
-      <div
-        style="
-          display: flex;
-          flex-direction: column;
-          align-items: flex-end;
-          gap: 0.3rem;
-        "
-      >
+      <div class="search-and-filter_container">
         <!-- SEARCH -->
         <div class="search-container">
           <input
             type="text"
-            class="form-control"
+            class="form-control search_input"
             placeholder="Поиск"
             v-model="searchInput"
           />
@@ -1342,26 +1357,10 @@ watch(item.value, () => {
         </div>
 
         <!-- FILTER BY ARCHIVE & DELETED -->
-        <div
-          style="
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-            margin-right: 0.5rem;
-          "
-        >
-          <span
-            style="cursor: pointer; color: var(--bs-blue)"
-            @click="showItemsInArchive"
-            >Архив
-          </span>
-          <span style="color: var(--bs-blue)">|</span>
-          <span
-            style="cursor: pointer; color: var(--bs-blue)"
-            @click="showItemsInDeleted"
-            >Удаленные
-          </span>
+        <div class="filter-archive_container">
+          <span @click="showItemsInArchive">Архив </span>
+          <span>|</span>
+          <span @click="showItemsInDeleted">Удаленные </span>
         </div>
       </div>
     </div>
@@ -1380,7 +1379,7 @@ watch(item.value, () => {
     <!-- data is loaded -->
     <div v-else>
       <!-- <div>{{ itemInfo.projects }}</div> -->
-      <br />
+      <!-- <br /> -->
       <!-- <div>{{ itemInfo.locations }}</div> -->
       <!-- СПИСОК ITEMS -->
       <!-- <div>{{ computedItems.length }}</div> -->
@@ -1570,9 +1569,18 @@ td {
   color: var(--bs-danger-bg-subtle);
   border: none;
 }
+.search-and-filter_container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between !important;
+  /* height: 100%; */
+  /* gap: 0.3rem; */
+}
 
 /* switch category type */
 .switch-type_container {
+  /* width: 100%; */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1632,6 +1640,22 @@ label #expend-item:checked + .expand-item_icon {
 /* label #expend-item:checked .expend-item_block {
   display: block;
 } */
+.filter-archive_container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  margin-right: 0.5rem;
+}
+
+.filter-archive_container span {
+  color: var(--bs-blue);
+}
+
+.filter-archive_container span:not(:nth-child(2)) {
+  cursor: pointer;
+}
+
 .hide-767 {
   display: block;
 }
@@ -1645,6 +1669,37 @@ label #expend-item:checked + .expand-item_icon {
   .set-categoty-type_wrapper {
     padding: 0 0.5rem;
   }
+  .filter-location_select {
+    margin: 0 0.5rem;
+  }
+  .search-and-filter_container {
+    position: absolute;
+    right: 0.5rem;
+    /* padding-right: 1rem; */
+  }
+  .search-and-filter_container .search_input {
+    max-width: 120px;
+  }
+  .search-container {
+    /* width: 100%; */
+    /* position: relative; */
+  }
+  .search_input {
+    /* position: absolute; */
+    /* top: 0; */
+    /* right: 1rem; */
+    /* display: none; */
+  }
+  .search-container svg {
+    /* position: absolute; */
+    /* top: 0; */
+    /* right: 3rem; */
+    /* display: none; */
+    /* right: 1rem; */
+    /* width: 32px;
+    height: 32px; */
+  }
+  /* .search_input  */
   /* .filter-location_select {} */
   /* .filter-location_select {
     width: 150px;
@@ -1699,10 +1754,11 @@ label #expend-item:checked + .expand-item_icon {
     transform: rotate(90deg);
   }
   .switch-type_container {
-    flex-direction: column;
+    /* flex-direction: column; */
+    align-items: flex-start;
   }
   .filter-location_select {
-    margin: 0 0.5rem;
+    /* margin: 0 0.5rem; */
     width: 60%;
     /* background-color: red; */
     /* background: url("~/assets/icons/filter-icon.svg") no-repeat right center; */
@@ -1722,6 +1778,12 @@ label #expend-item:checked + .expand-item_icon {
     font-size: 1rem;
     /* color: #444;       */
     color: var(--bs-blue);
+  }
+  /* .search-and-filter_container .search_input {
+    width: 150px;
+  } */
+  .filter-archive_container {
+    display: none;
   }
   /* .filter-location_select:focus {
     border: none;

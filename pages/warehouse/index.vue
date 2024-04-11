@@ -105,6 +105,7 @@ const measureTypes = ref([
 ]);
 
 // Для действий по редактированию предметов (добавление, вычитание, перемещение редактирование конкретного)
+const currentItem = ref(null);
 const editedActionType = ref(null);
 const editedItem = ref({
   id: null,
@@ -746,7 +747,7 @@ const itemActions = ref([
   },
   {
     type: "sub",
-    title: "Вычесть",
+    title: "Расход",
   },
   {
     type: "move",
@@ -779,6 +780,7 @@ const toggleExpendedItemBlock = (itemID: number) => {
 //
 const onClickAction = (action: string, item: any) => {
   editedActionType.value = action;
+  currentItem.value = item;
   if (action === "add" || action === "sub") {
     editedItem.value = {
       id: item.id,
@@ -861,29 +863,52 @@ watch(item.value, () => {
           <div class="modal-body">
             <h1>{{ editedItem.title }}</h1>
 
-            
-
-            <div v-if="editedActionType">
+            <div v-if="editedActionType && currentItem">
               <!-- add -->
               <div v-if="editedActionType === 'add'">
                 Добавляем
-                <br>
-                <br>
+                <br />
+                <br />
                 {{ editedItem }}
+                <br />
+                <br />
+                Количество: - 1 +
               </div>
               <!-- sub -->
               <div v-if="editedActionType === 'sub'">
-                Вычитаем
-                <br>
-                <br>
+                Расход
+                <br />
+                <br />
                 {{ editedItem }}
+                <br />
+                <br />
+                Количество: - 1 +
+                <br />
+                "Все 3"
               </div>
               <!-- move -->
               <div v-if="editedActionType === 'move'">
                 Перемещаем
-                <br>
-                <br>
+                <br />
+                <br />
                 {{ editedItem }}
+                <br />
+                <br />
+                Откуда:
+                {{
+                  translateLocation(
+                    currentItem.locationID,
+                    currentItem.location
+                  )
+                }}
+                <br />
+                >>>
+                <br />
+                Куда: Выберите
+                <br />
+                Количество: - 1 +
+                <br />
+                "Все 3"
               </div>
             </div>
           </div>

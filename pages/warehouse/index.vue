@@ -26,39 +26,6 @@ useHead({
 
 const router = useRouter();
 
-// В данном объекте owner - это user id из БД Users, далее функция переводчик
-// В данном объекте location - это project id из БД Projects, далее функция переводчик
-// const items_table_head = ref([
-//     // {
-//     //     id: 1,
-//     //     title: '#',
-//     // },
-//     // {
-//     //     id: 1,
-//     //     title: 'Uuid',
-//     // },
-//     {
-//         id: 1,
-//         title: 'Тип',
-//     },
-//     {
-//         id: 2,
-//         title: 'Наименование',
-//     },
-//     {
-//         id: 3,
-//         title: 'Кол-во',
-//     },
-//     {
-//         id: 4,
-//         title: 'Location',
-//     },
-//     {
-//         id: 5,
-//         title: 'Собственник',
-//     }
-// ])
-
 const item = ref({
   uuid: null,
   title: null,
@@ -141,6 +108,7 @@ const measureTypes = ref([
 const editedActionType = ref(null);
 const editedItem = ref({
   id: null,
+  title: null,
   qty: null,
 });
 
@@ -294,47 +262,8 @@ onMounted(async () => {
   refreshProjects();
   refreshLocations();
   refreshOrganizations();
-  // refreshUsers()
-  await loadData();
 
-  // Используем для закрытия модалки item action modal
-  // document.addEventListener("click", (e) => {
-  //   e.stopPropagation();
-  //   if(currentExpendedItemBlock.value) {
-  //     if(e.target.id === currentExpendedItemBlock.value) {
-  //       console.log('ДАДАДАД')
-  //     }
-  //   }
-  // if (currentExpendedItemBlock.value) {
-  //   if (e.target.id === "expend-item") {
-  //     let block = document.getElementById(
-  //       `${currentExpendedItemBlock.value}`
-  //     );
-  //     if (block.classList.contains("expended-item_opened")) {
-  //       block.classList.remove("expended-item_opened");
-  //       // currentExpendedItemBlock.value = null;
-  //     } else {
-  //       block.classList.add("expended-item_opened");
-  //     }
-  //   }
-  // } else {
-  //   currentExpendedItemBlock.value = null;
-  // }
-  //   let block = document.getElementById(`${currentExpendedItemBlock.value}`);
-  //   if (e.target.id === "expend-item") {
-  //     if (block === currentExpendedItemBlock.value) {
-  //     } else {
-  //     }
-  //   }
-  //   // console.log(currentExpendedItemBlock.value);
-  //   //   if (currentExpendedItemBlock.value) {
-  //   //     if (block && e.target) {
-  //   //     } else {
-  //   //       currentExpendedItemBlock.value = null;
-  //   //     }
-  //   //   }
-  // }
-  // });
+  await loadData();
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
@@ -372,25 +301,6 @@ const { data: organizations } = useLazyAsyncData("organizations", () =>
 
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
-// const { data: users } = useLazyAsyncData("users", () => {
-//   $fetch("api/usersList/users");
-// });
-// const { users, loadData } = useUsersStore();
-// await loadData();
-// console.log(users);
-
-// const computedProjects = computed(() =>
-//   projects.value
-// )
-// const { data: projects } = await useFetch("api/projects/projects", {
-//   lazy: false,
-//   transform: (projects) => {
-//     return projects.map((project) => ({
-//       id: project.id,
-//       title: project.title,
-//     }));
-//   },
-// });
 
 // Генерируем ссылки местонахождения
 const creatLocationLink = (object: any) => {
@@ -484,13 +394,6 @@ const translateResponsibles = (id: any) => {
   if (id) {
     let responsible = users.value.find((user) => user.id === id);
     return `${responsible?.surname} ${responsible?.name[0]}. ${responsible?.middleName[0]}.`;
-    // if (users.value.length) {
-    //   let responsible = users.value.find((user) => user.id === id);
-    //   // return `${responsible.surname} ${responsible.name[0]}. ${responsible.middleName[0]}.`;
-    //   if (responsible) {
-    //   }
-    // }
-    // return 123
   }
 };
 // owners
@@ -511,7 +414,19 @@ const translateOwner = (ownerID, ownerType) => {
     return `Не соучастник`;
   }
 };
+// action type
+const translateActionType = (actionType: string) => {
+  if (itemActions.value) {
+    let actionArray = itemActions.value.filter(
+      (item) => item.type === actionType
+    );
+    if (actionArray.length) {
+      return actionArray[0].title;
+    }
+  }
+};
 
+// не знал как назвать
 const onClickOwner = (ownerID: number, ownerType: string) => {
   if (ownerID && ownerType) {
     if (ownerType === "user") {
@@ -565,7 +480,6 @@ async function addWarehouseItem(item) {
     clearModalInputs(item);
 
     // refetching
-    // await refresh();
     filterItemsByCategoryType();
     filterItemsByLocationObj();
   }
@@ -789,21 +703,23 @@ const computedItems = computed(() =>
       )
 );
 
-// Изменения в количестве
-const changeQty = (action, id) => {
-  let item = items.value.find((item) => item.id === id);
+// Изменения в предмете
+const submitEditCurrentItem = () => {
+  // let item = items.value.find((item) => item.id === id);
 
-  if (action === "sub") {
-    if (item.qty > 0) {
-      item.qty--;
-    }
-  } else if (action === "add") {
-    item.qty++;
-  }
-  editedItem.value.id = item.id;
-  editedItem.value.qty = item.qty;
+  // if (action === "sub") {
+  //   if (item.qty > 0) {
+  //     item.qty--;
+  //   }
+  // } else if (action === "add") {
+  //   item.qty++;
+  // }
+  // editedItem.value.id = item.id;
+  // editedItem.value.qty = item.qty;
 
-  updateItem(editedItem.value);
+  // updateItem(editedItem.value);
+  console.log(`submitEditCurrentItem: ${editedActionType.value}`);
+  console.log(editedItem.value);
 };
 
 async function updateItem(editedItem) {
@@ -814,6 +730,7 @@ async function updateItem(editedItem) {
       method: "PUT",
       body: {
         id: editedItem.id,
+        // title: editedItem.title,
         qty: editedItem.qty,
       },
     });
@@ -821,20 +738,6 @@ async function updateItem(editedItem) {
   console.log(editedItem);
 }
 
-// Следим за изменением поиска
-// watch(searchInput, async () => {
-//   console.log(searchInput.value);
-//   if (searchInput.value === "") {
-//     filterItemsByLocationObj();
-//     filterItemsByCategoryType();
-//   } else {
-//     items.value = items.value.filter((item) => {
-//       return (
-//         item.title.toLowerCase().indexOf(searchInput.value.toLowerCase()) !== -1
-//       );
-//     });
-//   }
-// });
 // Item ACTIONS Modal FUNC
 const itemActions = ref([
   {
@@ -855,22 +758,13 @@ const itemActions = ref([
   // },
 ]);
 const currentExpendedItemBlock = ref(null);
-// const actionModalOpened = ref(false)
-// const openItemActionModal = (itemID: number) => {
-//   // let modal = document.querySelector(`#item-${itemID}-action_modal`);
-//   // modal.classList.add("item-action-modal_opened");
-//   console.log(`itemID: ${itemID}`);
-//   currentExpendedItemBlock.value = `item-${itemID}-action_modal`;
-//   // console.log(modal);
-//   // console.log(currentExpendedItemBlock.value);
-//   // expend-item-${item.id}_block
-// };
+
 const toggleExpendedItemBlock = (itemID: number) => {
   if (itemID) {
     currentExpendedItemBlock.value = `expended-item-${itemID}_block`;
     let block = document.querySelector(`#${currentExpendedItemBlock.value}`);
-    console.log(block);
-    console.log(currentExpendedItemBlock.value);
+    // console.log(block);
+    // console.log(currentExpendedItemBlock.value);
     if (block) {
       //   console.log(block)
       if (block.classList.contains("expended-item_opened")) {
@@ -883,42 +777,28 @@ const toggleExpendedItemBlock = (itemID: number) => {
 };
 
 //
-const onClickAction = (action, item) => {
+const onClickAction = (action: string, item: any) => {
   editedActionType.value = action;
-  editedItem.value = {
-    id: item.id,
-
-    qty: item.qty,
-  };
-  console.log(`action: ${action}, in item id: ${item.id}`);
+  if (action === "add" || action === "sub") {
+    editedItem.value = {
+      id: item.id,
+      title: item.title,
+      qty: item.qty,
+    };
+  } else if (action === "move") {
+    editedItem.value = {
+      id: item.id,
+      title: item.title,
+      qty: item.qty,
+      location: item.location,
+      locationID: item.locationID,
+      position: item.position,
+    };
+  }
+  console.log(`onClickAction: ${action}, id: ${item.id}`);
 };
 
 // ******** WATCHERS ********
-
-watch(currentExpendedItemBlock, (newValue, prevValue) => {
-  // console.log(`newValue: ${newValue}`);
-  // console.log(`prevValue: ${prevValue}`);
-  if (newValue) {
-    // let newBlock = document.querySelector(`#${currentExpendedItemBlock.value}`);
-    // newBlock.classList.add("expended-item_opened");
-  }
-  if (prevValue) {
-    // let prevBlock = document.querySelector(`#${prevValue}`);
-    // if (prevBlock) {
-    //   //   console.log(modal);
-    //   prevBlock.classList.remove("expended-item_opened");
-    //   currentExpendedItemBlock.value = null;
-    // }
-  }
-  // }
-  // if (prevValue) {
-  //   let modal = document.querySelector(`#${prevValue}`);
-  //   modal.classList.remove("item-action-modal_opened");
-  //   // console.log(modal);
-  // }
-  // if (prevValue && newValue) {
-  // }
-});
 
 // Следим за изменением фильтров и обновляем данные
 watch(currentCategoryByType, async () => {
@@ -947,10 +827,6 @@ watch(item.value, () => {
   }
 });
 
-// watch(actionModalOpened, () => {
-//   console.log(actionModalOpened.value)
-// })
-
 //
 </script>
 <template>
@@ -972,9 +848,9 @@ watch(item.value, () => {
       <div class="modal-dialog">
         <div class="modal-content">
           <div class="modal-header">
-            <h1 class="modal-title fs-5" id="editWarehouseItemModalLabel">
+            <!-- <h1 class="modal-title fs-5" id="editWarehouseItemModalLabel">
               Редактирование ТМЦ
-            </h1>
+            </h1> -->
             <button
               type="button"
               class="btn-close"
@@ -983,9 +859,33 @@ watch(item.value, () => {
             ></button>
           </div>
           <div class="modal-body">
-            {{ editedActionType }}
-            <br />
-            {{ editedItem }}
+            <h1>{{ editedItem.title }}</h1>
+
+            
+
+            <div v-if="editedActionType">
+              <!-- add -->
+              <div v-if="editedActionType === 'add'">
+                Добавляем
+                <br>
+                <br>
+                {{ editedItem }}
+              </div>
+              <!-- sub -->
+              <div v-if="editedActionType === 'sub'">
+                Вычитаем
+                <br>
+                <br>
+                {{ editedItem }}
+              </div>
+              <!-- move -->
+              <div v-if="editedActionType === 'move'">
+                Перемещаем
+                <br>
+                <br>
+                {{ editedItem }}
+              </div>
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -995,7 +895,13 @@ watch(item.value, () => {
             >
               Отменить
             </button>
-            <button type="button" class="btn btn-primary">Save changes</button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              @click="submitEditCurrentItem"
+            >
+              {{ translateActionType(editedActionType) }}
+            </button>
           </div>
         </div>
       </div>
@@ -1050,19 +956,6 @@ watch(item.value, () => {
             </div>
 
             <!-- TYPE -->
-            <!-- <div class="mb-3">
-              <label for="itemType" class="form-label"
-                >Тип (tools | stuff | consumables | technic
-                (warehouseCategories))</label
-              >
-              <input
-                v-model="item.type"
-                type="text"
-                id="itemType"
-                class="form-control"
-                aria-describedby="nameHelp"
-              />
-            </div> -->
             <div class="mb-3">
               <label for="itemType" class="form-label">Тип </label>
               <select
@@ -1091,18 +984,6 @@ watch(item.value, () => {
               "
             >
               <!-- MEASURE -->
-              <!-- <div class="mb-3">
-                <label for="itemMeasure" class="form-label"
-                  >Ед. Изм. (шт. | погм.м. | рулон | кг. | т.?)</label
-                >
-                <input
-                  v-model="item.measure"
-                  type="text"
-                  id="itemMeasure"
-                  class="form-control"
-                  aria-describedby="nameHelp"
-                />
-              </div> -->
               <div class="mb-3" style="width: 100%">
                 <label for="itemMeasure" class="form-label"
                   >Ед. измерения</label
@@ -1378,11 +1259,6 @@ watch(item.value, () => {
 
     <!-- data is loaded -->
     <div v-else>
-      <!-- <div>{{ itemInfo.projects }}</div> -->
-      <!-- <br /> -->
-      <!-- <div>{{ itemInfo.locations }}</div> -->
-      <!-- СПИСОК ITEMS -->
-      <!-- <div>{{ computedItems.length }}</div> -->
       <table class="table">
         <thead class="item-table_header">
           <tr>
@@ -1403,6 +1279,7 @@ watch(item.value, () => {
             </div>
           </div>
 
+          <!-- СПИСОК ITEMS -->
           <tr class="table-row_wrapper" v-for="(item, index) in computedItems">
             <!-- 1 -->
             <td>
@@ -1546,8 +1423,6 @@ td {
 }
 .link:hover {
   cursor: pointer;
-  /* color: white; */
-  /* background-color: var(--bs-info);    */
 }
 .link_project {
   color: var(--bs-success);
@@ -1555,7 +1430,6 @@ td {
   background-color: var(--bs-success-bg-subtle);
 }
 .link_sklad {
-  /* color: var(bs-primary-bg-subtle); */
   color: white;
   border: none;
   background-color: var(--bs-primary-bg-subtle);
@@ -1583,13 +1457,10 @@ td {
   flex-direction: column;
   align-items: flex-end;
   justify-content: space-between !important;
-  /* height: 100%; */
-  /* gap: 0.3rem; */
 }
 
 /* switch category type */
 .switch-type_container {
-  /* width: 100%; */
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1611,7 +1482,6 @@ td {
 .switch-type_el label {
   cursor: pointer;
   display: inline-block;
-  /* background-color: #d1d1d1; */
   padding: 4px 10px;
   border-radius: 16px;
 }
@@ -1646,9 +1516,6 @@ label #expend-item:checked + .expand-item_icon {
 .expended-item_opened {
   display: block;
 }
-/* label #expend-item:checked .expend-item_block {
-  display: block;
-} */
 .filter-archive_container {
   display: flex;
   align-items: center;
@@ -1684,42 +1551,10 @@ label #expend-item:checked + .expand-item_icon {
   .search-and-filter_container {
     position: absolute;
     right: 0.5rem;
-    /* padding-right: 1rem; */
   }
   .search-and-filter_container .search_input {
     max-width: 120px;
   }
-  .search-container {
-    /* width: 100%; */
-    /* position: relative; */
-  }
-  .search_input {
-    /* position: absolute; */
-    /* top: 0; */
-    /* right: 1rem; */
-    /* display: none; */
-  }
-  .search-container svg {
-    /* position: absolute; */
-    /* top: 0; */
-    /* right: 3rem; */
-    /* display: none; */
-    /* right: 1rem; */
-    /* width: 32px;
-    height: 32px; */
-  }
-  /* .search_input  */
-  /* .filter-location_select {} */
-  /* .filter-location_select {
-    width: 150px;
-    position: relative;
-  } */
-  /* .filter-location_select:before {
-    content: '1123';
-    position: absolute;
-    top: 0;
-    left: 0;
-  } */
 }
 
 @media screen and (max-width: 767px) {
@@ -1731,14 +1566,11 @@ label #expend-item:checked + .expand-item_icon {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
-    /* background-color: black; */
-    /* color: black; */
     width: 64px;
     height: 64px;
     border-radius: 100%;
     text-align: center;
     color: transparent;
-    /* position: relative; */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1763,58 +1595,41 @@ label #expend-item:checked + .expand-item_icon {
     transform: rotate(90deg);
   }
   .switch-type_container {
-    /* flex-direction: column; */
     align-items: flex-start;
   }
   .filter-location_select {
-    /* margin: 0 0.5rem; */
     width: 60%;
-    /* background-color: red; */
-    /* background: url("~/assets/icons/filter-icon.svg") no-repeat right center; */
     font-size: 1rem;
-    /* background-size: 32px 32px; */
-    /* color: var(--bs-primary) */
     display: block;
-    /* width: 100%; */
-    padding: 0.75rem 2.5rem 0.75rem 1rem; /* отступы от текста до рамки */
-    /* background: none; */
+    padding: 0.75rem 2.5rem 0.75rem 1rem;
     border: 1px solid var(--bs-primary-bg-subtle);
-    border-radius: 3px; /* скругление полей формы */
-    -webkit-appearance: none; /* Chrome */
-    -moz-appearance: none; /* Firefox */
-    appearance: none; /* убираем дефолнтные стрелочки */
-    font-family: inherit; /* наследует от родителя */
+    border-radius: 3px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    font-family: inherit;
     font-size: 1rem;
-    /* color: #444;       */
     color: var(--bs-blue);
   }
-  /* .search-and-filter_container .search_input {
-    width: 150px;
-  } */
   .filter-archive_container {
     display: none;
   }
-  /* .filter-location_select:focus {
-    border: none;
-  } */
   .set-categoty-type_wrapper {
-    /* padding: 0 0.5rem; */
     width: 100%;
     gap: 0 !important;
-    /* background-color: blue; */
     overflow-x: scroll;
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
-    /* width: 400px;
-    overflow-x: scroll;
-    gap: 0; */
   }
   .set-categoty-type_wrapper::-webkit-scrollbar {
     display: none;
   }
   .item-table_header {
     display: none;
+  }
+  .table {
+    margin-bottom: 6rem;
   }
   .table-row_wrapper {
     padding: 0;
@@ -1824,20 +1639,13 @@ label #expend-item:checked + .expand-item_icon {
     align-items: center;
     grid-template-columns: 50px 1fr 1fr 1fr 1fr;
     border-bottom: 1px solid var(--bs-border-color);
-    /* border-top: 1px solid cyan; */
   }
   .table-row_wrapper td {
-    /* background-color: red; */
-    /* padding: 0; */
     margin: 0;
-    /* padding: 0; */
     border: none;
   }
-  /* .table-row_wrapper td label {
-    background-color: red;
-  } */
-  .table-row_wrapper td label svg{
-    color: var(	--bs-primary);
+  .table-row_wrapper td label svg {
+    color: var(--bs-primary);
     margin: auto;
   }
   .table-row_wrapper td.item-qty {
@@ -1845,15 +1653,12 @@ label #expend-item:checked + .expand-item_icon {
     text-align: right;
   }
   .table-row_wrapper td.span-3 {
-    /* background-color: green !important; */
     grid-column: span 3;
   }
   .table-row_wrapper td.span-2 {
-    /* background-color: purple !important; */
     grid-column: span 2;
   }
   .table-row_wrapper td.span-5 {
-    /* background-color: yellow !important; */
     grid-column: span 5;
   }
   .hide-767 {
@@ -1862,33 +1667,28 @@ label #expend-item:checked + .expand-item_icon {
   .show-767 {
     display: flex;
     flex-direction: column;
-    /* align-items: flex-end; */
     justify-content: space-around;
   }
   .expended-item_container {
-    /* background-color: cyan; */
-    /* display: flex; */
     justify-content: space-between;
   }
   .expended-item_btns {
-    /* background-color: red; */
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
   .expended-item_btns button {
     color: var(--bs-primary);
-    background-color: var(--bs-primary-bg-subtle);
+    border: 1px solid var(--bs-primary);
     border-radius: 16px;
     padding: 6px 12px;
-    /* border-radius: 16px; */
-    /* padding: 4px 10px; */
-    /* background-color: gray; */
-    /* text-align: center; */
+  }
+  .expended-item_btns button:active {
+    background-color: var(--bs-primary);
+    color: #fff;
   }
   .expended-item_content {
     margin-top: 1rem;
-    /* background-color: green; */
     display: flex;
   }
   .expended-content_article {
@@ -1899,9 +1699,6 @@ label #expend-item:checked + .expand-item_icon {
   .expended-content_article p {
     margin: 0;
     margin-left: 0.5rem;
-  }
-  .expended-content_article span {
-    /* background-color: var(	--bs-danger-bg-subtle) */
   }
   .article_block {
     margin-top: 1rem;
@@ -1939,39 +1736,17 @@ label #expend-item:checked + .expand-item_icon {
   background-color: white;
   color: var(--bs-border-color);
   cursor: unset !important;
-  /* width: 10px;
-  heigth: 10px; */
 }
 .isNotEmpty {
   color: var(--bs-blue);
 }
-/* .item-action-modal {
-  z-index: -1;
-  display: flex;
-  gap: 0.5rem;
-  flex-direction: column;
-  border-radius: 16px;
-  box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
-  background-color: white;
-  pointer-events: none;
-  opacity: 0;
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 1rem;
-  transition: all 0.2s ease-in-out;
-} */
 .item-action-modal div {
   cursor: pointer;
 }
 .item-action-modal button:hover {
   color: var(--bs-primary);
 }
-/* .item-action-modal div span {
-  text-wrap: nowrap;
-} */
 .item-action-modal_opened {
-  /* display: flex !important; */
   pointer-events: all;
   opacity: 1;
   z-index: 1;

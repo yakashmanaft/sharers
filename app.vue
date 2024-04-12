@@ -37,15 +37,22 @@ watch(session, () => {
 </template>
 
 <style>
+
 html {
-  width: 100vw;
+  /* width: 100vw; */
   overflow-x: hidden;
+  scrollbar-width: none; /* for Firefox */
+  overflow-y: scroll;
 }
-::-webkit-scrollbar {
+html::-webkit-scrollbar {
+  display: none;
   -webkit-appearance: none;
-  width: 0!important;
+  width: 0 !important;
   height: 0;
+  -ms-overflow-style: none; /* IE и Edge */
+  scrollbar-width: none; /* Firefox */
 }
+
 /* # Тестировать docker */
 /* # https://www.youtube.com/watch?v=w9Ls34MvZTs */
 /* # environment settings nuxt */

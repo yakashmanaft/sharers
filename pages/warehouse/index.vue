@@ -265,6 +265,49 @@ onMounted(async () => {
   refreshOrganizations();
 
   await loadData();
+
+  // Скрытие модалки редактирования предмета
+  const editItemModalEl = document.getElementById("editWarehouseItemModal");
+  editItemModalEl.addEventListener("hidden.bs.modal", (event) => {
+    currentItem.value = null;
+    editedItem.value = {
+      id: null,
+      title: null,
+      qty: null,
+    };
+    // Сбрасывает временную переменную количества к действию
+    tempQty.value = 0;
+    console.log("Закрыть модалку редактирования ТМЦ");
+    console.log(currentItem.value);
+    console.log(editedItem.value);
+  });
+
+  //
+  const newItemModalEl = document.getElementById("newWarehouseItemModal");
+  newItemModalEl.addEventListener("hidden.bs.modal", (event) => {
+    item.value = {
+      // uuid: null,
+      title: null,
+      type: null,
+      qty: 0,
+      measure: null,
+      location: null,
+      locationID: null,
+      ownerID: null,
+      ownerType: null,
+      responsible: null,
+    };
+    // item.value.uuid = null;
+    // item.value.title = null;
+    // item.value.type = null;
+    // item.value.qty = 0;
+    // item.value.measure = null;
+    // item.value.location = null;
+    // item.value.locationID = null;
+    // item.value.ownerID = null;
+    // item.value.ownerType = null;
+    // item.value.responsible = null;
+  });
 });
 
 const refreshProjects = () => refreshNuxtData("projects");
@@ -478,7 +521,7 @@ async function addWarehouseItem(item) {
     });
 
     // clear all inputs in modal
-    clearModalInputs(item);
+    // clearModalInputs(item);
 
     // refetching
     filterItemsByCategoryType();
@@ -487,18 +530,32 @@ async function addWarehouseItem(item) {
 }
 
 // Ччисти инпуты модалки создания ТМЦ
-const clearModalInputs = (item: any) => {
-  item.uuid = null;
-  item.title = null;
-  item.type = null;
-  item.qty = 0;
-  item.measure = null;
-  item.location = null;
-  item.locationID = null;
-  item.ownerID = null;
-  item.ownerType = null;
-  item.responsible = null;
-};
+// const clearModalInputs = (item: any) => {
+//   item.uuid = null;
+//   item.title = null;
+//   item.type = null;
+//   item.qty = 0;
+//   item.measure = null;
+//   item.location = null;
+//   item.locationID = null;
+//   item.ownerID = null;
+//   item.ownerType = null;
+//   item.responsible = null;
+// };
+// Чистка инпутов модалки редактирования ТМЦ
+// const clearEditModalInputs = (item) => {
+//   currentItem.value = null;
+//   editedItem.value = {
+//     id: null,
+//     title: null,
+//     qty: null,
+//   };
+//   // Сбрасывает временную переменную количества к действию
+//   tempQty.value = 0;
+//   console.log("Закрыть модалку редактирования ТМЦ");
+//   console.log(currentItem.value);
+//   console.log(editedItem.value);
+// };
 
 // Фильтрация по locations
 const filterItemsByLocationObj = async () => {
@@ -705,7 +762,16 @@ const computedItems = computed(() =>
 );
 
 // Изменения в предмете
-const submitEditCurrentItem = () => {
+// const changeEditedQty = () => {
+//   if(editedActionType.value === 'add') {
+
+//   }
+// }
+const tempQty = ref(0);
+const editBtnIsDisabled = ref(true);
+const submitEditCurrentItem = async () => {
+  console.log(`submitEditCurrentItem: ${editedActionType.value}`);
+  console.log(editedItem.value);
   // let item = items.value.find((item) => item.id === id);
 
   // if (action === "sub") {
@@ -717,26 +783,34 @@ const submitEditCurrentItem = () => {
   // }
   // editedItem.value.id = item.id;
   // editedItem.value.qty = item.qty;
+  if (editedActionType.value === "add") {
+    editedItem.value.qty += tempQty.value;
+  }
 
-  // updateItem(editedItem.value);
-  console.log(`submitEditCurrentItem: ${editedActionType.value}`);
-  console.log(editedItem.value);
+  await updateItem(editedItem.value);
+  // Сбрасывает временную переменную количества к действию
+  tempQty.value = 0;
 };
 
 async function updateItem(editedItem) {
   let item = null;
 
-  if (editedItem.id) {
-    item = await $fetch("api/warehouse/item", {
-      method: "PUT",
-      body: {
-        id: editedItem.id,
-        // title: editedItem.title,
-        qty: editedItem.qty,
-      },
-    });
+  if (editedActionType.value === "add") {
+    if (editedItem.id) {
+      item = await $fetch("api/warehouse/item", {
+        method: "PUT",
+        body: {
+          id: editedItem.id,
+          // title: editedItem.title,
+          qty: editedItem.qty,
+        },
+      });
+    }
   }
-  console.log(editedItem);
+  // console.log(editedItem);
+  // await refresh();
+  filterItemsByCategoryType();
+  filterItemsByLocationObj();
 }
 
 // Item ACTIONS Modal FUNC
@@ -829,7 +903,23 @@ watch(item.value, () => {
   }
 });
 
+watch(tempQty, () => {
+  if (editedActionType.value === "add") {
+    if (tempQty.value === 0) {
+      editBtnIsDisabled.value = true;
+    } else {
+      console.log(tempQty.value);
+      editBtnIsDisabled.value = false;
+    }
+  }
+});
+
 //
+// watch(items, (prevValue, newValue) => {
+//   console.log(newValue)
+//   console.log(prevValue)
+
+// })
 </script>
 <template>
   <Container>
@@ -865,14 +955,27 @@ watch(item.value, () => {
 
             <div v-if="editedActionType && currentItem">
               <!-- add -->
-              <div v-if="editedActionType === 'add'">
-                Добавляем
-                <br />
-                <br />
-                {{ editedItem }}
-                <br />
-                <br />
-                Количество: - 1 +
+              <div
+                v-if="editedActionType === 'add'"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-start;
+                  justify-content: space-between;
+                  gap: 2rem;
+                "
+              >
+                <span>Добавляем:</span>
+
+                <div>
+                  <div style="display: flex; align-items: center; gap: 0.5rem">
+                    <button :disabled="tempQty <= 0" @click="tempQty--">
+                      -
+                    </button>
+                    <span>{{ tempQty }} {{ currentItem.measure }}</span>
+                    <button @click="tempQty++">+</button>
+                  </div>
+                </div>
               </div>
               <!-- sub -->
               <div v-if="editedActionType === 'sub'">
@@ -923,6 +1026,9 @@ watch(item.value, () => {
             <button
               type="button"
               class="btn btn-primary"
+              data-bs-toggle="modal"
+              data-bs-target="#editWarehouseItemModal"
+              :disabled="editBtnIsDisabled"
               @click="submitEditCurrentItem"
             >
               {{ translateActionType(editedActionType) }}
@@ -953,6 +1059,7 @@ watch(item.value, () => {
     >
       <div class="modal-dialog">
         <form class="modal-content">
+          <!-- MODAL HEADER -->
           <div class="modal-header">
             <h1 class="modal-title fs-5" id="newWarehouseItemLabel">
               Создание ТМЦ
@@ -964,6 +1071,8 @@ watch(item.value, () => {
               aria-label="Close"
             ></button>
           </div>
+
+          <!-- MODAL CONTENT -->
           <div class="modal-body">
             <div>
               {{ item }}
@@ -1128,7 +1237,6 @@ watch(item.value, () => {
               type="button"
               class="btn btn-secondary"
               data-bs-dismiss="modal"
-              @click="clearModalInputs(item)"
             >
               Отменить
             </button>
@@ -1530,8 +1638,8 @@ td {
   border: none;
 }
 .table-row_wrapper {
-  border-bottom: 1px solid var(	--bs-border-color);
-} 
+  border-bottom: 1px solid var(--bs-border-color);
+}
 .expand-item_icon {
   cursor: pointer;
 }

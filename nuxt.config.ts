@@ -14,7 +14,10 @@ export default defineNuxtConfig({
   app: {
     head: {
       title: 'stepbuild',
-      titleTemplate: "%s - stepbuild"
+      titleTemplate: "%s - stepbuild",
+      charset: 'utf-8',
+      viewport: 'user-scalable=no, width=device-width, initial-scale=1.0'
+      
     }
   },
   runtimeConfig: {

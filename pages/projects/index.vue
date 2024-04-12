@@ -402,8 +402,8 @@ watch(project.value, () => {
 }
 
 .project-completion {
-  width: 3rem;
-  height: 3rem;
+  min-width: 3rem;
+  min-height: 3rem;
   background-color: #b1e3c1;
   border-radius: 100%;
   display: flex;

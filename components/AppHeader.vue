@@ -64,7 +64,9 @@ const featuresListNoAuth = ref([
   },
 ]);
 
-onMounted(async () => {});
+onMounted(async () => {
+  // console.log(useAuthStore().user)
+});
 
 const logout = () => {
   router.replace("/login");
@@ -304,7 +306,7 @@ watch(
                     <!-- ПОльзвоательские кнопки -->
                     <div class="account-menu_user">
                       <div class="user_info">
-                        <router-link to="/partners/1" @click="closeBurgerMenu">
+                        <router-link :to="`/partners/${useAuthStore().user.id}`" @click="closeBurgerMenu">
                           <span style="font-weight: bold">Анфалов</span>
                           <div class="user_name">
                             <span>Сергей</span>

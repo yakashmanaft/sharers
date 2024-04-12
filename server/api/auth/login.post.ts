@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
     const user = {
-        id: 2,
+        id: 3,
         email: 'anfalov@camini-pk.ru',
         password: 'Anfalov123[eq'
     }

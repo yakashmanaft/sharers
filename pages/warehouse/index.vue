@@ -1526,6 +1526,12 @@ td {
   width: 100%;
   grid-template-columns: 50px 1fr 100px 1fr 200px 200px;
 }
+.table-row_wrapper td {
+  border: none;
+}
+.table-row_wrapper {
+  border-bottom: 1px solid var(	--bs-border-color);
+} 
 .expand-item_icon {
   cursor: pointer;
 }
@@ -1540,6 +1546,10 @@ label #expend-item:checked + .expand-item_icon {
 }
 .expended-item_opened {
   display: block;
+  border: none;
+}
+.expended-item_btns button span:hover {
+  color: var(--bs-primary);
 }
 .filter-archive_container {
   display: flex;

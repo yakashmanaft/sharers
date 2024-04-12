@@ -41,8 +41,10 @@ html {
   width: 100vw;
   overflow-x: hidden;
 }
-html::-webkit-scrollbar {
-  width: 0;
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 0!important;
+  height: 0;
 }
 /* # Тестировать docker */
 /* # https://www.youtube.com/watch?v=w9Ls34MvZTs */

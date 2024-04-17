@@ -785,6 +785,8 @@ const submitEditCurrentItem = async () => {
   // editedItem.value.qty = item.qty;
   if (editedActionType.value === "add") {
     editedItem.value.qty += tempQty.value;
+  } else if (editedActionType.value === "sub") {
+    editedItem.value.qty -= tempQty.value;
   }
 
   await updateItem(editedItem.value);
@@ -795,7 +797,7 @@ const submitEditCurrentItem = async () => {
 async function updateItem(editedItem) {
   let item = null;
 
-  if (editedActionType.value === "add") {
+  if (editedActionType.value === "add" || editedActionType.value === "sub") {
     if (editedItem.id) {
       item = await $fetch("api/warehouse/item", {
         method: "PUT",
@@ -904,11 +906,28 @@ watch(item.value, () => {
 });
 
 watch(tempQty, () => {
+  console.log(typeof tempQty.value);
   if (editedActionType.value === "add") {
-    if (tempQty.value === 0) {
+    if (
+      typeof tempQty.value == "string" ||
+      tempQty.value === 0 ||
+      tempQty.value < 0
+    ) {
       editBtnIsDisabled.value = true;
     } else {
-      console.log(tempQty.value);
+      editBtnIsDisabled.value = false;
+    }
+    // if (tempQty.value) {
+    // }
+  } else if (editedActionType.value === "sub") {
+    if (
+      typeof tempQty.value == "string" ||
+      tempQty.value === 0 ||
+      tempQty.value < 0
+    ) {
+      editBtnIsDisabled.value = true;
+    } else {
+      // console.log(tempQty.value);
       editBtnIsDisabled.value = false;
     }
   }
@@ -965,29 +984,65 @@ watch(tempQty, () => {
                   gap: 2rem;
                 "
               >
-                <span>Добавляем:</span>
-
-                <div>
+                <!--  -->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 1rem;
+                  "
+                >
+                  <label for="qtyAdd" class="form-label" style="margin: 0"
+                    >Добавляем:</label
+                  >
                   <div style="display: flex; align-items: center; gap: 0.5rem">
-                    <button :disabled="tempQty <= 0" @click="tempQty--">
-                      -
-                    </button>
-                    <span>{{ tempQty }} {{ currentItem.measure }}</span>
-                    <button @click="tempQty++">+</button>
+                    <input
+                      v-model="tempQty"
+                      type="number"
+                      id="qtyAdd"
+                      class="form-control"
+                      aria-describedby="nameHelp"
+                    />
+                    <span>{{ currentItem.measure }}</span>
                   </div>
                 </div>
               </div>
               <!-- sub -->
-              <div v-if="editedActionType === 'sub'">
-                Расход
-                <br />
-                <br />
-                {{ editedItem }}
-                <br />
-                <br />
-                Количество: - 1 +
-                <br />
-                "Все 3"
+              <div
+                v-if="editedActionType === 'sub'"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-start;
+                  justify-content: space-between;
+                  gap: 2rem;
+                "
+              >
+                <!--  -->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 1rem;
+                  "
+                >
+                  <label for="qtySub" class="form-label" style="margin: 0"
+                    >Расход:</label
+                  >
+                  <div style="display: flex; align-items: center; gap: 0.5rem">
+                    <input
+                      v-model="tempQty"
+                      type="number"
+                      id="qtySub"
+                      class="form-control"
+                      aria-describedby="nameHelp"
+                    />
+                    <span>{{ currentItem.measure }}</span>
+                  </div>
+                  <div @click="tempQty = currentItem.qty" style="background-color: var(--bs-primary); color: #fff; padding: 4px 10px;border-radius: 1rem; cursor:pointer;"><span>Все {{ currentItem.qty }} {{ currentItem.measure }}</span></div>
+                </div>
               </div>
               <!-- move -->
               <div v-if="editedActionType === 'move'">

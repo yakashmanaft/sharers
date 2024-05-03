@@ -39,6 +39,11 @@ const item = ref({
   responsible: null,
 });
 
+const tempCreateItemLocation = ref({
+  type: null,
+  id: null,
+});
+
 const currentCategoryByType = ref("all");
 // const currentCategoryByLocation = ref("all");
 const currentCategoryByLocationObj = ref({
@@ -278,6 +283,7 @@ onMounted(async () => {
     // Сбрасывает временную переменную количества к действию
     tempQty.value = 0;
     tempLocation.value = { title: "Все", type: "all", id: null };
+    // tempCreateItemLocation.value = { type: null, id: null };
     // console.log("Закрыть модалку редактирования ТМЦ");
     // console.log(currentItem.value);
     // console.log(editedItem.value);
@@ -308,6 +314,7 @@ onMounted(async () => {
     // item.value.ownerID = null;
     // item.value.ownerType = null;
     // item.value.responsible = null;
+    tempCreateItemLocation.value = { type: null, id: null };
   });
 });
 
@@ -522,6 +529,10 @@ async function addWarehouseItem(item) {
     });
 
     // clear all inputs in modal
+    tempCreateItemLocation.value = {
+      type: null,
+      id: null,
+    };
     // clearModalInputs(item);
 
     // refetching
@@ -847,9 +858,7 @@ async function updateItem(editedItem) {
     if (editedItem.id) {
       // 1
       // Если перемещаем всё кол-во в другое место
-      if (
-        tempQty.value === currentItem.value.qty
-      ) {
+      if (tempQty.value === currentItem.value.qty) {
         editedItem.location = tempLocation.value.type;
         editedItem.locationID = tempLocation.value.id;
       }
@@ -1029,6 +1038,12 @@ watch(tempLocation, () => {
       }
     }
   }
+});
+
+watch(tempCreateItemLocation, () => {
+  // console.log(tempCreateItemLocation.value)
+  item.value.location = tempCreateItemLocation.value.type;
+  item.value.locationID = tempCreateItemLocation.value.id;
 });
 
 //
@@ -1222,7 +1237,11 @@ watch(tempLocation, () => {
                     <!-- projects -->
                     <optgroup label="Проекты">
                       <option
-                        :value="{ title: 'project', type: 'project', id: project.id }"
+                        :value="{
+                          title: 'project',
+                          type: 'project',
+                          id: project.id,
+                        }"
                         v-for="(project, i) in projects"
                       >
                         {{ project.title }}
@@ -1429,7 +1448,7 @@ watch(tempLocation, () => {
             </div>
 
             <!-- LOCATION -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label for="itemLocation" class="form-label"
                 >Местонахождение (office | sklad | repair | project | archive |
                 deleted)</label
@@ -1441,23 +1460,50 @@ watch(tempLocation, () => {
                 class="form-control"
                 aria-describedby="nameHelp"
               />
-            </div>
+            </div> -->
 
             <div class="mb-3">
               <label for="itemLocation" class="form-label"
                 >Местонахождение</label
               >
-              <select class="form-select" aria-label="Default select example">
-                <option value="null" selected>Выберите</option>
-
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="tempCreateItemLocation"
+              >
+                <option :value="{ type: null, id: null }" selected>
+                  Выберите
+                </option>
+                <!-- Locations -->
+                <optgroup label="Locations">
+                  <option
+                    :value="{
+                      type: location.type,
+                      id: location.id,
+                    }"
+                    v-for="(location, i) in locations"
+                  >
+                    {{ location.title }}
+                  </option>
+                </optgroup>
+                <!-- projects -->
+                <optgroup label="Проекты">
+                  <option
+                    :value="{
+                      type: 'project',
+                      id: project.id,
+                    }"
+                    v-for="(project, i) in projects"
+                  >
+                    {{ project.title }}
+                    <!-- | {{ project.address }} -->
+                  </option>
+                </optgroup>
               </select>
             </div>
 
             <!-- POSITION ID -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label for="itemlocationID" class="form-label">locationID</label>
               <input
                 v-model="item.locationID"
@@ -1466,7 +1512,7 @@ watch(tempLocation, () => {
                 class="form-control"
                 aria-describedby="nameHelp"
               />
-            </div>
+            </div> -->
 
             <!-- OWNER ID-->
             <div class="mb-3">

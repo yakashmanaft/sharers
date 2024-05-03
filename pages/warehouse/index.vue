@@ -277,9 +277,10 @@ onMounted(async () => {
     };
     // Сбрасывает временную переменную количества к действию
     tempQty.value = 0;
-    console.log("Закрыть модалку редактирования ТМЦ");
-    console.log(currentItem.value);
-    console.log(editedItem.value);
+    tempLocation.value = { title: "Все", type: "all", id: null };
+    // console.log("Закрыть модалку редактирования ТМЦ");
+    // console.log(currentItem.value);
+    // console.log(editedItem.value);
   });
 
   //
@@ -768,10 +769,18 @@ const computedItems = computed(() =>
 //   }
 // }
 const tempQty = ref(0);
+const tempLocation = ref({
+  title: "Все",
+  type: "all",
+  id: null,
+});
+// title:
+// type:
+// id:
 const editBtnIsDisabled = ref(true);
 const submitEditCurrentItem = async () => {
-  console.log(`submitEditCurrentItem: ${editedActionType.value}`);
-  console.log(editedItem.value);
+  // console.log(`submitEditCurrentItem: ${editedActionType.value}`);
+  // console.log(editedItem.value);
   // let item = items.value.find((item) => item.id === id);
 
   // if (action === "sub") {
@@ -785,19 +794,24 @@ const submitEditCurrentItem = async () => {
   // editedItem.value.qty = item.qty;
   if (editedActionType.value === "add") {
     editedItem.value.qty += tempQty.value;
+    // await updateItem(editedItem.value);
   } else if (editedActionType.value === "sub") {
     editedItem.value.qty -= tempQty.value;
+    // await updateItem(editedItem.value);
+  } else if (editedActionType.value === "move") {
+    console.log("move clicked");
   }
 
   await updateItem(editedItem.value);
   // Сбрасывает временную переменную количества к действию
   tempQty.value = 0;
+  tempLocation.value = { title: "Все", type: "all", id: null };
 };
 
 async function updateItem(editedItem) {
   let item = null;
 
-  if (editedActionType.value === "add" || editedActionType.value === "sub") {
+  if (editedActionType.value === "add") {
     if (editedItem.id) {
       item = await $fetch("api/warehouse/item", {
         method: "PUT",
@@ -805,8 +819,54 @@ async function updateItem(editedItem) {
           id: editedItem.id,
           // title: editedItem.title,
           qty: editedItem.qty,
+          // location: editedItem.location,
+          // locationID: editedItem.locationID
         },
       });
+    }
+  } else if (editedActionType.value === "sub") {
+    if (editedItem.id) {
+      // Отправляем в архив, если в расход отправляем всё  доступное у предмета кол-во
+      if (tempQty.value === currentItem.value.qty) {
+        editedItem.location = "archive";
+        // editedItem.locationID
+      }
+
+      item = await $fetch("api/warehouse/item", {
+        method: "PUT",
+        body: {
+          id: editedItem.id,
+          // title: editedItem.title,
+          qty: editedItem.qty,
+          location: editedItem.location,
+          locationID: editedItem.locationID,
+        },
+      });
+    }
+  } else if (editedActionType.value === "move") {
+    if (editedItem.id) {
+      // 1
+      // Если перемещаем всё кол-во в другое место
+      if (
+        tempQty.value === currentItem.value.qty
+      ) {
+        editedItem.location = tempLocation.value.type;
+        editedItem.locationID = tempLocation.value.id;
+      }
+      // 2
+      // 3
+      // 4
+      item = await $fetch("api/warehouse/item", {
+        method: "PUT",
+        body: {
+          id: editedItem.id,
+          // title: editedItem.title,
+          qty: editedItem.qty,
+          location: editedItem.location,
+          locationID: editedItem.locationID,
+        },
+      });
+      // console.log(item)
     }
   }
   // console.log(editedItem);
@@ -873,7 +933,7 @@ const onClickAction = (action: string, item: any) => {
       position: item.position,
     };
   }
-  console.log(`onClickAction: ${action}, id: ${item.id}`);
+  // console.log(`onClickAction: ${action}, id: ${item.id}`);
 };
 
 // ******** WATCHERS ********
@@ -906,7 +966,7 @@ watch(item.value, () => {
 });
 
 watch(tempQty, () => {
-  console.log(typeof tempQty.value);
+  // console.log(typeof tempQty.value);
   if (editedActionType.value === "add") {
     if (
       typeof tempQty.value == "string" ||
@@ -926,9 +986,47 @@ watch(tempQty, () => {
       tempQty.value < 0
     ) {
       editBtnIsDisabled.value = true;
+    } else if (tempQty.value > currentItem.value.qty) {
+      editBtnIsDisabled.value = true;
     } else {
       // console.log(tempQty.value);
       editBtnIsDisabled.value = false;
+    }
+  } else if (editedActionType.value === "move") {
+    if (
+      typeof tempQty.value == "string" ||
+      tempQty.value === 0 ||
+      tempQty.value < 0 ||
+      tempLocation.value.type === "all"
+    ) {
+      editBtnIsDisabled.value = true;
+    } else {
+      editBtnIsDisabled.value = false;
+    }
+  }
+});
+
+watch(tempLocation, () => {
+  if (tempLocation.value) {
+    if (tempLocation.value.type === "all") {
+      editBtnIsDisabled.value = true;
+    } else {
+      if (
+        typeof tempQty.value == "string" ||
+        tempQty.value === 0 ||
+        tempQty.value < 0
+      ) {
+        editBtnIsDisabled.value = true;
+      } else {
+        if (
+          tempLocation.value.title === currentItem.value.location &&
+          tempLocation.value.id === currentItem.value.locationID
+        ) {
+          editBtnIsDisabled.value = true;
+        } else {
+          editBtnIsDisabled.value = false;
+        }
+      }
     }
   }
 });
@@ -1041,32 +1139,157 @@ watch(tempQty, () => {
                     />
                     <span>{{ currentItem.measure }}</span>
                   </div>
-                  <div @click="tempQty = currentItem.qty" style="background-color: var(--bs-primary); color: #fff; padding: 4px 10px;border-radius: 1rem; cursor:pointer;"><span>Все {{ currentItem.qty }} {{ currentItem.measure }}</span></div>
+                  <div
+                    @click="tempQty = currentItem.qty"
+                    style="
+                      background-color: var(--bs-primary);
+                      color: #fff;
+                      padding: 4px 10px;
+                      border-radius: 1rem;
+                      cursor: pointer;
+                    "
+                  >
+                    <span
+                      >Все {{ currentItem.qty }} {{ currentItem.measure }}</span
+                    >
+                  </div>
                 </div>
               </div>
               <!-- move -->
-              <div v-if="editedActionType === 'move'">
+              <div
+                v-if="editedActionType === 'move'"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: flex-start;
+                "
+              >
                 Перемещаем
                 <br />
                 <br />
-                {{ editedItem }}
+                <!-- {{ currentItem }} -->
+                <!-- <br> -->
+                <!-- <br> -->
+                <!-- {{ tempLocation }} -->
+
+                <!-- MOVE FROM  -->
+                <div style="display: flex; align-items: center; gap: 1rem">
+                  <span> Откуда: </span>
+                  <span
+                    class="link link-location"
+                    :class="`${locationLinkColorized(currentItem.location)}`"
+                  >
+                    {{
+                      translateLocation(
+                        currentItem.locationID,
+                        currentItem.location
+                      )
+                    }}
+                  </span>
+                </div>
+
+                <!-- separator -->
+                <span> >>> </span>
+
+                <!-- MOVE TO -->
+                <div style="display: flex; align-items: center; gap: 1rem">
+                  <span>Куда:</span>
+                  <select
+                    class="form-select"
+                    aria-label=".form-select-sm example"
+                    v-model="tempLocation"
+                  >
+                    <!-- deafult -->
+                    <option
+                      :value="{ title: 'Все', type: 'all', id: null }"
+                      selected
+                    >
+                      Выберите
+                    </option>
+                    <!-- Locations -->
+                    <optgroup label="Locations">
+                      <option
+                        :value="{
+                          title: 'location',
+                          type: location.type,
+                          id: location.id,
+                        }"
+                        v-for="(location, i) in locations"
+                      >
+                        {{ location.title }}
+                      </option>
+                    </optgroup>
+                    <!-- projects -->
+                    <optgroup label="Проекты">
+                      <option
+                        :value="{ title: 'project', type: 'project', id: project.id }"
+                        v-for="(project, i) in projects"
+                      >
+                        {{ project.title }}
+                        <!-- | {{ project.address }} -->
+                      </option>
+                    </optgroup>
+                    <!-- Archive & deleted -->
+                    <optgroup label="Прочее">
+                      <option
+                        :value="{
+                          title: 'location',
+                          type: 'archive',
+                          id: null,
+                        }"
+                      >
+                        В архиве
+                      </option>
+                      <option
+                        :value="{
+                          title: 'location',
+                          type: 'deleted',
+                          id: null,
+                        }"
+                      >
+                        Списание
+                      </option>
+                    </optgroup>
+                  </select>
+                </div>
+
                 <br />
-                <br />
-                Откуда:
-                {{
-                  translateLocation(
-                    currentItem.locationID,
-                    currentItem.location
-                  )
-                }}
-                <br />
-                >>>
-                <br />
-                Куда: Выберите
-                <br />
-                Количество: - 1 +
-                <br />
-                "Все 3"
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 1rem;
+                  "
+                >
+                  <label for="qtyMove" class="form-label" style="margin: 0"
+                    >Количество:</label
+                  >
+                  <div style="display: flex; align-items: center; gap: 0.5rem">
+                    <input
+                      v-model="tempQty"
+                      type="number"
+                      id="qtySub"
+                      class="form-control"
+                      aria-describedby="nameHelp"
+                    />
+                    <span>{{ currentItem.measure }}</span>
+                  </div>
+                  <div
+                    @click="tempQty = currentItem.qty"
+                    style="
+                      background-color: var(--bs-primary);
+                      color: #fff;
+                      padding: 4px 10px;
+                      border-radius: 1rem;
+                      cursor: pointer;
+                    "
+                  >
+                    <span
+                      >Все {{ currentItem.qty }} {{ currentItem.measure }}</span
+                    >
+                  </div>
+                </div>
               </div>
             </div>
           </div>

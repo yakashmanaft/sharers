@@ -8,6 +8,8 @@ export default defineEventHandler(async (event) => {
     // const title = body.title
     // const type = body.type
     const qty = body.qty
+    const location = body.location
+    const locationID = body.locationID
 
     if (!(id)) return createError({ statusCode: 400, statusMessage: 'Missing id or some other data' })
 
@@ -20,7 +22,9 @@ export default defineEventHandler(async (event) => {
             },
             data: {
                 // title: title,
-                qty: qty
+                qty: qty,
+                location: location,
+                locationID: locationID
             }
         })
     return item

@@ -334,12 +334,13 @@ const {
   status,
 } = await useFetch("api/warehouse/item", {
   lazy: false,
-  // transform: (items) => {
-  //   return items.map(item) => ({
-  //     id: item.id,
-  //     title: item.title,
-  //   })
-  // }
+  transform: (items:any) => {
+    // return items.map(item) => ({
+    //   id: item.id,
+    //   title: item.title,
+    // })
+    return items.sort((x, y) => x.title.localeCompare(y.title));
+  }
 });
 const { data: projects } = useLazyAsyncData("projects", () =>
   $fetch("api/projects/projects")
@@ -372,7 +373,7 @@ const creatLocationLink = (object: any) => {
         `В офисе №${object.locationID}. Адрес офиса (надо придумать как выдавать)`
       );
     } else if (object.location === "archive") {
-      alert(`В архиве. Складской адрес: ${object.locationID}`);
+      alert(`Архив. Складской адрес: ${object.locationID}`);
     } else if (object.location === "deleted") {
       alert(`У вас нет прав, чтобы окончательно удалить предмет`);
     } else {
@@ -427,7 +428,7 @@ const translateLocation = (id: any, location: string) => {
       }
       // return `В ремонте #${id}, ${typeof id}`;
     } else if (location === "archive") {
-      return `В архиве`;
+      return `Архив`;
     } else if (location === "deleted") {
       return "Списание";
     } else {
@@ -765,13 +766,25 @@ const showItemsInDeleted = () => {
 const computedItems = computed(() =>
   searchInput.value === ""
     ? items.value
-    : items.value.filter((item) =>
+    : items.value.filter((item: any) =>
         item.title
           .toLowerCase()
           .replace(/\s+/g, "")
           .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
       )
+    // : filterItemsFunc(items.value)
 );
+
+// const filterItemsFunc = (itemsArray: any) => {
+//   return itemsArray.filter((item) => item.title
+//           .toLowerCase()
+//           .replace(/\s+/g, "")
+//           .includes(searchInput.value.toLowerCase().replace(/\s+/g, "")))
+// }
+
+// const sortedItemsFunc = (itemsArray: any) => {
+//   return itemsArray.sort((x, y) => x.title.localeCompare(y.title));
+// }
 
 // Изменения в предмете
 // const changeEditedQty = () => {
@@ -810,7 +823,8 @@ const submitEditCurrentItem = async () => {
     editedItem.value.qty -= tempQty.value;
     // await updateItem(editedItem.value);
   } else if (editedActionType.value === "move") {
-    console.log("move clicked");
+    console.log("checking position to move...");
+    // Check is position available
   }
 
   await updateItem(editedItem.value);
@@ -876,6 +890,7 @@ async function updateItem(editedItem) {
         },
       });
       // console.log(item)
+      console.log('Moved')
     }
   }
   // console.log(editedItem);
@@ -1257,7 +1272,7 @@ watch(tempCreateItemLocation, () => {
                           id: null,
                         }"
                       >
-                        В архиве
+                        Архив
                       </option>
                       <option
                         :value="{
@@ -1645,7 +1660,7 @@ watch(tempCreateItemLocation, () => {
                 id: null,
               }"
             >
-              В архиве
+              Архив
             </option>
             <option
               :value="{
@@ -1696,7 +1711,7 @@ watch(tempCreateItemLocation, () => {
 
         <!-- FILTER BY ARCHIVE & DELETED -->
         <div class="filter-archive_container">
-          <span @click="showItemsInArchive">В архиве </span>
+          <span @click="showItemsInArchive">Архив </span>
           <span>|</span>
           <span @click="showItemsInDeleted">Списание</span>
         </div>

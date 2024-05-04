@@ -44,6 +44,11 @@ const tempCreateItemLocation = ref({
   id: null,
 });
 
+const tempCreateItemOwner = ref({
+  type: null,
+  id: null
+})
+
 const currentCategoryByType = ref("all");
 // const currentCategoryByLocation = ref("all");
 const currentCategoryByLocationObj = ref({
@@ -315,6 +320,7 @@ onMounted(async () => {
     // item.value.ownerType = null;
     // item.value.responsible = null;
     tempCreateItemLocation.value = { type: null, id: null };
+    tempCreateItemOwner.value = { type: null, id: null };
   });
 });
 
@@ -339,7 +345,18 @@ const {
     //   id: item.id,
     //   title: item.title,
     // })
-    return items.sort((x, y) => x.title.localeCompare(y.title));
+    // return items.sort((x, y) => x.title.localeCompare(y.title));
+    return items.sort((x, y) => {
+      if (x.title < y.title) {
+        return -1;
+      }
+  
+      if (x.title > y.title) {
+          return 1;
+      }
+
+      return x.locationID - y.locationID
+    })
   }
 });
 const { data: projects } = useLazyAsyncData("projects", () =>
@@ -534,6 +551,10 @@ async function addWarehouseItem(item) {
       type: null,
       id: null,
     };
+    tempCreateItemOwner.value = {
+      type: null,
+      id: null,
+    }
     // clearModalInputs(item);
 
     // refetching
@@ -1061,6 +1082,11 @@ watch(tempCreateItemLocation, () => {
   item.value.locationID = tempCreateItemLocation.value.id;
 });
 
+watch(tempCreateItemOwner, () => {
+  item.value.ownerType = tempCreateItemOwner.value.type;
+  item.value.ownerID = tempCreateItemOwner.value.id
+})
+
 //
 // watch(items, (prevValue, newValue) => {
 //   console.log(newValue)
@@ -1529,8 +1555,49 @@ watch(tempCreateItemLocation, () => {
               />
             </div> -->
 
-            <!-- OWNER ID-->
+            <!-- OWNER -->
             <div class="mb-3">
+              <label for="users" class="form-label"
+                >Собственник</label
+              >
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="tempCreateItemOwner"
+              >
+                <option :value="{ type: null, id: null }" selected>
+                  Выберите
+                </option>
+                <!-- Users -->
+                <optgroup label="Соучастники">
+                  <option
+                    :value="{
+                      type: 'user',
+                      id: user.id,
+                    }"
+                    v-for="(user, i) in users"
+                  >
+                  <!-- return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`; -->
+                    {{ user.surname }} {{ user.name }} {{ user.middleName }}
+                  </option>
+                </optgroup>
+                <!-- Companies -->
+                <optgroup label="Организации">
+                  <option 
+                    :value="{
+                      type: 'company',
+                      id: company.id
+                    }"
+                    v-for="(company, i) in organizations"
+                  >
+                    {{ company.title }}
+                  </option>
+                </optgroup>
+                </select>
+            </div>
+
+            <!-- OWNER ID-->
+            <!-- <div class="mb-3">
               <label for="itemOwnerID" class="form-label">Owner ID</label>
               <input
                 v-model="item.ownerID"
@@ -1539,10 +1606,10 @@ watch(tempCreateItemLocation, () => {
                 class="form-control"
                 aria-describedby="nameHelp"
               />
-            </div>
+            </div> -->
 
             <!-- OWNER TYPE-->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label for="itemOwnerType" class="form-label"
                 >Owner TYPE (user | company)</label
               >
@@ -1553,10 +1620,36 @@ watch(tempCreateItemLocation, () => {
                 class="form-control"
                 aria-describedby="nameHelp"
               />
-            </div>
+            </div> -->
 
             <!-- RESPONSIBLE -->
             <div class="mb-3">
+              <label for="users" class="form-label"
+                >Ответственный</label
+              >
+              <select
+                class="form-select"
+                aria-label="Default select example"
+                v-model="item.responsible"
+              >
+                <option :value="null" selected>
+                  Выберите
+                </option>
+                <!-- Users -->
+                <!-- <optgroup label="Соучастники"> -->
+                  <option
+                    :value="user.id"
+                    v-for="(user, i) in users"
+                  >
+                  <!-- return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`; -->
+                    {{ user.surname }} {{ user.name }} {{ user.middleName }}
+                  </option>
+                <!-- </optgroup> -->
+              </select>
+            </div>
+
+            <!-- RESPONSIBLE -->
+            <!-- <div class="mb-3">
               <label for="itemResponsible" class="form-label"
                 >ResponsibleID</label
               >
@@ -1567,7 +1660,7 @@ watch(tempCreateItemLocation, () => {
                 class="form-control"
                 aria-describedby="nameHelp"
               />
-            </div>
+            </div> -->
           </div>
 
           <!-- MODAL FOOTER -->

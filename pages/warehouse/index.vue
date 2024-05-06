@@ -123,205 +123,63 @@ const editedItem = ref({
   qty: null,
 });
 
-// Споты, где может находиться ТМЦ
-// const itemsLocations = ref([
-//   {
-
-//   }
-// ])
-// const item = ref({
-//   uuid: uuidv4(),
-//   title: null,
-//   type: null,
-//   qty: 0,
-//   measure: null,
-//   location: null,
-//   locationID: null,
-//   owner: null,
-// });
-// uuid во фронте не показываем, но надо иметь в принятой из бд объекте наверно в случае удаления
-// const items = ref([
-//   {
-//     id: 1,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "УШМ ELITECH 2623Э 230мм.",
-//     qty: 1,
-//     measure: "шт",
-//     location: "project",
-//     locationID: 2,
-//     owner: 'ООО "Камини"',
-//   },
-//   {
-//     id: 2,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "Клипсы",
-//     qty: 100,
-//     measure: "шт",
-//     location: "project",
-//     locationID: 1,
-//     owner: 'ООО "РусРазвтие"',
-//   },
-//   {
-//     id: 3,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "Удлинитель на катушке 30м KLAUS Bull Cabel Reel",
-//     qty: 1,
-//     measure: "шт",
-//     location: "repair",
-//     locationID: 12,
-//     owner: 'ООО "Камини"',
-//   },
-//   {
-//     id: 4,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "Уровень KAPRO 60cm 781-40P",
-//     qty: 1,
-//     measure: "шт",
-//     location: "sklad",
-//     locationID: "sklad_main_r2-c27-f1-f1",
-//     owner: "Папа Карло",
-//   },
-//   {
-//     id: 5,
-//     uuid: uuidv4(),
-//     type: "stuff",
-//     title: "Труба Сэндвич 220 / 280 320 / Оц",
-//     qty: 1,
-//     measure: "шт",
-//     location: "sklad",
-//     locationID: "sklad_main_r1-c1-f1-f1",
-//     owner: 'ООО "Камини"',
-//   },
-//   {
-//     id: 6,
-//     uuid: uuidv4(),
-//     type: "consumables",
-//     title: "Кровельный саморез Tech-Krep КР ZP сверло 4,8х51",
-//     qty: 200,
-//     measure: "кг",
-//     location: "sklad",
-//     locationID: "sklad_main_r1-c1-f2-f2",
-//     owner: 'ООО "Камини"',
-//   },
-//   {
-//     id: 7,
-//     uuid: uuidv4(),
-//     type: "equipment",
-//     title: "Ботинки кирзачи с мехом внутри",
-//     qty: 10,
-//     measure: "пар",
-//     location: "sklad",
-//     locationID: "sklad_main_r3-c6-f1-f3",
-//     owner: 'ООО "Камини"',
-//   },
-//   {
-//     id: 8,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "Болгарка 230 Metabo",
-//     qty: 1,
-//     measure: "шт",
-//     location: "project",
-//     locationID: 1,
-//     owner: 'ООО "Камини"',
-//   },
-//   {
-//     id: 9,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "Шуруповерт Калибр TOP0289900/2302",
-//     qty: 1,
-//     measure: "шт",
-//     location: "archive",
-//     locationID: "sklad_archive-r1-c1-f1-f1",
-//     owner: "В. Н. Клименко",
-//   },
-//   {
-//     id: 10,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "Электро-обогреватель 30НС - 2,0/1,5 - 41 5968",
-//     qty: 1,
-//     measure: "шт",
-//     location: "deleted",
-//     locationID: "deleted",
-//     owner: "В. Н. Клименко",
-//   },
-//   {
-//     id: 11,
-//     uuid: uuidv4(),
-//     type: "tools",
-//     title: "Комплект сварочника Wega 251 modelSTICK ",
-//     qty: 1,
-//     measure: "шт",
-//     location: "project",
-//     locationID: 2,
-//     owner: "В. Н. Клименко",
-//   },
-// ]);
-// const items = ref(null);
 onMounted(async () => {
   // makes refetching
   await refresh();
-  items.value = items.value.filter(
-    (item) => item.location !== "archive" && item.location !== "deleted"
-  );
-  refreshProjects();
-  refreshLocations();
-  refreshOrganizations();
+
+    items.value = items.value.filter(
+      (item: any) => item.location !== "archive" && item.location !== "deleted"
+    );
+    refreshProjects();
+    refreshLocations();
+    refreshOrganizations();
+
 
   await loadData();
 
   // Скрытие модалки редактирования предмета
   const editItemModalEl = document.getElementById("editWarehouseItemModal");
-  editItemModalEl.addEventListener("hidden.bs.modal", (event) => {
-    currentItem.value = null;
-    editedItem.value = {
-      id: null,
-      title: null,
-      qty: null,
-    };
-    // Сбрасывает временную переменную количества к действию
-    tempQty.value = 0;
-    tempLocation.value = { title: "Все", type: "all", id: null };
-    // tempCreateItemLocation.value = { type: null, id: null };
-    // console.log("Закрыть модалку редактирования ТМЦ");
-    // console.log(currentItem.value);
-    // console.log(editedItem.value);
-  });
+  if(editItemModalEl) {
+
+    editItemModalEl.addEventListener("hidden.bs.modal", (event) => {
+      currentItem.value = null;
+      editedItem.value = {
+        id: null,
+        title: null,
+        qty: null,
+      };
+      // Сбрасывает временную переменную количества к действию
+      tempQty.value = 0;
+      tempLocation.value = { title: "Все", type: "all", id: null };
+      // tempCreateItemLocation.value = { type: null, id: null };
+      // console.log("Закрыть модалку редактирования ТМЦ");
+      // console.log(currentItem.value);
+      // console.log(editedItem.value);
+    });
+  }
 
   //
   const newItemModalEl = document.getElementById("newWarehouseItemModal");
-  newItemModalEl.addEventListener("hidden.bs.modal", (event) => {
-    item.value = {
-      // uuid: null,
-      title: null,
-      type: null,
-      qty: 0,
-      measure: null,
-      location: null,
-      locationID: null,
-      ownerID: null,
-      ownerType: null,
-      responsible: null,
-    };
-    // item.value.uuid = null;
-    // item.value.title = null;
-    // item.value.type = null;
-    // item.value.qty = 0;
-    // item.value.measure = null;
-    // item.value.location = null;
-    // item.value.locationID = null;
-    // item.value.ownerID = null;
-    // item.value.ownerType = null;
-    // item.value.responsible = null;
-    tempCreateItemLocation.value = { type: null, id: null };
-    tempCreateItemOwner.value = { type: null, id: null };
-  });
+  if(newItemModalEl) {
+
+    newItemModalEl.addEventListener("hidden.bs.modal", (event) => {
+      item.value = {
+        // uuid: null,
+        title: null,
+        type: null,
+        qty: 0,
+        measure: null,
+        location: null,
+        locationID: null,
+        ownerID: null,
+        ownerType: null,
+        responsible: null,
+      };
+
+      tempCreateItemLocation.value = { type: null, id: null };
+      tempCreateItemOwner.value = { type: null, id: null };
+    });
+  }
 });
 
 const refreshProjects = () => refreshNuxtData("projects");

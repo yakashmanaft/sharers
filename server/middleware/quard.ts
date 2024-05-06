@@ -9,6 +9,7 @@ export default defineEventHandler(async (event) => {
     const protectedRoutes = [
         '/api/usersList/users',
         '/api/warehouse/item',
+        '/api/warehouse',
         '/api/projects/projects',
         '/api/locations/locations',
     ];

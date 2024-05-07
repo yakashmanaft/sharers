@@ -835,8 +835,7 @@ async function updateItem(editedItem) {
       // 2
       // Перемещаем часть
 
-      // 2.1.
-      // в уже имеющийся предмет в другом месте (вычитаем из первого, добавляем ко второму)
+      // 2.1. в уже имеющийся предмет в другом месте (вычитаем из первого, добавляем ко второму)
       else if (tempQty.value < currentItem.value.qty && findItems[0]) {
         editedItem.location = tempLocation.value.type;
         editedItem.locationID = tempLocation.value.id;
@@ -867,8 +866,7 @@ async function updateItem(editedItem) {
         console.log("Переместили часть туда, где уже есть подобные предметы");
       }
 
-      // 2.2.
-      // в новое место (вычитаем из первого, создаем второй и добавляем к нему)
+      // 2.2. в новое место (вычитаем из первого, создаем второй и добавляем к нему)
       else if (tempQty.value < currentItem.value.qty && !findItems.length) {
         editedItem.location = tempLocation.value.type;
         editedItem.locationID = tempLocation.value.id;

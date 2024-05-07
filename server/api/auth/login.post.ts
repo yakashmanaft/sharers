@@ -2,7 +2,8 @@ export default defineEventHandler(async (event) => {
     const user = {
         id: 3,
         email: 'anfalov@camini-pk.ru',
-        password: 'Anfalov123[eq'
+        password: 'Anfalov123[eq',
+        // role: 'ADMIN' 
     }
     await setUserSession(event, {
         user,

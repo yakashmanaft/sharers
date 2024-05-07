@@ -19,7 +19,7 @@ export default defineEventHandler(async (event) => {
       })
 
     if(error) 
-      return createError({statusCode: 500, statusMessage: 'Server error bleatb!'})
+      return createError({statusCode: 500, statusMessage: 'Server error bleatb! при удалении user'})
 
     return user
   })

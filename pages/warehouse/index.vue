@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { Container } from "@/shared/container";
+import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
 
 useHead({
@@ -46,8 +47,8 @@ const tempCreateItemLocation = ref({
 
 const tempCreateItemOwner = ref({
   type: null,
-  id: null
-})
+  id: null,
+});
 
 const currentCategoryByType = ref("all");
 // const currentCategoryByLocation = ref("all");
@@ -127,22 +128,20 @@ onMounted(async () => {
   // makes refetching
   await refresh();
 
-    items.value = items.value.filter(
-      (item: any) => item.location !== "archive" && item.location !== "deleted"
-    );
-    refreshProjects();
-    refreshLocations();
-    refreshOrganizations();
-
+  items.value = items.value.filter(
+    (item: any) => item.location !== "archive" && item.location !== "deleted"
+  );
+  refreshProjects();
+  refreshLocations();
+  refreshOrganizations();
 
   await loadData();
 
   // Скрытие модалки редактирования предмета
   const editItemModalEl = document.getElementById("editWarehouseItemModal");
-  if(editItemModalEl) {
-
+  if (editItemModalEl) {
     editItemModalEl.addEventListener("hidden.bs.modal", (event) => {
-      currentItem.value = null;
+      // currentItem.value = null;
       editedItem.value = {
         id: null,
         title: null,
@@ -160,8 +159,7 @@ onMounted(async () => {
 
   //
   const newItemModalEl = document.getElementById("newWarehouseItemModal");
-  if(newItemModalEl) {
-
+  if (newItemModalEl) {
     newItemModalEl.addEventListener("hidden.bs.modal", (event) => {
       item.value = {
         // uuid: null,
@@ -198,7 +196,7 @@ const {
   status,
 } = await useFetch("api/warehouse/item", {
   lazy: false,
-  transform: (items:any) => {
+  transform: (items: any) => {
     // return items.map(item) => ({
     //   id: item.id,
     //   title: item.title,
@@ -208,14 +206,14 @@ const {
       if (x.title < y.title) {
         return -1;
       }
-  
+
       if (x.title > y.title) {
-          return 1;
+        return 1;
       }
 
-      return x.locationID - y.locationID
-    })
-  }
+      return x.locationID - y.locationID;
+    });
+  },
 });
 const { data: projects } = useLazyAsyncData("projects", () =>
   $fetch("api/projects/projects")
@@ -412,7 +410,7 @@ async function addWarehouseItem(item) {
     tempCreateItemOwner.value = {
       type: null,
       id: null,
-    }
+    };
     // clearModalInputs(item);
 
     // refetching
@@ -642,16 +640,17 @@ const showItemsInDeleted = () => {
   currentCategoryByType.value = "all";
 };
 // фильтрация по search input
-const computedItems = computed(() =>
-  searchInput.value === ""
-    ? items.value
-    : items.value.filter((item: any) =>
-        item.title
-          .toLowerCase()
-          .replace(/\s+/g, "")
-          .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
-      )
-    // : filterItemsFunc(items.value)
+const computedItems = computed(
+  () =>
+    searchInput.value === ""
+      ? items.value
+      : items.value.filter((item: any) =>
+          item.title
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
+        )
+  // : filterItemsFunc(items.value)
 );
 
 // const filterItemsFunc = (itemsArray: any) => {
@@ -707,7 +706,8 @@ const submitEditCurrentItem = async () => {
   }
 
   await updateItem(editedItem.value);
-  // Сбрасывает временную переменную количества к действию
+
+  // Сбрасывает временную переменную количества и местонахлждения
   tempQty.value = 0;
   tempLocation.value = { title: "Все", type: "all", id: null };
 };
@@ -749,27 +749,96 @@ async function updateItem(editedItem) {
     }
   } else if (editedActionType.value === "move") {
     if (editedItem.id) {
+      // Ищем предметы в местах, куда хотим переместить
+      let findItems = items.value.filter(
+        (item) =>
+          item.id !== currentItem.value.id &&
+          item.title === currentItem.value.title &&
+          item.type === currentItem.value.type &&
+          item.measure === currentItem.value.measure &&
+          item.location === tempLocation.value.type &&
+          item.locationID === tempLocation.value.id &&
+          item.ownerType === currentItem.value.ownerType &&
+          item.ownerID === currentItem.value.ownerID &&
+          item.responsible === currentItem.value.responsible
+      );
+
       // 1
-      // Если перемещаем всё кол-во в другое место
-      if (tempQty.value === currentItem.value.qty) {
+      // Если перемещаем ВСЁ кол-во в другое место
+
+      // 1.1. где еще нет подобного предмета
+      if (tempQty.value === currentItem.value.qty && !findItems[0]) {
         editedItem.location = tempLocation.value.type;
         editedItem.locationID = tempLocation.value.id;
+
+        // Обновляем предмет в БД
+        item = await $fetch("api/warehouse/item", {
+          method: "PUT",
+          body: {
+            id: editedItem.id,
+            // title: editedItem.title,
+            qty: editedItem.qty,
+            location: editedItem.location,
+            locationID: editedItem.locationID,
+          },
+        });
+        console.log("Переместили туда, где не было подобного предмета");
       }
+
+      // 1.2. в уже имеющийся предмет в другом месте(добавляем ко второму (findItems[0].id) и удаляем первый(currentItem.value.id))
+      if (tempQty.value === currentItem.value.qty && findItems[0]) {
+        editedItem.location = tempLocation.value.type;
+        editedItem.locationID = tempLocation.value.id;
+        editedItem.qty = currentItem.value.qty + +findItems[0].qty;
+
+        // Обновляем предмет в БД
+        // 1.2.1. Удаляем из БД перемещаемый
+        let deletedItemOrError = null;
+        if (currentItem.value.id) {
+          deletedItemOrError = await $fetch("api/warehouse/item", {
+            method: "DELETE",
+            body: {
+              id: currentItem.value.id,
+            },
+          });
+        }
+        if (deletedItemOrError instanceof H3Error) {
+          error.value = deletedItemOrError;
+          console.log("error: ", error);
+          return;
+        }
+
+        // 1.2.2. Обновляем в БД итоговый
+        item = await $fetch("api/warehouse/item", {
+          method: "PUT",
+          body: {
+            id: findItems[0].id,
+            // title: editedItem.title,
+            qty: editedItem.qty,
+            location: editedItem.location,
+            locationID: editedItem.locationID,
+          },
+        });
+        console.log("Переместили туда, где уже есть подобные предметы");
+      }
+
       // 2
-      // 3
-      // 4
-      item = await $fetch("api/warehouse/item", {
-        method: "PUT",
-        body: {
-          id: editedItem.id,
-          // title: editedItem.title,
-          qty: editedItem.qty,
-          location: editedItem.location,
-          locationID: editedItem.locationID,
-        },
-      });
+      // Перемещаем часть
+
+      // 2.1.
+      // в уже имеющийся предмет в другом месте (вычитаем из первого, добавляем ко второму)
+      if(tempQty.value !== currentItem.value.qty && findItems[0]) {
+        console.log("Переместили часть туда, где уже есть подобные предметы");
+      }
+
+      // 2.2.
+      // в новое место (вычитаем из первого, создаем второй и добавляем к нему)
+      if(tempQty.value !== currentItem.value.qty && !findItems[0]) {
+        console.log("Переместили часть туда, где еще нет подобных предметы");
+      }
+
       // console.log(item)
-      console.log('Moved')
+      console.log("Moved");
     }
   }
   // console.log(editedItem);
@@ -837,6 +906,7 @@ const onClickAction = (action: string, item: any) => {
     };
   }
   // console.log(`onClickAction: ${action}, id: ${item.id}`);
+  // console.log(currentItem.value)
 };
 
 // ******** WATCHERS ********
@@ -942,8 +1012,8 @@ watch(tempCreateItemLocation, () => {
 
 watch(tempCreateItemOwner, () => {
   item.value.ownerType = tempCreateItemOwner.value.type;
-  item.value.ownerID = tempCreateItemOwner.value.id
-})
+  item.value.ownerID = tempCreateItemOwner.value.id;
+});
 
 //
 // watch(items, (prevValue, newValue) => {
@@ -1415,9 +1485,7 @@ watch(tempCreateItemOwner, () => {
 
             <!-- OWNER -->
             <div class="mb-3">
-              <label for="users" class="form-label"
-                >Собственник</label
-              >
+              <label for="users" class="form-label">Собственник</label>
               <select
                 class="form-select"
                 aria-label="Default select example"
@@ -1435,73 +1503,40 @@ watch(tempCreateItemOwner, () => {
                     }"
                     v-for="(user, i) in users"
                   >
-                  <!-- return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`; -->
+                    <!-- return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`; -->
                     {{ user.surname }} {{ user.name }} {{ user.middleName }}
                   </option>
                 </optgroup>
                 <!-- Companies -->
                 <optgroup label="Организации">
-                  <option 
+                  <option
                     :value="{
                       type: 'company',
-                      id: company.id
+                      id: company.id,
                     }"
                     v-for="(company, i) in organizations"
                   >
                     {{ company.title }}
                   </option>
                 </optgroup>
-                </select>
+              </select>
             </div>
-
-            <!-- OWNER ID-->
-            <!-- <div class="mb-3">
-              <label for="itemOwnerID" class="form-label">Owner ID</label>
-              <input
-                v-model="item.ownerID"
-                type="number"
-                id="itemOwnerID"
-                class="form-control"
-                aria-describedby="nameHelp"
-              />
-            </div> -->
-
-            <!-- OWNER TYPE-->
-            <!-- <div class="mb-3">
-              <label for="itemOwnerType" class="form-label"
-                >Owner TYPE (user | company)</label
-              >
-              <input
-                v-model="item.ownerType"
-                type="text"
-                id="itemOwnerType"
-                class="form-control"
-                aria-describedby="nameHelp"
-              />
-            </div> -->
 
             <!-- RESPONSIBLE -->
             <div class="mb-3">
-              <label for="users" class="form-label"
-                >Ответственный</label
-              >
+              <label for="users" class="form-label">Ответственный</label>
               <select
                 class="form-select"
                 aria-label="Default select example"
                 v-model="item.responsible"
               >
-                <option :value="null" selected>
-                  Выберите
-                </option>
+                <option :value="null" selected>Выберите</option>
                 <!-- Users -->
                 <!-- <optgroup label="Соучастники"> -->
-                  <option
-                    :value="user.id"
-                    v-for="(user, i) in users"
-                  >
+                <option :value="user.id" v-for="(user, i) in users">
                   <!-- return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`; -->
-                    {{ user.surname }} {{ user.name }} {{ user.middleName }}
-                  </option>
+                  {{ user.surname }} {{ user.name }} {{ user.middleName }}
+                </option>
                 <!-- </optgroup> -->
               </select>
             </div>
@@ -1668,6 +1703,8 @@ watch(tempCreateItemOwner, () => {
         </div>
       </div>
     </div>
+
+    <!-- ********************** DATA ******************************* -->
 
     <!-- fetch data is error -->
     <div v-if="error">

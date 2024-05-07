@@ -161,18 +161,27 @@ onMounted(async () => {
   const newItemModalEl = document.getElementById("newWarehouseItemModal");
   if (newItemModalEl) {
     newItemModalEl.addEventListener("hidden.bs.modal", (event) => {
-      item.value = {
-        // uuid: null,
-        title: null,
-        type: null,
-        qty: 0,
-        measure: null,
-        location: null,
-        locationID: null,
-        ownerID: null,
-        ownerType: null,
-        responsible: null,
-      };
+      // item.value = {
+      //   // uuid: null,
+      //   title: null,
+      //   type: null,
+      //   qty: 0,
+      //   measure: null,
+      //   location: null,
+      //   locationID: null,
+      //   ownerID: null,
+      //   ownerType: null,
+      //   responsible: null,
+      // };
+      item.value.title = null
+      item.value.type = null
+      item.value.qty = null
+      item.value.measure = null
+      item.value.location = null
+      item.value.locationID = null
+      item.value.ownerID = null
+      item.value.ownerType = null
+      item.value.responsible = null
 
       tempCreateItemLocation.value = { type: null, id: null };
       tempCreateItemOwner.value = { type: null, id: null };
@@ -411,6 +420,7 @@ async function addWarehouseItem(item) {
       type: null,
       id: null,
     };
+    // createNewItemBtnIsDisabled.value = true
     // clearModalInputs(item);
 
     // refetching
@@ -786,7 +796,7 @@ async function updateItem(editedItem) {
       }
 
       // 1.2. в уже имеющийся предмет в другом месте(добавляем ко второму (findItems[0].id) и удаляем первый(currentItem.value.id))
-      if (tempQty.value === currentItem.value.qty && findItems[0]) {
+      else if (tempQty.value === currentItem.value.qty && findItems[0]) {
         editedItem.location = tempLocation.value.type;
         editedItem.locationID = tempLocation.value.id;
         editedItem.qty = currentItem.value.qty + +findItems[0].qty;
@@ -827,13 +837,69 @@ async function updateItem(editedItem) {
 
       // 2.1.
       // в уже имеющийся предмет в другом месте (вычитаем из первого, добавляем ко второму)
-      if(tempQty.value !== currentItem.value.qty && findItems[0]) {
+      else if (tempQty.value < currentItem.value.qty && findItems[0]) {
+        editedItem.location = tempLocation.value.type;
+        editedItem.locationID = tempLocation.value.id;
+        editedItem.qty = findItems[0].qty + tempQty.value;
+
+        await $fetch("api/warehouse/item", {
+          method: "PUT",
+          body: {
+            id: findItems[0].id,
+            // title: editedItem.title,
+            qty: editedItem.qty,
+            location: editedItem.location,
+            locationID: editedItem.locationID,
+          },
+        });
+
+        await $fetch("api/warehouse/item", {
+          method: "PUT",
+          body: {
+            id: currentItem.value.id,
+            // title: editedItem.title,
+            qty: currentItem.value.qty - tempQty.value,
+            location: currentItem.value.location,
+            locationID: currentItem.value.locationID,
+          },
+        });
+
         console.log("Переместили часть туда, где уже есть подобные предметы");
       }
 
       // 2.2.
       // в новое место (вычитаем из первого, создаем второй и добавляем к нему)
-      if(tempQty.value !== currentItem.value.qty && !findItems[0]) {
+      else if (tempQty.value < currentItem.value.qty && !findItems.length) {
+        editedItem.location = tempLocation.value.type;
+        editedItem.locationID = tempLocation.value.id;
+        editedItem.qty = tempQty.value;
+
+        await $fetch("api/warehouse/item", {
+          method: "PUT",
+          body: {
+            id: currentItem.value.id,
+            // title: editedItem.title,
+            qty: currentItem.value.qty - tempQty.value,
+            location: currentItem.value.location,
+            locationID: currentItem.value.locationID,
+          },
+        });
+
+        await $fetch("api/warehouse/item", {
+          method: "POST",
+          body: {
+            uuid: uuidv4(),
+            title: currentItem.value.title,
+            type: currentItem.value.type,
+            qty: editedItem.qty,
+            measure: currentItem.value.measure,
+            location: editedItem.location,
+            locationID: editedItem.locationID,
+            ownerID: currentItem.value.ownerID,
+            ownerType: currentItem.value.ownerType,
+            responsible: currentItem.value.responsible,
+          },
+        });
         console.log("Переместили часть туда, где еще нет подобных предметы");
       }
 
@@ -921,6 +987,7 @@ watch(currentCategoryByLocationObj, async () => {
 
 // Проверка перед сабмитом
 watch(item.value, () => {
+  // console.log(item.value)
   if (
     item.value.title &&
     item.value.type &&
@@ -936,6 +1003,10 @@ watch(item.value, () => {
   } else {
     createNewItemBtnIsDisabled.value = true;
   }
+});
+
+watch(createNewItemBtnIsDisabled, () => {
+  console.log(createNewItemBtnIsDisabled.value);
 });
 
 watch(tempQty, () => {

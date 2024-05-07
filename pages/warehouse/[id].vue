@@ -56,8 +56,46 @@ async function getItems() {
     <p style="margin-top: 5rem">тмц #{{ $route.params.id }}</p>
 
     <div v-if="item">
-      <h1>{{ item.title }}</h1>
-      <p>{{ item.type }}</p>
+      <div style="display: flex; flex-direction: column;">
+
+        <h1>{{ item.title }}</h1>
+          <!-- Материалы -->
+          <div v-if="item.type === 'stuff'" style="display: flex; gap: 1rem;">
+            <!-- Показать динамически места, в которых есть данный материал. Стили как в общем списке ТЦ. По клику переходим на ТМЦ по выбранному месту. Выделить текущее местоположение выбранного ТМЦ --> 
+            <div>
+              Всего (36 шт.)
+            </div>
+            <div>
+              Офис на Хасана (12 шт)
+            </div>
+            <div>
+              Монолит G14 THULE (12 шт)
+            </div>
+            <div>
+              Клиника (12 шт)
+            </div>
+        </div>
+      </div>
+
+      <!-- из warehouse page - warehouseCategories - перенести в store, чтобы можно было дергать сразу переведенный текст -->
+      <h2>{{ item.type }}</h2>
+
+      <!-- Инструмент -->
+      <div v-if="item.type === 'tools'">
+        <ul>
+          <li>Серийник (если есть)</li>
+          <li>Описание?</li>
+        </ul>
+      </div>
+
+      <!-- Материалы -->
+      <div v-if="item.type === 'consumables'">
+        РАСХОДНИКИ
+      </div>
+      <!-- Техника -->
+      <div v-if="item.type === 'technic'">
+        ТЕХНИКА
+      </div>
       <br />
       {{ item }}
       <ul style="list-style: none; padding: 0">

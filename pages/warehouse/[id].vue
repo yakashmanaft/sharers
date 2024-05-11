@@ -48,8 +48,11 @@ onMounted(async () => {
     }
   })
 });
-console.log(route.path.split('/', 3))
-// if(route.path.split('/', 3)[1] === 'warehouse' && route.path.split('/', 3)[2] === $route.params.id)
+
+// const { data: projects } = useLazyAsyncData("projects", () =>
+//   $fetch("@/api/projects/projects")
+// );
+// console.log(projects)
 
 const locationLinkColorized = (location: string, id: number) => {
 
@@ -84,6 +87,7 @@ async function getItems() {
       <div style="display: flex; flex-direction: column;">
 
         <h1>{{ item.title }}</h1>
+        <!-- {{ projects }} -->
           <!-- Материалы -->
           <div v-if="item.type === 'stuff'" style="margin-top: 1rem; display: flex; gap: 1rem;">
             <!-- Показать динамически места, в которых есть данный материал. Стили как в общем списке ТЦ. По клику переходим на ТМЦ по выбранному месту. Выделить текущее местоположение выбранного ТМЦ --> 

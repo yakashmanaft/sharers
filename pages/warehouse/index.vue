@@ -102,6 +102,10 @@ const measureTypes = ref([
     name: "пог. м.",
   },
   {
+    type: "кв. м.",
+    name: "кв. м.",
+  },
+  {
     type: "рулон",
     name: "рулон",
   },

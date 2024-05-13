@@ -313,11 +313,20 @@ const translateLocation = (id: any, location: string) => {
         return `Ремонт: ${locationItem.title}`;
       }
       // return `В ремонте #${id}, ${typeof id}`;
-    } else if (location === "archive") {
+    } 
+    
+    // ARCHIVE
+    else if (location === "archive") {
       return `Архив`;
-    } else if (location === "deleted") {
+    } 
+    
+    // DELETED
+    else if (location === "deleted") {
       return "Списание";
-    } else {
+    } 
+    
+    // ELSE location
+    else {
       return alert(
         "warehouse inidex.vue error - strange object.location in translateLocation function"
       );

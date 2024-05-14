@@ -39,6 +39,8 @@ const itemLocations = ref(null);
 const switchedItem = ref(null);
 const projects = ref(null);
 const locations = ref(null);
+const allTransactions = ref(null);
+const currentItemTransactions = ref(null);
 //
 const switchedLocation = ref({
   location: "",
@@ -51,10 +53,17 @@ onMounted(async () => {
   projects.value = await getProjects();
   items.value = await getItems();
   locations.value = await getLocations();
+  allTransactions.value = await getWarehouseTransaction();
+
   item.value = items.value.find((item: any) => item.id == route.params.id);
 
   itemLocations.value = items.value.filter((element) => {
-    if (element.type === "stuff" && element.title === item.value.title && element.location !== 'deleted' && element.location !== 'archive') {
+    if (
+      element.type === "stuff" &&
+      element.title === item.value.title &&
+      element.location !== "deleted" &&
+      element.location !== "archive"
+    ) {
       return element;
     }
   });
@@ -70,6 +79,24 @@ onMounted(async () => {
       return element;
     }
   });
+
+  if (switchedLocation.value.location === "all") {
+    currentItemTransactions.value = allTransactions.value.filter((element) => {
+      if (element.itemTitle === item.value.title) {
+        return element;
+      }
+    });
+  } else {
+    currentItemTransactions.value = allTransactions.value.filter((element) => {
+      if (
+        element.itemTitle === item.value.title &&
+        element.locationTo === switchedLocation.value.location &&
+        element.locationToID === switchedLocation.value.locationID
+      ) {
+        return element;
+      }
+    });
+  }
 });
 
 // const locationLinkColorized = (location: string, id: number) => {
@@ -163,6 +190,9 @@ async function getProjects() {
 async function getLocations() {
   return await $fetch("/api/locations/locations");
 }
+async function getWarehouseTransaction() {
+  return await $fetch("/api/warehouse/ledger");
+}
 
 // sum items qty
 const sumItemsQty = () => {
@@ -179,11 +209,27 @@ const sumItemsQty = () => {
 watch(switchedLocation, () => {
   if (switchedLocation.value.location === "all") {
     switchedItem.value = itemLocations.value;
+    //
+    currentItemTransactions.value = allTransactions.value.filter((element) => {
+      if (element.itemTitle === item.value.title) {
+        return element;
+      }
+    });
   } else {
     switchedItem.value = itemLocations.value.filter((element) => {
       if (
         switchedLocation.value.location === element.location &&
         switchedLocation.value.locationID === element.locationID
+      ) {
+        return element;
+      }
+    });
+    //
+    currentItemTransactions.value = allTransactions.value.filter((element) => {
+      if (
+        element.itemTitle === item.value.title &&
+        element.locationTo === switchedLocation.value.location &&
+        element.locationToID === switchedLocation.value.locationID
       ) {
         return element;
       }
@@ -305,7 +351,11 @@ watch(switchedLocation, () => {
           </div> -->
         </div>
         <!-- Если прсомотреть хочется по всем объектам общую инфу по предмету -->
-        <div v-for="element in switchedItem" :key="element.id" style="margin-top: 1rem;">
+        <div
+          v-for="element in switchedItem"
+          :key="element.id"
+          style="margin-top: 1rem"
+        >
           {{ element }}
         </div>
       </div>
@@ -329,16 +379,19 @@ watch(switchedLocation, () => {
         {{ item }}
       </div>
       <br />
-      <ul style="list-style: none; padding: 0">
-        <li>
-          <div>
-            <h2>История</h2>
 
-            <ul style="list-style: none; padding: 0">
+      <div v-if="currentItemTransactions.length !== 0">
+        <h2>История</h2>
+        <ul style="list-style: none; padding: 0">
+          <li v-for="(transaction, i) in currentItemTransactions" :key="i">
+            <!-- <div> -->
+            {{ transaction }}
+
+            <!-- <ul style="list-style: none; padding: 0">
               <li style="display: flex; align-items: center; gap: 1rem">
                 <div>2024-03-23T13:54:12.000Z</div>
                 <div>"Склад на Бригадирской" (Камини собственник)</div>
-                <div>---></div>
+                <div>-</div>
                 <div>"Склад на Бригадирской" (Камини собственник)</div>
                 <div>Анфалов С.В.</div>
               </li>
@@ -349,13 +402,14 @@ watch(switchedLocation, () => {
                 </div>
                 <div>Анфалов С.В.</div>
               </li>
-            </ul>
-          </div>
-        </li>
-        <br />
-        <li>Стоимость закупа (руб.)</li>
-        <li>Ценность (руб.)</li>
-      </ul>
+            </ul> -->
+            <!-- </div> -->
+          </li>
+          <br />
+          <li>Стоимость закупа (руб.)</li>
+          <li>Ценность (руб.)</li>
+        </ul>
+      </div>
     </div>
   </Container>
 </template>

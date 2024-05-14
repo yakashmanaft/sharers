@@ -414,7 +414,6 @@ async function addWarehouseItem(item) {
     item.ownerType &&
     item.responsible
   ) {
-    await addWarehouseTransaction(item);
     addedItem = await $fetch("api/warehouse/item", {
       method: "POST",
       body: {
@@ -430,6 +429,7 @@ async function addWarehouseItem(item) {
         responsible: item.responsible,
       },
     });
+    await addWarehouseTransaction(item);
     // clear all inputs in modal
     tempCreateItemLocation.value = {
       type: null,
@@ -485,7 +485,7 @@ async function addWarehouseTransaction(item) {
       },
     });
 
-    console.log(addedTransaction)
+    // console.log(addedTransaction)
   }
   // {
   //   addedTransaction = await $fetch("api/warehouse/ledger", {

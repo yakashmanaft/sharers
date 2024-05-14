@@ -36,10 +36,15 @@ const route = useRoute();
 const items = ref(null);
 const item = ref(null);
 const itemLocations = ref(null);
+const switchedItem = ref(null);
 const projects = ref(null);
 const locations = ref(null);
 //
-const linkAllIsActive = ref(false);
+const switchedLocation = ref({
+  location: "",
+  locationID: null,
+});
+// const linkAllIsActive = ref(false);
 
 onMounted(async () => {
   //
@@ -53,26 +58,33 @@ onMounted(async () => {
       return element;
     }
   });
+
+  switchedLocation.value.location = item.value.location;
+  switchedLocation.value.locationID = item.value.locationID;
+
+  switchedItem.value = itemLocations.value.filter((element) => {
+    if (
+      switchedLocation.value.location === element.location &&
+      switchedLocation.value.locationID === element.locationID
+    ) {
+      return element;
+    }
+  });
 });
 
-// const { data: projects } = useLazyAsyncData("projects", () =>
-//   $fetch("@/api/projects/projects")
-// );
-// console.log(projects)
-
-const locationLinkColorized = (location: string, id: number) => {
-  if (location) {
-    if (+route.params.id === id) {
-      if (!linkAllIsActive.value) {
-        return `link_${location} link_current-route`;
-      } else {
-        return `link_${location}`;
-      }
-    } else {
-      return `link_${location}`;
-    }
-  }
-};
+// const locationLinkColorized = (location: string, id: number) => {
+//   if (location) {
+//     if (+route.params.id === id) {
+//       if (!linkAllIsActive.value) {
+//         return `link_${location} link_current-route`;
+//       } else {
+//         return `link_${location}`;
+//       }
+//     } else {
+//       return `link_${location}`;
+//     }
+//   }
+// };
 
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
@@ -138,7 +150,7 @@ const translateLocation = (id: any, location: string) => {
 
 //
 /**
- * @desc Get warehouse items from BD
+ * @desc Get warehouse items, projects, locations from BD
  */
 async function getItems() {
   return await $fetch("/api/warehouse/item");
@@ -154,25 +166,34 @@ async function getLocations() {
 
 // sum items qty
 const sumItemsQty = () => {
-  if (items.value && item.value) {
-    let filtered = items.value.filter((el) => {
-      if (el.title === item.value.title && el.measure === item.value.measure) {
-        return el;
+  let total;
+  if (items.value) {
+    if (itemLocations.value && item.value) {
+      total = itemLocations.value.reduce((sum, el) => sum + el.qty, 0);
+    }
+  }
+  return total;
+};
+
+// WATHERS
+watch(switchedLocation, () => {
+  if (switchedLocation.value.location === "all") {
+    switchedItem.value = itemLocations.value;
+  } else {
+    switchedItem.value = itemLocations.value.filter((element) => {
+      if (
+        switchedLocation.value.location === element.location &&
+        switchedLocation.value.locationID === element.locationID
+      ) {
+        return element;
       }
     });
-
-    return 1;
   }
-};
+});
 </script>
 
 <template>
   <Container>
-    <!-- <p style="margin-top: 5rem">тмц #{{ $route.params.id }}</p> -->
-
-    <!-- {{projects}} -->
-    <!--  -->
-
     <div v-if="item" style="margin-top: 7rem">
       <div
         style="display: flex; flex-direction: column; justify-content: center"
@@ -182,11 +203,75 @@ const sumItemsQty = () => {
         <p style="margin: 0">
           Мера: <span>{{ item.measure }}</span>
         </p>
+
+        <!--  -->
+        <h2>Описание</h2>
+        <p>
+          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestiae
+          autem mollitia rerum fugit et nobis, facilis optio deserunt eligendi
+          aliquam quod ex dolore placeat labore fuga ullam, id commodi repellat
+          eum. Deserunt nam dicta error excepturi atque quam qui cum reiciendis
+          suscipit officiis libero nesciunt dolor voluptatibus hic laudantium
+          voluptate doloremque doloribus corporis facere velit animi, cumque
+          neque. Quae, distinctio beatae architecto aperiam ratione accusantium,
+          sunt nam autem incidunt aliquam eum nobis maiores modi, temporibus
+          praesentium sed ab. Dolor veritatis non magnam commodi architecto sit
+          qui magni vel perspiciatis laborum praesentium, atque officiis
+          aspernatur quasi voluptates perferendis quaerat vero illo deserunt aut
+          impedit facilis voluptatum. Quod expedita nihil eaque commodi, cum
+          molestias a ea nulla quis numquam. Rerum quasi, dolores molestiae,
+          quibusdam laudantium numquam veritatis, accusamus impedit quam aliquid
+          atque laborum fugiat omnis corrupti officiis quae cupiditate molestias
+          neque illo. Nulla tenetur necessitatibus asperiores voluptatibus fuga,
+          earum deserunt totam culpa dolorum. Aliquam quas quibusdam,
+          dignissimos libero exercitationem tempora quisquam earum voluptate,
+          nesciunt sapiente eos provident optio fugit aliquid ab velit
+          voluptatibus iusto! Vitae, voluptatem! Aperiam totam officia nisi
+          accusamus temporibus animi, quo omnis repellendus, nihil impedit
+          possimus dolores, nesciunt voluptates maxime inventore odio. Culpa
+          perspiciatis nesciunt pariatur illo modi reprehenderit.
+        </p>
+
         <!-- {{ projects }} -->
         <!-- Материалы -->
         <div v-if="item.type === 'stuff'" class="item-locations_block">
+          <!-- set item to view -->
+          <fieldset id="item-locations" class="switch-item_wrapper">
+            <div class="switch-item_el" v-if="itemLocations.length > 1">
+              <input
+                type="radio"
+                id="all-item-view"
+                name="item-locations"
+                :value="{ location: 'all', locationID: null }"
+                v-model="switchedLocation"
+              />
+              <label for="all-item-view">Всего {{ sumItemsQty() }}</label>
+            </div>
+            <div
+              class="switch-item_el"
+              v-for="(location, i) in itemLocations"
+              :key="i"
+            >
+              <input
+                type="radio"
+                :id="location.id"
+                name="item-locations"
+                :value="{
+                  location: location.location,
+                  locationID: location.locationID,
+                }"
+                v-model="switchedLocation"
+              />
+              <label :for="location.id"
+                >{{
+                  translateLocation(location.locationID, location.location)
+                }}
+                {{ location.qty }}</label
+              >
+            </div>
+          </fieldset>
           <!-- Показать динамически места, в которых есть данный материал. Стили как в общем списке ТЦ. По клику переходим на ТМЦ по выбранному месту. Выделить текущее местоположение выбранного ТМЦ -->
-          <div
+          <!-- <div
             class="link link-location link-all link-all_block"
             :class="{ 'link-all_active': linkAllIsActive }"
             v-if="itemLocations.length > 1"
@@ -217,18 +302,13 @@ const sumItemsQty = () => {
               </span>
               <span class="item-location_qty">{{ location.qty }}</span>
             </router-link>
-          </div>
+          </div> -->
         </div>
-
         <!-- Если прсомотреть хочется по всем объектам общую инфу по предмету -->
-        <div v-if="linkAllIsActive">
-          <p>Показываем данные со всех объектов</p>
-          {{ linkAllIsActive }}
+        <div v-for="element in switchedItem" :key="element.id" style="margin-top: 1rem;">
+          {{ element }}
         </div>
       </div>
-      <!-- из warehouse page - warehouseCategories - перенести в store, чтобы можно было дергать сразу переведенный текст -->
-      <br />
-      <h2>{{ item.type }}</h2>
 
       <!-- Инструмент -->
       <div v-if="item.type === 'tools'">
@@ -239,11 +319,16 @@ const sumItemsQty = () => {
       </div>
 
       <!-- Материалы -->
-      <div v-if="item.type === 'consumables'">РАСХОДНИКИ</div>
+      <div v-if="item.type === 'consumables'">
+        <h2>РАСХОДНИКИ</h2>
+        {{ item }}
+      </div>
       <!-- Техника -->
-      <div v-if="item.type === 'technic'">ТЕХНИКА</div>
+      <div v-if="item.type === 'technic'">
+        <h2>ТЕХНИКА</h2>
+        {{ item }}
+      </div>
       <br />
-      {{ item }}
       <ul style="list-style: none; padding: 0">
         <li>
           <div>
@@ -276,7 +361,40 @@ const sumItemsQty = () => {
 </template>
 
 <style scoped>
-.link {
+.switch-item_wrapper {
+  width: 100%;
+  display: flex;
+  overflow-x: scroll;
+  gap: 1rem;
+}
+.switch-item_wrapper::-webkit-scrollbar {
+  display: none;
+}
+.switch-item_el {
+  text-wrap: nowrap;
+}
+.switch-item_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.switch-item_el label {
+  cursor: pointer;
+  padding: 4px 10px;
+  border: 1px solid black;
+  border-radius: 16px;
+}
+.switch-item_el label:hover {
+  color: var(--bs-body-bg);
+  background-color: var(--bs-body-color);
+  transition: all 0.15s ease-in;
+}
+.switch-item_el input[type="radio"]:checked + label {
+  color: var(--bs-body-bg);
+  background-color: var(--bs-body-color);
+}
+
+/* .link {
   text-wrap: nowrap;
 }
 .item-locations_block {
@@ -302,48 +420,44 @@ const sumItemsQty = () => {
   justify-content: center;
   border-radius: 100%;
   color: var(--bs-dark);
-}
-.link-location {
+} */
+/* .link-location {
   padding: 4px 10px;
   border-radius: 16px;
-}
-.link-all_block {
+} */
+/* .link-all_block {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.link-all {
+} */
+/* .link-all {
   padding: 0;
   padding: 4px 10px;
   border-radius: 16px;
-  background-color: var(--bs-dark-bg-subtle);
-}
-.link-all_active {
+  border: 1px solid var(--bs-dark-bg-subtle);
+} */
+/* .link-all_active {
   color: #fff;
   background-color: var(--bs-dark);
 }
 .link:hover {
   cursor: pointer;
-}
-.link_project {
+} */
+/* .link_project {
   color: var(--bs-success);
-  /* border: 1px solid var(--bs-success-bg-subtle); */
-  background-color: var(--bs-success-bg-subtle);
-}
-.link_sklad {
-  color: white;
-  border: none;
-  background-color: var(--bs-primary-bg-subtle);
-}
-.link_office {
-  color: white;
-  border: none;
-  background-color: var(--bs-primary-bg-subtle);
+  border: 1px solid var(--bs-success-bg-subtle);
+} */
+/* .link_sklad {
+  color: var(--bs-primary-bg-subtle);
+  border: 1px solid var(--bs-primary-bg-subtle);
+} */
+/* .link_office {
+  color: var(--bs-primary-bg-subtle);
+  border: 1px solid var(--bs-primary-bg-subtle);
 }
 .link_repair {
   color: var(--bs-warning);
-  /* border: 1px solid var(--bs-warning-bg-subtle); */
-  background-color: var(--bs-warning-bg-subtle);
+  border: 1px solid var(--bs-warning-bg-subtle);
 }
 .link_archive {
   color: var(--bs-dark-bg-subtle);
@@ -355,9 +469,8 @@ const sumItemsQty = () => {
 }
 .link_current-route {
   color: red;
-}
-
-.link_project.link_current-route {
+} */
+/* .link_project.link_current-route {
   color: #fff;
   background-color: var(--bs-success);
   border-color: var(--bs-success);
@@ -376,5 +489,5 @@ const sumItemsQty = () => {
   color: #fff;
   background-color: var(--bs-warning);
   border: none;
-}
+} */
 </style>

@@ -177,15 +177,15 @@ onMounted(async () => {
       //   ownerType: null,
       //   responsible: null,
       // };
-      item.value.title = null
-      item.value.type = null
-      item.value.qty = null
-      item.value.measure = null
-      item.value.location = null
-      item.value.locationID = null
-      item.value.ownerID = null
-      item.value.ownerType = null
-      item.value.responsible = null
+      item.value.title = null;
+      item.value.type = null;
+      item.value.qty = null;
+      item.value.measure = null;
+      item.value.location = null;
+      item.value.locationID = null;
+      item.value.ownerID = null;
+      item.value.ownerType = null;
+      item.value.responsible = null;
 
       tempCreateItemLocation.value = { type: null, id: null };
       tempCreateItemOwner.value = { type: null, id: null };
@@ -313,18 +313,18 @@ const translateLocation = (id: any, location: string) => {
         return `Ремонт: ${locationItem.title}`;
       }
       // return `В ремонте #${id}, ${typeof id}`;
-    } 
-    
+    }
+
     // ARCHIVE
     else if (location === "archive") {
       return `Архив`;
-    } 
-    
+    }
+
     // DELETED
     else if (location === "deleted") {
       return "Списание";
-    } 
-    
+    }
+
     // ELSE location
     else {
       return alert(
@@ -1850,6 +1850,7 @@ watch(tempCreateItemOwner, () => {
 
             <!-- 3 -->
             <td class="item-qty" scope="col">
+              <div class="location-mark" :class="locationLinkColorized(item.location)"></div>
               <span>{{ item.qty }} {{ item.measure }}</span>
             </td>
 
@@ -2203,6 +2204,16 @@ label #expend-item:checked + .expand-item_icon {
   .table-row_wrapper td.item-qty {
     text-wrap: nowrap;
     text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+  }
+  .table-row_wrapper td .location-mark {
+    width: 10px;
+    height: 10px;
+    border-radius: 100%;
+    /* background-color: red; */
   }
   .table-row_wrapper td.span-3 {
     grid-column: span 3;

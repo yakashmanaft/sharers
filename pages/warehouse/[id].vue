@@ -54,7 +54,7 @@ onMounted(async () => {
   item.value = items.value.find((item: any) => item.id == route.params.id);
 
   itemLocations.value = items.value.filter((element) => {
-    if (element.type === "stuff" && element.title === item.value.title) {
+    if (element.type === "stuff" && element.title === item.value.title && element.location !== 'deleted' && element.location !== 'archive') {
       return element;
     }
   });

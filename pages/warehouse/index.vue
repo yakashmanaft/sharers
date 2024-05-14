@@ -127,7 +127,7 @@ const editedItem = ref({
   title: null,
   qty: null,
 });
-
+const { user } = useUserSession();
 onMounted(async () => {
   // makes refetching
   await refresh();
@@ -390,6 +390,12 @@ const locationLinkColorized = (location: string) => {
   }
 };
 
+const locationMarkColorized = (location: string) => {
+  if (location) {
+    return `mark_${location}`;
+  }
+};
+
 // ****** ДОБАЛЯЕМ ITEM на SKLAD to BD в newWarehouseItemModal *******
 // флаг disabled для кнопки submit
 const createNewItemBtnIsDisabled = ref(true);
@@ -408,6 +414,7 @@ async function addWarehouseItem(item) {
     item.ownerType &&
     item.responsible
   ) {
+    await addWarehouseTransaction(item);
     addedItem = await $fetch("api/warehouse/item", {
       method: "POST",
       body: {
@@ -423,7 +430,6 @@ async function addWarehouseItem(item) {
         responsible: item.responsible,
       },
     });
-
     // clear all inputs in modal
     tempCreateItemLocation.value = {
       type: null,
@@ -440,6 +446,68 @@ async function addWarehouseItem(item) {
     filterItemsByCategoryType();
     filterItemsByLocationObj();
   }
+}
+
+async function addWarehouseTransaction(item) {
+  let addedTransaction = null;
+
+  if (
+    item.title &&
+    item.type &&
+    item.qty > 0 &&
+    item.measure &&
+    item.location &&
+    item.locationID &&
+    item.ownerID &&
+    item.ownerType &&
+    item.responsible
+  ) {
+    // console.log(item);
+    // console.log(user.value.id);
+
+    addedTransaction = await $fetch("api/warehouse/ledger", {
+      method: "POST",
+      body: {
+        transactionType: "created",
+        // itemID: addedItem.id,
+        itemTitle: item.title,
+        authorID: user.value.id,
+        locationFrom: item.location,
+        locationFromID: item.locationID,
+        locationTo: item.location,
+        locationToID: item.locationID,
+        prevOwnerID: item.ownerID,
+        prevOwnerType: item.ownerType,
+        currentOwnerID: item.ownerID,
+        currentOwnerType: item.ownerType,
+        prevResponsibleID: item.responsible,
+        currentResponsibleID: item.responsible,
+      },
+    });
+
+    console.log(addedTransaction)
+  }
+  // {
+  //   addedTransaction = await $fetch("api/warehouse/ledger", {
+  //     method: "POST",
+  //     body: {
+  //       transactionType: "created",
+  //       // itemID: addedItem.id,
+  //       itemTitle: item.title,
+  //       // authorID: user.value.id,
+  //       locationFrom: item.location,
+  //       locationFromID: item.locationID,
+  //       locationTo: item.location,
+  //       locationToID: item.locationID,
+  //       prevOwnerID: item.ownerID,
+  //       prevOwnerType: item.ownerType,
+  //       currentOwnerID: item.ownerID,
+  //       currentOwnerType: item.ownerType,
+  //       prevResponsibleID: item.responsible,
+  //       currentResponsibleID: item.responsible,
+  //     },
+  //   });
+  // }
 }
 
 // Ччисти инпуты модалки создания ТМЦ
@@ -663,60 +731,26 @@ const showItemsInDeleted = () => {
   currentCategoryByType.value = "all";
 };
 // фильтрация по search input
-const computedItems = computed(
-  () =>
-    searchInput.value === ""
-      ? items.value
-      : items.value.filter((item: any) =>
-          item.title
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
-        )
-  // : filterItemsFunc(items.value)
+const computedItems = computed(() =>
+  searchInput.value === ""
+    ? items.value
+    : items.value.filter((item: any) =>
+        item.title
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
+      )
 );
 
-// const filterItemsFunc = (itemsArray: any) => {
-//   return itemsArray.filter((item) => item.title
-//           .toLowerCase()
-//           .replace(/\s+/g, "")
-//           .includes(searchInput.value.toLowerCase().replace(/\s+/g, "")))
-// }
-
-// const sortedItemsFunc = (itemsArray: any) => {
-//   return itemsArray.sort((x, y) => x.title.localeCompare(y.title));
-// }
-
-// Изменения в предмете
-// const changeEditedQty = () => {
-//   if(editedActionType.value === 'add') {
-
-//   }
-// }
 const tempQty = ref(0);
 const tempLocation = ref({
   title: "Все",
   type: "all",
   id: null,
 });
-// title:
-// type:
-// id:
+
 const editBtnIsDisabled = ref(true);
 const submitEditCurrentItem = async () => {
-  // console.log(`submitEditCurrentItem: ${editedActionType.value}`);
-  // console.log(editedItem.value);
-  // let item = items.value.find((item) => item.id === id);
-
-  // if (action === "sub") {
-  //   if (item.qty > 0) {
-  //     item.qty--;
-  //   }
-  // } else if (action === "add") {
-  //   item.qty++;
-  // }
-  // editedItem.value.id = item.id;
-  // editedItem.value.qty = item.qty;
   if (editedActionType.value === "add") {
     editedItem.value.qty += tempQty.value;
     // await updateItem(editedItem.value);
@@ -730,7 +764,7 @@ const submitEditCurrentItem = async () => {
 
   await updateItem(editedItem.value);
 
-  // Сбрасывает временную переменную количества и местонахлждения
+  // Сбрасывает временную переменную количества и местонахождения
   tempQty.value = 0;
   tempLocation.value = { title: "Все", type: "all", id: null };
 };
@@ -1300,12 +1334,12 @@ watch(tempCreateItemOwner, () => {
                       </option>
                     </optgroup>
                     <!-- Archive & deleted -->
-                    <optgroup label="Прочее">
+                    <!-- <optgroup label="Прочее">
                       <option
                         :value="{
                           title: 'location',
                           type: 'archive',
-                          id: null,
+                          id: null, поэтому не 500 ошибка, так как надо для перемещения id
                         }"
                       >
                         Архив
@@ -1314,12 +1348,12 @@ watch(tempCreateItemOwner, () => {
                         :value="{
                           title: 'location',
                           type: 'deleted',
-                          id: null,
+                          id: null, поэтому не 500 ошибка, так как надо для перемещения id
                         }"
                       >
                         Списание
                       </option>
-                    </optgroup>
+                    </optgroup> -->
                   </select>
                 </div>
 
@@ -1850,7 +1884,10 @@ watch(tempCreateItemOwner, () => {
 
             <!-- 3 -->
             <td class="item-qty" scope="col">
-              <div class="location-mark" :class="locationLinkColorized(item.location)"></div>
+              <div
+                class="location-mark"
+                :class="locationMarkColorized(item.location)"
+              ></div>
               <span>{{ item.qty }} {{ item.measure }}</span>
             </td>
 
@@ -2213,7 +2250,36 @@ label #expend-item:checked + .expand-item_icon {
     width: 10px;
     height: 10px;
     border-radius: 100%;
-    /* background-color: red; */
+  }
+  .mark_project {
+    /* color: var(--bs-success); */
+    /* border: 1px solid var(--bs-success-bg-subtle); */
+    background-color: var(--bs-success-bg-subtle);
+  }
+  .mark_sklad {
+    /* color: white; */
+    /* border: none; */
+    background-color: var(--bs-primary-bg-subtle);
+  }
+  .mark_office {
+    /* color: white; */
+    /* border: none; */
+    background-color: var(--bs-primary-bg-subtle);
+  }
+  .mark_repair {
+    /* color: var(--bs-warning); */
+    /* border: 1px solid var(--bs-warning-bg-subtle); */
+    background-color: var(--bs-warning-bg-subtle);
+  }
+  .mark_archive {
+    /* color: var(--bs-dark-bg-subtle); */
+    /* border: none; */
+    background-color: var(--bs-danger-bg-subtle);
+  }
+  .mark_deleted {
+    /* color: var(--bs-danger-bg-subtle); */
+    /* border: none; */
+    background-color: var(--bs-secondary-bg);
   }
   .table-row_wrapper td.span-3 {
     grid-column: span 3;

@@ -59,6 +59,26 @@ model WarehouseItems {
   update_at   DateTime? @updatedAt
 }
 
+// transactionsTypes (created | added | subtracted | moved | changeOwner | changeResponsible)
+model WarehouseItemsLedger {
+  id                    Int       @id @default(autoincrement())
+  created_at            DateTime  @default(now()) @db.DateTime(0)
+  transactionType       String    @db.VarChar(255)
+  // itemID                Int       @default(0)
+  itemTitle             String    @db.VarChar(255)
+  authorID              Int       @default(0)
+  locationFrom          String?   @db.VarChar(255)
+  locationFromID        Int?      @default(0)
+  locationTo            String    @db.VarChar(255)
+  locationToID          Int       @default(0)
+  prevOwnerID           Int?      @default(0)
+  prevOwnerType         String?   @db.VarChar(255)
+  currentOwnerID        Int       @default(0)
+  currentOwnerType      String    @db.VarChar(255)
+  prevResponsibleID     Int?      @default(0)
+  currentResponsibleID  Int       @default(0)
+}
+
 model Projects {
   id          Int       @id @default(autoincrement())
   uuid        String    @unique(map: "uuid") @db.VarChar(60)

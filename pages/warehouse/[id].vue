@@ -57,16 +57,46 @@ onMounted(async () => {
 
   item.value = items.value.find((item: any) => item.id == route.params.id);
 
-  itemLocations.value = items.value.filter((element) => {
+  // itemLocations.value = items.value.filter((element) => {
+  //   if (
+  //     element.type === "stuff" &&
+  //     element.title === item.value.title &&
+  //     element.location !== "deleted" &&
+  //     element.location !== "archive"
+  //   ) {
+  //     if (
+  // element.ownerType !== item.value.ownerType ||
+  // element.ownerID !== item.value.ownerID ||
+  // element.responsible !== item.value.responsible
+  //     ) {
+  //       // return element
+
+  //     } else {
+  //       return element;
+  //     }
+  //   }
+  // });
+
+  itemLocations.value = items.value.reduce((acc, current) => {
     if (
-      element.type === "stuff" &&
-      element.title === item.value.title &&
-      element.location !== "deleted" &&
-      element.location !== "archive"
+      current.type === "stuff" &&
+      current.title === item.value.title &&
+      current.location !== "deleted" &&
+      current.location !== "archive"
     ) {
-      return element;
+      if (
+        current.ownerType !== item.value.ownerType ||
+        current.ownerID !== item.value.ownerID ||
+        current.responsible !== item.value.responsible
+      ) {
+        let newCurrent;
+        
+      } else {
+        acc.push(current);
+      }
     }
-  });
+    return acc;
+  }, []);
 
   switchedLocation.value.location = item.value.location;
   switchedLocation.value.locationID = item.value.locationID;
@@ -418,14 +448,15 @@ watch(switchedLocation, () => {
 .switch-item_wrapper {
   width: 100%;
   display: flex;
-  overflow-x: scroll;
+  overflow-x: auto;
   gap: 1rem;
 }
 .switch-item_wrapper::-webkit-scrollbar {
   display: none;
 }
 .switch-item_el {
-  text-wrap: nowrap;
+  /* text-wrap: nowrap; */
+  white-space: nowrap;
 }
 .switch-item_el input[type="radio"] {
   opacity: 0;
@@ -446,6 +477,54 @@ watch(switchedLocation, () => {
 .switch-item_el input[type="radio"]:checked + label {
   color: var(--bs-body-bg);
   background-color: var(--bs-body-color);
+}
+
+@media screen and (min-width: 768px) {
+  .item-locations_block {
+    width: 100%;
+    /* background-color: red; */
+    /* position: relative; */
+  }
+  .switch-item_wrapper {
+    /* display: flex;
+    flex-direction: row; */
+    /* position: absolute;
+    display: inline-block;
+    top: 100px;
+    left: 0;
+    padding: 100px 0 0 0;
+    max-height: 500px;
+    margin: 0;
+    transform: rotate(-90deg) translateY(-80px);
+    transform-origin: right top; */
+    /* width: 100%; */
+    /* 
+    overflow-y: auto;
+    overflow-x: scroll; */
+    /* background: #abc; */
+    /* overflow: scroll; */
+    /* white-space: nowrap; */
+    /* display: flex; */
+    /* flex-wrap: nowrap; */
+    /* overflow-x: auto; */
+  }
+  .switch-item_el {
+    /* flex: 0 0 auto; */
+    /* display: inline-block; */
+    /* width: 140px; */
+    /* height: 46px;
+    margin: 50px 10px;
+    padding: 5px; */
+    /* background: #cab; */
+    /* transform: rotate(90deg) translateY(80px); */
+    /* transform-origin: right top; */
+    /* display: inline-block; */
+  }
+  .switch-item_el:first-child {
+  }
+  .switch-item_el label {
+    /* white-space: nowrap; */
+  }
 }
 
 /* .link {

@@ -483,6 +483,8 @@ async function addWarehouseTransaction(item) {
         currentOwnerType: item.ownerType,
         prevResponsibleID: item.responsible,
         currentResponsibleID: item.responsible,
+        qty: item.qty,
+        measure: item.measure
       },
     });
 

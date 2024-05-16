@@ -77,6 +77,8 @@ model WarehouseItemsLedger {
   currentOwnerType      String    @db.VarChar(255)
   prevResponsibleID     Int?      @default(0)
   currentResponsibleID  Int       @default(0)
+  qty                   Int?      @default(0)
+  measure               String?   @db.VarChar(255) 
 }
 
 model Projects {

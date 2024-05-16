@@ -21,7 +21,9 @@ export default defineEventHandler(async (event) => {
                 currentOwnerID: body.currentOwnerID,
                 currentOwnerType: body.currentOwnerType,
                 prevResponsibleID: body.prevResponsibleID,
-                currentResponsibleID: body.currentResponsibleID
+                currentResponsibleID: body.currentResponsibleID,
+                qty: body.qty,
+                measure: body.measure
             }
         }).then((response) => {
             transaction = response

@@ -414,6 +414,7 @@ async function addWarehouseItem(item) {
     item.ownerType &&
     item.responsible
   ) {
+    // await addWarehouseTransaction(item);
     addedItem = await $fetch("api/warehouse/item", {
       method: "POST",
       body: {
@@ -429,7 +430,7 @@ async function addWarehouseItem(item) {
         responsible: item.responsible,
       },
     });
-    await addWarehouseTransaction(item);
+    
     // clear all inputs in modal
     tempCreateItemLocation.value = {
       type: null,
@@ -1687,7 +1688,7 @@ watch(tempCreateItemOwner, () => {
               class="btn btn-primary"
               data-bs-dismiss="modal"
               :disabled="createNewItemBtnIsDisabled"
-              @click.prevent="addWarehouseItem(item)"
+              @click.prevent="addWarehouseItem(item), addWarehouseTransaction(item)"
             >
               Создать
             </button>

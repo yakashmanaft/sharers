@@ -86,27 +86,6 @@ onMounted(async () => {
     }
   });
 
-  // itemLocations.value = items.value.reduce((acc, current) => {
-  //   if (
-  //     current.type === "stuff" &&
-  //     current.title === item.value.title &&
-  //     current.location !== "deleted" &&
-  //     current.location !== "archive"
-  //   ) {
-  //     if (
-  //       current.ownerType !== item.value.ownerType ||
-  //       current.ownerID !== item.value.ownerID ||
-  //       current.responsible !== item.value.responsible
-  //     ) {
-  //       let newCurrent;
-  //       acc.push(current);
-  //     } else {
-  //       acc.push(current);
-  //       }
-  //   }
-  //   return acc;
-  // }, []);
-
   testArray.value = Object.values(
     itemLocations.value.reduce((acc, { id, location, locationID, qty }) => {
 
@@ -405,19 +384,7 @@ watch(switchedLocation, () => {
               >
             </div>
           </fieldset>
-          {{ itemLocations }}
-          <br />
-          <br />
 
-          <div v-if="testArray">
-            <div v-for="(el, i) in testArray">
-              <!-- {{el.location}} {{el.locationID}}: {{el.qty}} -->
-              {{ el }}
-            </div>
-          </div>
-          <!-- {{ testArray }} -->
-          <br />
-          <br />
           <!-- {{sumSimilar(items)}} -->
           <!-- Показать динамически места, в которых есть данный материал. Стили как в общем списке ТЦ. По клику переходим на ТМЦ по выбранному месту. Выделить текущее местоположение выбранного ТМЦ -->
           <!-- <div

@@ -42,11 +42,29 @@ const locations = ref(null);
 const allTransactions = ref(null);
 const currentItemTransactions = ref(null);
 //
+const testArray = ref(null);
+//
 const switchedLocation = ref({
   location: "",
   locationID: null,
 });
 // const linkAllIsActive = ref(false);
+
+// const sumSimilar = (arr) => {
+//   const res = [];
+
+//   for (let i = 0; i < arr.length; i++) {
+//     const ind = res.findIndex((el) => el.location === arr[i].location && el.locationID === arr[i].locationID);
+
+//     if (ind === -1) {
+//       res.push(arr[i]); // If not found, add the object to the result array.
+//     } else {
+//       res[ind].qty += arr[i].qty; // If found, add the 'value' property to the existing object.
+//     }
+//   }
+
+//   return res;
+// };
 
 onMounted(async () => {
   //
@@ -64,7 +82,7 @@ onMounted(async () => {
       element.location !== "deleted" &&
       element.location !== "archive"
     ) {
-        return element;
+      return element;
     }
   });
 
@@ -86,6 +104,56 @@ onMounted(async () => {
   //       acc.push(current);
   //       }
   //   }
+  //   return acc;
+  // }, []);
+
+  testArray.value = Object.values(
+    itemLocations.value.reduce((acc, { id, location, locationID, qty }) => {
+
+      let key = location + '|' + locationID
+
+      acc[key] = acc[key] || { id, location, locationID, qty: 0 };
+      acc[key].qty += qty;
+      return acc;
+    }, {})
+  );
+
+
+  // const basket = fruits.reduce((basket, fruit) => {
+  //     for (const [fruitName, fruitCount] of Object.entries(fruit)) {
+  //         if (!basket[fruitName]) {
+  //             basket[fruitName] = 0;
+  //         }
+
+  //         basket[fruitName] += fruitCount;
+  //     }
+
+  //     return basket;
+  // }, {});
+
+  //  testArray.value = itemLocations.value.reduce((acc, val) => {
+  //     const findName = acc.find(_ => _.location === val.location);
+
+  //     if (findName) {
+  //         findName.qty += val.qty;
+  //     } else {
+  //         acc.push(val);
+  //     }
+
+  //     return acc;
+  // }, []);
+
+  // testArray.value = itemLocations.value.reduce((acc, val) => {
+  //   const findName = acc.find(
+  //     (_) => _.locationID === val.locationID
+  //   );
+
+  //   if (findName) {
+  //     findName.qty += val.qty;
+  //   } else {
+  //     acc.push(val);
+  //   }
+
   //   return acc;
   // }, []);
 
@@ -316,7 +384,7 @@ watch(switchedLocation, () => {
             </div>
             <div
               class="switch-item_el"
-              v-for="(location, i) in itemLocations"
+              v-for="(location, i) in testArray"
               :key="i"
             >
               <input
@@ -337,6 +405,20 @@ watch(switchedLocation, () => {
               >
             </div>
           </fieldset>
+          {{ itemLocations }}
+          <br />
+          <br />
+
+          <div v-if="testArray">
+            <div v-for="(el, i) in testArray">
+              <!-- {{el.location}} {{el.locationID}}: {{el.qty}} -->
+              {{ el }}
+            </div>
+          </div>
+          <!-- {{ testArray }} -->
+          <br />
+          <br />
+          <!-- {{sumSimilar(items)}} -->
           <!-- Показать динамически места, в которых есть данный материал. Стили как в общем списке ТЦ. По клику переходим на ТМЦ по выбранному месту. Выделить текущее местоположение выбранного ТМЦ -->
           <!-- <div
             class="link link-location link-all link-all_block"

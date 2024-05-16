@@ -57,46 +57,37 @@ onMounted(async () => {
 
   item.value = items.value.find((item: any) => item.id == route.params.id);
 
-  // itemLocations.value = items.value.filter((element) => {
+  itemLocations.value = items.value.filter((element) => {
+    if (
+      element.type === "stuff" &&
+      element.title === item.value.title &&
+      element.location !== "deleted" &&
+      element.location !== "archive"
+    ) {
+        return element;
+    }
+  });
+
+  // itemLocations.value = items.value.reduce((acc, current) => {
   //   if (
-  //     element.type === "stuff" &&
-  //     element.title === item.value.title &&
-  //     element.location !== "deleted" &&
-  //     element.location !== "archive"
+  //     current.type === "stuff" &&
+  //     current.title === item.value.title &&
+  //     current.location !== "deleted" &&
+  //     current.location !== "archive"
   //   ) {
   //     if (
-  // element.ownerType !== item.value.ownerType ||
-  // element.ownerID !== item.value.ownerID ||
-  // element.responsible !== item.value.responsible
+  //       current.ownerType !== item.value.ownerType ||
+  //       current.ownerID !== item.value.ownerID ||
+  //       current.responsible !== item.value.responsible
   //     ) {
-  //       // return element
-
+  //       let newCurrent;
+  //       acc.push(current);
   //     } else {
-  //       return element;
-  //     }
+  //       acc.push(current);
+  //       }
   //   }
-  // });
-
-  itemLocations.value = items.value.reduce((acc, current) => {
-    if (
-      current.type === "stuff" &&
-      current.title === item.value.title &&
-      current.location !== "deleted" &&
-      current.location !== "archive"
-    ) {
-      if (
-        current.ownerType !== item.value.ownerType ||
-        current.ownerID !== item.value.ownerID ||
-        current.responsible !== item.value.responsible
-      ) {
-        let newCurrent;
-        
-      } else {
-        acc.push(current);
-      }
-    }
-    return acc;
-  }, []);
+  //   return acc;
+  // }, []);
 
   switchedLocation.value.location = item.value.location;
   switchedLocation.value.locationID = item.value.locationID;

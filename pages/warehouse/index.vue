@@ -1063,6 +1063,39 @@ const onClickAction = (action: string, item: any) => {
   // console.log(currentItem.value)
 };
 
+const checkAndCreate = async (item) => {
+  let compareItem = items.value.find(
+    (e) =>
+      e.title === item.title &&
+      e.type === item.type &&
+      e.measure === item.measure &&
+      e.location === item.location &&
+      e.locationID === item.locationID &&
+      e.ownerType === item.ownerType &&
+      e.ownerID === item.ownerID &&
+      e.responsible === item.responsible
+  );
+  if (compareItem) {
+    tempQty.value = item.qty
+    addWarehouseTransaction(item, 'add'), 
+    // console.log(compareItem.id)
+    await $fetch("api/warehouse/item", {
+      method: "PUT",
+      body: {
+        id: compareItem.id,
+        qty: compareItem.qty + +item.qty,
+      },
+    });
+
+    // refetching
+    filterItemsByCategoryType();
+    filterItemsByLocationObj();
+  } else {
+    addWarehouseTransaction(item, 'created'), 
+    addWarehouseItem(item);
+  }
+};
+
 // ******** WATCHERS ********
 
 // Следим за изменением фильтров и обновляем данные
@@ -1093,9 +1126,9 @@ watch(item.value, () => {
   }
 });
 
-watch(createNewItemBtnIsDisabled, () => {
-  console.log(createNewItemBtnIsDisabled.value);
-});
+// watch(createNewItemBtnIsDisabled, () => {
+//   console.log(createNewItemBtnIsDisabled.value);
+// });
 
 watch(tempQty, () => {
   // console.log(typeof tempQty.value);
@@ -1337,7 +1370,7 @@ watch(tempCreateItemOwner, () => {
                 <!-- MOVE TO -->
                 <div style="display: flex; align-items: center; gap: 1rem">
                   <span>Куда:</span>
-                  {{tempLocation}}
+                  <!-- {{ tempLocation }} -->
                   <select
                     class="form-select"
                     aria-label=".form-select-sm example"
@@ -1731,9 +1764,7 @@ watch(tempCreateItemOwner, () => {
               class="btn btn-primary"
               data-bs-dismiss="modal"
               :disabled="createNewItemBtnIsDisabled"
-              @click.prevent="
-                addWarehouseTransaction(item, 'created'), addWarehouseItem(item)
-              "
+              @click.prevent="checkAndCreate(item)"
             >
               Создать
             </button>

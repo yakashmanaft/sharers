@@ -22,6 +22,7 @@ export default defineEventHandler(async (event) => {
                 currentOwnerType: body.currentOwnerType,
                 prevResponsibleID: body.prevResponsibleID,
                 currentResponsibleID: body.currentResponsibleID,
+                itemType: body.itemType,
                 qty: body.qty,
                 measure: body.measure
             }

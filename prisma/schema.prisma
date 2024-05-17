@@ -59,7 +59,7 @@ model WarehouseItems {
   update_at   DateTime? @updatedAt
 }
 
-// transactionsTypes (created | added | subtracted | moved | changeOwner | changeResponsible)
+// transactionsTypes (created ok | add ok | sub ok | move ok | changeOwner | changeResponsible)
 model WarehouseItemsLedger {
   id                    Int       @id @default(autoincrement())
   created_at            DateTime  @default(now()) @db.DateTime(0)
@@ -77,6 +77,7 @@ model WarehouseItemsLedger {
   currentOwnerType      String    @db.VarChar(255)
   prevResponsibleID     Int?      @default(0)
   currentResponsibleID  Int       @default(0)
+  itemType              String?   @db.VarChar(255) 
   qty                   Int?      @default(0)
   measure               String?   @db.VarChar(255) 
 }

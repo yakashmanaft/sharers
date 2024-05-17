@@ -414,7 +414,6 @@ async function addWarehouseItem(item) {
     item.ownerType &&
     item.responsible
   ) {
-    // await addWarehouseTransaction(item);
     addedItem = await $fetch("api/warehouse/item", {
       method: "POST",
       body: {
@@ -430,7 +429,7 @@ async function addWarehouseItem(item) {
         responsible: item.responsible,
       },
     });
-    
+
     // clear all inputs in modal
     tempCreateItemLocation.value = {
       type: null,
@@ -449,9 +448,8 @@ async function addWarehouseItem(item) {
   }
 }
 
-async function addWarehouseTransaction(item) {
+async function addWarehouseTransaction(item, type) {
   let addedTransaction = null;
-
   if (
     item.title &&
     item.type &&
@@ -463,83 +461,118 @@ async function addWarehouseTransaction(item) {
     item.ownerType &&
     item.responsible
   ) {
-    // console.log(item);
-    // console.log(user.value.id);
-
-    addedTransaction = await $fetch("api/warehouse/ledger", {
-      method: "POST",
-      body: {
-        transactionType: "created",
-        // itemID: addedItem.id,
-        itemTitle: item.title,
-        authorID: user.value.id,
-        locationFrom: item.location,
-        locationFromID: item.locationID,
-        locationTo: item.location,
-        locationToID: item.locationID,
-        prevOwnerID: item.ownerID,
-        prevOwnerType: item.ownerType,
-        currentOwnerID: item.ownerID,
-        currentOwnerType: item.ownerType,
-        prevResponsibleID: item.responsible,
-        currentResponsibleID: item.responsible,
-        qty: item.qty,
-        measure: item.measure
-      },
-    });
-
-    // console.log(addedTransaction)
+    // CREATED
+    if (type === "created") {
+      addedTransaction = await $fetch("api/warehouse/ledger", {
+        method: "POST",
+        body: {
+          transactionType: type,
+          // itemID: addedItem.id,
+          itemTitle: item.title,
+          // {user} = useUserSession
+          authorID: user.value.id,
+          locationFrom: item.location,
+          locationFromID: item.locationID,
+          locationTo: item.location,
+          locationToID: item.locationID,
+          prevOwnerID: item.ownerID,
+          prevOwnerType: item.ownerType,
+          currentOwnerID: item.ownerID,
+          currentOwnerType: item.ownerType,
+          prevResponsibleID: item.responsible,
+          currentResponsibleID: item.responsible,
+          itemType: item.type,
+          qty: item.qty,
+          measure: item.measure,
+        },
+      });
+    }
+    // ADD
+    else if (type === "add") {
+      addedTransaction = await $fetch("api/warehouse/ledger", {
+        method: "POST",
+        body: {
+          transactionType: type,
+          // itemID: addedItem.id,
+          itemTitle: item.title,
+          // {user} = useUserSession
+          authorID: user.value.id,
+          locationFrom: item.location,
+          locationFromID: item.locationID,
+          locationTo: item.location,
+          locationToID: item.locationID,
+          prevOwnerID: item.ownerID,
+          prevOwnerType: item.ownerType,
+          currentOwnerID: item.ownerID,
+          currentOwnerType: item.ownerType,
+          prevResponsibleID: item.responsible,
+          currentResponsibleID: item.responsible,
+          itemType: item.type,
+          // tempQty
+          qty: tempQty.value,
+          measure: item.measure,
+        },
+      });
+    } else if (type === "sub") {
+      addedTransaction = await $fetch("api/warehouse/ledger", {
+        method: "POST",
+        body: {
+          transactionType: type,
+          // itemID: addedItem.id,
+          itemTitle: item.title,
+          // {user} = useUserSession
+          authorID: user.value.id,
+          locationFrom: item.location,
+          locationFromID: item.locationID,
+          locationTo: item.location,
+          locationToID: item.locationID,
+          prevOwnerID: item.ownerID,
+          prevOwnerType: item.ownerType,
+          currentOwnerID: item.ownerID,
+          currentOwnerType: item.ownerType,
+          prevResponsibleID: item.responsible,
+          currentResponsibleID: item.responsible,
+          itemType: item.type,
+          // tempQty
+          qty: tempQty.value,
+          measure: item.measure,
+        },
+      });
+    } else if (type === "move") {
+      addedTransaction = await $fetch("api/warehouse/ledger", {
+        method: "POST",
+        body: {
+          transactionType: type,
+          // itemID: addedItem.id,
+          itemTitle: currentItem.value.title,
+          // {user} = useUserSession
+          authorID: user.value.id,
+          locationFrom: currentItem.value.location,
+          locationFromID: currentItem.value.locationID,
+          locationTo: tempLocation.value.type,
+          locationToID: tempLocation.value.id,
+          // locationTo: item.location,
+          // locationToID: item.locationID,
+          prevOwnerID: currentItem.value.ownerID,
+          prevOwnerType: currentItem.value.ownerType,
+          currentOwnerID: currentItem.value.ownerID,
+          currentOwnerType: currentItem.value.ownerType,
+          prevResponsibleID: currentItem.value.responsible,
+          currentResponsibleID: currentItem.value.responsible,
+          itemType: currentItem.value.type,
+          // tempQty
+          qty: tempQty.value,
+          measure: currentItem.value.measure,
+        },
+      });
+      // console.log(item);
+      // console.log(tempLocation.value)
+      // console.log(tempQty.value)
+    } else if (type === "changeOwner") {
+    } else if (type === "changeResponsible") {
+    }
   }
-  // {
-  //   addedTransaction = await $fetch("api/warehouse/ledger", {
-  //     method: "POST",
-  //     body: {
-  //       transactionType: "created",
-  //       // itemID: addedItem.id,
-  //       itemTitle: item.title,
-  //       // authorID: user.value.id,
-  //       locationFrom: item.location,
-  //       locationFromID: item.locationID,
-  //       locationTo: item.location,
-  //       locationToID: item.locationID,
-  //       prevOwnerID: item.ownerID,
-  //       prevOwnerType: item.ownerType,
-  //       currentOwnerID: item.ownerID,
-  //       currentOwnerType: item.ownerType,
-  //       prevResponsibleID: item.responsible,
-  //       currentResponsibleID: item.responsible,
-  //     },
-  //   });
-  // }
 }
-
-// Ччисти инпуты модалки создания ТМЦ
-// const clearModalInputs = (item: any) => {
-//   item.uuid = null;
-//   item.title = null;
-//   item.type = null;
-//   item.qty = 0;
-//   item.measure = null;
-//   item.location = null;
-//   item.locationID = null;
-//   item.ownerID = null;
-//   item.ownerType = null;
-//   item.responsible = null;
-// };
-// Чистка инпутов модалки редактирования ТМЦ
-// const clearEditModalInputs = (item) => {
-//   currentItem.value = null;
-//   editedItem.value = {
-//     id: null,
-//     title: null,
-//     qty: null,
-//   };
-//   // Сбрасывает временную переменную количества к действию
-//   tempQty.value = 0;
-//   console.log("Закрыть модалку редактирования ТМЦ");
-//   console.log(currentItem.value);
-//   console.log(editedItem.value);
-// };
 
 // Фильтрация по locations
 const filterItemsByLocationObj = async () => {
@@ -765,6 +798,8 @@ const submitEditCurrentItem = async () => {
     // Check is position available
   }
 
+  // Если делать await, то почему-то не вычитаем qty из начального предмета. А если ставлю после updateItem - не находит будущую локцацию к перемещению
+  addWarehouseTransaction(currentItem.value, editedActionType.value);
   await updateItem(editedItem.value);
 
   // Сбрасывает временную переменную количества и местонахождения
@@ -775,6 +810,7 @@ const submitEditCurrentItem = async () => {
 async function updateItem(editedItem) {
   let item = null;
 
+  // ADD
   if (editedActionType.value === "add") {
     if (editedItem.id) {
       item = await $fetch("api/warehouse/item", {
@@ -788,7 +824,9 @@ async function updateItem(editedItem) {
         },
       });
     }
-  } else if (editedActionType.value === "sub") {
+  }
+  // SUB
+  else if (editedActionType.value === "sub") {
     if (editedItem.id) {
       // Отправляем в архив, если в расход отправляем всё  доступное у предмета кол-во
       if (tempQty.value === currentItem.value.qty) {
@@ -807,7 +845,9 @@ async function updateItem(editedItem) {
         },
       });
     }
-  } else if (editedActionType.value === "move") {
+  }
+  // MOVE
+  else if (editedActionType.value === "move") {
     if (editedItem.id) {
       // Ищем предметы в местах, куда хотим переместить
       let findItems = items.value.filter(
@@ -832,7 +872,7 @@ async function updateItem(editedItem) {
         editedItem.locationID = tempLocation.value.id;
 
         // Обновляем предмет в БД
-        item = await $fetch("api/warehouse/item", {
+        await $fetch("api/warehouse/item", {
           method: "PUT",
           body: {
             id: editedItem.id,
@@ -869,7 +909,7 @@ async function updateItem(editedItem) {
         }
 
         // 1.2.2. Обновляем в БД итоговый
-        item = await $fetch("api/warehouse/item", {
+        await $fetch("api/warehouse/item", {
           method: "PUT",
           body: {
             id: findItems[0].id,
@@ -1297,6 +1337,7 @@ watch(tempCreateItemOwner, () => {
                 <!-- MOVE TO -->
                 <div style="display: flex; align-items: center; gap: 1rem">
                   <span>Куда:</span>
+                  {{tempLocation}}
                   <select
                     class="form-select"
                     aria-label=".form-select-sm example"
@@ -1690,7 +1731,9 @@ watch(tempCreateItemOwner, () => {
               class="btn btn-primary"
               data-bs-dismiss="modal"
               :disabled="createNewItemBtnIsDisabled"
-              @click.prevent="addWarehouseItem(item), addWarehouseTransaction(item)"
+              @click.prevent="
+                addWarehouseTransaction(item, 'created'), addWarehouseItem(item)
+              "
             >
               Создать
             </button>
@@ -2214,6 +2257,7 @@ label #expend-item:checked + .expand-item_icon {
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
+    scrollbar-width: none;
   }
   .set-categoty-type_wrapper::-webkit-scrollbar {
     display: none;
@@ -2242,7 +2286,7 @@ label #expend-item:checked + .expand-item_icon {
     margin: auto;
   }
   .table-row_wrapper td.item-qty {
-    text-wrap: nowrap;
+    white-space: nowrap;
     text-align: right;
     display: flex;
     align-items: center;

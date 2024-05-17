@@ -88,53 +88,13 @@ onMounted(async () => {
 
   testArray.value = Object.values(
     itemLocations.value.reduce((acc, { id, location, locationID, qty }) => {
-
-      let key = location + '|' + locationID
+      let key = location + "|" + locationID;
 
       acc[key] = acc[key] || { id, location, locationID, qty: 0 };
       acc[key].qty += qty;
       return acc;
     }, {})
   );
-
-
-  // const basket = fruits.reduce((basket, fruit) => {
-  //     for (const [fruitName, fruitCount] of Object.entries(fruit)) {
-  //         if (!basket[fruitName]) {
-  //             basket[fruitName] = 0;
-  //         }
-
-  //         basket[fruitName] += fruitCount;
-  //     }
-
-  //     return basket;
-  // }, {});
-
-  //  testArray.value = itemLocations.value.reduce((acc, val) => {
-  //     const findName = acc.find(_ => _.location === val.location);
-
-  //     if (findName) {
-  //         findName.qty += val.qty;
-  //     } else {
-  //         acc.push(val);
-  //     }
-
-  //     return acc;
-  // }, []);
-
-  // testArray.value = itemLocations.value.reduce((acc, val) => {
-  //   const findName = acc.find(
-  //     (_) => _.locationID === val.locationID
-  //   );
-
-  //   if (findName) {
-  //     findName.qty += val.qty;
-  //   } else {
-  //     acc.push(val);
-  //   }
-
-  //   return acc;
-  // }, []);
 
   switchedLocation.value.location = item.value.location;
   switchedLocation.value.locationID = item.value.locationID;
@@ -166,20 +126,6 @@ onMounted(async () => {
     });
   }
 });
-
-// const locationLinkColorized = (location: string, id: number) => {
-//   if (location) {
-//     if (+route.params.id === id) {
-//       if (!linkAllIsActive.value) {
-//         return `link_${location} link_current-route`;
-//       } else {
-//         return `link_${location}`;
-//       }
-//     } else {
-//       return `link_${location}`;
-//     }
-//   }
-// };
 
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
@@ -308,7 +254,7 @@ watch(switchedLocation, () => {
 
 <template>
   <Container>
-    <div v-if="item" style="margin-top: 7rem">
+    <div v-if="item">
       <div
         style="display: flex; flex-direction: column; justify-content: center"
       >
@@ -384,42 +330,8 @@ watch(switchedLocation, () => {
               >
             </div>
           </fieldset>
-
-          <!-- {{sumSimilar(items)}} -->
-          <!-- Показать динамически места, в которых есть данный материал. Стили как в общем списке ТЦ. По клику переходим на ТМЦ по выбранному месту. Выделить текущее местоположение выбранного ТМЦ -->
-          <!-- <div
-            class="link link-location link-all link-all_block"
-            :class="{ 'link-all_active': linkAllIsActive }"
-            v-if="itemLocations.length > 1"
-            @click="linkAllIsActive = true"
-          >
-            <span> Всего</span>
-            <span class="item-location_qty">{{ sumItemsQty() }}</span>
-          </div>
-          <div v-for="(location, i) in itemLocations" :key="i">
-            <router-link
-              class="link link-location"
-              :class="`${locationLinkColorized(
-                location.location,
-                location.id
-              )}`"
-              @click="linkAllIsActive = false"
-              :to="`${location.id}`"
-              style="
-                text-decoration: none;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                height: inherit;
-              "
-            >
-              <span>
-                {{ translateLocation(location.locationID, location.location) }}
-              </span>
-              <span class="item-location_qty">{{ location.qty }}</span>
-            </router-link>
-          </div> -->
         </div>
+
         <!-- Если прсомотреть хочется по всем объектам общую инфу по предмету -->
         <div
           v-for="element in switchedItem"
@@ -490,6 +402,7 @@ watch(switchedLocation, () => {
   display: flex;
   overflow-x: auto;
   gap: 1rem;
+  scrollbar-width: none;
 }
 .switch-item_wrapper::-webkit-scrollbar {
   display: none;
@@ -518,8 +431,16 @@ watch(switchedLocation, () => {
   color: var(--bs-body-bg);
   background-color: var(--bs-body-color);
 }
+@media screen and (max-width: 767px) {
+  h1 {
+    margin-top: 4rem;
+  }
+}
 
 @media screen and (min-width: 768px) {
+  h1 {
+    margin-top: 7rem;
+  }
   .item-locations_block {
     width: 100%;
     /* background-color: red; */

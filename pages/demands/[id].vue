@@ -21,6 +21,20 @@ useHead({
         ]
     })
 
+    // const listItemType = ref([])
+
+    // Инструмент
+    // tools
+
+    // Расходники
+    // consumables
+
+    // Техника
+    // technic
+
+    // Материалы
+    // stuff
+
     const currentDemand = {
         id: 1,
         title: 'заявка #111 от 21.02.2024',
@@ -28,20 +42,44 @@ useHead({
             {
                 id: 1,
                 title: 'Бетон B25F150W4 п4',
-                itemType: 'куб.м.',
+                itemMeasure: 'куб.м.',
                 qty: 22,
             },
             {
                 id: 2,
                 title: 'Круг на циркулярку D190 по деревув с мелкии зубьями',
-                itemType: 'шт.',
+                itemMeasure: 'шт.',
                 qty: 10,
             },
             {
                 id: 3,
                 title: 'УШМ 230',
-                itemType: 'шт.',
+                itemMeasure: 'шт.',
                 qty: 2,
+            },
+            {
+                id: 4,
+                title: 'Огнебиозащита Сенеж, 25л',
+                itemMeasure: 'кан',
+                qty: 4,
+            },
+            {
+                id: 5,
+                title: 'Металлочерепица Монтерей, 0,5мм, Призма, RAL',
+                itemMeasure: 'кв.м.',
+                qty: 582.4,
+            },
+            {
+                id: 6,
+                title: 'Автокран, ГП 25т., стрела 21,7м.',
+                itemMeasure: 'маш/час',
+                qty: 1560,
+            },
+            {
+                id: 7,
+                title: 'Доска обрезная 25х100х3000, I сорт',
+                itemMeasure: 'шт.',
+                qty: 120,
             }
         ]
     }
@@ -53,6 +91,15 @@ useHead({
 
         <h1 style="margin-top: 5rem;">Заявка #{{ $route.params.id  }}</h1> 
 
+        <div>
+
+            <p>Дата создания</p>
+            <p>Желаемая дата реализации</p>
+            <p>Автор</p>
+            <p>Контроль реализации</p>
+        </div>
+
+        <h2></h2>
         <div v-for="(item, index) in currentDemand.itemsList">
                 {{ item }}
         </div>

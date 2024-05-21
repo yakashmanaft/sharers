@@ -1918,8 +1918,8 @@ watch(tempCreateItemOwner, () => {
             <th scope="col">Наименование</th>
             <th scope="col">Кол-во</th>
             <th scope="col">Местонахождение</th>
-            <th scope="col">Собственник</th>
-            <th scope="col">Ответственный</th>
+            <th scope="col" class="hide-991">Собственник</th>
+            <th scope="col" class="hide-991">Ответственный</th>
           </tr>
         </thead>
 
@@ -1979,7 +1979,7 @@ watch(tempCreateItemOwner, () => {
             </td>
 
             <!-- 5 -->
-            <td class="span-2 hide-767" scope="col">
+            <td class="span-2 hide-767 hide-991" scope="col">
               <span
                 class="link"
                 @click="onClickOwner(item.ownerID, item.ownerType)"
@@ -1988,7 +1988,7 @@ watch(tempCreateItemOwner, () => {
             </td>
 
             <!-- 6 -->
-            <td class="span-2 hide-767" scope="col">
+            <td class="span-2 hide-767 hide-991" scope="col">
               <span
                 class="link"
                 @click="$router.push(`/partners/${item.responsible}`)"
@@ -2020,8 +2020,8 @@ watch(tempCreateItemOwner, () => {
                 </div>
 
                 <!--  -->
-                <div class="show-767 expended-item_content">
-                  <div class="expended-content_article">
+                <div class="show-767 show-768-991 expended-item_content">
+                  <div class="expended-content_article hide-768-991">
                     <p>Где</p>
                     <span
                       class="link link-location"
@@ -2207,6 +2207,55 @@ label #expend-item:checked + .expand-item_icon {
 .show-767 {
   display: none;
 }
+
+.search-container {
+  position: relative;
+  align-self: flex-start;
+}
+
+.search-container input:focus + .search-container {
+  width: 100%;
+}
+
+.search-container .icon {
+  position: absolute;
+  top: 50%;
+  right: 4px;
+  transform: translateY(-50%);
+}
+
+.form-control,
+.form-select {
+  border-radius: 16px;
+  padding: 4px 10px;
+}
+
+.isEmpty {
+  background-color: white;
+  color: var(--bs-border-color);
+  cursor: unset !important;
+}
+.isNotEmpty {
+  color: var(--bs-blue);
+}
+.item-action-modal div {
+  cursor: pointer;
+}
+.item-action-modal button:hover {
+  color: var(--bs-primary);
+}
+.item-action-modal_opened {
+  pointer-events: all;
+  opacity: 1;
+  z-index: 1;
+}
+
+.set-categoty-type_wrapper {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
 @media screen and (max-width: 575px) {
   .set-categoty-type_wrapper {
     flex-direction: column;
@@ -2419,51 +2468,51 @@ label #expend-item:checked + .expand-item_icon {
   }
 }
 
-.search-container {
-  position: relative;
-  align-self: flex-start;
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .hide-991 {
+    display: none;
+  }
+  .hide-768-991 {
+    display: none;
+  }
+  .item-table_header tr,
+  .table-row_wrapper {
+    grid-template-columns: 50px 1fr 100px 1fr;
+  }
+  /* .expended-item_content {
+    margin-top: 1rem;
+    display: flex;
+    width: 100%;
+  }   */
+  .expended-item {
+    grid-column: span 5;
+    /* background-color: red; */
+    margin-left: 1rem;
+  }
+  .expended-item_btns {
+    /* display: flex; */
+    
+  }
+  .expended-item_content {
+    /* border-top: 1px solid black; */
+    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2);
+    padding-top: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+  .article_block {
+    display: flex;
+    gap: 1rem;
+    /* background-color: blue; */
+  }
+  .article_block p {
+    margin: 0;
+  }
+  .show-768-991 {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
 }
 
-.search-container input:focus + .search-container {
-  width: 100%;
-}
-
-.search-container .icon {
-  position: absolute;
-  top: 50%;
-  right: 4px;
-  transform: translateY(-50%);
-}
-
-.form-control,
-.form-select {
-  border-radius: 16px;
-  padding: 4px 10px;
-}
-
-.isEmpty {
-  background-color: white;
-  color: var(--bs-border-color);
-  cursor: unset !important;
-}
-.isNotEmpty {
-  color: var(--bs-blue);
-}
-.item-action-modal div {
-  cursor: pointer;
-}
-.item-action-modal button:hover {
-  color: var(--bs-primary);
-}
-.item-action-modal_opened {
-  pointer-events: all;
-  opacity: 1;
-  z-index: 1;
-}
-
-.set-categoty-type_wrapper {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
 </style>

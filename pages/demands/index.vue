@@ -44,15 +44,22 @@ const demandStatusTypes = ref([
     title: "Исполнено",
   },
 ]);
+// const demandType = ref([
+//   {  
+//     type: 'building-materials',
+//     title: 'Материалы'
+//   }
+// ])
 const demands = ref([
   {
     id: 1,
     created_At: "2024.02.19",
     updated_At: "2024.02.21",
-    title: "Заявка #001",
+    deadline: '2024.06.29',
+    // title: "1",
     status: "research",
     deliveryDate: "",
-    type: "building-materials",
+    // type: "building-materials",
     creatorID: 3,
     responserID: 15,
     locationType: "office",
@@ -62,10 +69,11 @@ const demands = ref([
     id: 2,
     created_At: "2024.02.22",
     updated_At: "2024.02.24",
-    title: "Заявка #002",
+    deadline: '2024.06.29',
+    // title: "Заявка #002",
     status: "picking",
     deliveryDate: "",
-    type: "building-materials",
+    // type: "building-materials",
     creatorID: 3,
     responserID: 4,
     locationType: "office",
@@ -75,10 +83,11 @@ const demands = ref([
     id: 3,
     created_At: "2024.02.23",
     updated_At: "2024.02.25",
-    title: "Заявка #003",
+    deadline: '2024.06.29',
+    // title: "Заявка #003",
     status: "delivery",
     deliveryDate: "2024.02.25",
-    type: "building-materials",
+    // type: "building-materials",
     creatorID: 2,
     responserID: 1,
     locationType: "project",
@@ -88,10 +97,11 @@ const demands = ref([
     id: 4,
     created_At: "2024.02.24",
     updated_At: "2024.02.25",
-    title: "Заявка #004",
+    deadline: '2024.06.29',
+    // title: "Заявка #004",
     status: "completed",
-    deliveryDate: "",
-    type: "building-materials",
+    deliveryDate: "2024.02.25",
+    // type: "building-materials",
     creatorID: 1,
     responserID: 3,
     locationType: "project",
@@ -101,10 +111,11 @@ const demands = ref([
     id: 5,
     created_At: "2024.02.24",
     updated_At: "2024.02.25",
-    title: "Заявка #004",
-    status: "completed",
+    deadline: '2024.06.29',
+    // title: "Заявка #004",
+    status: "picking",
     deliveryDate: "",
-    type: "building-materials",
+    // type: "building-materials",
     creatorID: 1,
     responserID: 3,
     locationType: "project",
@@ -114,10 +125,25 @@ const demands = ref([
     id: 6,
     created_At: "2024.02.24",
     updated_At: "2024.02.25",
-    title: "Заявка #004",
+    deadline: '2024.06.29',
+    // title: "Заявка #004",
     status: "completed",
     deliveryDate: "",
-    type: "building-materials",
+    // type: "building-materials",
+    creatorID: 1,
+    responserID: 15,
+    locationType: "sklad",
+    locationID: 5,
+  },
+  {
+    id: 7,
+    created_At: "2024.05.29",
+    updated_At: "2024.05.01",
+    deadline: '2024.06.29',
+    // title: "Заявка #004",
+    status: "research",
+    deliveryDate: "",
+    // type: "tools",
     creatorID: 1,
     responserID: 15,
     locationType: "sklad",
@@ -150,6 +176,14 @@ async function getUsers() {
 const refreshProjects = () => refreshNuxtData("projects");
 const refreshLocations = () => refreshNuxtData("locations");
 
+// const translateDemandType = (type) => {
+//   if(type) {
+//     return type
+//   } else {
+//     return 'Не прогрузилось...'
+//   }
+// }
+
 const translateDemandUsers = (userID) => {
   if (users.value) {
     let demandUserName;
@@ -177,7 +211,7 @@ const translateStatus = (status) => {
 
 const translateLocation = (id: any, location: string) => {
   if (location && id) {
-    // // PROJECT
+    // PROJECT
     if (location === "project") {
       if (projects.value) {
         let project = projects.value.find((project) => project.id == id);
@@ -202,14 +236,14 @@ const translateLocation = (id: any, location: string) => {
         return `${locationItem.title}`;
       }
     }
-    // ELSE location
-    else {
-      return alert(
-        "demands page index.vue error - strange object.location in translateLocation function"
-      );
-    }
-  } else {
-    alert("demands page index.vue translateLocation function error");
+  //   // ELSE location
+  //   else {
+  //     return alert(
+  //       "demands page index.vue error - strange object.location in translateLocation function"
+  //     );
+  //   }
+  // } else {
+  //   alert("demands page index.vue translateLocation function error");
   }
   return location;
 };
@@ -224,6 +258,12 @@ const locationColorized = (location: string) => {
   <Container>
     <h1 style="margin-top: 5rem">Заявки</h1>
 
+    <div style="display: flex; align-items: center; gap: 1rem;;">
+      <p>Все</p>
+      <p>Я автор</p>
+      <p>Я исполнитель</p>
+    </div>
+
     <div class="demands_warpper">
       <div
         class="demands_item"
@@ -231,15 +271,16 @@ const locationColorized = (location: string) => {
         :key="index"
         @click="$router.push(`demands/${demand.id}`)"
       >
-        <h2>{{ demand.title }}</h2>
-        <p>Статус: {{ translateStatus(demand.status) }}</p>
-        <p v-if="demand.deliveryDate">{{ demand.deliveryDate }}</p>
-        <p>От кого: {{ translateDemandUsers(demand.creatorID) }}</p>
-        <p>Кому: {{ translateDemandUsers(demand.responserID) }}</p>
+        <!-- <h2>{{ translateDemandType(demand.type) }}</h2> -->
+        <!-- <h2>{{ demand.title }}</h2> -->
+        <p>Статус: {{ translateStatus(demand.status) }} <span v-if="demand.status === 'delivery'">{{ demand.deliveryDate }}</span></p>
+        <p>Автор: {{ translateDemandUsers(demand.creatorID) }}</p>
+        <p>Исполнитель: {{ translateDemandUsers(demand.responserID) }}</p>
+        <p v-if="demand.deadline">Deadline: {{ demand.deadline }}</p>
         <span
-          class="location"
-          :class="locationColorized(demand.locationType)"
-          >{{ translateLocation(demand.locationID, demand.locationType) }}</span
+        class="location"
+        :class="locationColorized(demand.locationType)"
+        >{{ translateLocation(demand.locationID, demand.locationType) }}</span
         >
       </div>
     </div>
@@ -250,7 +291,7 @@ const locationColorized = (location: string) => {
 .demands_warpper {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  /* gap: 1rem; */
 }
 .demands_item {
   padding: 1rem;

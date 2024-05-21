@@ -328,11 +328,11 @@ const translateLocation = (id: any, location: string) => {
     // ELSE location
     else {
       return alert(
-        "warehouse inidex.vue error - strange object.location in translateLocation function"
+        "warehouse page index.vue error - strange object.location in translateLocation function"
       );
     }
   } else {
-    alert("warehouse inidex.vue translateLocation function error");
+    alert("warehouse page index.vue translateLocation function error");
   }
   return location;
 };

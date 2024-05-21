@@ -29,19 +29,19 @@ useHead({
                 id: 1,
                 title: 'Бетон B25F150W4 п4',
                 itemType: 'куб.м.',
-                qty: 22
+                qty: 22,
             },
             {
                 id: 2,
                 title: 'Круг на циркулярку D190 по деревув с мелкии зубьями',
                 itemType: 'шт.',
-                qty: 10
+                qty: 10,
             },
             {
                 id: 3,
                 title: 'УШМ 230',
                 itemType: 'шт.',
-                qty: 2
+                qty: 2,
             }
         ]
     }

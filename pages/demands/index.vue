@@ -139,7 +139,6 @@ onMounted(async () => {
   users.value = await getUsers();
   refreshProjects();
   refreshLocations();
-  // console.log(projects)
 });
 
 /**
@@ -214,6 +213,12 @@ const translateLocation = (id: any, location: string) => {
   }
   return location;
 };
+
+const locationColorized = (location: string) => {
+  if (location) {
+    return `location_${location}`;
+  }
+};
 </script>
 <template>
   <Container>
@@ -231,16 +236,11 @@ const translateLocation = (id: any, location: string) => {
         <p v-if="demand.deliveryDate">{{ demand.deliveryDate }}</p>
         <p>От кого: {{ translateDemandUsers(demand.creatorID) }}</p>
         <p>Кому: {{ translateDemandUsers(demand.responserID) }}</p>
-        <p>
-          Куда:
-          {{ translateLocation(demand.locationID, demand.locationType) }}
-        </p>
-        <!-- id: 1,
-            created_At: '2024.02.19',
-            updated_At: '2024.02.21',
-            title: 'заявка #001',
-            status: 'Проработка',
-            type: 'building-materials', -->
+        <span
+          class="location"
+          :class="locationColorized(demand.locationType)"
+          >{{ translateLocation(demand.locationID, demand.locationType) }}</span
+        >
       </div>
     </div>
   </Container>
@@ -253,11 +253,29 @@ const translateLocation = (id: any, location: string) => {
   gap: 1rem;
 }
 .demands_item {
-  /* border: 1px solid black; */
+  padding: 1rem;
   transition: all 0.2s ease-in;
 }
 .demands_item:hover {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.05);
+}
+.location {
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+.location:hover {
+  cursor: pointer;
+}
+.location_project {
+  color: var(--bs-success);
+  border: none;
+  background-color: var(--bs-success-bg-subtle);
+}
+.location_sklad,
+.location_office {
+  color: white;
+  border: none;
+  background-color: var(--bs-primary-bg-subtle);
 }
 </style>

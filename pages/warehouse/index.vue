@@ -1076,23 +1076,22 @@ const checkAndCreate = async (item) => {
       e.responsible === item.responsible
   );
   if (compareItem) {
-    tempQty.value = item.qty
-    addWarehouseTransaction(item, 'add'), 
-    // console.log(compareItem.id)
-    await $fetch("api/warehouse/item", {
-      method: "PUT",
-      body: {
-        id: compareItem.id,
-        qty: compareItem.qty + +item.qty,
-      },
-    });
+    tempQty.value = item.qty;
+    addWarehouseTransaction(item, "add"),
+      // console.log(compareItem.id)
+      await $fetch("api/warehouse/item", {
+        method: "PUT",
+        body: {
+          id: compareItem.id,
+          qty: compareItem.qty + +item.qty,
+        },
+      });
 
     // refetching
     filterItemsByCategoryType();
     filterItemsByLocationObj();
   } else {
-    addWarehouseTransaction(item, 'created'), 
-    addWarehouseItem(item);
+    addWarehouseTransaction(item, "created"), addWarehouseItem(item);
   }
 };
 
@@ -2083,22 +2082,25 @@ td {
 }
 .link_project {
   color: var(--bs-success);
-  border: 1px solid var(--bs-success-bg-subtle);
+  border: none;
+  /* border: 1px solid var(--bs-success-bg-subtle); */
   background-color: var(--bs-success-bg-subtle);
 }
-.link_sklad {
-  color: white;
-  border: none;
-  background-color: var(--bs-primary-bg-subtle);
-}
+.link_sklad,
 .link_office {
   color: white;
   border: none;
   background-color: var(--bs-primary-bg-subtle);
 }
+/* .link_office {
+  color: white;
+  border: none;
+  background-color: var(--bs-primary-bg-subtle);
+} */
 .link_repair {
   color: var(--bs-warning);
-  border: 1px solid var(--bs-warning-bg-subtle);
+  border: none;
+  /* border: 1px solid var(--bs-warning-bg-subtle); */
   background-color: var(--bs-warning-bg-subtle);
 }
 .link_archive {

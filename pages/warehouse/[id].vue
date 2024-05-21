@@ -207,6 +207,11 @@ async function getLocations() {
 async function getWarehouseTransaction() {
   return await $fetch("/api/warehouse/ledger");
 }
+// const { data: allTransactions } = await useFetch("/api/warehouse/ledger", {
+//   transform: (allTransactions) => {
+//     return allTransactions.filter(transaction => transaction.title === item.value.title)
+//   }
+// })
 
 // sum items qty
 const sumItemsQty = () => {

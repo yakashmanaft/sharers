@@ -259,12 +259,12 @@ const locationColorized = (location: string) => {
     <h1 style="margin-top: 5rem">Заявки</h1>
 
     <div style="display: flex; align-items: center; gap: 1rem;;">
-      <p>Все</p>
-      <p>Я автор</p>
-      <p>Я исполнитель</p>
+      <p>Все (99+)</p>
+      <p>Я автор (3)</p>
+      <p>Я исполнитель (5)</p>
     </div>
 
-    <div class="demands_warpper">
+    <div class="demands_wrapper">
       <div
         class="demands_item"
         v-for="(demand, index) in demands"
@@ -288,7 +288,7 @@ const locationColorized = (location: string) => {
 </template>
 
 <style scoped>
-.demands_warpper {
+.demands_wrapper {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   /* gap: 1rem; */

@@ -39,15 +39,20 @@ const itemLocations = ref(null);
 const switchedItem = ref(null);
 const projects = ref(null);
 const locations = ref(null);
+const organizations = ref(null)
 const allTransactions = ref(null);
 const currentItemTransactions = ref(null);
 //
-const testArray = ref(null);
+const sumQtyUniqLocations = ref(null);
 //
 const switchedLocation = ref({
   location: "",
   locationID: null,
 });
+
+const { users } = storeToRefs(useUsersStore());
+const { loadData } = useUsersStore();
+
 // const linkAllIsActive = ref(false);
 
 // const sumSimilar = (arr) => {
@@ -68,9 +73,11 @@ const switchedLocation = ref({
 
 onMounted(async () => {
   //
+  await loadData();
   projects.value = await getProjects();
   items.value = await getItems();
   locations.value = await getLocations();
+  organizations.value = await getOrganizations()
   allTransactions.value = await getWarehouseTransaction();
 
   item.value = items.value.find((item: any) => item.id == route.params.id);
@@ -86,7 +93,7 @@ onMounted(async () => {
     }
   });
 
-  testArray.value = Object.values(
+  sumQtyUniqLocations.value = Object.values(
     itemLocations.value.reduce((acc, { id, location, locationID, qty }) => {
       let key = location + "|" + locationID;
 
@@ -188,6 +195,29 @@ const translateLocation = (id: any, location: string) => {
   }
   return location;
 };
+const translateOwner = (ownerID: any, ownerType: string) => {
+  if (ownerID && ownerType && users.value && organizations.value) {
+    if (ownerType === "user") {
+      // return `USER #${ownerID}`
+      let userItem = users.value.find((item) => item.id === ownerID);
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`;
+    } else if (ownerType === "company") {
+      // return `Компания #${ownerID}`
+      let organizationItem = organizations.value.find(
+        (item) => item.id === ownerID
+      );
+      return organizationItem.title;
+    }
+  } else if (ownerID === 0 && !ownerType) {
+    return `Не соучастник`;
+  }
+}
+const translateResponsibles = (id: any) => {
+  if (id) {
+    let responsible = users.value.find((user) => user.id === id);
+    return `${responsible?.surname} ${responsible?.name[0]}. ${responsible?.middleName[0]}.`;
+  }
+}
 
 //
 /**
@@ -203,6 +233,9 @@ async function getProjects() {
 
 async function getLocations() {
   return await $fetch("/api/locations/locations");
+}
+async function getOrganizations() {
+  return await $fetch("/api/organizations/organizations")
 }
 async function getWarehouseTransaction() {
   return await $fetch("/api/warehouse/ledger");
@@ -265,44 +298,65 @@ watch(switchedLocation, () => {
       >
         <h1>{{ item.title }}</h1>
         <!-- {{ linkAllIsActive }} -->
-        <p style="margin: 0">
-          Мера: <span>{{ item.measure }}</span>
-        </p>
+        <div style="margin: 0; margin-top: 1rem;">
 
-        <!--  -->
-        <h2>Описание</h2>
-        <p>
-          Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestiae
-          autem mollitia rerum fugit et nobis, facilis optio deserunt eligendi
-          aliquam quod ex dolore placeat labore fuga ullam, id commodi repellat
-          eum. Deserunt nam dicta error excepturi atque quam qui cum reiciendis
-          suscipit officiis libero nesciunt dolor voluptatibus hic laudantium
-          voluptate doloremque doloribus corporis facere velit animi, cumque
-          neque. Quae, distinctio beatae architecto aperiam ratione accusantium,
-          sunt nam autem incidunt aliquam eum nobis maiores modi, temporibus
-          praesentium sed ab. Dolor veritatis non magnam commodi architecto sit
-          qui magni vel perspiciatis laborum praesentium, atque officiis
-          aspernatur quasi voluptates perferendis quaerat vero illo deserunt aut
-          impedit facilis voluptatum. Quod expedita nihil eaque commodi, cum
-          molestias a ea nulla quis numquam. Rerum quasi, dolores molestiae,
-          quibusdam laudantium numquam veritatis, accusamus impedit quam aliquid
-          atque laborum fugiat omnis corrupti officiis quae cupiditate molestias
-          neque illo. Nulla tenetur necessitatibus asperiores voluptatibus fuga,
-          earum deserunt totam culpa dolorum. Aliquam quas quibusdam,
-          dignissimos libero exercitationem tempora quisquam earum voluptate,
-          nesciunt sapiente eos provident optio fugit aliquid ab velit
-          voluptatibus iusto! Vitae, voluptatem! Aperiam totam officia nisi
-          accusamus temporibus animi, quo omnis repellendus, nihil impedit
-          possimus dolores, nesciunt voluptates maxime inventore odio. Culpa
-          perspiciatis nesciunt pariatur illo modi reprehenderit.
-        </p>
+          <!-- Кол-во, местонахождение -->
+          <p>{{ item.qty }} <span>{{ item.measure }}</span> <span class="item-location"><label for="">{{ translateLocation(item.locationID, item.location) }}</label> </span></p>
 
-        <!-- {{ projects }} -->
-        <!-- Материалы -->
-        <div v-if="item.type === 'stuff'" class="item-locations_block">
+          <!-- Собственник -->
+          <p>Собственник: <span>{{ translateOwner(item.ownerID, item.ownerType) }}</span></p>
+          <!-- Отвественный -->
+          <p>Ответственный: <span>{{ translateResponsibles(item.responsible) }}</span></p>
+          <span></span>
+        </div>
+
+        <div>
+          <h2 style="margin-top: 1rem;">Описание</h2>
+
+          <!-- ТИП ПРЕДМЕТА -->
+          <div>
+            <!-- Инструмент -->
+            <div v-if="item.type === 'tools'">
+              <p>Тип: {{ item.type }}</p> 
+              <ul>
+                <li>Серийник (если есть)</li>
+              </ul>
+            </div>
+            <!-- Материалы -->
+            <div v-if="item.type === 'consumables'">
+              <p>Тип: {{ item.type }}</p>
+              <!-- {{ item }} -->
+            </div>
+            <!-- Техника -->
+            <div v-if="item.type === 'technic'">
+              <p>Тип: {{ item.type }}</p>
+              <!-- {{ item }} -->
+            </div>
+          </div>
+
+          <!-- Текст -->
+          <p>
+            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestiae
+            autem mollitia rerum fugit et nobis, facilis optio deserunt eligendi
+            aliquam quod ex dolore placeat labore fuga ullam, id commodi repellat
+            eum. Deserunt nam dicta error excepturi atque quam qui cum reiciendis
+            suscipit officiis libero nesciunt dolor voluptatibus hic laudantium
+            voluptate doloremque doloribus corporis facere velit animi, cumque
+            neque. Quae, distinctio beatae architecto aperiam ratione accusantium,
+            sunt nam autem incidunt aliquam eum nobis maiores modi, temporibus
+            praesentium sed ab. Dolor veritatis non magnam commodi architecto sit
+            qui magni vel perspiciatis laborum praesentium, atque officiis
+            aspernatur quasi voluptates perferendis quaerat vero illo deserunt aut
+            <br>
+            <span>Это item:{{ item }}</span>
+          </p>
+        </div>
+
+        <div v-if="itemLocations.length > 1">
+          <h2>{{ item.title }} в других местах</h2>
           <!-- set item to view -->
           <fieldset id="item-locations" class="switch-item_wrapper">
-            <div class="switch-item_el" v-if="itemLocations.length > 1">
+            <div class="switch-item_el">
               <input
                 type="radio"
                 id="all-item-view"
@@ -312,14 +366,22 @@ watch(switchedLocation, () => {
               />
               <label for="all-item-view">Всего {{ sumItemsQty() }}</label>
             </div>
+  
+            <!-- Если location только один (в массиве itemLocations нет повторений и других location) -->
+            <!-- <div 
+              class="switch-item_el"
+              v-if="itemLocations.length === 0"
+            >
+              <label for="">{{ translateLocation(item.locationID, item.location) }}</label>
+            </div> -->
             <div
               class="switch-item_el"
-              v-for="(location, i) in testArray"
+              v-for="(location, i) in sumQtyUniqLocations"
               :key="i"
             >
               <input
                 type="radio"
-                :id="location.id"
+                :id="`${location.location}${location.id}`"
                 name="item-locations"
                 :value="{
                   location: location.location,
@@ -327,7 +389,7 @@ watch(switchedLocation, () => {
                 }"
                 v-model="switchedLocation"
               />
-              <label :for="location.id"
+              <label :for="`${location.location}${location.id}`"
                 >{{
                   translateLocation(location.locationID, location.location)
                 }}
@@ -335,67 +397,117 @@ watch(switchedLocation, () => {
               >
             </div>
           </fieldset>
+
+          <!--  -->
+          <div style="margin-top: 1rem;">
+            <h3 style="font-size: 1rem;">Наличие | История</h3>
+          </div>
         </div>
 
-        <!-- Если прсомотреть хочется по всем объектам общую инфу по предмету -->
-        <div
-          v-for="element in switchedItem"
-          :key="element.id"
-          style="margin-top: 1rem"
-        >
-          {{ element }}
+        <!-- Местонахождение -->
+        <div class="item-locations_block" v-if="itemLocations.length > 1" style="margin-top: 1rem;">
+          <!-- <h3>Наличие на локациях</h3> -->
         </div>
-      </div>
 
-      <!-- Инструмент -->
-      <div v-if="item.type === 'tools'">
-        <ul>
-          <li>Серийник (если есть)</li>
-          <li>Описание?</li>
-        </ul>
-      </div>
+        <!-- Предметы по разным параметрам, но на одной локации -->
+        <table class="table" v-if="switchedItem.length" style="margin-top: 1rem;">
+          <thead class="item-table_header">
+            <tr>
+              <th scope="col"></th>
+              <!-- <th scope="col">Наименование</th> -->
+              <th scope="col">Кол-во</th>
+              <th scope="col" class="hide-991">Собственник</th>
+              <th scope="col" class="hide-991">Ответственный</th>
+            </tr>
+          </thead>
+          <tbody>
+            <div v-if="switchedItem">
+              <div v-if="!switchedItem.length">
+                  Ничего нет
+              </div>
+            </div>
 
-      <!-- Материалы -->
-      <div v-if="item.type === 'consumables'">
-        <h2>РАСХОДНИКИ</h2>
-        {{ item }}
-      </div>
-      <!-- Техника -->
-      <div v-if="item.type === 'technic'">
-        <h2>ТЕХНИКА</h2>
-        {{ item }}
-      </div>
-      <br />
+            <!--  -->
+            <tr class="table-row_wrapper" 
+            v-for="element in switchedItem"           
+            :key="element.id"
+            >
+              <!-- {{ element }} -->
+              <!-- 1 -->
+              <!-- @click="toggleExpendedItemBlock(item.id)" -->
+              <td>
+                <label>
+                  <input type="checkbox" id="expend-item" :class="`expended-item-${item.id}_block`">
+                  <Icon
+                    class="expand-item_icon"
+                    name="material-symbols-light:expand-more"
+                    size="28px"
+                  />
+                </label>
+              </td>
 
-      <div v-if="currentItemTransactions.length !== 0">
-        <h2>История</h2>
-        <ul style="list-style: none; padding: 0">
-          <li v-for="(transaction, i) in currentItemTransactions" :key="i">
-            <!-- <div> -->
-            {{ transaction }}
-
-            <!-- <ul style="list-style: none; padding: 0">
-              <li style="display: flex; align-items: center; gap: 1rem">
-                <div>2024-03-23T13:54:12.000Z</div>
-                <div>"Склад на Бригадирской" (Камини собственник)</div>
-                <div>-</div>
-                <div>"Склад на Бригадирской" (Камини собственник)</div>
-                <div>Анфалов С.В.</div>
-              </li>
-              <li style="display: flex; align-items: center; gap: 1rem">
-                <div>{{ item.created_at }}</div>
-                <div>
-                  Добавлен на "Склад на Бригадирской" (Камини собственник)
+              <!-- 2 -->
+              <!-- :class="locationMarkColorized(item.location)" -->
+              <td class="item-qty" scope="col">
+                <div 
+                class="location-mark"
+                >
+                  <span>{{ element.qty }} {{  element.measure  }}</span>
                 </div>
-                <div>Анфалов С.В.</div>
-              </li>
-            </ul> -->
-            <!-- </div> -->
-          </li>
-          <br />
-          <li>Стоимость закупа (руб.)</li>
-          <li>Ценность (руб.)</li>
-        </ul>
+              </td>
+
+              <!-- 3 -->
+              <td class="span-2 hide-767 hide-991" scope="col">
+                <span
+                  class="link"
+                  >
+                  {{ element.ownerType }} {{ element.ownerID }}
+                </span>
+                <!-- @click="onClickOwner(item.ownerID, item.ownerType)" -->
+                <!-- {{ translateOwner(item.ownerID, item.ownerType) }} -->
+              </td>
+
+              <!-- 5 -->
+              <td class="span-2 hide-767 hide-991" scope="col">
+                <span
+                  class="link"
+                  @click="$router.push(`/partners/${item.responsible}`)"
+                  >
+                    {{ element.responsible }}
+                  </span
+                  >
+                  <!-- {{ translateResponsibles(item.responsible) }} -->
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- hISTOrY TRANSACTIONS -->
+      <div v-if="currentItemTransactions.length !== 0">
+        <h3>История по локации</h3>
+        <table class="table">
+          <!-- <thead class="item-table_header">
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Наименованиее</th>
+            </tr>
+          </thead> -->
+
+          <tbody>
+            <div v-if="currentItemTransactions">
+              <div v-if="!currentItemTransactions.length">
+                Нет истории
+              </div>
+            </div>
+
+            <!-- trasactions -->
+            <tr v-for="(transaction, i) in currentItemTransactions" :key="i">
+              {{ transaction }}
+            </tr>
+
+          </tbody>
+        </table>
       </div>
     </div>
   </Container>
@@ -403,6 +515,7 @@ watch(switchedLocation, () => {
 
 <style scoped>
 .switch-item_wrapper {
+  margin-top: 1rem;
   width: 100%;
   display: flex;
   overflow-x: auto;
@@ -418,14 +531,19 @@ watch(switchedLocation, () => {
 }
 .switch-item_el input[type="radio"] {
   opacity: 0;
-  position: fixed;
+  position: fixed!important;
   width: 0;
 }
+.item-location,
 .switch-item_el label {
   cursor: pointer;
   padding: 4px 10px;
   border: 1px solid black;
   border-radius: 16px;
+}
+.item-location {
+  color: var(--bs-body-bg);
+  background-color: var(--bs-body-color);
 }
 .switch-item_el label:hover {
   color: var(--bs-body-bg);
@@ -589,4 +707,21 @@ watch(switchedLocation, () => {
   background-color: var(--bs-warning);
   border: none;
 } */
+.table {
+
+}
+.item-table_header {
+
+}
+.table-row_wrapper {
+  /* background-color: rgba(0, 0, 0, 0.05); */
+}
+.table-row_wrapper td:hover {
+  /* background-color: red; */
+  /* cursor: pointer; */
+  /* background-color: rgba(0, 0, 0, 0.05); */
+}
+.hide-991 {
+
+}
 </style>

@@ -513,7 +513,9 @@ async function addWarehouseTransaction(item, type) {
           measure: item.measure,
         },
       });
-    } else if (type === "sub") {
+    }
+    // SUB
+    else if (type === "sub") {
       addedTransaction = await $fetch("api/warehouse/ledger", {
         method: "POST",
         body: {
@@ -538,7 +540,9 @@ async function addWarehouseTransaction(item, type) {
           measure: item.measure,
         },
       });
-    } else if (type === "move") {
+    }
+    // MOVE
+    else if (type === "move") {
       addedTransaction = await $fetch("api/warehouse/ledger", {
         method: "POST",
         body: {
@@ -927,20 +931,20 @@ async function updateItem(editedItem) {
 
       // 2.1. в уже имеющийся предмет в другом месте (вычитаем из первого, добавляем ко второму)
       else if (tempQty.value < currentItem.value.qty && findItems[0]) {
+        // if (
+        //   tempLocation.value.type === currentItem.value.location &&
+        //   tempLocation.value.id === currentItem.value.locationID &&
+        //   findItems[0].ownerType === currentItem.value.ownerType &&
+        //   findItems[0].ownerID === currentItem.value.ownerID &&
+        //   findItems[0].responsible === currentItem.value.responsible
+        // ) {
+        //   alert("Косяк. findItems[0] Разделяем предмет");
+        // } else {
+
+        // }
         editedItem.location = tempLocation.value.type;
         editedItem.locationID = tempLocation.value.id;
         editedItem.qty = findItems[0].qty + tempQty.value;
-
-        await $fetch("api/warehouse/item", {
-          method: "PUT",
-          body: {
-            id: findItems[0].id,
-            // title: editedItem.title,
-            qty: editedItem.qty,
-            location: editedItem.location,
-            locationID: editedItem.locationID,
-          },
-        });
 
         await $fetch("api/warehouse/item", {
           method: "PUT",
@@ -953,11 +957,33 @@ async function updateItem(editedItem) {
           },
         });
 
+        await $fetch("api/warehouse/item", {
+          method: "PUT",
+          body: {
+            id: findItems[0].id,
+            // title: editedItem.title,
+            qty: editedItem.qty,
+            location: editedItem.location,
+            locationID: editedItem.locationID,
+          },
+        });
+
         console.log("Переместили часть туда, где уже есть подобные предметы");
       }
 
       // 2.2. в новое место (вычитаем из первого, создаем второй и добавляем к нему)
       else if (tempQty.value < currentItem.value.qty && !findItems.length) {
+        // if (
+        //   tempLocation.value.type === currentItem.value.location &&
+        //   tempLocation.value.id === currentItem.value.locationID
+        //   // findItems[0].ownerType === currentItem.value.ownerType &&
+        //   // findItems[0].ownerID === currentItem.value.ownerID &&
+        //   // findItems[0].responsible === currentItem.value.responsible
+        // ) {
+        //   alert("Косяк. !findItems.length. Разделяем предмет");
+        // } else {
+
+        // }
         editedItem.location = tempLocation.value.type;
         editedItem.locationID = tempLocation.value.id;
         editedItem.qty = tempQty.value;
@@ -1390,7 +1416,17 @@ watch(tempCreateItemOwner, () => {
                           type: location.type,
                           id: location.id,
                         }"
-                        v-for="(location, i) in locations"
+                        v-for="(location, i) in locations.filter((item) => {
+                          if (
+                            currentItem.location === 'sklad' ||
+                            currentItem.location === 'office' ||
+                            currentItem.location === 'repair'
+                          ) {
+                            return item.id !== currentItem.locationID;
+                          } else {
+                            return item;
+                          }
+                        })"
                       >
                         {{ location.title }}
                       </option>
@@ -1403,7 +1439,13 @@ watch(tempCreateItemOwner, () => {
                           type: 'project',
                           id: project.id,
                         }"
-                        v-for="(project, i) in projects"
+                        v-for="(project, i) in projects.filter((item) => {
+                          if (currentItem.location === 'project') {
+                            return item.id !== currentItem.locationID;
+                          } else {
+                            return item;
+                          }
+                        })"
                       >
                         {{ project.title }}
                         <!-- | {{ project.address }} -->
@@ -2491,7 +2533,6 @@ label #expend-item:checked + .expand-item_icon {
   }
   .expended-item_btns {
     /* display: flex; */
-    
   }
   .expended-item_content {
     /* border-top: 1px solid black; */
@@ -2514,5 +2555,4 @@ label #expend-item:checked + .expand-item_icon {
     justify-content: space-around;
   }
 }
-
 </style>

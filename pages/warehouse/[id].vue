@@ -308,49 +308,64 @@ const toggleExpendedItemBlock = (itemID: number) => {
 };
 
 // Добавляет знак "минус" или "плюс" в зависимости от транзакции
-// const addArithmeticMark = (type, from, fromID, to, toID) => {
-//   // CREATED ITEM
-//   if (type === "created") {
-//     return "+";
-//   }
-//   // ADD
-//   else if (type === "add") {
-//     return "+";
-//   }
-//   // SUB
-//   else if (type === "sub") {
-//     return "-";
-//   }
-//   // MOVE
-//   else if (type === "move") {
-//     // Если перенсли из текущей выбранной локации
-//     if (
-//       from === item.value.location &&
-//       fromID === item.value.locationID &&
-//       to !== item.value.location &&
-//       toID !== item.value.locationID
-//     ) {
-//       return "-";
-//     }
-//     // Если перенесли в текущую выбранную локацию
-//     else if (
-//       to === item.value.location &&
-//       toID === item.value.locationID &&
-//       from !== item.value.location &&
-//       fromID !== item.value.locationID
-//     ) {
-//       return "+";
-//     }
-//     //
-//     else {
-//       return "Косяк";
-//     }
-//   }
-//   //
-//   else if (switchedLocation.value.location === "all") {
-//     return "555";
-//   }
-// };
+const addArithmeticMark = (type, from, fromID, to, toID) => {
+  if (item.value) {
+    if (switchedLocation.value.location === "all") {
+      return "";
+    } 
+    // if(currentItemTransactions.value.find(item => item.locationFrom === switchedLocation.value.location && item.locationFromID === switchedLocation.value.locationID)) {
+    //   return '-'
+    // }
+    // else {
+    //   if (type === "move") {
+    //     if (from === item.value.location && fromID === item.value.locationID) {
+    //       return "-";
+    //     }
+    //   }
+    // }
+  }
+  //   // CREATED ITEM
+  //   if (type === "created") {
+  //     return "+";
+  //   }
+  //   // ADD
+  //   else if (type === "add") {
+  //     return "+";
+  //   }
+  //   // SUB
+  //   else if (type === "sub") {
+  //     return "-";
+  //   }
+  //   // MOVE
+  //   else if (type === "move") {
+  //     // Если перенсли из текущей выбранной локации
+  //     if (
+  //       from === item.value.location &&
+  //       fromID === item.value.locationID &&
+  //       to !== item.value.location &&
+  //       toID !== item.value.locationID
+  //     ) {
+  //       return "-";
+  //     }
+  //     // Если перенесли в текущую выбранную локацию
+  //     else if (
+  //       to === item.value.location &&
+  //       toID === item.value.locationID &&
+  //       from !== item.value.location &&
+  //       fromID !== item.value.locationID
+  //     ) {
+  //       return "+";
+  //     }
+  //     //
+  //     else {
+  //       return "Косяк";
+  //     }
+  //   }
+  //   //
+  //   else if (switchedLocation.value.location === "all") {
+  //     return "555";
+  //   }
+};
 
 // WATHERS
 watch(switchedLocation, () => {
@@ -380,22 +395,41 @@ watch(switchedLocation, () => {
         element.locationToID === switchedLocation.value.locationID
       ) {
         return element;
+      } else if (
+        element.itemTitle === item.value.title &&
+        element.locationFrom === switchedLocation.value.location &&
+        element.locationFromID === switchedLocation.value.locationID
+      ) {
+        return 123;
       }
     });
   }
 });
 
 watch(infoActionBtn, () => {
-  currentItemTransactions.value = allTransactions.value.filter((element) => {
-    if (
-      element.itemTitle === item.value.title &&
-      element.locationTo === switchedLocation.value.location &&
-      element.locationToID === switchedLocation.value.locationID
-    ) {
-      return element;
-    }
-  });
+  // console.log(switchedLocation.value.location)
+  if (switchedLocation.value.location === "all") {
+    currentItemTransactions.value = allTransactions.value.filter((element) => {
+      if (element.itemTitle === item.value.title) {
+        return element;
+      }
+    });
+  } else {
+    currentItemTransactions.value = allTransactions.value.filter((element) => {
+      if (
+        (element.itemTitle === item.value.title &&
+          element.locationTo === switchedLocation.value.location &&
+          element.locationToID === switchedLocation.value.locationID) ||
+        (element.locationFrom === switchedLocation.value.location &&
+          element.locationFromID === switchedLocation.value.locationID)
+      ) {
+        return element;
+      }
+    });
+  }
+
   showCase();
+  // console.log(currentItemTransactions.value);
 });
 </script>
 
@@ -667,7 +701,10 @@ watch(infoActionBtn, () => {
               </td>
               <!-- 3 -->
               <td scope="col">
-                <span>{{ transaction.qty }} {{ transaction.measure }}</span>
+                <span
+                  >{{ addArithmeticMark(transaction.transactionType)
+                  }}{{ transaction.qty }} {{ transaction.measure }}</span
+                >
               </td>
               <!-- 3 -->
               <td scope="col">

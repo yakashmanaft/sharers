@@ -40,7 +40,7 @@ const switchedItem = ref(null);
 const projects = ref(null);
 const locations = ref(null);
 const organizations = ref(null);
-const allTransactions = ref(null);
+// const allTransactions = ref(null);
 const currentItemTransactions = ref(null);
 //
 const sumQtyUniqLocations = ref(null);
@@ -68,6 +68,15 @@ const showCaseByHistory = ref(null);
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
 
+// Получаем и сразу трансформируем массив транзакций из БД
+const { data: allTransactions } = await useFetch("/api/warehouse/ledger", {
+  transform: (allTransactions) => {
+    return allTransactions.sort((a, b) =>
+      b.created_at > a.created_at ? 1 : -1
+    );
+  },
+});
+
 onMounted(async () => {
   //
   await loadData();
@@ -75,7 +84,7 @@ onMounted(async () => {
   items.value = await getItems();
   locations.value = await getLocations();
   organizations.value = await getOrganizations();
-  allTransactions.value = await getWarehouseTransaction();
+  // allTransactions.value = await getWarehouseTransaction();
 
   item.value = items.value.find((item: any) => item.id == route.params.id);
 
@@ -243,9 +252,9 @@ async function getLocations() {
 async function getOrganizations() {
   return await $fetch("/api/organizations/organizations");
 }
-async function getWarehouseTransaction() {
-  return await $fetch("/api/warehouse/ledger");
-}
+// async function getWarehouseTransaction() {
+//   return await $fetch("/api/warehouse/ledger");
+// }
 
 // sum items qty
 const sumItemsQty = () => {
@@ -308,63 +317,62 @@ const toggleExpendedItemBlock = (itemID: number) => {
 };
 
 // Добавляет знак "минус" или "плюс" в зависимости от транзакции
-const addArithmeticMark = (type, from, fromID, to, toID) => {
-  if (item.value) {
-    if (switchedLocation.value.location === "all") {
-      return "";
-    } 
-    // if(currentItemTransactions.value.find(item => item.locationFrom === switchedLocation.value.location && item.locationFromID === switchedLocation.value.locationID)) {
-    //   return '-'
-    // }
-    // else {
-    //   if (type === "move") {
-    //     if (from === item.value.location && fromID === item.value.locationID) {
-    //       return "-";
-    //     }
-    //   }
-    // }
+// const addArithmeticMark = (type, from, fromID, to, toID) => {
+//   if (
+//     item.value &&
+//     switchedLocation.value.location &&
+//     switchedLocation.value.locationID
+//   ) {
+//     if (switchedLocation.value.location === "all") {
+//       return "";
+//     }
+//     // MOVE
+//     else if (type === "move") {
+//       if (
+//         switchedLocation.value.location === from &&
+//         switchedLocation.value.locationID === fromID
+//       ) {
+//         return "-";
+//       }
+//       //
+//       else if (
+//         switchedLocation.value.location === to &&
+//         switchedLocation.value.locationID === toID
+//       ) {
+//         return "+";
+//       }
+//     }
+//   }
+// };
+
+//
+const historyMovement = (type, qty, measure, from, fromID, to, toID) => {
+  // 
+  let locationFrom = translateLocation(fromID, from)
+  let locationTo = translateLocation(toID, to)
+  // CREATED
+  if (type === "created") {
+    return `Создан в количестве ${qty}${measure} и помещен на ${to} ${toID}`;
   }
-  //   // CREATED ITEM
-  //   if (type === "created") {
-  //     return "+";
-  //   }
-  //   // ADD
-  //   else if (type === "add") {
-  //     return "+";
-  //   }
-  //   // SUB
-  //   else if (type === "sub") {
-  //     return "-";
-  //   }
-  //   // MOVE
-  //   else if (type === "move") {
-  //     // Если перенсли из текущей выбранной локации
-  //     if (
-  //       from === item.value.location &&
-  //       fromID === item.value.locationID &&
-  //       to !== item.value.location &&
-  //       toID !== item.value.locationID
-  //     ) {
-  //       return "-";
-  //     }
-  //     // Если перенесли в текущую выбранную локацию
-  //     else if (
-  //       to === item.value.location &&
-  //       toID === item.value.locationID &&
-  //       from !== item.value.location &&
-  //       fromID !== item.value.locationID
-  //     ) {
-  //       return "+";
-  //     }
-  //     //
-  //     else {
-  //       return "Косяк";
-  //     }
-  //   }
-  //   //
-  //   else if (switchedLocation.value.location === "all") {
-  //     return "555";
-  //   }
+  // ADD
+  if (type === "add") {
+    return `Добавлен в количестве ${qty}${measure} на "${locationTo}"`;
+  }
+  // SUB
+  if (type === "sub") {
+    return `Расход в количестве ${qty}${measure} из "${locationFrom}"`;
+  }
+  // MOVE
+  if (type === "move") {
+    //
+    // if(switchedLocation.value.location === from && switchedLocation.value.locationID === fromID) {
+    //   return `Перемещен в количестве ${qty}${measure} из ${from}${fromID} в ${to}${toID}`
+    // }
+    // //
+    // else if(switchedLocation.value.location === to && switchedLocation.value.locationID === toID) {
+    //   }
+    return `Перемещен в количестве ${qty}${measure} из "${locationFrom}" в "${locationTo}"`;
+  }
 };
 
 // WATHERS
@@ -593,6 +601,9 @@ watch(infoActionBtn, () => {
                 <th scope="col"></th>
                 <!-- <th scope="col">Наименование</th> -->
                 <th scope="col">Кол-во</th>
+                <th scope="col" v-if="switchedLocation.location === 'all'">
+                  Где
+                </th>
                 <th scope="col" class="hide-991">Собственник</th>
                 <th scope="col" class="hide-991">Ответственный</th>
               </tr>
@@ -635,6 +646,13 @@ watch(infoActionBtn, () => {
                   </div>
                 </td>
 
+                <!-- IF ALL LOCATIONS -->
+                <td scope="col" v-if="switchedLocation.location === 'all'">
+                  <span>{{
+                    translateLocation(element.locationID, element.location)
+                  }}</span>
+                </td>
+
                 <!-- 3 -->
                 <td class="span-2 hide-767 hide-991" scope="col">
                   <span class="link">
@@ -667,10 +685,11 @@ watch(infoActionBtn, () => {
             <tr>
               <th scope="col">Дата</th>
               <th scope="col">Автор</th>
-              <th scope="col">Тип</th>
+              <!-- <th scope="col">Тип</th>
               <th scope="col">Кол-во</th>
               <th scope="col">Откуда</th>
-              <th scope="col">Куда</th>
+              <th scope="col">Куда</th> -->
+              <th scope="col">Транзакция</th>
             </tr>
           </thead>
 
@@ -687,8 +706,8 @@ watch(infoActionBtn, () => {
             >
               <!-- 1 -->
               <td scope="col">
-                <span>{{ transaction.id }}</span
-                ><br />
+                <!-- <span>{{ transaction.id }}</span
+                ><br /> -->
                 <span>{{ transaction.created_at }}</span>
               </td>
               <!-- 2 -->
@@ -696,29 +715,51 @@ watch(infoActionBtn, () => {
                 <span>{{ translateResponsibles(transaction.authorID) }}</span>
               </td>
               <!-- 3 -->
-              <td scope="col">
+              <!-- <td scope="col">
                 <span>{{ transaction.transactionType }}</span>
-              </td>
+              </td> -->
               <!-- 3 -->
-              <td scope="col">
-                <span
-                  >{{ addArithmeticMark(transaction.transactionType)
-                  }}{{ transaction.qty }} {{ transaction.measure }}</span
-                >
-              </td>
+              <!-- <td scope="col"> -->
+                <!-- <span> -->
+                  <!-- {{
+                    addArithmeticMark(
+                      transaction.transactionType,
+                      transaction.locationFrom,
+                      transaction.locationFromID,
+                      transaction.locationTo,
+                      transaction.locationToID
+                    )
+                  }} -->
+                  <!-- {{ transaction.qty }} {{ transaction.measure }}</span -->
+                <!-- > -->
+              <!-- </td> -->
               <!-- 3 -->
-              <td scope="col">
+              <!-- <td scope="col">
                 <span
                   >{{ transaction.locationFrom }}
                   {{ transaction.locationFromID }}</span
                 >
-              </td>
+              </td> -->
               <!-- 4 -->
-              <td scope="col">
+              <!-- <td scope="col">
                 <span
                   >{{ transaction.locationTo }}
                   {{ transaction.locationToID }}</span
                 >
+              </td> -->
+
+              <td scope="col">
+                <span>{{
+                  historyMovement(
+                    transaction.transactionType,
+                    transaction.qty,
+                    transaction.measure,
+                    transaction.locationFrom,
+                    transaction.locationFromID,
+                    transaction.locationTo,
+                    transaction.locationToID
+                  )
+                }}</span>
               </td>
             </tr>
           </tbody>
@@ -803,13 +844,13 @@ watch(infoActionBtn, () => {
 .table-by-available .item-table_header tr,
 .table-by-available .table-row_wrapper {
   display: grid;
-  grid-template-columns: 50px 1fr 1fr 1fr;
+  grid-template-columns: 50px 1fr 1fr 1fr 1fr;
 }
 
 .table-by-history .item-table_header tr,
 .table-by-history .table-row_wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 100px 1fr 1fr 1fr;
+  grid-template-columns:  300px 200px 1fr;
 }
 .expand-item_icon {
   cursor: pointer;

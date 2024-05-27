@@ -16,6 +16,9 @@ export default defineEventHandler(async (event) => {
           measure: body.measure,
           location: body.location,
           locationID: body.locationID,
+          // position пока не делаем
+          serial: body.serial,
+          productionDate: body.productionDate,
           ownerID: body.ownerID,
           ownerType: body.ownerType,
           responsible: body.responsible

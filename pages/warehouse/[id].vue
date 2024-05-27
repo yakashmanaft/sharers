@@ -233,6 +233,21 @@ const translateResponsibles = (id: any) => {
     return `${responsible?.surname} ${responsible?.name[0]}. ${responsible?.middleName[0]}.`;
   }
 };
+const translateItemType = (type) => {
+  if (type === "tools") {
+    return "Инструмент";
+  } else if (type === "stuff") {
+    return "Материалы";
+  } else if (type === "consumables") {
+    return "Расходники";
+  } else if (type === "technic") {
+    return "Техника";
+  } else if (type === "office equipment") {
+    return "Оргтехника";
+  } else {
+    return type;
+  }
+};
 
 //
 /**
@@ -347,12 +362,12 @@ const toggleExpendedItemBlock = (itemID: number) => {
 
 //
 const historyMovement = (type, qty, measure, from, fromID, to, toID) => {
-  // 
-  let locationFrom = translateLocation(fromID, from)
-  let locationTo = translateLocation(toID, to)
+  //
+  let locationFrom = translateLocation(fromID, from);
+  let locationTo = translateLocation(toID, to);
   // CREATED
   if (type === "created") {
-    return `Создан в количестве ${qty}${measure} и помещен на ${to} ${toID}`;
+    return `Создан в количестве ${qty}${measure} и помещен на "${locationTo}"`;
   }
   // ADD
   if (type === "add") {
@@ -473,26 +488,39 @@ watch(infoActionBtn, () => {
           <span></span>
         </div>
 
+        <!-- ОПИСАНИЕ -->
         <div>
           <h2 style="margin-top: 1rem">Описание</h2>
 
           <!-- ПО ТИПУ ПРЕДМЕТА -->
           <div>
             <!-- Инструмент -->
-            <div v-if="item.type === 'tools'">
-              <p>Тип: {{ item.type }}</p>
+            <div
+              v-if="item.type === 'tools' || item.type === 'office equipment'"
+            >
+              <!-- <p>Тип: {{ item.type }}</p> -->
               <ul>
-                <li>Серийник (если есть)</li>
+                <li>Тип: {{ translateItemType(item.type) }}</li>
+                <li>Серийник: {{ item.serial }}</li>
+                <li>Дата производства: {{ item.productionDate }}</li>
+                <li>Закупочная цена?</li>
               </ul>
             </div>
             <!-- Материалы -->
+            <div v-if="item.type === 'stuff'">
+              <p>Тип: {{ translateItemType(item.type) }}</p>
+            </div>
+            <!-- Расходники -->
             <div v-if="item.type === 'consumables'">
-              <p>Тип: {{ item.type }}</p>
+              <p>Тип: {{ translateItemType(item.type) }}</p>
               <!-- {{ item }} -->
             </div>
             <!-- Техника -->
             <div v-if="item.type === 'technic'">
-              <p>Тип: {{ item.type }}</p>
+              <p>Тип: {{ translateItemType(item.type) }}</p>
+              <ul>
+                <li>Какие данные по технике чекать имеет смысл?</li>
+              </ul>
               <!-- {{ item }} -->
             </div>
           </div>
@@ -516,8 +544,8 @@ watch(infoActionBtn, () => {
           </p>
         </div>
 
-        <!-- Показываем другие локации, где есть текущий предмет -->
-        <div v-if="itemLocations.length > 1">
+        <!-- ЛОКАЦИИ -->
+        <div style="margin-top: 1rem" v-if="itemLocations.length > 1">
           <h2>{{ item.title }} в других местах</h2>
           <!-- set item to view -->
           <fieldset id="item-locations" class="switch-item_wrapper">
@@ -593,17 +621,17 @@ watch(infoActionBtn, () => {
 
         <!-- AVAILABLE IN LOCATION -->
         <div class="item-locations_block" v-if="showCaseByAvailable">
-          <h3>Наличие на местеэ</h3>
+          <h3>Наличие</h3>
           <!-- Предметы по разным параметрам, но на одной локации -->
           <table class="table table-by-available" v-if="switchedItem.length">
             <thead class="item-table_header">
               <tr>
                 <th scope="col"></th>
                 <!-- <th scope="col">Наименование</th> -->
-                <th scope="col">Кол-во</th>
                 <th scope="col" v-if="switchedLocation.location === 'all'">
                   Где
                 </th>
+                <th scope="col">Кол-во</th>
                 <th scope="col" class="hide-991">Собственник</th>
                 <th scope="col" class="hide-991">Ответственный</th>
               </tr>
@@ -638,19 +666,19 @@ watch(infoActionBtn, () => {
                   </label>
                 </td>
 
+                <!-- IF ALL LOCATIONS -->
+                <td scope="col" v-if="switchedLocation.location === 'all'">
+                  <span>{{
+                    translateLocation(element.locationID, element.location)
+                  }}</span>
+                </td>
+
                 <!-- 2 -->
                 <!-- :class="locationMarkColorized(item.location)" -->
                 <td class="item-qty" scope="col">
                   <div class="location-mark">
                     <span>{{ element.qty }} {{ element.measure }}</span>
                   </div>
-                </td>
-
-                <!-- IF ALL LOCATIONS -->
-                <td scope="col" v-if="switchedLocation.location === 'all'">
-                  <span>{{
-                    translateLocation(element.locationID, element.location)
-                  }}</span>
                 </td>
 
                 <!-- 3 -->
@@ -678,18 +706,18 @@ watch(infoActionBtn, () => {
 
       <!-- hISTOrY TRANSACTIONS -->
       <!-- currentItemTransactions.length !== 0 -->
-      <div v-if="showCaseByHistory">
-        <h3>История предмета в локации</h3>
+      <div class="item-history_block" v-if="showCaseByHistory">
+        <h3>История</h3>
         <table class="table table-by-history">
           <thead class="item-table_header">
             <tr>
               <th scope="col">Дата</th>
-              <th scope="col">Автор</th>
               <!-- <th scope="col">Тип</th>
               <th scope="col">Кол-во</th>
               <th scope="col">Откуда</th>
               <th scope="col">Куда</th> -->
               <th scope="col">Транзакция</th>
+              <th scope="col">Автор</th>
             </tr>
           </thead>
 
@@ -710,18 +738,14 @@ watch(infoActionBtn, () => {
                 ><br /> -->
                 <span>{{ transaction.created_at }}</span>
               </td>
-              <!-- 2 -->
-              <td scope="col">
-                <span>{{ translateResponsibles(transaction.authorID) }}</span>
-              </td>
               <!-- 3 -->
               <!-- <td scope="col">
                 <span>{{ transaction.transactionType }}</span>
               </td> -->
               <!-- 3 -->
               <!-- <td scope="col"> -->
-                <!-- <span> -->
-                  <!-- {{
+              <!-- <span> -->
+              <!-- {{
                     addArithmeticMark(
                       transaction.transactionType,
                       transaction.locationFrom,
@@ -730,8 +754,8 @@ watch(infoActionBtn, () => {
                       transaction.locationToID
                     )
                   }} -->
-                  <!-- {{ transaction.qty }} {{ transaction.measure }}</span -->
-                <!-- > -->
+              <!-- {{ transaction.qty }} {{ transaction.measure }}</span -->
+              <!-- > -->
               <!-- </td> -->
               <!-- 3 -->
               <!-- <td scope="col">
@@ -748,6 +772,7 @@ watch(infoActionBtn, () => {
                 >
               </td> -->
 
+              <!-- 2 -->
               <td scope="col">
                 <span>{{
                   historyMovement(
@@ -760,6 +785,11 @@ watch(infoActionBtn, () => {
                     transaction.locationToID
                   )
                 }}</span>
+              </td>
+
+              <!-- 3 -->
+              <td scope="col">
+                <span>{{ translateResponsibles(transaction.authorID) }}</span>
               </td>
             </tr>
           </tbody>
@@ -774,6 +804,7 @@ watch(infoActionBtn, () => {
   margin-top: 1rem;
   width: 100%;
   display: flex;
+  align-items: center;
   overflow-x: auto;
   gap: 1rem;
   scrollbar-width: none;
@@ -796,14 +827,15 @@ watch(infoActionBtn, () => {
   /* color: var(--bs-primary); */
   font-weight: normal;
   font-size: 1rem;
-  border: 1px solid var(--bs-border-color);
+  /* border: 1px solid var(--bs-border-color); */
   padding: 4px 10px;
   border-radius: 16px;
   transition: all 0.15s ease-in;
 }
 .infoActionBtns_el label:hover {
   cursor: pointer;
-  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary);
+  /* background-color: var(--bs-primary-bg-subtle); */
 }
 
 .infoActionBtns_el input[type="radio"],
@@ -817,23 +849,33 @@ watch(infoActionBtn, () => {
   visibility: hidden;
   opacity: 0;
 }
-.item-location,
 .switch-item_el label {
-  cursor: pointer;
-  padding: 4px 10px;
-  border: 1px solid black;
   border-radius: 16px;
+  /* padding: 4px 10px; */
+  /* cursor: pointer; */
+  /* padding: 4px 10px; */
+  border: 1px solid var(--bs-secondary-bg);
+  transition: all 0.15s ease-in;
+  padding: 4px 10px;
 }
 .item-location {
   color: var(--bs-body-bg);
   background-color: var(--bs-body-color);
+  padding: 4px 10px;
+  border-radius: 16px;
 }
+/* .item-location:hover {
+  cursor: pointer;
+} */
 .switch-item_el label:hover {
+  cursor: pointer;
   color: var(--bs-body-bg);
-  background-color: var(--bs-body-color);
-  transition: all 0.15s ease-in;
+  background-color: var(--bs-body-color); 
+  /* box-shadow: -10px -10px 0 0 rgba(0, 0, 0, 0.2); */
 }
 .switch-item_el input[type="radio"]:checked + label {
+  border-radius: 16px;
+  padding: 4px 10px;
   color: var(--bs-body-bg);
   background-color: var(--bs-body-color);
 }
@@ -850,7 +892,7 @@ watch(infoActionBtn, () => {
 .table-by-history .item-table_header tr,
 .table-by-history .table-row_wrapper {
   display: grid;
-  grid-template-columns:  300px 200px 1fr;
+  grid-template-columns: 300px 1fr 200px;
 }
 .expand-item_icon {
   cursor: pointer;
@@ -881,7 +923,9 @@ label #expend-item:checked + .expand-item_icon {
   h1 {
     margin-top: 7rem;
   }
+  .item-history_block,
   .item-locations_block {
+    margin-top: 1rem;
     width: 100%;
     /* background-color: red; */
     /* position: relative; */

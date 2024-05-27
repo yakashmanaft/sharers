@@ -38,6 +38,9 @@ const item = ref({
   ownerID: null,
   ownerType: null,
   responsible: null,
+  // if type === 'tools'
+  serial: null,
+  productionDate: null,
 });
 
 const tempCreateItemLocation = ref({
@@ -80,6 +83,10 @@ const warehouseCategories = ref([
   {
     type: "technic",
     name: "Техника",
+  },
+  {
+    type: "office equipment",
+    name: "Оргтехника",
   },
 ]);
 //
@@ -186,6 +193,8 @@ onMounted(async () => {
       item.value.ownerID = null;
       item.value.ownerType = null;
       item.value.responsible = null;
+      item.value.serial = null;
+      item.value.productionDate = null;
 
       tempCreateItemLocation.value = { type: null, id: null };
       tempCreateItemOwner.value = { type: null, id: null };
@@ -424,6 +433,9 @@ async function addWarehouseItem(item) {
         measure: item.measure,
         location: item.location,
         locationID: item.locationID,
+        // position это про точный адрес полки на складе
+        serial: item.serial,
+        productionDate: item.productionDate,
         ownerID: item.ownerID,
         ownerType: item.ownerType,
         responsible: item.responsible,
@@ -1144,6 +1156,7 @@ watch(item.value, () => {
     item.value.ownerID &&
     item.value.ownerType &&
     item.value.responsible
+    // serial & production date are not compare
   ) {
     createNewItemBtnIsDisabled.value = false;
   } else {
@@ -1579,7 +1592,7 @@ watch(tempCreateItemOwner, () => {
             </div>
             <!-- TITLE -->
             <div class="mb-3">
-              <label for="itemTitle" class="form-label">Наименование</label>
+              <label for="itemTitle" class="form-label">Наименование*</label>
               <input
                 v-model="item.title"
                 type="text"
@@ -1591,7 +1604,7 @@ watch(tempCreateItemOwner, () => {
 
             <!-- TYPE -->
             <div class="mb-3">
-              <label for="itemType" class="form-label">Тип </label>
+              <label for="itemType" class="form-label">Тип* </label>
               <select
                 class="form-select"
                 aria-label="Default select example"
@@ -1608,6 +1621,49 @@ watch(tempCreateItemOwner, () => {
               </select>
             </div>
 
+            <!--  -->
+            <div
+              class="mb-3"
+              v-if="item && item.type === 'tools' || item.type === 'office equipment'"
+              style="
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 2rem;
+                width: 100%;
+              "
+            >
+              <!-- Серийник -->
+              <div style="width: 100%">
+                <label for="itemSerial" class="form-label"
+                  >Серийный номер</label
+                >
+                <input
+                  v-model="item.serial"
+                  type="text"
+                  id="itemSerial"
+                  class="form-control"
+                  aria-describedby="nameHelp"
+                />
+              </div>
+
+              <!-- Дата производства -->
+              <div style="flex: 3 2 100%">
+                <label for="itemProductionDate" class="form-label"
+                  >Дата изготовления</label
+                >
+                  <!-- type="month" -->
+                <input
+                  type="date"
+                  v-model="item.productionDate"
+                  id="itemProductionDate"
+                  class="form-control"
+                  aria-describedby="nameHelp"
+                  
+                />
+              </div>
+            </div>
+
             <!-- MEASURE & QTY -->
             <div
               style="
@@ -1620,7 +1676,7 @@ watch(tempCreateItemOwner, () => {
               <!-- MEASURE -->
               <div class="mb-3" style="width: 100%">
                 <label for="itemMeasure" class="form-label"
-                  >Ед. измерения</label
+                  >Ед. измерения*</label
                 >
                 <select
                   class="form-select"
@@ -1639,7 +1695,7 @@ watch(tempCreateItemOwner, () => {
               </div>
               <!-- QTY -->
               <div class="mb-3">
-                <label for="itemQty" class="form-label">Кол-во</label>
+                <label for="itemQty" class="form-label">Кол-во*</label>
                 <input
                   v-model="item.qty"
                   type="number"
@@ -1667,7 +1723,7 @@ watch(tempCreateItemOwner, () => {
 
             <div class="mb-3">
               <label for="itemLocation" class="form-label"
-                >Местонахождение</label
+                >Местонахождение*</label
               >
               <select
                 class="form-select"
@@ -1719,7 +1775,7 @@ watch(tempCreateItemOwner, () => {
 
             <!-- OWNER -->
             <div class="mb-3">
-              <label for="users" class="form-label">Собственник</label>
+              <label for="users" class="form-label">Собственник*</label>
               <select
                 class="form-select"
                 aria-label="Default select example"
@@ -1758,7 +1814,7 @@ watch(tempCreateItemOwner, () => {
 
             <!-- RESPONSIBLE -->
             <div class="mb-3">
-              <label for="users" class="form-label">Ответственный</label>
+              <label for="users" class="form-label">Ответственный*</label>
               <select
                 class="form-select"
                 aria-label="Default select example"

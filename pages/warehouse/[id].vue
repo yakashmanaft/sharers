@@ -32,6 +32,7 @@ useHead({
 
 //
 const route = useRoute();
+const router = useRouter();
 //
 const items = ref(null);
 const item = ref(null);
@@ -390,6 +391,31 @@ const historyMovement = (type, qty, measure, from, fromID, to, toID) => {
   }
 };
 
+// Router create link to locations function
+const routerLocationsFunc = (locationID, location) => {
+  if (location === "project") {
+    router.push(`/projects/${locationID}`);
+  } else if (
+    location === "sklad" ||
+    location === "repair" ||
+    location === "office"
+  ) {
+    router.push(`/locations/${locationID}`);
+  } else {
+    alert("Путь не найден (warehouse :id... routerLocationsFunc )");
+  }
+};
+// Router create link to owner  function
+const routerUsersFunc = (ownerID, ownerType) => {
+  if (ownerType === "company") {
+    router.push(`/organizations/${ownerID}`);
+  } else if (ownerType === "user") {
+    router.push(`/partners/${ownerID}`);
+  } else {
+    alert("Путь не найден (warehouse :id... routerUsersFunc )");
+  }
+};
+
 // WATHERS
 watch(switchedLocation, () => {
   // infoActionBtn.value = "available";
@@ -628,9 +654,7 @@ watch(infoActionBtn, () => {
               <tr>
                 <th scope="col"></th>
                 <!-- <th scope="col">Наименование</th> -->
-                <th scope="col" v-if="switchedLocation.location === 'all'">
-                  Где
-                </th>
+                <th scope="col">Где</th>
                 <th scope="col">Кол-во</th>
                 <th scope="col" class="hide-991">Собственник</th>
                 <th scope="col" class="hide-991">Ответственный</th>
@@ -667,10 +691,17 @@ watch(infoActionBtn, () => {
                 </td>
 
                 <!-- IF ALL LOCATIONS -->
-                <td scope="col" v-if="switchedLocation.location === 'all'">
-                  <span>{{
-                    translateLocation(element.locationID, element.location)
-                  }}</span>
+                <!-- v-if="switchedLocation.location === 'all'" -->
+                <td scope="col">
+                  <span
+                    class="link_hover"
+                    @click="
+                      routerLocationsFunc(element.locationID, element.location)
+                    "
+                    >{{
+                      translateLocation(element.locationID, element.location)
+                    }}</span
+                  >
                 </td>
 
                 <!-- 2 -->
@@ -683,16 +714,15 @@ watch(infoActionBtn, () => {
 
                 <!-- 3 -->
                 <td class="span-2 hide-767 hide-991" scope="col">
-                  <span class="link">
+                  <span class="link_hover" @click="routerUsersFunc(element.ownerID, element.ownerType)">
                     {{ translateOwner(element.ownerID, element.ownerType) }}
                   </span>
-                  <!-- @click="onClickOwner(item.ownerID, item.ownerType)" -->
                 </td>
 
                 <!-- 5 -->
                 <td class="span-2 hide-767 hide-991" scope="col">
                   <span
-                    class="link"
+                    class="link_hover"
                     @click="$router.push(`/partners/${item.responsible}`)"
                   >
                     {{ translateResponsibles(item.responsible) }}
@@ -870,7 +900,7 @@ watch(infoActionBtn, () => {
 .switch-item_el label:hover {
   cursor: pointer;
   color: var(--bs-body-bg);
-  background-color: var(--bs-body-color); 
+  background-color: var(--bs-body-color);
   /* box-shadow: -10px -10px 0 0 rgba(0, 0, 0, 0.2); */
 }
 .switch-item_el input[type="radio"]:checked + label {
@@ -913,6 +943,10 @@ label #expend-item:checked + .expand-item_icon {
 /* .expended-item_btns button span:hover {
   color: var(--bs-primary);
 } */
+.link_hover:hover {
+  color: var(--bs-primary);
+  cursor: pointer;
+}
 @media screen and (max-width: 767px) {
   h1 {
     margin-top: 4rem;

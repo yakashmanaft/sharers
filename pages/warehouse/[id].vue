@@ -51,7 +51,7 @@ const switchedLocation = ref({
   locationID: null,
 });
 // other locations info actions buttons
-const infoActionsBtns = ref([
+const infoActionBtns = ref([
   {
     name: "available",
     title: "Наличие",
@@ -61,7 +61,7 @@ const infoActionsBtns = ref([
     title: "История",
   },
 ]);
-const infoActionBtn = ref("available");
+const infoActionBtn = ref('available');
 const showCaseByAvailable = ref(null);
 const showCaseByHistory = ref(null);
 
@@ -77,6 +77,12 @@ const { data: allTransactions } = await useFetch("/api/warehouse/ledger", {
     );
   },
 });
+
+// onBeforeMount(async () => {
+//   if(!switchedItem.value.length) {
+//     infoActionBtn.value = 'history'
+//   }
+// })
 
 onMounted(async () => {
   //
@@ -100,6 +106,7 @@ onMounted(async () => {
     }
   });
 
+  // суммируем количество одной и той ж позиции (но которая может быть с разными собственниками или отвесттвенными)
   sumQtyUniqLocations.value = Object.values(
     itemLocations.value.reduce((acc, { id, location, locationID, qty }) => {
       let key = location + "|" + locationID;
@@ -113,8 +120,9 @@ onMounted(async () => {
   if (item.value) {
     switchedLocation.value.location = item.value.location;
     switchedLocation.value.locationID = item.value.locationID;
-  }
 
+  }
+  
   switchedItem.value = itemLocations.value.filter((element) => {
     if (
       switchedLocation.value.location === element.location &&
@@ -130,7 +138,8 @@ onMounted(async () => {
         return element;
       }
     });
-  } else {
+  } 
+  else {
     currentItemTransactions.value = allTransactions.value.filter((element) => {
       if (
         element.itemTitle === item.value.title
@@ -146,7 +155,10 @@ onMounted(async () => {
     });
   }
 
-  showCase();
+  // showCase();
+  if(!switchedItem.value.length) {
+    infoActionBtn.value = 'history';
+  }
 });
 
 // translators functions
@@ -463,21 +475,22 @@ watch(infoActionBtn, () => {
         return element;
       }
     });
-  } else {
-    currentItemTransactions.value = allTransactions.value.filter((element) => {
-      if (
-        (element.itemTitle === item.value.title &&
-          element.locationTo === switchedLocation.value.location &&
-          element.locationToID === switchedLocation.value.locationID) ||
-        (element.locationFrom === switchedLocation.value.location &&
-          element.locationFromID === switchedLocation.value.locationID)
-      ) {
-        return element;
-      }
-    });
-  }
+  } 
+  // else {
+  //   currentItemTransactions.value = allTransactions.value.filter((element) => {
+  //     if (
+  //       (element.itemTitle === item.value.title &&
+  //         element.locationTo === switchedLocation.value.location &&
+  //         element.locationToID === switchedLocation.value.locationID) ||
+  //       (element.locationFrom === switchedLocation.value.location &&
+  //         element.locationFromID === switchedLocation.value.locationID)
+  //     ) {
+  //       return element;
+  //     }
+  //   });
+  // }
 
-  showCase();
+  // showCase();
   // console.log(currentItemTransactions.value);
 });
 </script>
@@ -583,7 +596,9 @@ watch(infoActionBtn, () => {
                 :value="{ location: 'all', locationID: null }"
                 v-model="switchedLocation"
               />
-              <label for="all-item-view">Всего {{ sumItemsQty() }}</label>
+              <label class="item-label_element" for="all-item-view">
+                Всего {{ sumItemsQty() }}
+              </label>
             </div>
 
             <!-- Если location только один (в массиве itemLocations нет повторений и других location) -->
@@ -608,7 +623,7 @@ watch(infoActionBtn, () => {
                 }"
                 v-model="switchedLocation"
               />
-              <label :for="`${location.location}${location.id}`"
+              <label class="item-label_element" :for="`${location.location}${location.id}`"
                 >{{
                   translateLocation(location.locationID, location.location)
                 }}
@@ -621,123 +636,137 @@ watch(infoActionBtn, () => {
           <!-- v-if="
                 itemLocations.length > 1 && currentItemTransactions.length !== 0
               " -->
-          <div style="margin-top: 1rem">
-            <h3 class="infoActionBtns_wrapper">
-              <div
-                class="infoActionBtns_el"
-                v-for="(btn, index) in infoActionsBtns"
-                :key="index"
-              >
-                <input
-                  type="radio"
-                  :id="btn.name"
-                  name="info-action-btns"
-                  :value="btn.name"
-                  v-model="infoActionBtn"
-                />
-                <label :for="btn.name">
-                  {{ btn.title }}
-                </label>
-              </div>
-            </h3>
 
-            <!-- {{ infoActionBtn }} -->
+            </div>
+            
           </div>
-        </div>
 
-        <!-- AVAILABLE IN LOCATION -->
-        <div class="item-locations_block" v-if="showCaseByAvailable">
-          <h3>Наличие</h3>
-          <!-- Предметы по разным параметрам, но на одной локации -->
-          <table class="table table-by-available" v-if="switchedItem.length">
-            <thead class="item-table_header">
-              <tr>
-                <th scope="col"></th>
-                <!-- <th scope="col">Наименование</th> -->
-                <th scope="col">Где</th>
-                <th scope="col">Кол-во</th>
-                <th scope="col" class="hide-991">Собственник</th>
-                <th scope="col" class="hide-991">Ответственный</th>
-              </tr>
-            </thead>
-            <tbody>
-              <div v-if="switchedItem">
-                <div v-if="!switchedItem.length">Ничего нет</div>
-              </div>
 
-              <!--  -->
-              <tr
-                class="table-row_wrapper"
-                v-for="element in switchedItem"
-                :key="element.id"
-              >
-                <!-- {{ element }} -->
-                <!-- 1 -->
-                <!-- @click="toggleExpendedItemBlock(item.id)" -->
-                <td>
-                  <label>
-                    <input
-                      type="checkbox"
-                      id="expend-item"
-                      :class="`expended-item-${element.id}_block`"
-                    />
-                    <Icon
-                      class="expand-item_icon"
-                      @click="toggleExpendedItemBlock(element.id)"
-                      name="material-symbols-light:expand-more"
-                      size="28px"
-                    />
-                  </label>
-                </td>
+      <!-- infoActionBtns -->
+      <div style="margin-top: 1rem">
+        <h3 class="infoActionBtns_wrapper">
+          <span
+            class="infoActionBtns_el"
+            v-for="(btn, index) in infoActionBtns.filter(btn => {
+              if(btn.name === infoActionBtn && !switchedItem.length) {
+                return btn
+              } else if(switchedItem.length) {
+                return btn
+              } else if (btn.name === infoActionBtn) {
+                return btn
+              }
+            })"
+            :key="index"
+          >
+            <input
+              type="radio"
+              :id="btn.name"
+              name="info-action-btns"
+              :value="btn.name"
+              v-model="infoActionBtn"
+            />
+            <label :for="btn.name">
+              {{ btn.title }}
+            </label>
+          </span>
+        </h3>
+        <!-- {{ infoActionBtn }} -->
+      </div>
+      
+      <!-- AVAILABLE IN LOCATION -->
+      <!-- infoActionBtn -->
+      <div class="item-locations_block" v-if="infoActionBtn === 'available'">
+        <!-- <h3>Наличие</h3> -->
+        <!-- Предметы по разным параметрам, но на одной локации -->
+        <table class="table table-by-available" v-if="switchedItem.length">
+          <thead class="item-table_header">
+            <tr>
+              <th scope="col"></th>
+              <!-- <th scope="col">Наименование</th> -->
+              <th scope="col">Где</th>
+              <th scope="col">Кол-во</th>
+              <th scope="col" class="hide-991">Собственник</th>
+              <th scope="col" class="hide-991">Ответственный</th>
+            </tr>
+          </thead>
+          <tbody>
+            <div v-if="switchedItem">
+              <div v-if="!switchedItem.length">Ничего нет</div>
+            </div>
 
-                <!-- IF ALL LOCATIONS -->
-                <!-- v-if="switchedLocation.location === 'all'" -->
-                <td scope="col">
-                  <span
-                    class="link_hover"
-                    @click="
-                      routerLocationsFunc(element.locationID, element.location)
-                    "
-                    >{{
-                      translateLocation(element.locationID, element.location)
-                    }}</span
-                  >
-                </td>
+            <!--  -->
+            <tr
+              class="table-row_wrapper"
+              v-for="element in switchedItem"
+              :key="element.id"
+            >
+              <!-- {{ element }} -->
+              <!-- 1 -->
+              <!-- @click="toggleExpendedItemBlock(item.id)" -->
+              <td>
+                <label>
+                  <input
+                    type="checkbox"
+                    id="expend-item"
+                    :class="`expended-item-${element.id}_block`"
+                  />
+                  <Icon
+                    class="expand-item_icon"
+                    @click="toggleExpendedItemBlock(element.id)"
+                    name="material-symbols-light:expand-more"
+                    size="28px"
+                  />
+                </label>
+              </td>
 
-                <!-- 2 -->
-                <!-- :class="locationMarkColorized(item.location)" -->
-                <td class="item-qty" scope="col">
-                  <div class="location-mark">
-                    <span>{{ element.qty }} {{ element.measure }}</span>
-                  </div>
-                </td>
+              <!-- IF ALL LOCATIONS -->
+              <!-- v-if="switchedLocation.location === 'all'" -->
+              <td scope="col">
+                <span
+                  class="link_hover"
+                  @click="
+                    routerLocationsFunc(element.locationID, element.location)
+                  "
+                  >{{
+                    translateLocation(element.locationID, element.location)
+                  }}</span
+                >
+              </td>
 
-                <!-- 3 -->
-                <td class="span-2 hide-767 hide-991" scope="col">
-                  <span class="link_hover" @click="routerUsersFunc(element.ownerID, element.ownerType)">
-                    {{ translateOwner(element.ownerID, element.ownerType) }}
-                  </span>
-                </td>
+              <!-- 2 -->
+              <!-- :class="locationMarkColorized(item.location)" -->
+              <td class="item-qty" scope="col">
+                <div class="location-mark">
+                  <span>{{ element.qty }} {{ element.measure }}</span>
+                </div>
+              </td>
 
-                <!-- 5 -->
-                <td class="span-2 hide-767 hide-991" scope="col">
-                  <span
-                    class="link_hover"
-                    @click="$router.push(`/partners/${item.responsible}`)"
-                  >
-                    {{ translateResponsibles(item.responsible) }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+              <!-- 3 -->
+              <td class="span-2 hide-767 hide-991" scope="col">
+                <span class="link_hover" @click="routerUsersFunc(element.ownerID, element.ownerType)">
+                  {{ translateOwner(element.ownerID, element.ownerType) }}
+                </span>
+              </td>
+
+              <!-- 5 -->
+              <td class="span-2 hide-767 hide-991" scope="col">
+                <span
+                  class="link_hover"
+                  @click="$router.push(`/partners/${item.responsible}`)"
+                >
+                  {{ translateResponsibles(item.responsible) }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
       <!-- hISTOrY TRANSACTIONS -->
+      <!-- v-if="showCaseByHistory" -->
       <!-- currentItemTransactions.length !== 0 -->
-      <div class="item-history_block" v-if="showCaseByHistory">
-        <h3>История</h3>
+      <div class="item-history_block" v-if="infoActionBtn === 'history'">
+        <!-- <h3>История</h3> -->
         <table class="table table-by-history">
           <thead class="item-table_header">
             <tr>
@@ -756,7 +785,7 @@ watch(infoActionBtn, () => {
               <div v-if="!currentItemTransactions.length">Нет истории</div>
             </div>
 
-            <!-- trasactions -->
+            <!-- transactions -->
             <tr
               v-for="(transaction, i) in currentItemTransactions"
               :key="i"
@@ -845,6 +874,7 @@ watch(infoActionBtn, () => {
 .infoActionBtns_wrapper {
   display: flex;
   gap: 0.5rem;
+  background-color: cyan;
 }
 .infoActionBtns_el,
 .switch-item_el {
@@ -919,6 +949,10 @@ watch(infoActionBtn, () => {
   grid-template-columns: 50px 1fr 1fr 1fr 1fr;
 }
 
+/* .table-by-history {
+  background-color: cyan;
+} */
+
 .table-by-history .item-table_header tr,
 .table-by-history .table-row_wrapper {
   display: grid;
@@ -947,6 +981,25 @@ label #expend-item:checked + .expand-item_icon {
   color: var(--bs-primary);
   cursor: pointer;
 }
+
+/* LABEL */
+.item-label_element {
+  background-color: red;
+}
+.item-locations_block {
+  background-color: cyan;
+}
+.table>:not(caption)>*>* {
+  padding: 0;
+  color: unset;
+  background-color: unset;
+  box-shadow: unset;
+}
+.table .table-by-available{
+  background-color: blue;
+}
+
+
 @media screen and (max-width: 767px) {
   h1 {
     margin-top: 4rem;
@@ -956,6 +1009,9 @@ label #expend-item:checked + .expand-item_icon {
 @media screen and (min-width: 768px) {
   h1 {
     margin-top: 7rem;
+  }
+  .item-history_block {
+    background-color: blue;
   }
   .item-history_block,
   .item-locations_block {

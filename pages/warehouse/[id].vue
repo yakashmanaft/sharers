@@ -930,8 +930,8 @@ watch(infoActionBtn, () => {
   overflow-x: auto;
   gap: 1rem;
   scrollbar-width: none;
-  /* background-color: var(--bs-secondary-bg);  */
-  background-color: var(--bs-tertiary-bg);
+  background-color: var(--bs-secondary-bg); 
+  /* background-color: var(--bs-tertiary-bg); */
 }
 .switch-item_wrapper::-webkit-scrollbar {
   display: none;
@@ -981,9 +981,9 @@ watch(infoActionBtn, () => {
 }
 .switch-item_el label:hover {
   cursor: pointer;
-  /* color: var(--bs-body-bg); */
-  /* background-color: var(--bs-body-color); */
-  background-color: var(--bs-secondary-bg);
+  color: var(--bs-body-bg);
+  background-color: var(--bs-body-color);
+  /* background-color: var(--bs-secondary-bg); */
   /* background-color: var(--bs-tertiary-bg); */
 }
 .switch-item_el input[type="radio"]:checked + label {
@@ -993,9 +993,10 @@ watch(infoActionBtn, () => {
   background-color: var(--bs-body-color);
 }
 .infoActionBtns_el input[type="radio"]:checked + label {
-  /* background-color: var(--bs-secondary-bg); */
-  background-color: var(--bs-tertiary-bg);
+  background-color: var(--bs-secondary-bg);
+  /* background-color: var(--bs-tertiary-bg); */
 }
+
 
 .table-by-available .item-table_header tr,
 .table-by-available .table-row_wrapper {
@@ -1009,9 +1010,10 @@ watch(infoActionBtn, () => {
 .table-by-available .item-table_header,
 .table-by-history .item-table_header {
   border-bottom: 1px solid var(--bs-secondary-bg);
+  background-color: var(--bs-secondary-bg)
 }
-.table-by-history .table-row_wrapper:nth-child(even),
-.table-by-available .table-row_wrapper:nth-child(even) {
+.table-by-history .table-row_wrapper:nth-child(odd),
+.table-by-available .table-row_wrapper:nth-child(odd) {
   background-color: var(--bs-secondary-bg);
 }
 .table-by-available .item-table_header tr th:nth-last-child(2),
@@ -1119,6 +1121,10 @@ label #expend-item:checked + .expand-item_icon {
   .table-by-available .table-row_wrapper {
     grid-template-columns: 30px 1fr 100px;
     grid-gap: unset;
+  }
+  .item-qty {
+    justify-self: flex-end;
+    background-color: red;
   }
 }
 

@@ -61,7 +61,7 @@ const infoActionBtns = ref([
     title: "История",
   },
 ]);
-const infoActionBtn = ref('available');
+const infoActionBtn = ref("available");
 const showCaseByAvailable = ref(null);
 const showCaseByHistory = ref(null);
 
@@ -120,9 +120,8 @@ onMounted(async () => {
   if (item.value) {
     switchedLocation.value.location = item.value.location;
     switchedLocation.value.locationID = item.value.locationID;
-
   }
-  
+
   switchedItem.value = itemLocations.value.filter((element) => {
     if (
       switchedLocation.value.location === element.location &&
@@ -138,8 +137,7 @@ onMounted(async () => {
         return element;
       }
     });
-  } 
-  else {
+  } else {
     currentItemTransactions.value = allTransactions.value.filter((element) => {
       if (
         element.itemTitle === item.value.title
@@ -156,8 +154,8 @@ onMounted(async () => {
   }
 
   // showCase();
-  if(!switchedItem.value.length) {
-    infoActionBtn.value = 'history';
+  if (!switchedItem.value.length) {
+    infoActionBtn.value = "history";
   }
 });
 
@@ -373,36 +371,6 @@ const toggleExpendedItemBlock = (itemID: number) => {
 //   }
 // };
 
-//
-const historyMovement = (type, qty, measure, from, fromID, to, toID) => {
-  //
-  let locationFrom = translateLocation(fromID, from);
-  let locationTo = translateLocation(toID, to);
-  // CREATED
-  if (type === "created") {
-    return `Создан в количестве ${qty}${measure} и помещен на "${locationTo}"`;
-  }
-  // ADD
-  if (type === "add") {
-    return `Добавлен в количестве ${qty}${measure} на "${locationTo}"`;
-  }
-  // SUB
-  if (type === "sub") {
-    return `Расход в количестве ${qty}${measure} из "${locationFrom}"`;
-  }
-  // MOVE
-  if (type === "move") {
-    //
-    // if(switchedLocation.value.location === from && switchedLocation.value.locationID === fromID) {
-    //   return `Перемещен в количестве ${qty}${measure} из ${from}${fromID} в ${to}${toID}`
-    // }
-    // //
-    // else if(switchedLocation.value.location === to && switchedLocation.value.locationID === toID) {
-    //   }
-    return `Перемещен в количестве ${qty}${measure} из "${locationFrom}" в "${locationTo}"`;
-  }
-};
-
 // Router create link to locations function
 const routerLocationsFunc = (locationID, location) => {
   if (location === "project") {
@@ -475,7 +443,7 @@ watch(infoActionBtn, () => {
         return element;
       }
     });
-  } 
+  }
   // else {
   //   currentItemTransactions.value = allTransactions.value.filter((element) => {
   //     if (
@@ -498,33 +466,43 @@ watch(infoActionBtn, () => {
 <template>
   <Container>
     <div v-if="item">
-      <div
-        style="display: flex; flex-direction: column; justify-content: center"
-      >
+      <!-- ХЭДЕР страницы -->
+      <div class="page_header">
+        <!-- Заголовок -->
         <h1>{{ item.title }}</h1>
-        <!-- {{ linkAllIsActive }} -->
+
+        <!-- ДОП инфа -->
         <div style="margin: 0; margin-top: 1rem">
           <!-- Кол-во, местонахождение -->
           <p>
             {{ item.qty }} <span>{{ item.measure }}</span>
-            <span class="item-location" style="margin-left: 0.5rem"
+            <span
+              class="item-location"
+              style="margin-left: 0.5rem"
+              @click="routerLocationsFunc(item.locationID, item.location)"
               ><label for="">{{
                 translateLocation(item.locationID, item.location)
               }}</label>
             </span>
           </p>
-
           <!-- Собственник -->
           <p>
             Собственник:
-            <span>{{ translateOwner(item.ownerID, item.ownerType) }}</span>
+            <span
+              class="link_hover"
+              @click="routerUsersFunc(item.ownerID, item.ownerType)"
+              >{{ translateOwner(item.ownerID, item.ownerType) }}</span
+            >
           </p>
           <!-- Отвественный -->
           <p>
             Ответственный:
-            <span>{{ translateResponsibles(item.responsible) }}</span>
+            <span
+              class="link_hover"
+              @click="$router.push(`/partners/${item.responsible}`)"
+              >{{ translateResponsibles(item.responsible) }}</span
+            >
           </p>
-          <span></span>
         </div>
 
         <!-- ОПИСАНИЕ -->
@@ -565,95 +543,23 @@ watch(infoActionBtn, () => {
           </div>
 
           <!-- Текст -->
-          <p>
-            Lorem ipsum, dolor sit amet consectetur adipisicing elit. Molestiae
-            autem mollitia rerum fugit et nobis, facilis optio deserunt eligendi
-            aliquam quod ex dolore placeat labore fuga ullam, id commodi
-            repellat eum. Deserunt nam dicta error excepturi atque quam qui cum
-            reiciendis suscipit officiis libero nesciunt dolor voluptatibus hic
-            laudantium voluptate doloremque doloribus corporis facere velit
-            animi, cumque neque. Quae, distinctio beatae architecto aperiam
-            ratione accusantium, sunt nam autem incidunt aliquam eum nobis
-            maiores modi, temporibus praesentium sed ab. Dolor veritatis non
-            magnam commodi architecto sit qui magni vel perspiciatis laborum
-            praesentium, atque officiis aspernatur quasi voluptates perferendis
-            quaerat vero illo deserunt aut
-            <br />
-            <span>Это item:{{ item }}</span>
-          </p>
+          <p>Это item:{{ item }}</p>
         </div>
+      </div>
 
-        <!-- ЛОКАЦИИ -->
-        <div style="margin-top: 1rem" v-if="itemLocations.length > 1">
-          <h2>{{ item.title }} в других местах</h2>
-          <!-- set item to view -->
-          <fieldset id="item-locations" class="switch-item_wrapper">
-            <div class="switch-item_el">
-              <input
-                type="radio"
-                id="all-item-view"
-                name="item-locations"
-                :value="{ location: 'all', locationID: null }"
-                v-model="switchedLocation"
-              />
-              <label class="item-label_element" for="all-item-view">
-                Всего {{ sumItemsQty() }}
-              </label>
-            </div>
-
-            <!-- Если location только один (в массиве itemLocations нет повторений и других location) -->
-            <!-- <div 
-              class="switch-item_el"
-              v-if="itemLocations.length === 0"
-            >
-              <label for="">{{ translateLocation(item.locationID, item.location) }}</label>
-            </div> -->
-            <div
-              class="switch-item_el"
-              v-for="(location, i) in sumQtyUniqLocations"
-              :key="i"
-            >
-              <input
-                type="radio"
-                :id="`${location.location}${location.id}`"
-                name="item-locations"
-                :value="{
-                  location: location.location,
-                  locationID: location.locationID,
-                }"
-                v-model="switchedLocation"
-              />
-              <label class="item-label_element" :for="`${location.location}${location.id}`"
-                >{{
-                  translateLocation(location.locationID, location.location)
-                }}
-                {{ location.qty }}</label
-              >
-            </div>
-          </fieldset>
-
-          <!--  -->
-          <!-- v-if="
-                itemLocations.length > 1 && currentItemTransactions.length !== 0
-              " -->
-
-            </div>
-            
-          </div>
-
-
-      <!-- infoActionBtns -->
-      <div style="margin-top: 1rem">
-        <h3 class="infoActionBtns_wrapper">
+      <!-- AVAILABLE AND HISTORY -->
+      <div>
+        <!-- infoActionBtns -->
+        <h2 class="infoActionBtns_wrapper">
           <span
             class="infoActionBtns_el"
-            v-for="(btn, index) in infoActionBtns.filter(btn => {
-              if(btn.name === infoActionBtn && !switchedItem.length) {
-                return btn
-              } else if(switchedItem.length) {
-                return btn
+            v-for="(btn, index) in infoActionBtns.filter((btn) => {
+              if (btn.name === infoActionBtn && !switchedItem.length) {
+                return btn;
+              } else if (switchedItem.length) {
+                return btn;
               } else if (btn.name === infoActionBtn) {
-                return btn
+                return btn;
               }
             })"
             :key="index"
@@ -669,190 +575,347 @@ watch(infoActionBtn, () => {
               {{ btn.title }}
             </label>
           </span>
-        </h3>
-        <!-- {{ infoActionBtn }} -->
-      </div>
-      
-      <!-- AVAILABLE IN LOCATION -->
-      <!-- infoActionBtn -->
-      <div class="item-locations_block" v-if="infoActionBtn === 'available'">
-        <!-- <h3>Наличие</h3> -->
-        <!-- Предметы по разным параметрам, но на одной локации -->
-        <table class="table table-by-available" v-if="switchedItem.length">
-          <thead class="item-table_header">
-            <tr>
-              <th scope="col"></th>
-              <!-- <th scope="col">Наименование</th> -->
-              <th scope="col">Где</th>
-              <th scope="col">Кол-во</th>
-              <th scope="col" class="hide-991">Собственник</th>
-              <th scope="col" class="hide-991">Ответственный</th>
-            </tr>
-          </thead>
-          <tbody>
-            <div v-if="switchedItem">
-              <div v-if="!switchedItem.length">Ничего нет</div>
-            </div>
+        </h2>
 
-            <!--  -->
-            <tr
-              class="table-row_wrapper"
-              v-for="element in switchedItem"
-              :key="element.id"
-            >
-              <!-- {{ element }} -->
-              <!-- 1 -->
-              <!-- @click="toggleExpendedItemBlock(item.id)" -->
-              <td>
-                <label>
-                  <input
-                    type="checkbox"
-                    id="expend-item"
-                    :class="`expended-item-${element.id}_block`"
-                  />
-                  <Icon
-                    class="expand-item_icon"
-                    @click="toggleExpendedItemBlock(element.id)"
-                    name="material-symbols-light:expand-more"
-                    size="28px"
-                  />
-                </label>
-              </td>
-
-              <!-- IF ALL LOCATIONS -->
-              <!-- v-if="switchedLocation.location === 'all'" -->
-              <td scope="col">
-                <span
-                  class="link_hover"
-                  @click="
-                    routerLocationsFunc(element.locationID, element.location)
-                  "
-                  >{{
-                    translateLocation(element.locationID, element.location)
-                  }}</span
-                >
-              </td>
-
-              <!-- 2 -->
-              <!-- :class="locationMarkColorized(item.location)" -->
-              <td class="item-qty" scope="col">
-                <div class="location-mark">
-                  <span>{{ element.qty }} {{ element.measure }}</span>
-                </div>
-              </td>
-
-              <!-- 3 -->
-              <td class="span-2 hide-767 hide-991" scope="col">
-                <span class="link_hover" @click="routerUsersFunc(element.ownerID, element.ownerType)">
-                  {{ translateOwner(element.ownerID, element.ownerType) }}
-                </span>
-              </td>
-
-              <!-- 5 -->
-              <td class="span-2 hide-767 hide-991" scope="col">
-                <span
-                  class="link_hover"
-                  @click="$router.push(`/partners/${item.responsible}`)"
-                >
-                  {{ translateResponsibles(item.responsible) }}
-                </span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- hISTOrY TRANSACTIONS -->
-      <!-- v-if="showCaseByHistory" -->
-      <!-- currentItemTransactions.length !== 0 -->
-      <div class="item-history_block" v-if="infoActionBtn === 'history'">
-        <!-- <h3>История</h3> -->
-        <table class="table table-by-history">
-          <thead class="item-table_header">
-            <tr>
-              <th scope="col">Дата</th>
-              <!-- <th scope="col">Тип</th>
-              <th scope="col">Кол-во</th>
-              <th scope="col">Откуда</th>
-              <th scope="col">Куда</th> -->
-              <th scope="col">Транзакция</th>
-              <th scope="col">Автор</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            <div v-if="currentItemTransactions">
-              <div v-if="!currentItemTransactions.length">Нет истории</div>
-            </div>
-
-            <!-- transactions -->
-            <tr
-              v-for="(transaction, i) in currentItemTransactions"
-              :key="i"
-              class="table-row_wrapper"
-            >
-              <!-- 1 -->
-              <td scope="col">
-                <!-- <span>{{ transaction.id }}</span
-                ><br /> -->
-                <span>{{ transaction.created_at }}</span>
-              </td>
-              <!-- 3 -->
-              <!-- <td scope="col">
-                <span>{{ transaction.transactionType }}</span>
-              </td> -->
-              <!-- 3 -->
-              <!-- <td scope="col"> -->
-              <!-- <span> -->
-              <!-- {{
-                    addArithmeticMark(
-                      transaction.transactionType,
-                      transaction.locationFrom,
-                      transaction.locationFromID,
-                      transaction.locationTo,
-                      transaction.locationToID
-                    )
-                  }} -->
-              <!-- {{ transaction.qty }} {{ transaction.measure }}</span -->
-              <!-- > -->
-              <!-- </td> -->
-              <!-- 3 -->
-              <!-- <td scope="col">
-                <span
-                  >{{ transaction.locationFrom }}
-                  {{ transaction.locationFromID }}</span
-                >
-              </td> -->
-              <!-- 4 -->
-              <!-- <td scope="col">
-                <span
-                  >{{ transaction.locationTo }}
-                  {{ transaction.locationToID }}</span
-                >
-              </td> -->
-
-              <!-- 2 -->
-              <td scope="col">
-                <span>{{
-                  historyMovement(
-                    transaction.transactionType,
-                    transaction.qty,
-                    transaction.measure,
-                    transaction.locationFrom,
-                    transaction.locationFromID,
-                    transaction.locationTo,
-                    transaction.locationToID
-                  )
+        <!-- ЛОКАЦИИ -->
+        <div v-if="itemLocations.length > 1">
+          <!-- <h2>{{ item.title }} в других местах</h2> -->
+          <!-- set item to view -->
+          <fieldset id="item-locations" class="switch-item_wrapper">
+            <div class="switch-item_el">
+              <input
+                type="radio"
+                id="all-item-view"
+                name="item-locations"
+                :value="{ location: 'all', locationID: null }"
+                v-model="switchedLocation"
+              />
+              <label class="item-label_element" for="all-item-view">
+                Всего
+                <span v-if="infoActionBtn === 'available'">{{
+                  sumItemsQty()
                 }}</span>
-              </td>
+              </label>
+              <!-- infoActionBtn -->
+            </div>
 
-              <!-- 3 -->
-              <td scope="col">
-                <span>{{ translateResponsibles(transaction.authorID) }}</span>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+            <!-- Если location только один (в массиве itemLocations нет повторений и других location) -->
+            <div
+              class="switch-item_el"
+              v-for="(location, i) in sumQtyUniqLocations"
+              :key="i"
+            >
+              <input
+                type="radio"
+                :id="`${location.location}${location.id}`"
+                name="item-locations"
+                :value="{
+                  location: location.location,
+                  locationID: location.locationID,
+                }"
+                v-model="switchedLocation"
+              />
+              <label
+                class="item-label_element"
+                :for="`${location.location}${location.id}`"
+                >{{
+                  translateLocation(location.locationID, location.location)
+                }}
+                <span v-if="infoActionBtn === 'available'">{{
+                  location.qty
+                }}</span></label
+              >
+            </div>
+          </fieldset>
+        </div>
+
+        <!-- AVAILABLE IN LOCATION -->
+        <div class="item-locations_block" v-if="infoActionBtn === 'available'">
+          <!-- <h3>Наличие</h3> -->
+          <!-- Предметы по разным параметрам, но на одной локации -->
+          <table class="table table-by-available" v-if="switchedItem.length">
+            <thead class="item-table_header">
+              <tr>
+                <th scope="col"></th>
+                <!-- <th scope="col">Наименование</th> -->
+                <th scope="col">Где</th>
+                <th scope="col">Кол-во</th>
+                <th scope="col" class="hide-991">Собственник</th>
+                <th scope="col" class="hide-max-767">Ответственный</th>
+              </tr>
+            </thead>
+            <tbody>
+              <div v-if="switchedItem">
+                <div v-if="!switchedItem.length">Ничего нет</div>
+              </div>
+
+              <!--  -->
+              <tr
+                class="table-row_wrapper"
+                v-for="element in switchedItem"
+                :key="element.id"
+              >
+                <!-- 1 -->
+                <td>
+                  <label>
+                    <input
+                      type="checkbox"
+                      id="expend-item"
+                      :class="`expended-item-${element.id}_block`"
+                    />
+                    <Icon
+                      class="expand-item_icon"
+                      @click="toggleExpendedItemBlock(element.id)"
+                      name="material-symbols-light:expand-more"
+                      size="28px"
+                    />
+                  </label>
+                </td>
+
+                <!-- 2 -->
+                <!-- IF ALL LOCATIONS -->
+                <td scope="col">
+                  <span
+                    class="link_hover"
+                    @click="
+                      routerLocationsFunc(element.locationID, element.location)
+                    "
+                    >{{
+                      translateLocation(element.locationID, element.location)
+                    }}</span
+                  >
+                </td>
+
+                <!-- 3 -->
+                <!-- QTY, MEASURE -->
+                <td class="item-qty" scope="col">
+                  <div class="location-mark">
+                    <span>{{ element.qty }} {{ element.measure }}</span>
+                  </div>
+                </td>
+
+                <!-- 4 -->
+                <!-- OWNER -->
+                <td class="span-2 hide-767 hide-min-575" scope="col">
+                  <span
+                    class="link_hover"
+                    @click="routerUsersFunc(element.ownerID, element.ownerType)"
+                  >
+                    {{ translateOwner(element.ownerID, element.ownerType) }}
+                  </span>
+                </td>
+
+                <!-- 5 -->
+                <!-- RESPONSIBLE -->
+                <td class="span-2 hide-767 hide-max-767" scope="col">
+                  <span
+                    class="link_hover"
+                    @click="$router.push(`/partners/${item.responsible}`)"
+                  >
+                    {{ translateResponsibles(item.responsible) }}
+                  </span>
+                </td>
+
+                <!-- 6 -->
+                <!-- Expended item block -->
+                <td
+                  class="span-5 expended-item"
+                  :id="`expended-item-${element.id}_block`"
+                >
+                  <div class="expended-item_content">
+                    <!-- show owner -->
+                    <div class="hide-max-575 expended-content_article">
+                      <p>
+                        Собственник:
+                        <span
+                          @click="routerUsersFunc(item.ownerID, item.ownerType)"
+                          class="link_hover"
+                          >{{
+                            translateOwner(item.ownerID, item.ownerType)
+                          }}</span
+                        >
+                      </p>
+                    </div>
+                    <!-- show responsible -->
+                    <div class="hide-min-768 expended-content_article">
+                      <p>
+                        Ответственный:
+                        <span
+                          class="link_hover"
+                          @click="$router.push(`/partners/${item.responsible}`)"
+                          >{{ translateResponsibles(item.responsible) }}</span
+                        >
+                      </p>
+                    </div>
+                    <!--  -->
+                    <div class="expended-content_article">
+                      <p>В разработке...</p>
+                      <p>{{ currentExpendedItemBlock }}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- hISTOrY TRANSACTIONS -->
+        <div class="item-history_block" v-if="infoActionBtn === 'history'">
+          <!-- <h3>История</h3> -->
+          <table class="table table-by-history">
+            <thead class="item-table_header">
+              <tr>
+                <th scope="col">Дата</th>
+                <th scope="col">Транзакция</th>
+                <th scope="col">Автор</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <div v-if="currentItemTransactions">
+                <div v-if="!currentItemTransactions.length">Нет истории</div>
+              </div>
+
+              <!-- transactions -->
+              <tr
+                v-for="(transaction, i) in currentItemTransactions"
+                :key="i"
+                class="table-row_wrapper"
+              >
+                <!-- 1 -->
+                <td scope="col">
+                  <span>{{ transaction.created_at }}</span>
+                </td>
+
+                <!-- 2 -->
+                <!-- Варианты описания транзакции -->
+                <td scope="col">
+                  <!-- CREATED -->
+                  <p
+                    class="transaction_paragraph"
+                    v-if="transaction.transactionType === 'created'"
+                  >
+                    Создан в количестве {{ transaction.qty
+                    }}{{ transaction.measure }} и помещен на
+                    <span
+                      class="link_hover"
+                      @click="
+                        routerLocationsFunc(
+                          transaction.locationToID,
+                          transaction.locationTo
+                        )
+                      "
+                      >"{{
+                        translateLocation(
+                          transaction.locationToID,
+                          transaction.locationTo
+                        )
+                      }}"</span
+                    >
+                  </p>
+                  <!-- ADD -->
+                  <p
+                    class="transaction_paragraph"
+                    v-if="transaction.transactionType === 'add'"
+                  >
+                    Добавлен в количестве {{ transaction.qty
+                    }}{{ transaction.measure }} на
+                    <span
+                      class="link_hover"
+                      @click="
+                        routerLocationsFunc(
+                          transaction.locationToID,
+                          transaction.locationTo
+                        )
+                      "
+                      >"{{
+                        translateLocation(
+                          transaction.locationToID,
+                          transaction.locationTo
+                        )
+                      }}"</span
+                    >
+                  </p>
+                  <!-- SUB -->
+                  <p
+                    class="transaction_paragraph"
+                    v-if="transaction.transactionType === 'sub'"
+                  >
+                    Расход в количестве {{ transaction.qty
+                    }}{{ transaction.measure }} из
+                    <span
+                      class="link_hover"
+                      @click="
+                        routerLocationsFunc(
+                          transaction.locationFromID,
+                          transaction.locationFrom
+                        )
+                      "
+                      >"{{
+                        translateLocation(
+                          transaction.locationFromID,
+                          transaction.locationFrom
+                        )
+                      }}"</span
+                    >
+                  </p>
+                  <!-- MOVE -->
+                  <p
+                    class="transaction_paragraph"
+                    v-if="transaction.transactionType === 'move'"
+                  >
+                    Перемещен в количестве {{ transaction.qty
+                    }}{{ transaction.measure }} из
+                    <span
+                      class="link_hover"
+                      @click="
+                        routerLocationsFunc(
+                          transaction.locationFromID,
+                          transaction.locationFrom
+                        )
+                      "
+                      >"{{
+                        translateLocation(
+                          transaction.locationFromID,
+                          transaction.locationFrom
+                        )
+                      }}"</span
+                    >
+                    в
+                    <span
+                      class="link_hover"
+                      @click="
+                        routerLocationsFunc(
+                          transaction.locationToID,
+                          transaction.locationTo
+                        )
+                      "
+                      >"{{
+                        translateLocation(
+                          transaction.locationToID,
+                          transaction.locationTo
+                        )
+                      }}"</span
+                    >
+                  </p>
+                </td>
+
+                <!-- 3 -->
+                <!-- Автор транзакции -->
+                <td scope="col">
+                  <span class="hide-575" style="margin-right: 0.5rem"
+                    >Автор:</span
+                  >
+                  <span
+                    @click="$router.push(`/partners/${transaction.authorID}`)"
+                    class="link_hover"
+                    >{{ translateResponsibles(transaction.authorID) }}</span
+                  >
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </Container>
@@ -860,21 +923,24 @@ watch(infoActionBtn, () => {
 
 <style scoped>
 .switch-item_wrapper {
-  margin-top: 1rem;
+  padding: 1rem;
   width: 100%;
   display: flex;
   align-items: center;
   overflow-x: auto;
   gap: 1rem;
   scrollbar-width: none;
+  /* background-color: var(--bs-secondary-bg);  */
+  background-color: var(--bs-tertiary-bg);
 }
 .switch-item_wrapper::-webkit-scrollbar {
   display: none;
 }
 .infoActionBtns_wrapper {
+  margin: 0;
   display: flex;
-  gap: 0.5rem;
-  background-color: cyan;
+  /* gap: 0.5rem; */
+  /* background-color: cyan; */
 }
 .infoActionBtns_el,
 .switch-item_el {
@@ -884,39 +950,22 @@ watch(infoActionBtn, () => {
 }
 
 .infoActionBtns_el label {
-  /* color: var(--bs-primary); */
-  font-weight: normal;
-  font-size: 1rem;
-  /* border: 1px solid var(--bs-border-color); */
-  padding: 4px 10px;
-  border-radius: 16px;
+  padding: 0.5rem 1rem;
   transition: all 0.15s ease-in;
 }
 .infoActionBtns_el label:hover {
   cursor: pointer;
-  color: var(--bs-primary);
-  /* background-color: var(--bs-primary-bg-subtle); */
+  /* background-color: var(--bs-tertiary-bg); */
+  background-color: var(--bs-secondary-bg);
 }
 
 .infoActionBtns_el input[type="radio"],
 .switch-item_el input[type="radio"] {
-  /* opacity: 0;
-  position: fixed!important;
-  width: 0; */
   position: absolute;
   top: 0;
   left: 0;
   visibility: hidden;
   opacity: 0;
-}
-.switch-item_el label {
-  border-radius: 16px;
-  /* padding: 4px 10px; */
-  /* cursor: pointer; */
-  /* padding: 4px 10px; */
-  border: 1px solid var(--bs-secondary-bg);
-  transition: all 0.15s ease-in;
-  padding: 4px 10px;
 }
 .item-location {
   color: var(--bs-body-bg);
@@ -924,14 +973,18 @@ watch(infoActionBtn, () => {
   padding: 4px 10px;
   border-radius: 16px;
 }
-/* .item-location:hover {
-  cursor: pointer;
-} */
+.switch-item_el label {
+  border-radius: 16px;
+  transition: all 0.15s ease-in;
+  padding: 4px 10px;
+  border: 1px solid var(--bs-secondary-bg);
+}
 .switch-item_el label:hover {
   cursor: pointer;
-  color: var(--bs-body-bg);
-  background-color: var(--bs-body-color);
-  /* box-shadow: -10px -10px 0 0 rgba(0, 0, 0, 0.2); */
+  /* color: var(--bs-body-bg); */
+  /* background-color: var(--bs-body-color); */
+  background-color: var(--bs-secondary-bg);
+  /* background-color: var(--bs-tertiary-bg); */
 }
 .switch-item_el input[type="radio"]:checked + label {
   border-radius: 16px;
@@ -940,24 +993,48 @@ watch(infoActionBtn, () => {
   background-color: var(--bs-body-color);
 }
 .infoActionBtns_el input[type="radio"]:checked + label {
-  color: var(--bs-body-bg);
-  background-color: var(--bs-primary);
-}
-.table-by-available .item-table_header tr,
-.table-by-available .table-row_wrapper {
-  display: grid;
-  grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+  /* background-color: var(--bs-secondary-bg); */
+  background-color: var(--bs-tertiary-bg);
 }
 
-/* .table-by-history {
-  background-color: cyan;
-} */
+.table-by-available .item-table_header tr,
+.table-by-available .table-row_wrapper {
+  padding: 1rem;
+  display: grid;
+  grid-gap: 1rem;
+  align-items: center;
+  grid-template-columns: 50px 1fr 100px 1fr 1fr;
+}
+
+.table-by-available .item-table_header,
+.table-by-history .item-table_header {
+  border-bottom: 1px solid var(--bs-secondary-bg);
+}
+.table-by-history .table-row_wrapper:nth-child(even),
+.table-by-available .table-row_wrapper:nth-child(even) {
+  background-color: var(--bs-secondary-bg);
+}
+.table-by-available .item-table_header tr th:nth-last-child(2),
+.table-by-available .item-table_header tr th:nth-last-child(1),
+.table-by-available .table-row_wrapper td:nth-last-child(3),
+.table-by-available .table-row_wrapper td:nth-last-child(2) {
+  justify-self: flex-end;
+}
 
 .table-by-history .item-table_header tr,
 .table-by-history .table-row_wrapper {
+  padding: 1rem;
   display: grid;
-  grid-template-columns: 300px 1fr 200px;
+  grid-gap: 1rem;
+  align-items: center;
+  grid-template-columns: 200px 1fr 200px;
 }
+
+.table-row_wrapper td.span-5 {
+  grid-column: span 5;
+}
+
+.item-location label,
 .expand-item_icon {
   cursor: pointer;
 }
@@ -967,58 +1044,128 @@ label #expend-item {
 label #expend-item:checked + .expand-item_icon {
   transform: rotate(180deg);
 }
-/* .expended-item {
+.expended-item {
   display: none;
-} */
-/* .expended-item_opened {
+}
+.expended-item_opened {
   display: block;
   border: none;
-} */
+}
 /* .expended-item_btns button span:hover {
   color: var(--bs-primary);
 } */
+.expended-item_container {
+  justify-content: space-between;
+}
+.expended-item_content {
+  margin-top: 1rem;
+}
 .link_hover:hover {
   color: var(--bs-primary);
   cursor: pointer;
 }
 
 /* LABEL */
-.item-label_element {
-  background-color: red;
+.item-locations_block,
+.item-history_block {
+  /* padding: 1rem 0; */
+  background-color: var(--bs-tertiary-bg);
 }
-.item-locations_block {
-  background-color: cyan;
-}
-.table>:not(caption)>*>* {
+.table > :not(caption) > * > * {
   padding: 0;
   color: unset;
   background-color: unset;
   box-shadow: unset;
+  border: none;
 }
-.table .table-by-available{
+.table .table-by-available {
   background-color: blue;
 }
+.transaction_paragraph {
+  margin: 0;
+}
+.hide-575 {
+  display: none;
+}
+.hide-min-768 {
+  display: none;
+}
+.hide-max-575 {
+  display: none;
+}
 
+@media screen and (max-width: 575px) {
+  .hide-575 {
+    display: inline-block;
+  }
+  .hide-max-575 {
+    display: block;
+  }
+  .hide-min-575 {
+    display: none;
+  }
+  .page_header {
+    margin: 0 1rem;
+  }
+  .table-by-available .item-table_header tr,
+  .table-by-history .item-table_header tr {
+    display: none;
+  }
+  .table-by-history .table-row_wrapper {
+    /* margin-top: 1rem; */
+    grid-template-columns: 1fr;
+  }
+  /* .table-by-available .item-table_header tr, */
+  .table-by-available .table-row_wrapper {
+    grid-template-columns: 30px 1fr 100px;
+    grid-gap: unset;
+  }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px) {
+  .table-by-history .item-table_header tr,
+  .table-by-history .table-row_wrapper {
+    grid-template-columns: 150px 1fr 150px;
+  }
+  .table-by-available .item-table_header tr,
+  .table-by-available .table-row_wrapper {
+    grid-template-columns: 30px 1fr 70px 1fr;
+  }
+  .table-by-available .table-row_wrapper {
+    grid-gap: unset;
+  }
+}
 
 @media screen and (max-width: 767px) {
   h1 {
     margin-top: 4rem;
   }
+  .hide-min-768 {
+    display: block;
+  }
+  .hide-max-767 {
+    display: none;
+  }
+  /* .table-by-available .table-row_wrapper */
 }
 
 @media screen and (min-width: 768px) {
   h1 {
-    margin-top: 7rem;
+    margin-top: 6rem;
   }
-  .item-history_block {
-    background-color: blue;
-  }
+  /* .table-by-available .item-table_header tr,
+  .table-by-available .table-row_wrapper {
+    grid-template-columns: 50px 1fr 1fr 1fr 1fr;
+  } */
   .item-history_block,
   .item-locations_block {
-    margin-top: 1rem;
+    /* margin-top: 1rem; */
     width: 100%;
     /* background-color: red; */
     /* position: relative; */
+  }
+  .hide-min-768 {
+    display: none;
   }
   .switch-item_wrapper {
     /* display: flex;
@@ -1170,6 +1317,6 @@ label #expend-item:checked + .expand-item_icon {
   /* cursor: pointer; */
   /* background-color: rgba(0, 0, 0, 0.05); */
 }
-.hide-991 {
-}
+/* .hide-991 {
+} */
 </style>

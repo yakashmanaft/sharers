@@ -4,8 +4,10 @@
       <h1 style="margin-top: 5rem">{{ location.title }}</h1>
 
       <div>
-      <p>{{ location.type }}</p>
-    <p>{{ location.address }}</p>
+        <p>Тип: <span>{{ translateLocationType(location.type) }}</span></p>
+        <p>
+          Адрес: <span>{{ location.address }}</span>
+        </p>
         <div>
           <p>{{ location }}</p>
         </div>
@@ -69,6 +71,17 @@ async function getLocations() {
 
 async function getAllUsers() {
   return await $fetch("/api/usersList/users");
+}
+
+// translations
+const translateLocationType = (type) => {
+  if(type === 'sklad') {
+    return 'Склад'
+  } else if (type === 'office') {
+    return 'Офис'
+  } else if (type === 'repair') {
+    return 'Сервисный центр (ремонт)'
+  }
 }
 </script>
 

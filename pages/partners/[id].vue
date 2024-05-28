@@ -478,6 +478,7 @@ useHead({
   gap: 1rem;
   padding-bottom: 1rem;
   border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+  margin-top: 5rem;
 }
 .page-title h1 {
   margin: 0;
@@ -493,5 +494,16 @@ useHead({
 .btn__disabled {
   color: gray;
   opacity: 0.3;
+}
+
+@media screen and (max-width: 767px) {
+  .page-title {
+    margin-top: 4rem;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .page-title {
+    margin-top: 6rem;
+  }
 }
 </style>

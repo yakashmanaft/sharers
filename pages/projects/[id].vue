@@ -54,10 +54,15 @@ async function getProjects() {
 
 <template>
   <Container>
-    <h1 style="margin-top: 5rem;">Проект #{{ $route.params.id }}</h1>
+    <div v-if="project">
+      <!-- <h1 style="margin-top: 5rem;">Проект {{ $route.params.id }}</h1> -->
+      <h1 style="margin-top: 5rem">Проект "{{ project.title }}"</h1>
+      <p>Вид работ: <span>{{ project.workType }}</span></p>
+      <p>Адрес: <span>{{ project.address }}</span></p>
 
-    <div>
-      <p>{{ project }}</p>
+      <div>
+        <p>{{ project }}</p>
+      </div>
     </div>
   </Container>
 </template>

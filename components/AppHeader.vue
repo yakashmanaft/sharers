@@ -151,6 +151,12 @@ const translateRoutePath = (path: string) => {
     let id = path.substr(startIndex + 1);
     return `Банда #${id}`;
   }
+  // LOCATIONS
+  else if (path.includes('/locations/')) {
+    let startIndex = path.lastIndexOf("/");
+    let id = path.substr(startIndex + 1);
+    return `Локация #${id}`
+  }
   // ELSE
   else {
     return path;
@@ -236,6 +242,8 @@ watch(
             <span>stepbuild.ru</span>
           </router-link>
         </div>
+
+        <!--  -->
         <h1 class="current-route_container">
           {{ translateRoutePath(route.path) }}
         </h1>

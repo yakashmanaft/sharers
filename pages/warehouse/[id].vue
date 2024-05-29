@@ -396,9 +396,30 @@ const routerUsersFunc = (ownerID, ownerType) => {
   }
 };
 
+const addSignToTransaction = (
+  locationFromID,
+  locationFrom,
+  locationToID,
+  locationTo
+) => {
+  if (item.value && switchedLocation.value.location !== "all") {
+    if (
+      locationFromID === switchedLocation.value.locationID &&
+      locationFrom === switchedLocation.value.location
+    ) {
+      return "-";
+    } else if (
+      locationToID === switchedLocation.value.locationID &&
+      locationTo === switchedLocation.value.location
+    ) {
+      return "+";
+    }
+  }
+};
+
 // WATHERS
 watch(switchedLocation, () => {
-  // infoActionBtn.value = "available";
+  // ALL
   if (switchedLocation.value.location === "all") {
     switchedItem.value = itemLocations.value;
     //
@@ -407,7 +428,9 @@ watch(switchedLocation, () => {
         return element;
       }
     });
-  } else {
+  }
+  //
+  else {
     switchedItem.value = itemLocations.value.filter((element) => {
       if (
         switchedLocation.value.location === element.location &&
@@ -435,31 +458,30 @@ watch(switchedLocation, () => {
   }
 });
 
-watch(infoActionBtn, () => {
-  // console.log(switchedLocation.value.location)
-  if (switchedLocation.value.location === "all") {
+watch(infoActionBtn, (next, prev) => {
+  if (prev === "available" && switchedLocation.value.location === "all") {
+    switchedLocation.value = {
+      location: item.value.location,
+      locationID: item.value.locationID,
+    };
+  }
+  if (next === "history") {
     currentItemTransactions.value = allTransactions.value.filter((element) => {
-      if (element.itemTitle === item.value.title) {
+      if (
+        element.itemTitle === item.value.title &&
+        element.locationTo === switchedLocation.value.location &&
+        element.locationToID === switchedLocation.value.locationID
+      ) {
+        return element;
+      } else if (
+        element.itemTitle === item.value.title &&
+        element.locationFrom === switchedLocation.value.location &&
+        element.locationFromID === switchedLocation.value.locationID
+      ) {
         return element;
       }
     });
   }
-  // else {
-  //   currentItemTransactions.value = allTransactions.value.filter((element) => {
-  //     if (
-  //       (element.itemTitle === item.value.title &&
-  //         element.locationTo === switchedLocation.value.location &&
-  //         element.locationToID === switchedLocation.value.locationID) ||
-  //       (element.locationFrom === switchedLocation.value.location &&
-  //         element.locationFromID === switchedLocation.value.locationID)
-  //     ) {
-  //       return element;
-  //     }
-  //   });
-  // }
-
-  // showCase();
-  // console.log(currentItemTransactions.value);
 });
 </script>
 
@@ -582,7 +604,8 @@ watch(infoActionBtn, () => {
           <!-- <h2>{{ item.title }} в других местах</h2> -->
           <!-- set item to view -->
           <fieldset id="item-locations" class="switch-item_wrapper">
-            <div class="switch-item_el">
+            <!-- ALL only for available items in location / project -->
+            <div class="switch-item_el" v-if="infoActionBtn === 'available'">
               <input
                 type="radio"
                 id="all-item-view"
@@ -795,22 +818,15 @@ watch(infoActionBtn, () => {
                     class="transaction_paragraph"
                     v-if="transaction.transactionType === 'created'"
                   >
-                    Создан в количестве {{ transaction.qty
-                    }}{{ transaction.measure }} и помещен на
+                    +{{ transaction.qty }}{{ transaction.measure }}
                     <span
-                      class="link_hover"
-                      @click="
-                        routerLocationsFunc(
-                          transaction.locationToID,
-                          transaction.locationTo
-                        )
+                      style="
+                        background-color: var(--bs-success-bg-subtle);
+                        padding: 4px 10px;
+                        border-radius: 16px;
+                        white-space: nowrap;
                       "
-                      >"{{
-                        translateLocation(
-                          transaction.locationToID,
-                          transaction.locationTo
-                        )
-                      }}"</span
+                      >Добавлен</span
                     >
                   </p>
                   <!-- ADD -->
@@ -818,22 +834,15 @@ watch(infoActionBtn, () => {
                     class="transaction_paragraph"
                     v-if="transaction.transactionType === 'add'"
                   >
-                    Добавлен в количестве {{ transaction.qty
-                    }}{{ transaction.measure }} на
+                    +{{ transaction.qty }}{{ transaction.measure }}
                     <span
-                      class="link_hover"
-                      @click="
-                        routerLocationsFunc(
-                          transaction.locationToID,
-                          transaction.locationTo
-                        )
+                      style="
+                        background-color: var(--bs-success-bg-subtle);
+                        padding: 4px 10px;
+                        border-radius: 16px;
+                        white-space: nowrap;
                       "
-                      >"{{
-                        translateLocation(
-                          transaction.locationToID,
-                          transaction.locationTo
-                        )
-                      }}"</span
+                      >Приход</span
                     >
                   </p>
                   <!-- SUB -->
@@ -841,63 +850,98 @@ watch(infoActionBtn, () => {
                     class="transaction_paragraph"
                     v-if="transaction.transactionType === 'sub'"
                   >
-                    Расход в количестве {{ transaction.qty
-                    }}{{ transaction.measure }} из
+                    {{
+                      addSignToTransaction(
+                        transaction.locationFromID,
+                        transaction.locationFrom,
+                        transaction.locationToID,
+                        transaction.locationTo
+                      )
+                    }}{{ transaction.qty }}{{ transaction.measure }}
                     <span
-                      class="link_hover"
-                      @click="
-                        routerLocationsFunc(
-                          transaction.locationFromID,
-                          transaction.locationFrom
-                        )
+                      style="
+                        background-color: var(--bs-danger-bg-subtle);
+                        padding: 4px 10px;
+                        border-radius: 16px;
+                        white-space: nowrap;
                       "
-                      >"{{
-                        translateLocation(
-                          transaction.locationFromID,
-                          transaction.locationFrom
-                        )
-                      }}"</span
+                      >Расход</span
                     >
                   </p>
                   <!-- MOVE -->
-                  <p
+                  <div
                     class="transaction_paragraph"
                     v-if="transaction.transactionType === 'move'"
                   >
-                    Перемещен в количестве {{ transaction.qty
-                    }}{{ transaction.measure }} из
-                    <span
-                      class="link_hover"
-                      @click="
-                        routerLocationsFunc(
+                    <div>
+                      {{
+                        addSignToTransaction(
                           transaction.locationFromID,
-                          transaction.locationFrom
-                        )
-                      "
-                      >"{{
-                        translateLocation(
-                          transaction.locationFromID,
-                          transaction.locationFrom
-                        )
-                      }}"</span
-                    >
-                    в
-                    <span
-                      class="link_hover"
-                      @click="
-                        routerLocationsFunc(
+                          transaction.locationFrom,
                           transaction.locationToID,
                           transaction.locationTo
                         )
-                      "
-                      >"{{
-                        translateLocation(
-                          transaction.locationToID,
-                          transaction.locationTo
-                        )
-                      }}"</span
-                    >
-                  </p>
+                      }}{{ transaction.qty }}{{ transaction.measure }}
+                    </div>
+
+                    <!--  -->
+                    <div class="transaction_path">
+                      <!-- transaction location from -->
+                      <div
+                        style="
+                          background-color: var(--bs-primary-bg-subtle);
+                          padding: 4px 10px;
+                          border-radius: 16px;
+                          white-space: nowrap;
+                        "
+                        class="link_hover"
+                        @click="
+                          routerLocationsFunc(
+                            transaction.locationFromID,
+                            transaction.locationFrom
+                          )
+                        "
+                      >
+                        {{
+                          translateLocation(
+                            transaction.locationFromID,
+                            transaction.locationFrom
+                          )
+                        }}
+                      </div>
+
+                      <!-- transaction loction to -->
+                      <div>
+                        <!--  -->
+                        <span style="white-space: nowrap; padding-bottom: 2px"
+                          >-></span
+                        >
+                        <!--  -->
+                        <span
+                          style="
+                            background-color: var(--bs-primary-bg-subtle);
+                            padding: 4px 10px;
+                            border-radius: 16px;
+                            white-space: nowrap;
+                            margin-left: 0.5rem;
+                          "
+                          class="link_hover"
+                          @click="
+                            routerLocationsFunc(
+                              transaction.locationToID,
+                              transaction.locationTo
+                            )
+                          "
+                          >{{
+                            translateLocation(
+                              transaction.locationToID,
+                              transaction.locationTo
+                            )
+                          }}</span
+                        >
+                      </div>
+                    </div>
+                  </div>
                 </td>
 
                 <!-- 3 -->
@@ -930,7 +974,7 @@ watch(infoActionBtn, () => {
   overflow-x: auto;
   gap: 1rem;
   scrollbar-width: none;
-  background-color: var(--bs-secondary-bg); 
+  background-color: var(--bs-secondary-bg);
   /* background-color: var(--bs-tertiary-bg); */
 }
 .switch-item_wrapper::-webkit-scrollbar {
@@ -997,7 +1041,6 @@ watch(infoActionBtn, () => {
   /* background-color: var(--bs-tertiary-bg); */
 }
 
-
 .table-by-available .item-table_header tr,
 .table-by-available .table-row_wrapper {
   padding: 1rem;
@@ -1010,7 +1053,7 @@ watch(infoActionBtn, () => {
 .table-by-available .item-table_header,
 .table-by-history .item-table_header {
   border-bottom: 1px solid var(--bs-secondary-bg);
-  background-color: var(--bs-secondary-bg)
+  background-color: var(--bs-secondary-bg);
 }
 .table-by-history .table-row_wrapper:nth-child(odd),
 .table-by-available .table-row_wrapper:nth-child(odd) {
@@ -1019,7 +1062,9 @@ watch(infoActionBtn, () => {
 .table-by-available .item-table_header tr th:nth-last-child(2),
 .table-by-available .item-table_header tr th:nth-last-child(1),
 .table-by-available .table-row_wrapper td:nth-last-child(3),
-.table-by-available .table-row_wrapper td:nth-last-child(2) {
+.table-by-available .table-row_wrapper td:nth-last-child(2),
+.table-by-history .item-table_header tr th:nth-last-child(1),
+.table-by-history .table-row_wrapper td:nth-last-child(1) {
   justify-self: flex-end;
 }
 
@@ -1029,7 +1074,7 @@ watch(infoActionBtn, () => {
   display: grid;
   grid-gap: 1rem;
   align-items: center;
-  grid-template-columns: 200px 1fr 200px;
+  grid-template-columns: 200px 1fr 1fr;
 }
 
 .table-row_wrapper td.span-5 {
@@ -1085,6 +1130,14 @@ label #expend-item:checked + .expand-item_icon {
 }
 .transaction_paragraph {
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.transaction_path {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
 }
 .hide-575 {
   display: none;
@@ -1126,6 +1179,10 @@ label #expend-item:checked + .expand-item_icon {
     justify-self: flex-end;
     background-color: red;
   }
+  .table-by-history .item-table_header tr th:nth-last-child(1),
+  .table-by-history .table-row_wrapper td:nth-last-child(1) {
+    justify-self: flex-start;
+  }
 }
 
 @media screen and (min-width: 576px) and (max-width: 767px) {
@@ -1140,6 +1197,8 @@ label #expend-item:checked + .expand-item_icon {
   .table-by-available .table-row_wrapper {
     grid-gap: unset;
   }
+  .transaction_path {
+  }
 }
 
 @media screen and (max-width: 767px) {
@@ -1151,6 +1210,10 @@ label #expend-item:checked + .expand-item_icon {
   }
   .hide-max-767 {
     display: none;
+  }
+  .transaction_paragraph {
+    flex-direction: column;
+    align-items: flex-start;
   }
   /* .table-by-available .table-row_wrapper */
 }
@@ -1325,4 +1388,12 @@ label #expend-item:checked + .expand-item_icon {
 }
 /* .hide-991 {
 } */
+
+@media screen and (max-width: 991px) {
+  .transaction_path {
+    flex-direction: column;
+    align-items: flex-start;
+    /* gap: 0.1rem; */
+  }
+}
 </style>

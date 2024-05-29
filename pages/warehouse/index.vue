@@ -1624,7 +1624,10 @@ watch(tempCreateItemOwner, () => {
             <!--  -->
             <div
               class="mb-3"
-              v-if="item && item.type === 'tools' || item.type === 'office equipment'"
+              v-if="
+                (item && item.type === 'tools') ||
+                item.type === 'office equipment'
+              "
               style="
                 display: flex;
                 align-items: center;
@@ -1652,14 +1655,13 @@ watch(tempCreateItemOwner, () => {
                 <label for="itemProductionDate" class="form-label"
                   >Дата изготовления</label
                 >
-                  <!-- type="month" -->
+                <!-- type="month" -->
                 <input
                   type="date"
                   v-model="item.productionDate"
                   id="itemProductionDate"
                   class="form-control"
                   aria-describedby="nameHelp"
-                  
                 />
               </div>
             </div>
@@ -2210,6 +2212,7 @@ td {
   border: none;
 }
 .search-and-filter_container {
+  align-self: flex-start;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -2413,13 +2416,17 @@ label #expend-item:checked + .expand-item_icon {
   .switch-type_container {
     align-items: flex-start;
   }
+  .search-and-filter_container {
+    position: absolute;
+    right: 0.5rem;
+  }
   .filter-location_select {
     width: 60%;
     font-size: 1rem;
     display: block;
-    padding: 0.75rem 2.5rem 0.75rem 1rem;
+    /* padding: 0.75rem 2.5rem 0.75rem 1rem; */
     border: 1px solid var(--bs-primary-bg-subtle);
-    border-radius: 3px;
+    border-radius: 1rem;
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;

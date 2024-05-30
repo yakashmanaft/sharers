@@ -33,10 +33,25 @@ const route = useRoute();
 const projects = ref(null);
 const project = ref(null);
 
+// ТМЦ
+const items = ref([])
+
+// тмц организации
+// items.value = items.value.filter(
+//   (item) =>
+//     item.location === 'project' && item.locationID === project.value.id
+// );
+
 onMounted(async () => {
   //
   projects.value = await getProjects();
   project.value = projects.value.find((item) => item.id == route.params.id);
+
+  //
+  items.value = await getItems();
+  items.value = items.value.filter(
+    (el) => el.location === "project" && el.locationID === project.value.id
+  );
 });
 /**
  * @desc Get users
@@ -50,6 +65,9 @@ onMounted(async () => {
 async function getProjects() {
   return await $fetch("/api/projects/projects");
 }
+async function getItems() {
+  return await $fetch("/api/warehouse/item");
+}
 </script>
 
 <template>
@@ -57,11 +75,30 @@ async function getProjects() {
     <div v-if="project">
       <!-- <h1 style="margin-top: 5rem;">Проект {{ $route.params.id }}</h1> -->
       <h1 style="margin-top: 5rem">Проект "{{ project.title }}"</h1>
-      <p>Вид работ: <span>{{ project.workType }}</span></p>
-      <p>Адрес: <span>{{ project.address }}</span></p>
+      <p>
+        Вид работ: <span>{{ project.workType }}</span>
+      </p>
+      <p>
+        Адрес: <span>{{ project.address }}</span>
+      </p>
 
       <div>
+        Проект:
         <p>{{ project }}</p>
+      </div>
+
+      <!-- ТМЦ на проекте -->
+      <div>
+        <!--  -->
+        <h2>ТМЦ</h2>
+        <!--  -->
+        <div v-if="items.length">
+          <div v-for="(item, index) in items" :key="index">
+            {{ item }}
+          </div>
+        </div>
+        <!-- { "id": 159, "uuid": "ac07b3c9-c0f2-45dc-a400-b6005d70c098", "title": "Щит опалубочный 1200х3000", "type": "stuff", "qty": 1, "measure": "шт.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T04:46:12.000Z", "update_at": "2024-05-29T04:46:11.784Z" } -->
+        <div v-else>Ничего нет</div>
       </div>
     </div>
   </Container>

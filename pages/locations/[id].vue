@@ -4,13 +4,41 @@
       <h1 style="margin-top: 5rem">{{ location.title }}</h1>
 
       <div>
-        <p>Тип: <span>{{ translateLocationType(location.type) }}</span></p>
+        <p>
+          Тип: <span>{{ translateLocationType(location.type) }}</span>
+        </p>
         <p>
           Адрес: <span>{{ location.address }}</span>
         </p>
+
+        <p>
+          Собственник:
+          <span>{{ location.ownerType }} {{ location.ownerID }}</span>
+        </p>
+
+        <br />
         <div>
-          <p>{{ location }}</p>
+          <p><span>Location: </span>{{ location }}</p>
         </div>
+
+        <!-- ТМЦ -->
+        <div>
+          <h2>ТМЦ</h2>
+          <div v-if="items.length">
+            <div
+              v-for="(item, index) in items"
+              :key="`${item.type}-${item.id}`"
+              style="margin-top: 1rem"
+            >
+              {{ item.title }} | {{ item.type }} | {{ item.qty }}
+              {{ item.measure }} | {{ item.ownerType }} {{ item.ownerID }} |
+              {{ item.responsible }}
+            </div>
+          </div>
+          <div v-else>Здесь ничего нет</div>
+        </div>
+
+        <!-- { "id": 156, "uuid": "cb013f71-b4f0-48ba-a55a-ed0120dd531c", "title": "Доска пола", "type": "stuff", "qty": 150, "measure": "кв. м.", "location": "sklad", "locationID": 5, "position": null, "serial": null, "productionDate": null, "ownerID": 2, "ownerType": "user", "responsible": 2, "created_at": "2024-05-27T19:39:57.000Z", "update_at": "2024-05-29T09:22:43.703Z" } -->
       </div>
     </div>
   </Container>
@@ -48,6 +76,28 @@ const location = ref(null);
 
 const users = ref(null);
 // const usersInBand = ref(null)
+const {
+  pending,
+  error,
+  refresh,
+  data: items,
+  status,
+} = await useFetch("/api/warehouse/item", {
+  lazy: false,
+  transform: (items: any) => {
+    return items.sort((x, y) => {
+      if (x.title < y.title) {
+        return -1;
+      }
+
+      if (x.title > y.title) {
+        return 1;
+      }
+
+      return x.locationID - y.locationID;
+    });
+  },
+});
 
 onMounted(async () => {
   //
@@ -63,6 +113,13 @@ onMounted(async () => {
   //       (user) => user.groupID === +route.params.id
   //     )
   //   }
+
+  //
+  items.value = items.value.filter(
+    (item) =>
+      item.location === location.value.type &&
+      item.locationID === location.value.id
+  );
 });
 
 async function getLocations() {
@@ -75,14 +132,14 @@ async function getAllUsers() {
 
 // translations
 const translateLocationType = (type) => {
-  if(type === 'sklad') {
-    return 'Склад'
-  } else if (type === 'office') {
-    return 'Офис'
-  } else if (type === 'repair') {
-    return 'Сервисный центр (ремонт)'
+  if (type === "sklad") {
+    return "Склад";
+  } else if (type === "office") {
+    return "Офис";
+  } else if (type === "repair") {
+    return "Сервисный центр (ремонт)";
   }
-}
+};
 </script>
 
 <style scoped></style>

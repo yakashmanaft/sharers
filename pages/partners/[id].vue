@@ -230,6 +230,9 @@ usersInBand.value = [
   },
 ];
 
+// ТМЦ
+const items = ref([]);
+
 // When accessing /posts/1, route.params.id will be 1
 
 // onMounted(async () => {
@@ -254,12 +257,21 @@ onMounted(async () => {
 
   wageFund.value = sumUserSalary() + rest.value;
   productionFund.value = sumUserProductionSalary() + rest.value;
+
+  //
+  items.value = await getItems();
+  items.value = items.value.filter(
+    (el) => el.ownerType === "user" && el.ownerID === user.value.id
+  );
 });
 /**
  * @desc Get users
  */
 async function getUsers() {
   return await $fetch("/api/usersList/users");
+}
+async function getItems() {
+  return await $fetch("/api/warehouse/item");
 }
 
 /**
@@ -384,7 +396,7 @@ useHead({
     </div>
 
     <div>
-      <h2>{{ user.surname }} {{ user.name }} <br>{{ user.middleName }}</h2>
+      <h2>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h2>
       <p>{{ user.role }}</p>
     </div>
 
@@ -467,6 +479,22 @@ useHead({
         <p>Прочее: {{ rest }}</p>
       </div>
     </div>
+
+    <!-- ТМЦ соучастника-->
+    <div>
+      <!--  -->
+      <h2>ТМЦ</h2>
+      <!--  -->
+      <div v-if="items.length">
+        <div v-for="(item, index) in items" :key="index">
+          {{ item }}
+        </div>
+      </div>
+      <!-- { "id": 159, "uuid": "ac07b3c9-c0f2-45dc-a400-b6005d70c098", "title": "Щит опалубочный 1200х3000", "type": "stuff", "qty": 1, "measure": "шт.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T04:46:12.000Z", "update_at": "2024-05-29T04:46:11.784Z" } -->
+      <div v-else>Ничего нет</div>
+    </div>
+    <br>
+    <br>
   </Container>
 </template>
 

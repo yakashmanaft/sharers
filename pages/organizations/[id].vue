@@ -1,6 +1,6 @@
 <template>
   <Container>
-    <h1 style="margin-top: 5rem;">Банда #{{ $route.params.id }}</h1>
+    <h1 style="margin-top: 5rem">Банда #{{ $route.params.id }}</h1>
 
     <div v-if="organization">
       <p>{{ organization.title }}</p>
@@ -8,19 +8,31 @@
       <!-- <div>
         <p>{{ organization }}</p>
       </div> -->
-
     </div>
 
     <div v-if="usersInBand">
-
       <h2>Соучастники банды</h2>
       <p>Количество соучастников: {{ usersInBand.length }}</p>
       <div>
         <div v-for="(user, index) in usersInBand">
-
           <p>{{ user }}</p>
         </div>
       </div>
+    </div>
+
+    <!-- ТМЦ организации -->
+    <div>
+      <!-- Заголовок -->
+      <h2>ТМЦ</h2>
+      <!--  -->
+      <div v-if="items.length">
+        <div v-for="(item, index) in items" :key="index">
+          {{ item }}
+        </div>
+      </div>
+      <!-- { "id": 160, "uuid": "d8ea7bba-e93d-4994-8b53-ac77880ec59e", "title": "Доска пола", "type": "stuff", "qty": 33, "measure": "кв. м.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T09:23:49.000Z", "update_at": "2024-05-29T09:23:48.700Z" } -->
+      <!--  -->
+      <div v-else>Ничего нет</div>
     </div>
   </Container>
 </template>
@@ -56,35 +68,63 @@ const organizations = ref(null);
 const organization = ref(null);
 
 const users = ref(null);
-const usersInBand = ref(null)
+const usersInBand = ref(null);
+
+const {
+  pending,
+  error,
+  refresh,
+  data: items,
+  status,
+} = await useFetch("/api/warehouse/item", {
+  lazy: false,
+  transform: (items: any) => {
+    return items.sort((x, y) => {
+      if (x.title < y.title) {
+        return -1;
+      }
+
+      if (x.title > y.title) {
+        return 1;
+      }
+
+      return x.locationID - y.locationID;
+    });
+  },
+});
 
 onMounted(async () => {
-
-  // 
+  // организации
   organizations.value = await getOrganizations();
-  if(organizations.value) {
-
+  if (organizations.value) {
     organization.value = organizations.value.find(
       (company) => company.id == route.params.id
     );
-
   }
 
-  // 
-  users.value = await getAllUsers()
-  if(users.value) {
+  // пользователи
+  users.value = await getAllUsers();
+  if (users.value) {
     usersInBand.value = users.value.filter(
       (user) => user.groupID === +route.params.id
-    )
+    );
   }
+
+  // тмц организации
+  items.value = items.value.filter(
+    (item) =>
+      item.ownerType === 'company' &&
+      item.ownerID === organization.value.id
+  );
 });
+
 
 async function getOrganizations() {
   return await $fetch("/api/organizations/organizations");
 }
 
 async function getAllUsers() {
-  return await $fetch("/api/usersList/users")
+  return await $fetch("/api/usersList/users");
 }
 </script>
 

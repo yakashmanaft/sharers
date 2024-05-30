@@ -458,12 +458,19 @@ watch(switchedLocation, () => {
   }
 });
 
+// скрываем некоторые элементы по условию
 const hide = () => {
   console.log(window.screen.width)
   if (switchedLocation.value.location === "all" && window.screen.width < 576 ) {
     return `display: none`;
   }
 };
+
+const locationMarkColorized = (location: string) => {
+  if(location) {
+    return `mark_${location}`
+  }
+}
 
 watch(infoActionBtn, (next, prev) => {
   if (prev === "available" && switchedLocation.value.location === "all") {
@@ -533,9 +540,10 @@ watch(infoActionBtn, (next, prev) => {
           <p>
             Где:
             <span
-              class="item-location"
+              class="item-location_mark"
+              :class="locationMarkColorized(item.location)"
               @click="routerLocationsFunc(item.locationID, item.location)"
-              ><label for="">{{
+              ><label style="cursor: pointer;">{{
                 translateLocation(item.locationID, item.location)
               }}</label>
             </span>
@@ -655,6 +663,7 @@ watch(infoActionBtn, (next, prev) => {
               />
               <label
                 class="item-label_element"
+                :class="locationMarkColorized(location.location)"
                 :for="`${location.location}${location.id}`"
                 >{{
                   translateLocation(location.locationID, location.location)
@@ -1006,6 +1015,8 @@ watch(infoActionBtn, (next, prev) => {
   scrollbar-width: none;
   background-color: var(--bs-secondary-bg);
   /* background-color: var(--bs-tertiary-bg); */
+  /* border-top: 1px solid var(--bs-border-color); */
+  border-bottom: 1px solid var(--bs-border-color);
 }
 .switch-item_wrapper::-webkit-scrollbar {
   display: none;
@@ -1043,15 +1054,22 @@ watch(infoActionBtn, (next, prev) => {
 }
 .item-location {
   color: var(--bs-body-bg);
-  background-color: var(--bs-body-color);
+  /* background-color: var(--bs-body-color); */
   padding: 4px 10px;
   border-radius: 16px;
+}
+.item-location_mark {
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+.item-location_mark:hover {
+  border-radius: 16px!important;
 }
 .switch-item_el label {
   border-radius: 16px;
   transition: all 0.15s ease-in;
   padding: 4px 10px;
-  border: 1px solid var(--bs-secondary-bg);
+  /* border: 1px solid var(--bs-secondary-bg); */
 }
 .switch-item_el label:hover {
   cursor: pointer;
@@ -1059,13 +1077,30 @@ watch(infoActionBtn, (next, prev) => {
   background-color: var(--bs-body-color);
   /* background-color: var(--bs-secondary-bg); */
   /* background-color: var(--bs-tertiary-bg); */
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
 }
+
 .switch-item_el input[type="radio"]:checked + label {
-  border-radius: 16px;
-  padding: 4px 10px;
+  /* border-radius: 16px; */
+  /* padding: 4px 10px; */
   color: var(--bs-body-bg);
   background-color: var(--bs-body-color);
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
 }
+
+.switch-item_el label:hover:after,
+.switch-item_el input[type="radio"]:checked + label:after {
+  content: '';
+  position: absolute;
+  bottom: -1rem;
+  left: 0;
+  width: 100%;
+  height: 20px;
+  background-color: var(--bs-body-color);
+}
+
 .infoActionBtns_el input[type="radio"]:checked + label {
   background-color: var(--bs-secondary-bg);
   /* background-color: var(--bs-tertiary-bg); */
@@ -1169,6 +1204,102 @@ label #expend-item:checked + .expand-item_icon {
   display: flex;
   gap: 0.5rem;
   align-items: center;
+}
+
+/* MARK_PROJECT */
+.mark_project {
+  color: var(--bs-success);
+  background-color: var(--bs-success-bg-subtle);
+}
+.mark_project:hover {
+  color: var(--bs-success)!important;
+  background-color: var(--bs-success-bg-subtle)!important;
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el input[type="radio"]:checked + label.mark_project {
+  color: var(--bs-success);
+  background-color: var(--bs-success-bg-subtle);
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el label.mark_project:hover:after,
+.switch-item_el input[type="radio"]:checked + label.mark_project:after {
+  background-color: var(--bs-success-bg-subtle);
+}
+
+/* MARK_SKLAAD */
+.mark_sklad {
+  color: var(--bs-dark)!important;
+  background-color: var(--bs-primary-bg-subtle);
+}
+.mark_sklad:hover {
+  color: var(--bs-dark)!important;
+  background-color: var(--bs-primary-bg-subtle)!important;
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el input[type="radio"]:checked + label.mark_sklad {
+  /* color: #fff; */
+  background-color: var(--bs-primary-bg-subtle);
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el label.mark_sklad:hover:after,
+.switch-item_el input[type="radio"]:checked + label.mark_sklad:after {
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+/* MARK_OFFICE */
+.mark_office {
+  color: var(--bs-dark)!important;
+  background-color: var(--bs-primary-bg-subtle);
+}
+.mark_office:hover {
+  color: var(--bs-dark)!important;
+  background-color: var(--bs-primary-bg-subtle)!important;
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el input[type="radio"]:checked + label.mark_office {
+  /* color: #fff; */
+  background-color: var(--bs-primary-bg-subtle);
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el label.mark_office:hover:after,
+.switch-item_el input[type="radio"]:checked + label.mark_office:after {
+  background-color: var(--bs-primary-bg-subtle);
+}
+
+/* REPAIR */
+.mark_repair {
+  color: var(--bs-warning);
+  background-color: var(--bs-warning-bg-subtle);
+}
+.mark_repair:hover {
+  color: var(--bs-warning)!important;
+  background-color: var(--bs-warning-bg-subtle)!important;
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el input[type="radio"]:checked + label.mark_repair {
+  color: var(--bs-warning);
+  background-color: var(--bs-warning-bg-subtle);
+  border-bottom-left-radius: unset; 
+  border-bottom-right-radius: unset; 
+}
+.switch-item_el label.mark_repair:hover:after,
+.switch-item_el input[type="radio"]:checked + label.mark_repair:after {
+  background-color: var(--bs-warning-bg-subtle);
+}
+
+/* ARCHIVE */
+.mark_archive {
+  background-color: var(--bs-danger-bg-subtle);
+}
+.mark_deleted {
+  background-color: var(--bs-secondary-bg);
 }
 .hide-575 {
   display: none;

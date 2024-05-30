@@ -2040,6 +2040,7 @@ watch(tempCreateItemOwner, () => {
           <!-- СПИСОК ITEMS -->
           <tr class="table-row_wrapper" v-for="(item, index) in computedItems">
             <!-- 1 -->
+            <!-- Кнопка развернуть expended-item -->
             <td>
               <label>
                 <input
@@ -2057,6 +2058,7 @@ watch(tempCreateItemOwner, () => {
             </td>
 
             <!-- 2 -->
+            <!-- Заголовок -->
             <td class="span-3" scope="col">
               <span>{{ index + 1 }}. </span>
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
@@ -2065,6 +2067,7 @@ watch(tempCreateItemOwner, () => {
             </td>
 
             <!-- 3 -->
+            <!-- Кол-во, мера -->
             <td class="item-qty" scope="col">
               <div
                 class="location-mark"
@@ -2194,7 +2197,7 @@ td {
 }
 .link_sklad,
 .link_office {
-  color: white;
+  color: var(--bs-dark);
   border: none;
   background-color: var(--bs-primary-bg-subtle);
 }

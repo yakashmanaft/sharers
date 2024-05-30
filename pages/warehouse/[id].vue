@@ -495,22 +495,18 @@ watch(infoActionBtn, (next, prev) => {
 
         <!-- ДОП инфа -->
         <div style="margin: 0; margin-top: 1rem">
-          <!-- Кол-во, местонахождение -->
+          <!-- Кол-во -->
           <p>
-            {{ item.qty }} <span>{{ item.measure }}</span>
-            <span
-              class="item-location"
-              style="margin-left: 0.5rem"
-              @click="routerLocationsFunc(item.locationID, item.location)"
-              ><label for="">{{
-                translateLocation(item.locationID, item.location)
-              }}</label>
-            </span>
+            Кол-во:
+            <span style="font-weight: bold"
+              >{{ item.qty }} <span>{{ item.measure }}</span></span
+            >
           </p>
           <!-- Собственник -->
           <p>
             Собственник:
             <span
+              style="font-weight: bold"
               class="link_hover"
               @click="routerUsersFunc(item.ownerID, item.ownerType)"
               >{{ translateOwner(item.ownerID, item.ownerType) }}</span
@@ -520,10 +516,22 @@ watch(infoActionBtn, (next, prev) => {
           <p>
             Ответственный:
             <span
+              style="font-weight: bold"
               class="link_hover"
               @click="$router.push(`/partners/${item.responsible}`)"
               >{{ translateResponsibles(item.responsible) }}</span
             >
+          </p>
+          <!-- Местонахождени -->
+          <p>
+            Местонахождение:
+            <span
+              class="item-location"
+              @click="routerLocationsFunc(item.locationID, item.location)"
+              ><label for="">{{
+                translateLocation(item.locationID, item.location)
+              }}</label>
+            </span>
           </p>
         </div>
 
@@ -661,9 +669,17 @@ watch(infoActionBtn, (next, prev) => {
               <tr>
                 <th scope="col"></th>
                 <!-- <th scope="col">Наименование</th> -->
-                <th scope="col">Где</th>
+                <th v-if="switchedLocation.location === 'all'" scope="col">
+                  Где
+                </th>
                 <th scope="col">Кол-во</th>
-                <th scope="col" class="hide-991">Собственник</th>
+                <th
+                  v-if="switchedLocation.location !== 'all'"
+                  scope="col"
+                  class="hide-991"
+                >
+                  Собственник
+                </th>
                 <th scope="col" class="hide-max-767">Ответственный</th>
               </tr>
             </thead>
@@ -679,6 +695,7 @@ watch(infoActionBtn, (next, prev) => {
                 :key="element.id"
               >
                 <!-- 1 -->
+                <!-- btn expend -->
                 <td>
                   <label>
                     <input
@@ -697,7 +714,7 @@ watch(infoActionBtn, (next, prev) => {
 
                 <!-- 2 -->
                 <!-- IF ALL LOCATIONS -->
-                <td scope="col">
+                <td scope="col" v-if="switchedLocation.location === 'all'">
                   <span
                     class="link_hover"
                     @click="
@@ -719,8 +736,13 @@ watch(infoActionBtn, (next, prev) => {
 
                 <!-- 4 -->
                 <!-- OWNER -->
-                <td class="span-2 hide-767 hide-min-575" scope="col">
+                <td
+                  class="span-2 hide-767"
+                  scope="col"
+                  v-if="switchedLocation.location !== 'all'"
+                >
                   <span
+                    style="white-space: nowrap"
                     class="link_hover"
                     @click="routerUsersFunc(element.ownerID, element.ownerType)"
                   >
@@ -732,6 +754,7 @@ watch(infoActionBtn, (next, prev) => {
                 <!-- RESPONSIBLE -->
                 <td class="span-2 hide-767 hide-max-767" scope="col">
                   <span
+                    style="white-space: nowrap"
                     class="link_hover"
                     @click="$router.push(`/partners/${item.responsible}`)"
                   >
@@ -747,14 +770,17 @@ watch(infoActionBtn, (next, prev) => {
                 >
                   <div class="expended-item_content">
                     <!-- show owner -->
-                    <div class="hide-max-575 expended-content_article">
+                    <div
+                      class="hide-max-575 expended-content_article"
+                      v-if="switchedLocation.location === 'all'"
+                    >
                       <p>
                         Собственник:
                         <span
-                          @click="routerUsersFunc(item.ownerID, item.ownerType)"
+                          @click="routerUsersFunc(element.ownerID, element.ownerType)"
                           class="link_hover"
                           >{{
-                            translateOwner(item.ownerID, item.ownerType)
+                            translateOwner(element.ownerID, element.ownerType)
                           }}</span
                         >
                       </p>
@@ -765,8 +791,8 @@ watch(infoActionBtn, (next, prev) => {
                         Ответственный:
                         <span
                           class="link_hover"
-                          @click="$router.push(`/partners/${item.responsible}`)"
-                          >{{ translateResponsibles(item.responsible) }}</span
+                          @click="$router.push(`/partners/${element.responsible}`)"
+                          >{{ translateResponsibles(element.responsible) }}</span
                         >
                       </p>
                     </div>
@@ -1095,8 +1121,9 @@ label #expend-item:checked + .expand-item_icon {
   display: none;
 }
 .expended-item_opened {
-  display: block;
+  display: inline-block;
   border: none;
+  margin-left: 4rem;
 }
 /* .expended-item_btns button span:hover {
   color: var(--bs-primary);
@@ -1162,7 +1189,7 @@ label #expend-item:checked + .expand-item_icon {
   .page_header {
     margin: 0 1rem;
   }
-  .table-by-available .item-table_header tr,
+  /* .table-by-available .item-table_header tr, */
   .table-by-history .item-table_header tr {
     display: none;
   }
@@ -1171,17 +1198,26 @@ label #expend-item:checked + .expand-item_icon {
     grid-template-columns: 1fr;
   }
   /* .table-by-available .item-table_header tr, */
+  .table-by-available .item-table_header tr,
   .table-by-available .table-row_wrapper {
-    grid-template-columns: 30px 1fr 100px;
+    grid-template-columns: 30px 1fr 1fr;
     grid-gap: unset;
+    /* gap: 1rem !important; */
   }
   .item-qty {
-    justify-self: flex-end;
+    /* justify-self: flex-end; */
     background-color: red;
   }
   .table-by-history .item-table_header tr th:nth-last-child(1),
   .table-by-history .table-row_wrapper td:nth-last-child(1) {
     justify-self: flex-start;
+  }
+  .table-by-available .item-table_header tr th:nth-last-child(1),
+  .table-by-available .table-row_wrapper td:nth-last-child(1) {
+    justify-self: flex-start;
+  }
+  .expended-item_opened {
+    margin-left: 2rem !important;
   }
 }
 
@@ -1193,11 +1229,15 @@ label #expend-item:checked + .expand-item_icon {
   .table-by-available .item-table_header tr,
   .table-by-available .table-row_wrapper {
     grid-template-columns: 30px 1fr 70px 1fr;
+    gap: 1rem !important;
   }
   .table-by-available .table-row_wrapper {
     grid-gap: unset;
   }
   .transaction_path {
+  }
+  .expended-item_opened {
+    margin-left: 3rem !important;
   }
 }
 

@@ -1316,7 +1316,9 @@ watch(tempCreateItemOwner, () => {
                       class="form-control"
                       aria-describedby="nameHelp"
                     />
-                    <span>{{ currentItem.measure }}</span>
+                    <span style="white-space: nowrap">{{
+                      currentItem.measure
+                    }}</span>
                   </div>
                 </div>
               </div>
@@ -1351,7 +1353,9 @@ watch(tempCreateItemOwner, () => {
                       class="form-control"
                       aria-describedby="nameHelp"
                     />
-                    <span>{{ currentItem.measure }}</span>
+                    <span style="white-space: nowrap">{{
+                      currentItem.measure
+                    }}</span>
                   </div>
                   <div
                     @click="tempQty = currentItem.qty"
@@ -1508,7 +1512,9 @@ watch(tempCreateItemOwner, () => {
                       class="form-control"
                       aria-describedby="nameHelp"
                     />
-                    <span>{{ currentItem.measure }}</span>
+                    <span style="white-space: nowrap">{{
+                      currentItem.measure
+                    }}</span>
                   </div>
                   <div
                     @click="tempQty = currentItem.qty"
@@ -2282,6 +2288,7 @@ label #expend-item:checked + .expand-item_icon {
 .expended-item_opened {
   display: block;
   border: none;
+  margin-left: 4rem;
 }
 .expended-item_btns button span:hover {
   color: var(--bs-primary);
@@ -2374,7 +2381,14 @@ label #expend-item:checked + .expand-item_icon {
   .search-and-filter_container .search_input {
     max-width: 120px;
   }
+  .expended-item_opened {
+    margin: unset;
+  }
 }
+
+/* @media screen and (min-width: 576px) and (max-width: 767px) {
+
+} */
 
 @media screen and (max-width: 767px) {
   .header-h1 {
@@ -2593,14 +2607,15 @@ label #expend-item:checked + .expand-item_icon {
   .expended-item {
     grid-column: span 5;
     /* background-color: red; */
-    margin-left: 1rem;
+    margin-left: 4rem;
   }
   .expended-item_btns {
     /* display: flex; */
   }
   .expended-item_content {
     /* border-top: 1px solid black; */
-    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2);
+    /* box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.2); */
+    border-top: 1px solid var(--bs-border-color);
     padding-top: 1rem;
     margin-top: 1rem;
     margin-bottom: 1rem;

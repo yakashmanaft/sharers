@@ -2567,9 +2567,10 @@ label #expend-item:checked + .expand-item_icon {
     margin-top: 1rem;
   }
   .article_block span {
-    border-radius: 16px;
-    padding: 4px 10px;
-    background-color: var(--bs-danger-bg-subtle);
+    font-weight: bold;
+    /* border-radius: 16px; */
+    /* padding: 4px 10px; */
+    /* background-color: var(--bs-danger-bg-subtle); */
   }
 }
 

@@ -458,6 +458,13 @@ watch(switchedLocation, () => {
   }
 });
 
+const hide = () => {
+  console.log(window.screen.width)
+  if (switchedLocation.value.location === "all" && window.screen.width < 576 ) {
+    return `display: none`;
+  }
+};
+
 watch(infoActionBtn, (next, prev) => {
   if (prev === "available" && switchedLocation.value.location === "all") {
     switchedLocation.value = {
@@ -524,7 +531,7 @@ watch(infoActionBtn, (next, prev) => {
           </p>
           <!-- Местонахождени -->
           <p>
-            Местонахождение:
+            Где:
             <span
               class="item-location"
               @click="routerLocationsFunc(item.locationID, item.location)"
@@ -673,13 +680,7 @@ watch(infoActionBtn, (next, prev) => {
                   Где
                 </th>
                 <th scope="col">Кол-во</th>
-                <th
-                  v-if="switchedLocation.location !== 'all'"
-                  scope="col"
-                  class="hide-991"
-                >
-                  Собственник
-                </th>
+                <th scope="col" class="hide-991" :style="hide()">Собственник</th>
                 <th scope="col" class="hide-max-767">Ответственный</th>
               </tr>
             </thead>
@@ -736,11 +737,8 @@ watch(infoActionBtn, (next, prev) => {
 
                 <!-- 4 -->
                 <!-- OWNER -->
-                <td
-                  class="span-2 hide-767"
-                  scope="col"
-                  v-if="switchedLocation.location !== 'all'"
-                >
+                <!-- v-if="switchedLocation.location !== 'all'" -->
+                <td class="span-2 hide-767" scope="col" :style="hide()">
                   <span
                     style="white-space: nowrap"
                     class="link_hover"
@@ -756,9 +754,9 @@ watch(infoActionBtn, (next, prev) => {
                   <span
                     style="white-space: nowrap"
                     class="link_hover"
-                    @click="$router.push(`/partners/${item.responsible}`)"
+                    @click="$router.push(`/partners/${element.responsible}`)"
                   >
-                    {{ translateResponsibles(item.responsible) }}
+                    {{ translateResponsibles(element.responsible) }}
                   </span>
                 </td>
 
@@ -777,7 +775,9 @@ watch(infoActionBtn, (next, prev) => {
                       <p>
                         Собственник:
                         <span
-                          @click="routerUsersFunc(element.ownerID, element.ownerType)"
+                          @click="
+                            routerUsersFunc(element.ownerID, element.ownerType)
+                          "
                           class="link_hover"
                           >{{
                             translateOwner(element.ownerID, element.ownerType)
@@ -791,8 +791,12 @@ watch(infoActionBtn, (next, prev) => {
                         Ответственный:
                         <span
                           class="link_hover"
-                          @click="$router.push(`/partners/${element.responsible}`)"
-                          >{{ translateResponsibles(element.responsible) }}</span
+                          @click="
+                            $router.push(`/partners/${element.responsible}`)
+                          "
+                          >{{
+                            translateResponsibles(element.responsible)
+                          }}</span
                         >
                       </p>
                     </div>

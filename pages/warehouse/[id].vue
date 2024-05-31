@@ -259,6 +259,16 @@ const translateItemType = (type) => {
     return type;
   }
 };
+const translateDate = (date) => {
+  // var day = date.getDate();
+  // day = day < 10 ? "0" + day : day;
+  // var month = date.getMonth() + 1;
+  // month = month < 10 ? "0" + month : month;
+  // var year = date.getFullYear();
+  // return day + "." + month + "." + year;
+  // Нихуя не работает.... как не хочетс библиотеки устанавливать...
+  return date;
+};
 
 //
 /**
@@ -293,7 +303,7 @@ const sumItemsQty = () => {
   return total;
 };
 
-// SHOW CASE HISTORY or AVAILABLE
+// SHOW HISTORY or AVAILABLE CASE
 const showCase = () => {
   if (
     itemLocations.value.length <= 1 &&
@@ -320,7 +330,7 @@ const showCase = () => {
   // currentItemTransactions.value.length !== 0
 };
 
-//
+// expended item block
 const currentExpendedItemBlock = ref(null);
 
 const toggleExpendedItemBlock = (itemID: number) => {
@@ -342,36 +352,7 @@ const toggleExpendedItemBlock = (itemID: number) => {
   }
 };
 
-// Добавляет знак "минус" или "плюс" в зависимости от транзакции
-// const addArithmeticMark = (type, from, fromID, to, toID) => {
-//   if (
-//     item.value &&
-//     switchedLocation.value.location &&
-//     switchedLocation.value.locationID
-//   ) {
-//     if (switchedLocation.value.location === "all") {
-//       return "";
-//     }
-//     // MOVE
-//     else if (type === "move") {
-//       if (
-//         switchedLocation.value.location === from &&
-//         switchedLocation.value.locationID === fromID
-//       ) {
-//         return "-";
-//       }
-//       //
-//       else if (
-//         switchedLocation.value.location === to &&
-//         switchedLocation.value.locationID === toID
-//       ) {
-//         return "+";
-//       }
-//     }
-//   }
-// };
-
-// Router create link to locations function
+// Router create link to locations
 const routerLocationsFunc = (locationID, location) => {
   if (location === "project") {
     router.push(`/projects/${locationID}`);
@@ -385,7 +366,7 @@ const routerLocationsFunc = (locationID, location) => {
     alert("Путь не найден (warehouse :id... routerLocationsFunc )");
   }
 };
-// Router create link to owner  function
+// Router create link to owner
 const routerUsersFunc = (ownerID, ownerType) => {
   if (ownerType === "company") {
     router.push(`/organizations/${ownerID}`);
@@ -396,6 +377,7 @@ const routerUsersFunc = (ownerID, ownerType) => {
   }
 };
 
+// Добавляем знак +/- к транзакции
 const addSignToTransaction = (
   locationFromID,
   locationFrom,
@@ -414,6 +396,28 @@ const addSignToTransaction = (
     ) {
       return "+";
     }
+  }
+};
+
+// скрываем некоторые элементы по условию
+const hide = () => {
+  // console.log(window.screen.width);
+  if (switchedLocation.value.location === "all" && window.screen.width < 576) {
+    return `display: none`;
+  }
+};
+
+// функции раскраски
+const locationMarkColorized = (location: string) => {
+  if (location) {
+    return `mark_${location}`;
+  }
+};
+const historyMarkColorized = (transactionType: string, location: string) => {
+  if (transactionType && transactionType !== "move" && !location) {
+    return `mark_history_${transactionType}`;
+  } else if (transactionType && transactionType === "move" && location) {
+    return `mark_history_${transactionType}_${location}`;
   }
 };
 
@@ -458,27 +462,15 @@ watch(switchedLocation, () => {
   }
 });
 
-// скрываем некоторые элементы по условию
-const hide = () => {
-  console.log(window.screen.width)
-  if (switchedLocation.value.location === "all" && window.screen.width < 576 ) {
-    return `display: none`;
-  }
-};
-
-const locationMarkColorized = (location: string) => {
-  if(location) {
-    return `mark_${location}`
-  }
-}
-
 watch(infoActionBtn, (next, prev) => {
+  // если предыдущая - available
   if (prev === "available" && switchedLocation.value.location === "all") {
     switchedLocation.value = {
       location: item.value.location,
       locationID: item.value.locationID,
     };
   }
+  // если следующая - history
   if (next === "history") {
     currentItemTransactions.value = allTransactions.value.filter((element) => {
       if (
@@ -543,7 +535,7 @@ watch(infoActionBtn, (next, prev) => {
               class="item-location_mark"
               :class="locationMarkColorized(item.location)"
               @click="routerLocationsFunc(item.locationID, item.location)"
-              ><label style="cursor: pointer;">{{
+              ><label style="cursor: pointer">{{
                 translateLocation(item.locationID, item.location)
               }}</label>
             </span>
@@ -689,7 +681,9 @@ watch(infoActionBtn, (next, prev) => {
                   Где
                 </th>
                 <th scope="col">Кол-во</th>
-                <th scope="col" class="hide-991" :style="hide()">Собственник</th>
+                <th scope="col" class="hide-991" :style="hide()">
+                  Собственник
+                </th>
                 <th scope="col" class="hide-max-767">Ответственный</th>
               </tr>
             </thead>
@@ -825,6 +819,7 @@ watch(infoActionBtn, (next, prev) => {
         <div class="item-history_block" v-if="infoActionBtn === 'history'">
           <!-- <h3>История</h3> -->
           <table class="table table-by-history">
+            <!-- head of table -->
             <thead class="item-table_header">
               <tr>
                 <th scope="col">Дата</th>
@@ -833,6 +828,7 @@ watch(infoActionBtn, (next, prev) => {
               </tr>
             </thead>
 
+            <!-- body of table -->
             <tbody>
               <div v-if="currentItemTransactions">
                 <div v-if="!currentItemTransactions.length">Нет истории</div>
@@ -846,7 +842,7 @@ watch(infoActionBtn, (next, prev) => {
               >
                 <!-- 1 -->
                 <td scope="col">
-                  <span>{{ transaction.created_at }}</span>
+                  <span>{{ translateDate(transaction.created_at) }}</span>
                 </td>
 
                 <!-- 2 -->
@@ -859,12 +855,7 @@ watch(infoActionBtn, (next, prev) => {
                   >
                     +{{ transaction.qty }}{{ transaction.measure }}
                     <span
-                      style="
-                        background-color: var(--bs-success-bg-subtle);
-                        padding: 4px 10px;
-                        border-radius: 16px;
-                        white-space: nowrap;
-                      "
+                      :class="historyMarkColorized(transaction.transactionType)"
                       >Добавлен</span
                     >
                   </p>
@@ -875,12 +866,7 @@ watch(infoActionBtn, (next, prev) => {
                   >
                     +{{ transaction.qty }}{{ transaction.measure }}
                     <span
-                      style="
-                        background-color: var(--bs-success-bg-subtle);
-                        padding: 4px 10px;
-                        border-radius: 16px;
-                        white-space: nowrap;
-                      "
+                      :class="historyMarkColorized(transaction.transactionType)"
                       >Приход</span
                     >
                   </p>
@@ -898,12 +884,7 @@ watch(infoActionBtn, (next, prev) => {
                       )
                     }}{{ transaction.qty }}{{ transaction.measure }}
                     <span
-                      style="
-                        background-color: var(--bs-danger-bg-subtle);
-                        padding: 4px 10px;
-                        border-radius: 16px;
-                        white-space: nowrap;
-                      "
+                      :class="historyMarkColorized(transaction.transactionType)"
                       >Расход</span
                     >
                   </p>
@@ -927,11 +908,11 @@ watch(infoActionBtn, (next, prev) => {
                     <div class="transaction_path">
                       <!-- transaction location from -->
                       <div
-                        style="
-                          background-color: var(--bs-primary-bg-subtle);
-                          padding: 4px 10px;
-                          border-radius: 16px;
-                          white-space: nowrap;
+                        :class="
+                          historyMarkColorized(
+                            transaction.transactionType,
+                            transaction.locationFrom
+                          )
                         "
                         class="link_hover"
                         @click="
@@ -957,12 +938,12 @@ watch(infoActionBtn, (next, prev) => {
                         >
                         <!--  -->
                         <span
-                          style="
-                            background-color: var(--bs-primary-bg-subtle);
-                            padding: 4px 10px;
-                            border-radius: 16px;
-                            white-space: nowrap;
-                            margin-left: 0.5rem;
+                        style="margin-left: 0.5rem;"
+                          :class="
+                            historyMarkColorized(
+                              transaction.transactionType,
+                              transaction.locationTo
+                            )
                           "
                           class="link_hover"
                           @click="
@@ -1014,8 +995,6 @@ watch(infoActionBtn, (next, prev) => {
   gap: 1rem;
   scrollbar-width: none;
   background-color: var(--bs-secondary-bg);
-  /* background-color: var(--bs-tertiary-bg); */
-  /* border-top: 1px solid var(--bs-border-color); */
   border-bottom: 1px solid var(--bs-border-color);
 }
 .switch-item_wrapper::-webkit-scrollbar {
@@ -1063,7 +1042,7 @@ watch(infoActionBtn, (next, prev) => {
   border-radius: 16px;
 }
 .item-location_mark:hover {
-  border-radius: 16px!important;
+  border-radius: 16px !important;
 }
 .switch-item_el label {
   border-radius: 16px;
@@ -1077,8 +1056,8 @@ watch(infoActionBtn, (next, prev) => {
   background-color: var(--bs-body-color);
   /* background-color: var(--bs-secondary-bg); */
   /* background-color: var(--bs-tertiary-bg); */
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 
 .switch-item_el input[type="radio"]:checked + label {
@@ -1086,13 +1065,13 @@ watch(infoActionBtn, (next, prev) => {
   /* padding: 4px 10px; */
   color: var(--bs-body-bg);
   background-color: var(--bs-body-color);
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 
 .switch-item_el label:hover:after,
 .switch-item_el input[type="radio"]:checked + label:after {
-  content: '';
+  content: "";
   position: absolute;
   bottom: -1rem;
   left: 0;
@@ -1206,22 +1185,23 @@ label #expend-item:checked + .expand-item_icon {
   align-items: center;
 }
 
+/* ********* itemLocations marks colorized ********* */
 /* MARK_PROJECT */
 .mark_project {
   color: var(--bs-success);
   background-color: var(--bs-success-bg-subtle);
 }
 .mark_project:hover {
-  color: var(--bs-success)!important;
-  background-color: var(--bs-success-bg-subtle)!important;
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  color: var(--bs-success) !important;
+  background-color: var(--bs-success-bg-subtle) !important;
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el input[type="radio"]:checked + label.mark_project {
   color: var(--bs-success);
   background-color: var(--bs-success-bg-subtle);
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el label.mark_project:hover:after,
 .switch-item_el input[type="radio"]:checked + label.mark_project:after {
@@ -1230,20 +1210,20 @@ label #expend-item:checked + .expand-item_icon {
 
 /* MARK_SKLAAD */
 .mark_sklad {
-  color: var(--bs-dark)!important;
+  color: var(--bs-dark) !important;
   background-color: var(--bs-primary-bg-subtle);
 }
 .mark_sklad:hover {
-  color: var(--bs-dark)!important;
-  background-color: var(--bs-primary-bg-subtle)!important;
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  color: var(--bs-dark) !important;
+  background-color: var(--bs-primary-bg-subtle) !important;
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el input[type="radio"]:checked + label.mark_sklad {
   /* color: #fff; */
   background-color: var(--bs-primary-bg-subtle);
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el label.mark_sklad:hover:after,
 .switch-item_el input[type="radio"]:checked + label.mark_sklad:after {
@@ -1252,20 +1232,20 @@ label #expend-item:checked + .expand-item_icon {
 
 /* MARK_OFFICE */
 .mark_office {
-  color: var(--bs-dark)!important;
+  color: var(--bs-dark) !important;
   background-color: var(--bs-primary-bg-subtle);
 }
 .mark_office:hover {
-  color: var(--bs-dark)!important;
-  background-color: var(--bs-primary-bg-subtle)!important;
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  color: var(--bs-dark) !important;
+  background-color: var(--bs-primary-bg-subtle) !important;
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el input[type="radio"]:checked + label.mark_office {
   /* color: #fff; */
   background-color: var(--bs-primary-bg-subtle);
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el label.mark_office:hover:after,
 .switch-item_el input[type="radio"]:checked + label.mark_office:after {
@@ -1278,16 +1258,16 @@ label #expend-item:checked + .expand-item_icon {
   background-color: var(--bs-warning-bg-subtle);
 }
 .mark_repair:hover {
-  color: var(--bs-warning)!important;
-  background-color: var(--bs-warning-bg-subtle)!important;
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  color: var(--bs-warning) !important;
+  background-color: var(--bs-warning-bg-subtle) !important;
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el input[type="radio"]:checked + label.mark_repair {
   color: var(--bs-warning);
   background-color: var(--bs-warning-bg-subtle);
-  border-bottom-left-radius: unset; 
-  border-bottom-right-radius: unset; 
+  border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset;
 }
 .switch-item_el label.mark_repair:hover:after,
 .switch-item_el input[type="radio"]:checked + label.mark_repair:after {
@@ -1301,6 +1281,54 @@ label #expend-item:checked + .expand-item_icon {
 .mark_deleted {
   background-color: var(--bs-secondary-bg);
 }
+
+/* ********* history transactions marks colorized ********* */
+/* MARK_HISTORY_CREATED */
+.mark_history_created,
+.mark_history_add,
+.mark_history_sub,
+.mark_history_move_project,
+.mark_history_move_office,
+.mark_history_move_sklad,
+.mark_history_move_repair {
+  padding: 4px 10px;
+  border-radius: 16px;
+  white-space: nowrap;
+}
+
+.mark_history_created {
+  /* background-color: var(--bs-light-bg-subtle); */
+  color: var(--bs-success);
+}
+
+/* MARK_HISTORY_ADD */
+.mark_history_add {
+  /* background-color: var(--bs-light-bg-subtle); */
+  color: var(--bs-success);
+}
+
+/* MARK_HISTORY_SUB */
+.mark_history_sub {
+  /* background-color: var(--bs-light-bg-subtle); */
+  color: var(--bs-danger);
+}
+.mark_history_move_project {
+  color: var(--bs-success);
+  background-color: var(--bs-success-bg-subtle);
+}
+.mark_history_move_office {
+  color: var(--bs-dark);
+  background-color: var(--bs-primary-bg-subtle);
+}
+.mark_history_move_sklad {
+  color: var(--bs-dark);
+  background-color: var(--bs-primary-bg-subtle);
+}
+.mark_history_move_repair {
+  color: var(--bs-warning);
+  background-color: var(--bs-warning-bg-subtle);
+}
+
 .hide-575 {
   display: none;
 }

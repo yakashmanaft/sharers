@@ -247,6 +247,7 @@ const { data: organizations } = useLazyAsyncData("organizations", () =>
   $fetch("/api/organizations/organizations")
 );
 
+// 
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
 
@@ -393,6 +394,8 @@ const onClickOwner = (ownerID: number, ownerType: string) => {
     }
   }
 };
+
+// Раскраски
 const locationLinkColorized = (location: string) => {
   if (location) {
     return `link_${location}`;

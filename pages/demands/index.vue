@@ -315,7 +315,7 @@ const locationColorized = (location: string) => {
 }
 .location_sklad,
 .location_office {
-  color: white;
+  /* color: white; */
   border: none;
   background-color: var(--bs-primary-bg-subtle);
 }

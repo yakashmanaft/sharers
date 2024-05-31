@@ -8,6 +8,8 @@ const router = useRouter();
 const burgerIsOpened = ref(false);
 const accountMenuIsOpened = ref(false);
 
+
+// FEATURES LISTS
 const featuresListAuth = ref([
   {
     path: "/dashboard",
@@ -64,6 +66,7 @@ const featuresListNoAuth = ref([
   },
 ]);
 
+// 
 onMounted(async () => {
   // console.log(useAuthStore().user)
 });
@@ -163,6 +166,8 @@ const translateRoutePath = (path: string) => {
   }
 };
 
+
+// WATCHERS
 watch(burgerIsOpened, () => {
   // console.log(`burgerIsOpened: ${burgerIsOpened.value}`);
   if (burgerIsOpened.value) {
@@ -315,13 +320,14 @@ watch(
                     <div class="account-menu_user">
                       <div class="user_info">
                         <router-link :to="`/partners/${useAuthStore().user.id}`" @click="closeBurgerMenu">
-                          <span style="font-weight: bold">Анфалов</span>
+                          <span style="font-weight: bold">{{ useAuthStore().user.surname}}</span>
                           <div class="user_name">
-                            <span>Сергей</span>
+                            <span>{{ useAuthStore().user.name }}</span>
 
-                            <span>Владимирович</span>
+                            <span>{{ useAuthStore().user.middleName }}</span>
                           </div>
                         </router-link>
+                        
                       </div>
                       <div class="line"></div>
 

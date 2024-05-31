@@ -352,7 +352,7 @@ const toggleExpendedItemBlock = (itemID: number) => {
   }
 };
 
-// Router create link to locations
+// Router create link
 const routerLocationsFunc = (locationID, location) => {
   if (location === "project") {
     router.push(`/projects/${locationID}`);
@@ -366,7 +366,6 @@ const routerLocationsFunc = (locationID, location) => {
     alert("Путь не найден (warehouse :id... routerLocationsFunc )");
   }
 };
-// Router create link to owner
 const routerUsersFunc = (ownerID, ownerType) => {
   if (ownerType === "company") {
     router.push(`/organizations/${ownerID}`);
@@ -938,7 +937,7 @@ watch(infoActionBtn, (next, prev) => {
                         >
                         <!--  -->
                         <span
-                        style="margin-left: 0.5rem;"
+                          style="margin-left: 0.5rem"
                           :class="
                             historyMarkColorized(
                               transaction.transactionType,
@@ -1418,7 +1417,12 @@ label #expend-item:checked + .expand-item_icon {
     flex-direction: column;
     align-items: flex-start;
   }
-  /* .table-by-available .table-row_wrapper */
+  .mark_history_created,
+  .mark_history_add,
+  .mark_history_sub {
+    padding: unset;
+    border-radius: unset;
+  }
 }
 
 @media screen and (min-width: 768px) {

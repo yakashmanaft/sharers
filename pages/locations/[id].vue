@@ -5,7 +5,10 @@
 
       <div>
         <p>
-          Тип: <span>{{ translateLocationType(location.type) }}</span>
+          Тип:
+          <span style="padding: 4px 10px; border-radius: 16px;" :class="locationMarkColorized(location.type)">{{
+            translateLocationType(location.type)
+          }}</span>
         </p>
         <p>
           Адрес: <span>{{ location.address }}</span>
@@ -13,7 +16,12 @@
 
         <p>
           Собственник:
-          <span>{{ location.ownerType }} {{ location.ownerID }}</span>
+          <span
+            style="font-weight: bold"
+            class="link_hover"
+            @click="routerUsersFunc(location.ownerID, location.ownerType)"
+            >{{ translateOwner(location.ownerID, location.ownerType) }}</span
+          >
         </p>
 
         <br />
@@ -69,12 +77,19 @@ useHead({
   ],
 });
 
+//
 const route = useRoute();
+const router = useRouter();
 
+//
 const locations = ref(null);
 const location = ref(null);
 
-const users = ref(null);
+// Дергаем пользователей из БД с помощью функций из стора
+const { users } = storeToRefs(useUsersStore());
+const { loadData } = useUsersStore();
+//
+const organizations = ref(null);
 // const usersInBand = ref(null)
 const {
   pending,
@@ -101,18 +116,12 @@ const {
 
 onMounted(async () => {
   //
+  await loadData();
+  //
   locations.value = await getLocations();
   if (locations.value) {
     location.value = locations.value.find((el) => el.id == route.params.id);
   }
-
-  //
-  //   users.value = await getAllUsers()
-  //   if(users.value) {
-  //     usersInBand.value = users.value.filter(
-  //       (user) => user.groupID === +route.params.id
-  //     )
-  //   }
 
   //
   items.value = items.value.filter(
@@ -120,14 +129,21 @@ onMounted(async () => {
       item.location === location.value.type &&
       item.locationID === location.value.id
   );
+
+  organizations.value = await getOrganizations();
 });
 
+// РАБОТА С БД
 async function getLocations() {
   return await $fetch("/api/locations/locations");
 }
 
 async function getAllUsers() {
   return await $fetch("/api/usersList/users");
+}
+
+async function getOrganizations() {
+  return await $fetch("/api/organizations/organizations");
 }
 
 // translations
@@ -140,6 +156,61 @@ const translateLocationType = (type) => {
     return "Сервисный центр (ремонт)";
   }
 };
+const translateOwner = (ownerID: number, ownerType: string) => {
+  if (ownerID && ownerType && users.value && organizations.value) {
+    if (ownerType === "user") {
+      let userItem = users.value.find((item) => item.id === ownerID);
+      return `${userItem?.surname} ${userItem?.name[0]}. ${userItem?.middleName[0]}.`;
+    } else if (ownerType === "company") {
+      let organizationItem = organizations.value.find(
+        (item) => item.id === ownerID
+      );
+      return organizationItem.title;
+    }
+  } else if (ownerID === 0 && !ownerType) {
+    return `Не соучастник`;
+  }
+};
+
+// Router create link
+const routerUsersFunc = (ownerID: number, ownerType: string) => {
+  if (ownerType === "company") {
+    router.push(`/organizations/${ownerID}`);
+  } else if (ownerType === "user") {
+    router.push(`/partners/${ownerID}`);
+  } else {
+    alert("Путь не найден (warehouse :id... routerUsersFunc )");
+  }
+};
+
+// Раскраски
+const locationMarkColorized = (location: string) => {
+  if (location) {
+    return `mark_${location}`;
+  }
+};
 </script>
 
-<style scoped></style>
+<style scoped>
+.link_hover:hover {
+  color: var(--bs-primary);
+  cursor: pointer;
+}
+
+/* MARK LOCATION COLORIZED */
+/* .mark_project {} 
+ .mark_archive {}
+ .mark_deleted {}
+ НА ДАННОЙ СТРАНИЦЕ НЕ ИСПОЛЬЗУЕТСЯ*/
+
+.mark_sklad {
+  background-color: var(--bs-primary-bg-subtle);
+}
+.mark_office {
+  background-color: var(--bs-primary-bg-subtle);
+}
+.mark_repair {
+  color: var(--bs-warning);
+  background-color: var(--bs-warning-bg-subtle);
+}
+</style>

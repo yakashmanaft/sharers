@@ -117,7 +117,7 @@ const demands = ref([
     deliveryDate: "",
     // type: "building-materials",
     creatorID: 1,
-    responserID: 3,
+    responserID: 2,
     locationType: "project",
     locationID: 1,
   },
@@ -150,6 +150,41 @@ const demands = ref([
     locationID: 5,
   },
 ]);
+
+// demand filter types
+const currentDemandFilterType = ref('all')
+const demandFilterTypes = ref([
+  {
+    name: 'all',
+    title: 'Все'
+  },
+  {
+    name: 'author',
+    title: 'Я автор'
+  },
+  {
+    name: 'contractor',
+    title: 'Я исполнитель'
+  }
+])
+// Фильтры
+const computedDemands = computed(() => {
+  if(demands.value.length) {
+    if(currentDemandFilterType.value === 'all') {
+      return demands.value
+    } else if (currentDemandFilterType.value === 'author') {
+      let filteredDemands = demands.value.filter(demand => demand.creatorID === useAuthStore().user.id)
+      return filteredDemands
+    } else if (currentDemandFilterType.value === 'contractor') {
+      let filteredDemands = demands.value.filter(demand => demand.responserID === useAuthStore().user.id)
+      return filteredDemands
+    } else {
+      alert('Вы пытаетесь воспользоваться несуществуюющим фильтром :)')
+    }
+  } else {
+    return `А что-о ничего нет...`
+  }
+})
 
 const users = ref(null);
 // const userCreatorData = ref(null)
@@ -184,6 +219,8 @@ const refreshLocations = () => refreshNuxtData("locations");
 //   }
 // }
 
+
+// Переводчики
 const translateDemandUsers = (userID) => {
   if (users.value) {
     let demandUserName;
@@ -248,6 +285,7 @@ const translateLocation = (id: any, location: string) => {
   return location;
 };
 
+// Раскраски
 const locationColorized = (location: string) => {
   if (location) {
     return `location_${location}`;
@@ -256,18 +294,23 @@ const locationColorized = (location: string) => {
 </script>
 <template>
   <Container>
-    <h1 style="margin-top: 5rem">Заявки</h1>
+    <h1>Заявки</h1>
 
-    <div style="display: flex; align-items: center; gap: 1rem;;">
-      <p>Все (99+)</p>
-      <p>Я автор (3)</p>
-      <p>Я исполнитель (5)</p>
+    <!-- Фильтры -->
+    <div v-if="demandFilterTypes.length">
+      <fieldset id="demand-filter-types" class="filter-types_wrapper">
+        <div class="filter-types_el" v-for="(element, index) in demandFilterTypes" :key="index">
+          <input type="radio" :id="element.name" name="demand-filter-types" v-model="currentDemandFilterType" :value="element.name">
+          <label :for="element.name">{{ element.title }}</label>
+        </div>
+      </fieldset>
     </div>
 
+    <!-- DEMANDS LIST -->
     <div class="demands_wrapper">
       <div
         class="demands_item"
-        v-for="(demand, index) in demands"
+        v-for="(demand, index) in computedDemands"
         :key="index"
         @click="$router.push(`demands/${demand.id}`)"
       >
@@ -318,5 +361,15 @@ const locationColorized = (location: string) => {
   /* color: white; */
   border: none;
   background-color: var(--bs-primary-bg-subtle);
+}
+@media screen and (max-width: 767px) {
+    h1 {
+        margin-top: 4rem;
+    }
+}
+@media screen and (min-width: 768px) {
+  h1 {
+    margin-top: 6rem;
+  }
 }
 </style>

@@ -89,19 +89,33 @@ useHead({
 <template>
     <Container>
 
-        <h1 style="margin-top: 5rem;">Заявка #{{ $route.params.id  }}</h1> 
+        <h1>Заявка #{{ $route.params.id  }}</h1> 
 
         <div>
 
             <p>Дата создания</p>
-            <p>Желаемая дата реализации</p>
+            <p>Deadline</p>
             <p>Автор</p>
             <p>Контроль реализации</p>
         </div>
 
         <h2></h2>
         <div v-for="(item, index) in currentDemand.itemsList">
-                {{ item }}
+            <p>{{index + 1 }}.{{ item }}</p>
         </div>
     </Container>
 </template>
+
+<style scoped>
+
+@media screen and (max-width: 767px) {
+    h1 {
+        margin-top: 4rem;
+    }
+}
+@media screen and (min-width: 768px) {
+  h1 {
+    margin-top: 6rem;
+  }
+}
+</style>

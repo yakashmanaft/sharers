@@ -399,12 +399,17 @@ const addSignToTransaction = (
 };
 
 // скрываем некоторые элементы по условию
-const hide = () => {
+const hideOwnerCell = () => {
   // console.log(window.screen.width);
   if (switchedLocation.value.location === "all" && window.screen.width < 576) {
     return `display: none`;
   }
 };
+
+const setGridTemplate = () => {
+  if(switchedLocation.value.location !== "all" && window.screen.width < 767)
+  return `grid-template-columns: 30px 1fr 1fr;`
+}
 
 // функции раскраски
 const locationMarkColorized = (location: string) => {
@@ -673,14 +678,14 @@ watch(infoActionBtn, (next, prev) => {
           <!-- Предметы по разным параметрам, но на одной локации -->
           <table class="table table-by-available" v-if="switchedItem.length">
             <thead class="item-table_header">
-              <tr>
+              <tr :style="setGridTemplate()">
                 <th scope="col"></th>
                 <!-- <th scope="col">Наименование</th> -->
                 <th v-if="switchedLocation.location === 'all'" scope="col">
                   Где
                 </th>
                 <th scope="col">Кол-во</th>
-                <th scope="col" class="hide-991" :style="hide()">
+                <th scope="col" class="hide-991" :style="hideOwnerCell()">
                   Собственник
                 </th>
                 <th scope="col" class="hide-max-767">Ответственный</th>
@@ -693,6 +698,7 @@ watch(infoActionBtn, (next, prev) => {
 
               <!--  -->
               <tr
+                :style="setGridTemplate()"
                 class="table-row_wrapper"
                 v-for="element in switchedItem"
                 :key="element.id"
@@ -740,7 +746,7 @@ watch(infoActionBtn, (next, prev) => {
                 <!-- 4 -->
                 <!-- OWNER -->
                 <!-- v-if="switchedLocation.location !== 'all'" -->
-                <td class="span-2 hide-767" scope="col" :style="hide()">
+                <td class="span-2 hide-767" scope="col" :style="hideOwnerCell()">
                   <span
                     style="white-space: nowrap"
                     class="link_hover"
@@ -981,6 +987,12 @@ watch(infoActionBtn, (next, prev) => {
         </div>
       </div>
     </div>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
   </Container>
 </template>
 
@@ -1108,6 +1120,10 @@ watch(infoActionBtn, (next, prev) => {
 .table-by-available .table-row_wrapper td:nth-last-child(2),
 .table-by-history .item-table_header tr th:nth-last-child(1),
 .table-by-history .table-row_wrapper td:nth-last-child(1) {
+  justify-self: flex-end;
+}
+.table-by-available .item-table_header tr th:nth-child(3),
+.table-by-available .table-row_wrapper td:nth-child(3){
   justify-self: flex-end;
 }
 
@@ -1483,6 +1499,13 @@ label #expend-item:checked + .expand-item_icon {
   .switch-item_el label {
     /* white-space: nowrap; */
   }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  /* .table-by-available .item-table_header tr,
+  .table-by-available .table-row_wrapper {
+    grid-template-columns: 30px 1fr 1fr;
+  } */
 }
 
 /* .link {

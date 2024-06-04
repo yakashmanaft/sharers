@@ -25,9 +25,13 @@ const isFlipperNextUserBtnExist = ref(true);
 const wageFund = ref(0);
 const productionFund = ref(0);
 // Ставка заработной платы
+// Значение тянем из БД organiztaions, where user role is MASTER
+// Далее думать как сделать диверсификацию шаблонов должностей и конкретного под них рейтинга / ставки
 const wageRate = ref(1264.0);
-// Приколюхи на стол
+// Приколюхи на стол поидее должны быть остаточные??? или устанавливать лучше вручную? Спросить у Славы
 const rest = ref(1150);
+// 
+
 // Список участников
 const usersInBand = ref(null);
 
@@ -400,6 +404,7 @@ useHead({
       <p>{{ user.role }}</p>
     </div>
 
+    <!-- USER ROlE - MASTER -->
     <div v-if="user.role === 'MASTER'">
       <h3>ЗП (1ая половина февраля)</h3>
       <p>{{ usersInBand.length }} человек</p>

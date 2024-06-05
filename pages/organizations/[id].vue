@@ -46,16 +46,11 @@
             <!-- <option :value="2024">2024</option> -->
           </select>
 
-          <div
-            v-if="fundPeriodArray"
-            style="display: flex; align-items: center; gap: 1rem"
-          >
+          <!-- выбор ФОТ таблицы -->
+          <!-- v-if="fundPeriodArray" -->
+          <div style="display: flex; align-items: center; gap: 1rem">
             <!-- v-for="(period, i) in calculateFundPeriod()" -->
-            <div
-              v-for="(period, i) in calculateFundPeriod()"
-              :key="i"
-              style="cursor: pointer"
-            >
+            <div v-for="(period, i) in computedPeriodList" :key="i">
               <input
                 type="radio"
                 :id="`${i}`"
@@ -66,12 +61,16 @@
                 }"
                 v-model="choosenFundPeriod"
               />
-              <label :for="`${i}`">{{ period.title }}</label>
+              <!-- {{ period.title }} -->
+              <label :for="`${i}`" style="cursor: pointer"
+                >{{period.periodStart}}_{{ period.periodEnd }}</label
+              >
             </div>
           </div>
         </div>
         <!-- Выбор периода просмотра-->
-        <div v-if="computedSalaryFund.length">
+        <!-- v-if="computedSalaryFund.length" -->
+        <div>
           <p>Список ФОТ</p>
           <div
             v-for="fund in computedSalaryFund"
@@ -85,7 +84,7 @@
             <p>band: {{ fund.bandID }}</p>
           </div>
         </div>
-        <div v-else>Ни одной таблицы ФОТ...</div>
+        <div>Ни одной таблицы ФОТ...</div>
       </div>
     </div>
 
@@ -144,8 +143,9 @@ const users = ref(null);
 const usersInBand = ref(null);
 
 // ФОТ
-const currentYear = ref(2024);
+const currentYear = ref();
 const yearsList = ref([]);
+const periodList = ref([]);
 const fundPeriodArray = ref([]);
 const choosenFundPeriod = ref({
   periodStart: "",
@@ -163,26 +163,40 @@ const salaryFundArray = ref([
   {
     id: 1,
     bandID: 2,
+    periodStart: "2023-03-01",
+    periodEnd: "2023-03-30",
+    wageRate: 1264.0,
+  },
+  {
+    id: 2,
+    bandID: 2,
+    periodStart: "2023-04-01",
+    periodEnd: "2023-04-30",
+    wageRate: 1264.0,
+  },
+  {
+    id: 3,
+    bandID: 2,
     periodStart: "2024-04-01",
     periodEnd: "2024-04-30",
     wageRate: 1264.0,
   },
   {
-    id: 2,
+    id: 4,
     bandID: 2,
     periodStart: "2024-05-01",
     periodEnd: "2024-05-15",
     wageRate: 1264.0,
   },
   {
-    id: 3,
+    id: 5,
     bandID: 2,
     periodStart: "2024-05-16",
     periodEnd: "2024-05-30",
     wageRate: 1264.0,
   },
   {
-    id: 4,
+    id: 6,
     bandID: 2,
     periodStart: "2024-06-01",
     periodEnd: "2024-06-30",
@@ -191,19 +205,21 @@ const salaryFundArray = ref([
 ]);
 
 const computedSalaryFund = computed(() => {
-  console.log(choosenFundPeriod.value);
   // currentYear
-  yearsList.value = new Set(
-    salaryFundArray.value.map((num) => num.periodEnd.slice(0, 4))
-  );
 
   // current ФОТ
   return salaryFundArray.value.filter(
-    (item) =>
-      item.bandID === +route.params.id &&
-      item.periodStart === choosenFundPeriod.value.periodStart &&
-      item.periodEnd === choosenFundPeriod.value.periodEnd &&
-      +item.periodEnd.slice(0, 4) === currentYear.value
+    (item) => item.bandID === +route.params.id &&
+    item.periodStart === choosenFundPeriod.value.periodStart &&
+    item.periodEnd === choosenFundPeriod.value.periodEnd
+    // +item.periodEnd.slice(0, 4) === currentYear.value
+  );
+  // return salaryFundArray.value;
+});
+
+const computedPeriodList = computed(() => {
+  return periodList.value.filter(
+    (item) => item.periodEnd.slice(0, 4) === currentYear.value
   );
 });
 
@@ -263,13 +279,37 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
-  // choosenFundPeriod
+  // Выделяем года, где были таблицы ФОТ
+  let yearsSet = new Set(
+    salaryFundArray.value.map((num) => num.periodEnd.slice(0, 4))
+  );
+  yearsList.value = [...yearsSet];
+  currentYear.value = yearsList.value[yearsList.value.length - 1];
+
+  // // Выделяем месяца где были таблицы ФОТ
+  let monthPeriod = new Set(
+    salaryFundArray.value.map((el) => {
+      let obj = {
+        title: "Месяц",
+        periodStart: el.periodStart,
+        periodEnd: el.periodEnd,
+      };
+      return obj;
+    })
+  );
+  periodList.value = [...monthPeriod];
+
+  // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
   if (salaryFundArray.value) {
     let lastFundInArray =
       salaryFundArray.value[salaryFundArray.value.length - 1];
     //
-    choosenFundPeriod.value.periodStart = lastFundInArray.periodStart;
-    choosenFundPeriod.value.periodEnd = lastFundInArray.periodEnd;
+    // choosenFundPeriod.value.periodStart = lastFundInArray.periodStart;
+    // choosenFundPeriod.value.periodEnd = lastFundInArray.periodEnd;
+    choosenFundPeriod.value = {
+      periodStart: lastFundInArray.periodStart,
+      periodEnd: lastFundInArray.periodEnd,
+    };
   }
 });
 
@@ -282,7 +322,10 @@ const calculateFundPeriod = () => {
   };
   // let periodArray = [{a: 1, b: 2}, {a: 1, b: 2}, {a: 1, b: 2}]
   salaryFundArray.value.forEach((el) => {
-    if (el.bandID === +route.params.id) {
+    if (
+      el.bandID === +route.params.id &&
+      +el.periodEnd.slice(0, 4) === currentYear.value
+    ) {
       const date1 = new Date(el.periodStart);
       const date2 = new Date(el.periodEnd);
 
@@ -321,9 +364,9 @@ const calculateFundPeriod = () => {
 
 // Wathers
 watch(choosenFundPeriod, () => {
+  console.log(choosenFundPeriod.value);
   // console.log(choosenFundPeriod.value);
   // console.log(currentYear.value);
-
   // if (salaryFundArray.value) {
   //   let lastFundInArray =
   //     salaryFundArray.value[salaryFundArray.value.length - 1];
@@ -331,6 +374,27 @@ watch(choosenFundPeriod, () => {
   //   choosenFundPeriod.value.periodStart = lastFundInArray.periodStart;
   //   choosenFundPeriod.value.periodEnd = lastFundInArray.periodEnd;
   // }
+});
+watch(currentYear, () => {
+  // При изменении года всегда показываем самую последнюю таблицу ФОТ выбранного года
+  if (salaryFundArray.value) {
+    let fundByYearSet = new Set(
+      salaryFundArray.value.filter(
+        (el) => el.periodEnd.slice(0, 4) === currentYear.value
+      )
+    );
+    let fundByYearArray = [...fundByYearSet];
+
+    let lastFundInArray = fundByYearArray[fundByYearArray.length - 1];
+    // console.log(lastFundInArray);
+    //
+
+    choosenFundPeriod.value = {
+      periodStart: lastFundInArray.periodStart,
+      periodEnd: lastFundInArray.periodEnd,
+    };
+  }
+  // console.log(salaryFundArray.value);
 });
 </script>
 

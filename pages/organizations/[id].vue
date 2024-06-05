@@ -10,8 +10,9 @@
       </div> -->
     </div>
 
+    <!-- USERS IN BAND -->
     <div v-if="usersInBand">
-      <h2>Соучастники банды</h2>
+      <h2>Соучастники</h2>
       <p>Количество соучастников: {{ usersInBand.length }}</p>
       <div>
         <div v-for="(user, index) in usersInBand">
@@ -20,25 +21,95 @@
       </div>
     </div>
 
-    <!-- ТМЦ организации -->
+    <!-- ФОТ -->
+    <!-- Изменения может вносить только пахан -->
+    <!-- v-if="user.role === 'MASTER' -->
     <div>
+      <!-- Заголовок -->
+      <h2>ФОТ</h2>
+
+      <!-- Выбор периода просмотра-->
+      <!-- Фильтры просмотра ФОТ -->
+      <div style="display: flex; align-items: center; gap: 1rem">
+        <!-- Выбор года -->
+        <select name="" id="" v-model="currentYear" style="cursor: pointer">
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+        </select>
+
+        <div
+          v-if="fundPeriodArray"
+          style="display: flex; align-items: center; gap: 1rem"
+        >
+          <div
+            v-for="(period, i) in calculateFundPeriod()"
+            :key="i"
+            style="cursor: pointer"
+          >
+            <input
+              type="radio"
+              :id="`${i}`"
+              name="fund-period"
+              :value="{
+                periodStart: period.periodStart,
+                periodEnd: period.periodEnd
+              }"
+              v-model="choosenFundPeriod"
+            />
+            <label :for="`${i}`">{{ period.title }}</label>
+          </div>
+        </div>
+      </div>
+
+      <br />
+
+      {{ currentYear }}
+      {{ date.toISOString() }}
+
+      <br />
+      <br />
+
+      <div v-if="salaryFundArray">
+        <p>Список ФОТ</p>
+        <div
+          v-for="fund in salaryFundArray.filter(
+            (item) => item.bandID === +$route.params.id
+          )"
+          :key="fund.id"
+          style="display: flex; align-items: center; gap: 1rem"
+        >
+          <p>{{ fund.id }}</p>
+          <p>{{ fund.periodStart }}</p>
+          <p>{{ fund.periodEnd }}</p>
+          <p>wageRate: {{ fund.wageRate }}</p>
+          <p>band: {{ fund.bandID }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ТМЦ организации -->
+    <div v-if="items">
       <!-- Заголовок -->
       <h2>ТМЦ</h2>
       <!--  -->
-      <div v-if="items.length">
-        <div v-for="(item, index) in items" :key="index">
-          {{ item }}
+      <div v-if="pending">Loading...</div>
+      <div v-else>
+        <div v-if="items.length">
+          <div v-for="(item, index) in items" :key="index">
+            {{ item }}
+          </div>
         </div>
+        <div v-else>Ничего нет</div>
       </div>
       <!-- { "id": 160, "uuid": "d8ea7bba-e93d-4994-8b53-ac77880ec59e", "title": "Доска пола", "type": "stuff", "qty": 33, "measure": "кв. м.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T09:23:49.000Z", "update_at": "2024-05-29T09:23:48.700Z" } -->
       <!--  -->
-      <div v-else>Ничего нет</div>
     </div>
   </Container>
 </template>
 
 <script lang="ts" setup>
 import { Container } from "@/shared/container";
+import { onBeforeMount } from "vue";
 
 useHead({
   title: "Банда # ",
@@ -70,6 +141,50 @@ const organization = ref(null);
 const users = ref(null);
 const usersInBand = ref(null);
 
+// ФОТ
+const date = new Date();
+const currentYear = ref(date.getFullYear());
+const fundPeriodArray = ref([]);
+const choosenFundPeriod = ref({
+  periodStart: "",
+  preriodEnd: "",
+});
+const choosenStartDate = ref();
+const choosenEndDate = ref();
+// pseudo object of Fund Salary
+// LONGBLOB or BLOB
+// хотя JSON формат тоже вроде поддерживает
+const salaryFundArray = ref([
+  {
+    id: 1,
+    bandID: 2,
+    periodStart: "2024-04-01",
+    periodEnd: "2024-04-30",
+    wageRate: 1264.0,
+  },
+  {
+    id: 2,
+    bandID: 2,
+    periodStart: "2024-05-01",
+    periodEnd: "2024-05-15",
+    wageRate: 1264.0,
+  },
+  {
+    id: 3,
+    bandID: 2,
+    periodStart: "2024-05-16",
+    periodEnd: "2024-05-30",
+    wageRate: 1264.0,
+  },
+  {
+    id: 4,
+    bandID: 2,
+    periodStart: "2024-06-01",
+    periodEnd: "2024-06-30",
+    wageRate: 1264.0,
+  },
+]);
+
 const {
   pending,
   error,
@@ -93,7 +208,7 @@ const {
   },
 });
 
-onMounted(async () => {
+onBeforeMount(async () => {
   // организации
   organizations.value = await getOrganizations();
   if (organizations.value) {
@@ -101,7 +216,11 @@ onMounted(async () => {
       (company) => company.id == route.params.id
     );
   }
-
+  // тмц организации
+  items.value = items.value.filter(
+    (item) =>
+      item.ownerType === "company" && item.ownerID === organization.value.id
+  );
   // пользователи
   users.value = await getAllUsers();
   if (users.value) {
@@ -109,23 +228,65 @@ onMounted(async () => {
       (user) => user.groupID === +route.params.id
     );
   }
+  async function getOrganizations() {
+    return await $fetch("/api/organizations/organizations");
+  }
 
-  // тмц организации
-  items.value = items.value.filter(
-    (item) =>
-      item.ownerType === 'company' &&
-      item.ownerID === organization.value.id
-  );
+  async function getAllUsers() {
+    return await $fetch("/api/usersList/users");
+  }
 });
 
+onMounted(async () => {});
 
-async function getOrganizations() {
-  return await $fetch("/api/organizations/organizations");
-}
+// вычисляем и оформляем периоды
+const calculateFundPeriod = () => {
+  let periodArray = [];
+  const oneDay = 1000 * 60 * 60 * 24;
+  let options = {
+    month: "long",
+  };
+  // let periodArray = [{a: 1, b: 2}, {a: 1, b: 2}, {a: 1, b: 2}]
+  salaryFundArray.value.forEach((el) => {
+    const date1 = new Date(el.periodStart);
+    const date2 = new Date(el.periodEnd);
 
-async function getAllUsers() {
-  return await $fetch("/api/usersList/users");
-}
+    const monthText = date1.toLocaleDateString("ru-Ru", options);
+    let monthTextUpper = `${monthText[0].toUpperCase()}${monthText.slice(1)}`;
+
+    let diffInTime = date2.getTime() - date1.getTime();
+    const diffInDays = Math.round(diffInTime / oneDay);
+
+    if (diffInDays <= 15 && date1.getDate() >= 1 && date1.getDate() <= 15) {
+      // periodArray.push(`${monthTextUpper} 1`);
+      periodArray.push({
+        title: `${monthTextUpper} 1`,
+        periodStart: `${el.periodStart}`,
+        periodEnd: `${el.periodEnd}`,
+      });
+    } else if (diffInDays <= 15 && date1.getDate() > 15) {
+      // periodArray.push(`${monthTextUpper} 2`);
+      periodArray.push({
+        title: `${monthTextUpper} 2`,
+        periodStart: `${el.periodStart}`,
+        periodEnd: `${el.periodEnd}`,
+      });
+    } else {
+      // periodArray.push(`${monthTextUpper}`);
+      periodArray.push({
+        title: `${monthTextUpper}`,
+        periodStart: `${el.periodStart}`,
+        periodEnd: `${el.periodEnd}`,
+      });
+    }
+  });
+  return periodArray;
+};
+
+// Wathers
+watch(choosenFundPeriod, () => {
+  console.log(choosenFundPeriod.value)
+})
 </script>
 
 <style scoped></style>

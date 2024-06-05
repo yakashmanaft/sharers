@@ -22,6 +22,12 @@ const isFlipperPrevUserBtnExist = ref(true);
 const isFlipperNextUserBtnExist = ref(true);
 
 // ФОТ
+const date = new Date ()
+const currentYear = ref(date.getFullYear())
+const choosenFundPeriod = ref({
+  periodStart: '',
+  preriodEnd: ''
+})
 const wageFund = ref(0);
 const productionFund = ref(0);
 // Ставка заработной платы
@@ -30,7 +36,7 @@ const productionFund = ref(0);
 const wageRate = ref(1264.0);
 // Приколюхи на стол поидее должны быть остаточные??? или устанавливать лучше вручную? Спросить у Славы
 const rest = ref(1150);
-// 
+//
 
 // Список участников
 const usersInBand = ref(null);
@@ -222,8 +228,8 @@ usersInBand.value = [
   {
     id: 15,
     uuid: uuidv4(),
-    name: "Чебасов",
-    surname: "Виталий",
+    name: "Виталий",
+    surname: "Чебасов",
     category: "#2",
     hours: 22,
     stakeIndex: 1.0,
@@ -406,7 +412,28 @@ useHead({
 
     <!-- USER ROlE - MASTER -->
     <div v-if="user.role === 'MASTER'">
-      <h3>ЗП (1ая половина февраля)</h3>
+
+      <!-- Заголовок -->
+      <h3>ФОТ банды</h3>
+
+      <!-- Фильтры просмотра ФОТ -->
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <!-- Выбор года -->
+        <select name="" id="" v-model="currentYear">
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+        </select>
+
+        <!-- Выбор периода -->
+        <p>Январь</p>
+        <p>Февраль</p>
+        <p>Март</p>
+        <p>Апрель</p>
+        <p>Май (1ая)</p>
+        <p>Май (2ая)</p>
+        <p>+</p>
+      </div>
+
       <p>{{ usersInBand.length }} человек</p>
       <p>
         ФОТ (начисленный) <span>{{ wageFund }}</span>
@@ -498,8 +525,8 @@ useHead({
       <!-- { "id": 159, "uuid": "ac07b3c9-c0f2-45dc-a400-b6005d70c098", "title": "Щит опалубочный 1200х3000", "type": "stuff", "qty": 1, "measure": "шт.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T04:46:12.000Z", "update_at": "2024-05-29T04:46:11.784Z" } -->
       <div v-else>Ничего нет</div>
     </div>
-    <br>
-    <br>
+    <br />
+    <br />
   </Container>
 </template>
 

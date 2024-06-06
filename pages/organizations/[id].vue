@@ -34,15 +34,14 @@
       </button>
 
       <!-- ПЕРИОДы и просомтр ФОТ -->
-      <div v-if="computedSalaryFund.length">
+      <div v-if="computedSalaryFund.length !== 0">
         <!-- Фильтры просмотра ФОТ -->
-        <div
-          v-if="computedSalaryFund.length"
-          style="display: flex; align-items: center; gap: 1rem"
-        >
+        <div style="display: flex; align-items: center; gap: 1rem">
           <!-- Выбор года -->
           <select name="" id="" v-model="currentYear" style="cursor: pointer">
-            <option v-for="year in yearsList" :value="year">{{ year }}</option>
+            <option v-for="year in computedYearsList" :value="year">
+              {{ year }}
+            </option>
             <!-- <option :value="2024">2024</option> -->
           </select>
 
@@ -65,10 +64,10 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Таблицы ФОТ -->
         <div
-          v-for="fund in computedSalaryFund"
+          v-for="fund in salaryFundArray.filter(item =>  item.bandID === +route.params.id && item.periodStart === choosenFundPeriod.periodStart && item.periodEnd === choosenFundPeriod.periodEnd)"
           :key="fund.id"
           style="display: flex; align-items: center; gap: 1rem"
         >
@@ -162,54 +161,88 @@ const salaryFundArray = ref([
   {
     id: 2,
     bandID: 2,
+    periodStart: "2023-02-01",
+    periodEnd: "2023-02-29",
+    wageRate: 1264.0,
+  },
+  {
+    id: 3,
+    bandID: 1,
     periodStart: "2023-04-01",
     periodEnd: "2023-04-30",
     wageRate: 1264.0,
   },
   {
-    id: 3,
+    id: 4,
     bandID: 2,
     periodStart: "2024-04-01",
     periodEnd: "2024-04-30",
     wageRate: 1264.0,
   },
   {
-    id: 4,
+    id: 5,
     bandID: 2,
     periodStart: "2024-05-01",
     periodEnd: "2024-05-15",
     wageRate: 1264.0,
   },
   {
-    id: 5,
+    id: 6,
     bandID: 2,
     periodStart: "2024-05-16",
     periodEnd: "2024-05-30",
     wageRate: 1264.0,
   },
   {
-    id: 6,
-    bandID: 2,
+    id: 7,
+    bandID: 1,
     periodStart: "2024-06-01",
     periodEnd: "2024-06-30",
     wageRate: 1264.0,
   },
 ]);
 
+// COMPUTED
 const computedSalaryFund = computed(() => {
   // current ФОТ
   return salaryFundArray.value.filter(
-    (item) =>
-      item.bandID === +route.params.id &&
-      item.periodStart === choosenFundPeriod.value.periodStart &&
-      item.periodEnd === choosenFundPeriod.value.periodEnd
+    (item) => item.bandID === +route.params.id
+    // item.periodStart === choosenFundPeriod.value.periodStart &&
+    // item.periodEnd === choosenFundPeriod.value.periodEnd
   );
 });
 
+const computedYearsList = computed(() => {
+  if (computedSalaryFund.value) {
+    let yearsSet = new Set(
+      computedSalaryFund.value.map((num) => num.periodEnd.slice(0, 4))
+    );
+    yearsList.value = [...yearsSet];
+
+    // Задаем текущий год к показу
+    currentYear.value = yearsList.value[yearsList.value.length - 1];
+
+    return yearsList.value;
+  }
+});
+
 const computedPeriodList = computed(() => {
-  return periodList.value.filter(
-    (item) => item.periodEnd.slice(0, 4) === currentYear.value
-  );
+  if (computedSalaryFund.value) {
+    let monthPeriod = new Set(
+      computedSalaryFund.value.map((el) => {
+        let obj = {
+          periodStart: el.periodStart,
+          periodEnd: el.periodEnd,
+        };
+        return obj;
+      })
+    );
+    periodList.value = [...monthPeriod];
+
+    return periodList.value.filter(
+      (period) => period.periodEnd.slice(0, 4) === currentYear.value
+    );
+  }
 });
 
 const {
@@ -243,6 +276,7 @@ onBeforeMount(async () => {
       (company) => company.id == route.params.id
     );
   }
+
   // тмц организации
   items.value = items.value.filter(
     (item) =>
@@ -268,30 +302,15 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
-  // Выделяем года, где были таблицы ФОТ
-  let yearsSet = new Set(
-    salaryFundArray.value.map((num) => num.periodEnd.slice(0, 4))
-  );
-  yearsList.value = [...yearsSet];
-  currentYear.value = yearsList.value[yearsList.value.length - 1];
-
-  // // Выделяем месяца где были таблицы ФОТ
-  let monthPeriod = new Set(
-    salaryFundArray.value.map((el) => {
-      let obj = {
-        title: "Месяц",
-        periodStart: el.periodStart,
-        periodEnd: el.periodEnd,
-      };
-      return obj;
-    })
-  );
-  periodList.value = [...monthPeriod];
-
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
-  if (salaryFundArray.value) {
+  if (computedSalaryFund.value) {
+
+    // Сортируем да дате окончания отчетного периода. Может имеет смысл добавить строку created_at и по ней сортировать???
+    computedSalaryFund.value.sort((a, b) => new Date(a.periodStart) - new Date(b.periodEnd))
+    
+    
     let lastFundInArray =
-      salaryFundArray.value[salaryFundArray.value.length - 1];
+      computedSalaryFund.value[computedSalaryFund.value.length - 1];
     //
     choosenFundPeriod.value = {
       periodStart: lastFundInArray.periodStart,
@@ -331,25 +350,31 @@ const translateFundPeriod = (periodStart, periodEnd) => {
 // Wathers
 watch(choosenFundPeriod, () => {
   console.log(choosenFundPeriod.value);
+  console.log(computedSalaryFund.value);
 });
 watch(currentYear, () => {
+  console.log(choosenFundPeriod.value);
+  console.log(computedSalaryFund.value);
   // При изменении года всегда показываем самую последнюю таблицу ФОТ выбранного года
-  if (salaryFundArray.value) {
+  if (computedSalaryFund.value) {
     let fundByYearSet = new Set(
-      salaryFundArray.value.filter(
+      computedSalaryFund.value.filter(
         (el) => el.periodEnd.slice(0, 4) === currentYear.value
       )
     );
     //
     let fundByYearArray = [...fundByYearSet];
     let lastFundInArray = fundByYearArray[fundByYearArray.length - 1];
-
     //
     choosenFundPeriod.value = {
       periodStart: lastFundInArray.periodStart,
       periodEnd: lastFundInArray.periodEnd,
     };
+    // 
   }
+});
+watch(periodList, () => {
+  // console.log(choosenFundPeriod.value);
 });
 </script>
 

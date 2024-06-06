@@ -28,6 +28,7 @@ const { loadData } = useUsersStore();
 const headers = ["ID", "Name", "Email"];
 
 const { loggedIn, user, session, clear } = useUserSession();
+
 </script>
 <template>
   <Container>

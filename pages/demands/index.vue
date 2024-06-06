@@ -45,7 +45,7 @@ const demandStatusTypes = ref([
   },
 ]);
 // const demandType = ref([
-//   {  
+//   {
 //     type: 'building-materials',
 //     title: 'Материалы'
 //   }
@@ -55,7 +55,7 @@ const demands = ref([
     id: 1,
     created_At: "2024.02.19",
     updated_At: "2024.02.21",
-    deadline: '2024.06.29',
+    deadline: "2024.06.29",
     // title: "1",
     status: "research",
     deliveryDate: "",
@@ -69,7 +69,7 @@ const demands = ref([
     id: 2,
     created_At: "2024.02.22",
     updated_At: "2024.02.24",
-    deadline: '2024.06.29',
+    deadline: "2024.06.29",
     // title: "Заявка #002",
     status: "picking",
     deliveryDate: "",
@@ -83,7 +83,7 @@ const demands = ref([
     id: 3,
     created_At: "2024.02.23",
     updated_At: "2024.02.25",
-    deadline: '2024.06.29',
+    deadline: "2024.06.29",
     // title: "Заявка #003",
     status: "delivery",
     deliveryDate: "2024.02.25",
@@ -97,7 +97,7 @@ const demands = ref([
     id: 4,
     created_At: "2024.02.24",
     updated_At: "2024.02.25",
-    deadline: '2024.06.29',
+    deadline: "2024.06.29",
     // title: "Заявка #004",
     status: "completed",
     deliveryDate: "2024.02.25",
@@ -111,7 +111,7 @@ const demands = ref([
     id: 5,
     created_At: "2024.02.24",
     updated_At: "2024.02.25",
-    deadline: '2024.06.29',
+    deadline: "2024.06.29",
     // title: "Заявка #004",
     status: "picking",
     deliveryDate: "",
@@ -125,7 +125,7 @@ const demands = ref([
     id: 6,
     created_At: "2024.02.24",
     updated_At: "2024.02.25",
-    deadline: '2024.06.29',
+    deadline: "2024.06.29",
     // title: "Заявка #004",
     status: "completed",
     deliveryDate: "",
@@ -139,7 +139,7 @@ const demands = ref([
     id: 7,
     created_At: "2024.05.29",
     updated_At: "2024.05.01",
-    deadline: '2024.06.29',
+    deadline: "2024.06.29",
     // title: "Заявка #004",
     status: "research",
     deliveryDate: "",
@@ -152,39 +152,43 @@ const demands = ref([
 ]);
 
 // demand filter types
-const currentDemandFilterType = ref('all')
+const currentDemandFilterType = ref("all");
 const demandFilterTypes = ref([
   {
-    name: 'all',
-    title: 'Все'
+    name: "all",
+    title: "Все",
   },
   {
-    name: 'author',
-    title: 'Я автор'
+    name: "author",
+    title: "Я автор",
   },
   {
-    name: 'contractor',
-    title: 'Я исполнитель'
-  }
-])
+    name: "contractor",
+    title: "Я исполнитель",
+  },
+]);
 // Фильтры
 const computedDemands = computed(() => {
-  if(demands.value.length) {
-    if(currentDemandFilterType.value === 'all') {
-      return demands.value
-    } else if (currentDemandFilterType.value === 'author') {
-      let filteredDemands = demands.value.filter(demand => demand.creatorID === useAuthStore().user.id)
-      return filteredDemands
-    } else if (currentDemandFilterType.value === 'contractor') {
-      let filteredDemands = demands.value.filter(demand => demand.responserID === useAuthStore().user.id)
-      return filteredDemands
+  if (demands.value.length) {
+    if (currentDemandFilterType.value === "all") {
+      return demands.value;
+    } else if (currentDemandFilterType.value === "author") {
+      let filteredDemands = demands.value.filter(
+        (demand) => demand.creatorID === useAuthStore().user.id
+      );
+      return filteredDemands;
+    } else if (currentDemandFilterType.value === "contractor") {
+      let filteredDemands = demands.value.filter(
+        (demand) => demand.responserID === useAuthStore().user.id
+      );
+      return filteredDemands;
     } else {
-      alert('Вы пытаетесь воспользоваться несуществуюющим фильтром :)')
+      alert("Вы пытаетесь воспользоваться несуществуюющим фильтром :)");
     }
   } else {
-    return `А что-о ничего нет...`
+    return `А что-о ничего нет...`;
   }
-})
+});
 
 const users = ref(null);
 // const userCreatorData = ref(null)
@@ -210,15 +214,6 @@ async function getUsers() {
 }
 const refreshProjects = () => refreshNuxtData("projects");
 const refreshLocations = () => refreshNuxtData("locations");
-
-// const translateDemandType = (type) => {
-//   if(type) {
-//     return type
-//   } else {
-//     return 'Не прогрузилось...'
-//   }
-// }
-
 
 // Переводчики
 const translateDemandUsers = (userID) => {
@@ -273,14 +268,14 @@ const translateLocation = (id: any, location: string) => {
         return `${locationItem.title}`;
       }
     }
-  //   // ELSE location
-  //   else {
-  //     return alert(
-  //       "demands page index.vue error - strange object.location in translateLocation function"
-  //     );
-  //   }
-  // } else {
-  //   alert("demands page index.vue translateLocation function error");
+    //   // ELSE location
+    //   else {
+    //     return alert(
+    //       "demands page index.vue error - strange object.location in translateLocation function"
+    //     );
+    //   }
+    // } else {
+    //   alert("demands page index.vue translateLocation function error");
   }
   return location;
 };
@@ -299,8 +294,18 @@ const locationColorized = (location: string) => {
     <!-- Фильтры -->
     <div v-if="demandFilterTypes.length">
       <fieldset id="demand-filter-types" class="filter-types_wrapper">
-        <div class="filter-types_el" v-for="(element, index) in demandFilterTypes" :key="index">
-          <input type="radio" :id="element.name" name="demand-filter-types" v-model="currentDemandFilterType" :value="element.name">
+        <div
+          class="filter-types_el"
+          v-for="(element, index) in demandFilterTypes"
+          :key="index"
+        >
+          <input
+            type="radio"
+            :id="element.name"
+            name="demand-filter-types"
+            v-model="currentDemandFilterType"
+            :value="element.name"
+          />
           <label :for="element.name">{{ element.title }}</label>
         </div>
       </fieldset>
@@ -316,14 +321,19 @@ const locationColorized = (location: string) => {
       >
         <!-- <h2>{{ translateDemandType(demand.type) }}</h2> -->
         <!-- <h2>{{ demand.title }}</h2> -->
-        <p>Статус: {{ translateStatus(demand.status) }} <span v-if="demand.status === 'delivery'">{{ demand.deliveryDate }}</span></p>
+        <p>
+          Статус: {{ translateStatus(demand.status) }}
+          <span v-if="demand.status === 'delivery'">{{
+            demand.deliveryDate
+          }}</span>
+        </p>
         <p>Автор: {{ translateDemandUsers(demand.creatorID) }}</p>
         <p>Исполнитель: {{ translateDemandUsers(demand.responserID) }}</p>
         <p v-if="demand.deadline">Deadline: {{ demand.deadline }}</p>
         <span
-        class="location"
-        :class="locationColorized(demand.locationType)"
-        >{{ translateLocation(demand.locationID, demand.locationType) }}</span
+          class="location"
+          :class="locationColorized(demand.locationType)"
+          >{{ translateLocation(demand.locationID, demand.locationType) }}</span
         >
       </div>
     </div>
@@ -362,10 +372,49 @@ const locationColorized = (location: string) => {
   border: none;
   background-color: var(--bs-primary-bg-subtle);
 }
+.filter-types_wrapper {
+  width: 100%;
+  overflow-x: auto;
+  display: flex;
+  align-items: center;
+  scrollbar-width: none;
+}
+.filter-types_wrapper::-webkit-scrollbar {
+  display: none;
+}
+.filter-types_el {
+  white-space: nowrap;
+  position: relative;
+}
+.filter-types_el label {
+  cursor: pointer;
+  border-radius: 16px;
+  transition: all 0.15s ease-in;
+  padding: 4px 10px;
+}
+.filter-types_el label:hover {
+  background-color: var(--bs-secondary-bg);
+}
+.filter-types_el input[type="radio"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  opacity: 0;
+}
+
+.filter-types_el input[type="radio"]:checked + label {
+  color: var(--bs-body-bg);
+  background-color: var(--bs-body-color);
+  border: unset;
+  /* border-bottom-left-radius: unset;
+  border-bottom-right-radius: unset; */
+}
+
 @media screen and (max-width: 767px) {
-    h1 {
-        margin-top: 4rem;
-    }
+  h1 {
+    margin-top: 4rem;
+  }
 }
 @media screen and (min-width: 768px) {
   h1 {

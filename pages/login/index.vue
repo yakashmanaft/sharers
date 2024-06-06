@@ -25,16 +25,17 @@ useHead({
 import { Container } from "@/shared/container";
 
 const { loggedIn, user, session, clear, fetch } = useUserSession();
+
 const router = useRouter();
 // import { useCurrentUserStore } from '@/stores/auth'
 
 // if (user.value) {
 //   router.push("/");
 // }
-// const tempUser = ref({
-//     email: null,
-//     password: null
-// })
+const tempUser = ref({
+  email: null,
+  password: null,
+});
 
 // const users = ref(null)
 
@@ -81,9 +82,13 @@ const router = useRouter();
 // async function getUsers() {
 //     return await $fetch('api/users')
 // }
-const loginloggedIn = () => {
-  useAuthStore().signIn();
-  router.push("/dashboard");
+const loginloggedIn = async () => {
+  // if (tempUser.value.email && tempUser.value.email === user.value.email) {
+  //   } else {
+  //     alert('Пользователь не найден')
+  // }
+    await useAuthStore().signIn();
+    router.push("/dashboard");
 };
 const onClickRegister = () => {
   alert("В разработке");
@@ -95,23 +100,25 @@ const onClickRegister = () => {
     <div
       style="
         width: 100%;
-        height: 80vh;
+        height: 100vh;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
       "
     >
-      <h1 style="margin-top: 5rem;">Login</h1>
-      <button @click="loginloggedIn">Sign IN</button>
+      <h1 style="margin-top: 5rem">Вход</h1>
 
-      <button @click="onClickRegister">Зарегистрироваться</button>
-      <!--     
-            <div>
-                <label for="login">Введите имейл</label>
-                <input id='login' v-model="tempUser.email" type="text">
-            </div>
+      <!-- <button @click="onClickRegister">Зарегистрироваться</button> -->
 
+      <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+        <label for="login">Введите имейл</label>
+        <input id="login" v-model="tempUser.email" type="text" />
+      </div>
+      <br>
+
+      <button @click="loginloggedIn">Войти</button>
+      <!--
             <div>
                 <label for="password">Введите пароль</label>
                 <input id='password' v-model="tempUser.password" type="password">

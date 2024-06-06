@@ -303,7 +303,7 @@ onBeforeMount(async () => {
 
 onMounted(async () => {
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
-  if (computedSalaryFund.value) {
+  if (computedSalaryFund.value.length) {
 
     // Сортируем да дате окончания отчетного периода. Может имеет смысл добавить строку created_at и по ней сортировать???
     computedSalaryFund.value.sort((a, b) => new Date(a.periodStart) - new Date(b.periodEnd))
@@ -349,12 +349,12 @@ const translateFundPeriod = (periodStart, periodEnd) => {
 
 // Wathers
 watch(choosenFundPeriod, () => {
-  console.log(choosenFundPeriod.value);
-  console.log(computedSalaryFund.value);
+  // console.log(choosenFundPeriod.value);
+  // console.log(computedSalaryFund.value);
 });
 watch(currentYear, () => {
-  console.log(choosenFundPeriod.value);
-  console.log(computedSalaryFund.value);
+  // console.log(choosenFundPeriod.value);
+  // console.log(computedSalaryFund.value);
   // При изменении года всегда показываем самую последнюю таблицу ФОТ выбранного года
   if (computedSalaryFund.value) {
     let fundByYearSet = new Set(

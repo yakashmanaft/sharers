@@ -1,4 +1,12 @@
+// import { useUsersStore } from '@/stores/users'
+
+// const { loadData } = useUsersStore();
+// const { users } = useUsersStore()
+
 export default defineEventHandler(async (event) => {
+
+    // await loadData()
+    // console.log(users.value)
 
     const body = await readBody(event)
 
@@ -11,7 +19,7 @@ export default defineEventHandler(async (event) => {
         surname: 'Анфалов',
         name: 'Сергей',
         middleName: 'Владимирович',
-        role: 'ADMIN' 
+        role: 'ADMIN'
     }
     // const user = {
     //     event.context.body,

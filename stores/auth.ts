@@ -1,27 +1,51 @@
 import { defineStore } from 'pinia'
 
+
+// await loadData()
+// // const users = loadData()
+
+// const promise = new Promise(function (resolve, reject) {
+//     const data = loadData() // делаем асинхронную операцию: запрос в БД, API, etc.
+//     resolve(data) // переводим промис в состояние fulfilled. Результатом выполнения будет объект data
+// })
+// const errorPromise = new Promise(function (resolve, reject) {
+//     reject(new Error('ошибка')) // переводим промис в состояние rejected. Результатом выполнения будет объект Error
+// })
+
+// console.log(promise)
+// console.log(errorPromise)
+// console.log(users.value)
+
+
 export const useAuthStore = defineStore('Auth', () => {
 
     const { loggedIn, user, session, clear, fetch } = useUserSession()
 
+
+    // const { loadData } = useUsersStore();
+    // const { users } = storeToRefs(useUsersStore());
+
     const signIn = async (loggedUser: any) => {
-        console.log(loggedUser)
+
+
+        const { loadData } = useUsersStore();
+        const { users } = storeToRefs(useUsersStore());
+
         await $fetch('/api/auth/login', {
             method: 'POST',
-            // headers: {
-            //     'Content-Type': 'application/x-www-form-urlencoded',
-            // },
-            // headers: { 'Content-Type': 'multipart/form-data' },
-            headers: { 'content-type':'application/json' },
+            headers: { 'content-type': 'application/json' },
             body: JSON.stringify(
                 loggedUser
             ),
-            // body: loggedUser,
         })
-            // .then((response) => response)
-            // .then((data) => {
-            //     console.log(data)
-            // })
+
+
+        await loadData()
+        if (users.value) {
+            let userObj = users.value.find(item => item.email === loggedUser.email)
+            console.log(userObj)
+        }
+
         await fetch()
     }
 

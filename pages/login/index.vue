@@ -23,8 +23,13 @@ useHead({
   ],
 });
 import { Container } from "@/shared/container";
+import { onBeforeMount } from "vue";
+
+// import { userToLog } from '@/stores/auth';
 
 const { loggedIn, user, session, clear, fetch } = useUserSession();
+// const { userToLog } = useAuthStore()
+// const { userToLog } = setUserSession()
 
 const router = useRouter();
 // import { useCurrentUserStore } from '@/stores/auth'
@@ -33,10 +38,29 @@ const router = useRouter();
 //   router.push("/");
 // }
 const tempUser = ref({
-  email: null,
+  email: 'anfalov@camini-pk.ru',
   password: null,
 });
 
+const login = async () => {
+  // Пользвоатель вводит данные в форму
+  tempUser.value.email = "anfalov@camini-pk.ru";
+  tempUser.value.password = "Anfalov123[eq";
+
+  // Сравниваем с БД
+
+  // Если есть такой в БД - создаем объект уже с id user и передаем в signIn() 
+  // Или в login post будем сравнивать пароли... потом надо думать как шифровать)
+
+  await useAuthStore().signIn(tempUser.value);
+  router.push("/dashboard");
+};
+
+onBeforeMount(() => {
+  // if(user.value) {
+  //   router.push("/dashboard");
+  // }
+});
 // const users = ref(null)
 
 // const store = useCurrentUserStore()
@@ -82,14 +106,14 @@ const tempUser = ref({
 // async function getUsers() {
 //     return await $fetch('api/users')
 // }
-const loginloggedIn = async () => {
-  // if (tempUser.value.email && tempUser.value.email === user.value.email) {
-  //   } else {
-  //     alert('Пользователь не найден')
-  // }
-    await useAuthStore().signIn();
-    router.push("/dashboard");
-};
+// const loginloggedIn = async () => {
+//   // if (tempUser.value.email && tempUser.value.email === user.value.email) {
+//   //   } else {
+//   //     alert('Пользователь не найден')
+//   // }
+//     await useAuthStore().signIn();
+//     router.push("/dashboard");
+// };
 const onClickRegister = () => {
   alert("В разработке");
 };
@@ -111,13 +135,21 @@ const onClickRegister = () => {
 
       <!-- <button @click="onClickRegister">Зарегистрироваться</button> -->
 
-      <div style="display: flex; align-items: center; justify-content: center; flex-direction: column;">
+      <div
+        style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-direction: column;
+        "
+      >
         <label for="login">Введите имейл</label>
         <input id="login" v-model="tempUser.email" type="text" />
       </div>
-      <br>
+      <br />
 
-      <button @click="loginloggedIn">Войти</button>
+      <!-- <button @click="loginloggedIn">Войти</button> -->
+      <button @click="login">Войти</button>
       <!--
             <div>
                 <label for="password">Введите пароль</label>

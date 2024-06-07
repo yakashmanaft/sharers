@@ -41,7 +41,7 @@ export const useAuthStore = defineStore('Auth', () => {
 
 
         await loadData()
-        if (users.value) {
+        if (users.value && loggedUser) {
             let userObj = users.value.find(item => item.email === loggedUser.email)
             console.log(userObj)
         }

@@ -68,7 +68,6 @@ const featuresListNoAuth = ref([
 
 // 
 onMounted(async () => {
-  // console.log(useAuthStore().user)
 });
 
 const logout = () => {
@@ -264,11 +263,13 @@ watch(
               class="header-features__list"
               v-if="useAuthStore().loggedIn === true"
             >
-              <li
-                v-for="(item, index) in featuresListAuth"
-                @click="closeBurgerMenu"
+            <!-- .current-feature -->
+            <!-- :class="{'current-feature': route.path === '/dashboard'}" -->
+            <li
+            v-for="(item, index) in featuresListAuth"
+            @click="closeBurgerMenu"
               >
-                <router-link :to="`${item.path}`">{{ item.title }}</router-link>
+                <router-link :to="`${item.path}`" :class="{'current-feature': route.path === item.path && route.path.includes('partners')}">{{ item.title }}</router-link>
               </li>
             </ul>
 
@@ -430,13 +431,29 @@ a:visited {
   padding: 0;
   margin: 0;
 }
+.router-link-exact-active {
+  color: #fff!important;
+  background-color: green;
+  /* box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2); */
+  padding: 0.3rem;
+  /* padding-top: 1rem; */
+  /* border-top-right-radius: 16px; */
+}
+/* .header-features__list li {
+  background-color: gray;
+} */
 .header-features__list li a {
   text-decoration: none;
 }
-
-/* .user-name {
-  text-wrap: nowrap;
-} */
+.user_list a,
+.account-menu_user .user_info a {
+    background-color: unset!important;
+    color: var(--bs-primary)!important;
+}
+.user_list a {
+  padding: unset!important;
+  padding-left: -1rem!important; 
+}
 .account-menu_user .user_name {
   display: flex;
   gap: 0.3rem;
@@ -520,11 +537,33 @@ a:visited {
   .links_container .header-features__list,
   .links_container .login_wrapper .account-container {
     flex-direction: column;
+    width: 100%;
   }
 
   .header-features__list,
   .account-menu_list {
     align-items: flex-start;
+  }
+
+  /* .header-features__list {
+
+  } */
+
+  .router-link-exact-active {
+    /* color: #fff!important; */
+    /* background-color: green; */
+    position: relative;
+    padding-left: 1rem;
+    margin-left: -1rem;
+    padding: 0.3rem!important;
+  }
+
+  .account-menu_user .user_list a.router-link-exact-active{
+    color: #fff!important;
+    background-color: green!important;
+    padding-left: 1rem!important;
+    margin-left: -1rem;
+    padding: 0.3rem!important;
   }
 
   .login_wrapper {
@@ -552,8 +591,10 @@ a:visited {
     flex-direction: column;
     align-items: center;
   }
-  .account-menu,
-  .header-features__list {
+  .account-menu {
+    margin-left: 1rem;
+  }
+  .header-features__list li {
     padding-left: 1rem;
   }
   .header-features__list {
@@ -639,14 +680,15 @@ a:visited {
   }
 
   .account-menu_user .user_list {
-    margin-top: 1rem;
+    margin-top: 0.6rem;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
+  
 
   .user_logout {
-    margin-top: 0.5rem;
+    margin-top: 1rem;
     /* cursor: pointer; */
   }
   .user_logout span {

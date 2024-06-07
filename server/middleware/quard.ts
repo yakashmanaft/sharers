@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
         '/api/warehouse',
         '/api/projects/projects',
         '/api/locations/locations',
+        '/api/locations/organizations',
     ];
 
     // check if th pathname is in the list of protected routes

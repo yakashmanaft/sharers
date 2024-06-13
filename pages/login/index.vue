@@ -38,22 +38,25 @@ const router = useRouter();
 //   router.push("/");
 // }
 const tempUser = ref({
-  email: 'anfalov@camini-pk.ru',
+  email: "anfalov@camini-pk.ru",
   password: null,
 });
 
 const login = async () => {
   // Пользвоатель вводит данные в форму
-  tempUser.value.email = "anfalov@camini-pk.ru";
-  tempUser.value.password = "Anfalov123[eq";
+  // tempUser.value.email = "anfalov@camini-pk.ru";
+  // tempUser.value.password = "Anfalov123[eq";
 
   // Сравниваем с БД
 
-  // Если есть такой в БД - создаем объект уже с id user и передаем в signIn() 
+  // Если есть такой в БД - создаем объект уже с id user и передаем в signIn()
   // Или в login post будем сравнивать пароли... потом надо думать как шифровать)
-
-  await useAuthStore().signIn(tempUser.value);
-  router.push("/dashboard");
+  if (tempUser.value.email) {
+    await useAuthStore().signIn(tempUser.value);
+    // router.push("/dashboard");
+  } else {
+    alert('Вы не указали email')
+  }
 };
 
 onBeforeMount(() => {

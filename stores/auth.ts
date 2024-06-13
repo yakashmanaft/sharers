@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-
+const router = useRouter();
 
 // await loadData()
 // // const users = loadData()
@@ -43,10 +43,16 @@ export const useAuthStore = defineStore('Auth', () => {
         await loadData()
         if (users.value && loggedUser) {
             let userObj = users.value.find(item => item.email === loggedUser.email)
-            console.log(userObj)
+            if (userObj) {
+                console.log(userObj)
+                router.push('/dashboard')
+                await fetch()   
+            } else {
+                alert('Что-то неверно....')
+            }
+
         }
 
-        await fetch()
     }
 
     return {

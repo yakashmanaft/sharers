@@ -293,7 +293,7 @@
               {{ translateGroupData(user.groupID, user.groupStatus) }}
             </td>
             <td scope="col">{{ user.email }}</td>
-            <td scope="col">
+            <td scope="col" v-if="sessionUser.role === 'ADMIN'">
               <!-- Button trigger edit user modal -->
               <button
                 type="button"
@@ -315,7 +315,7 @@
                 Edit
               </button>
             </td>
-            <td scope="col">
+            <td scope="col" v-if="sessionUser.role === 'ADMIN'">
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -361,6 +361,8 @@ import { Container } from "@/shared/container";
 
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
+
+const sessionUser = useUserSession().user
 
 // Шаблон нового user'a
 const user = ref({

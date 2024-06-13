@@ -67,7 +67,12 @@
 
         <!-- Таблицы ФОТ -->
         <div
-          v-for="fund in salaryFundArray.filter(item =>  item.bandID === +route.params.id && item.periodStart === choosenFundPeriod.periodStart && item.periodEnd === choosenFundPeriod.periodEnd)"
+          v-for="fund in salaryFundArray.filter(
+            (item) =>
+              item.bandID === +route.params.id &&
+              item.periodStart === choosenFundPeriod.periodStart &&
+              item.periodEnd === choosenFundPeriod.periodEnd
+          )"
           :key="fund.id"
           style="display: flex; align-items: center; gap: 1rem"
         >
@@ -86,11 +91,17 @@
       <!-- Заголовок -->
       <h2>ТМЦ</h2>
       <!--  -->
-      <div v-if="pending">Loading...</div>
-      <div v-else>
+      <!-- <div v-if="pending">Loading...</div> -->
+      <div>
         <div v-if="items.length">
-          <div v-for="(item, index) in items" :key="index">
-            {{ item }}
+          <div
+            v-for="(item, index) in items"
+            :key="index"
+            style="display: flex"
+          >
+            <div>{{ item.title }}</div>
+            <div>-{{ item.qty }} {{ item.measure }}</div>
+            <div>-{{ item.location }}_{{ item.ownerID }}</div>
           </div>
         </div>
         <div v-else>Ничего нет</div>
@@ -125,7 +136,7 @@ useHead({
   ],
 });
 
-const { user } = useUserSession()
+const { user } = useUserSession();
 
 const route = useRoute();
 
@@ -148,70 +159,20 @@ const choosenFundPeriod = ref({
 // Модалка созданя нового ФОТ
 const choosenStartDate = ref();
 const choosenEndDate = ref();
-
+// Массив salary funds
+const salaryFundArray = ref([]);
 // pseudo object of Fund Salary
 // LONGBLOB or BLOB
-// хотя JSON формат тоже вроде поддерживает
-const salaryFundArray = ref([
-  {
-    id: 1,
-    bandID: 2,
-    periodStart: "2023-03-01",
-    periodEnd: "2023-03-30",
-    wageRate: 1264.0,
-  },
-  {
-    id: 2,
-    bandID: 2,
-    periodStart: "2023-02-01",
-    periodEnd: "2023-02-29",
-    wageRate: 1264.0,
-  },
-  {
-    id: 3,
-    bandID: 1,
-    periodStart: "2023-04-01",
-    periodEnd: "2023-04-30",
-    wageRate: 1264.0,
-  },
-  {
-    id: 4,
-    bandID: 2,
-    periodStart: "2024-04-01",
-    periodEnd: "2024-04-30",
-    wageRate: 1264.0,
-  },
-  {
-    id: 5,
-    bandID: 2,
-    periodStart: "2024-05-01",
-    periodEnd: "2024-05-15",
-    wageRate: 1264.0,
-  },
-  {
-    id: 6,
-    bandID: 2,
-    periodStart: "2024-05-16",
-    periodEnd: "2024-05-30",
-    wageRate: 1264.0,
-  },
-  {
-    id: 7,
-    bandID: 1,
-    periodStart: "2024-06-01",
-    periodEnd: "2024-06-30",
-    wageRate: 1264.0,
-  },
-]);
+
+// warehouse items
+const items = ref([]);
 
 // COMPUTED
 const computedSalaryFund = computed(() => {
   // current ФОТ
-  return salaryFundArray.value.filter(
-    (item) => item.bandID === +route.params.id
-    // item.periodStart === choosenFundPeriod.value.periodStart &&
-    // item.periodEnd === choosenFundPeriod.value.periodEnd
-  );
+  if (salaryFundArray.value) {
+    return salaryFundArray.value;
+  }
 });
 
 const computedYearsList = computed(() => {
@@ -247,16 +208,37 @@ const computedPeriodList = computed(() => {
   }
 });
 
-const {
-  pending,
-  error,
-  refresh,
-  data: items,
-  status,
-} = await useFetch("/api/warehouse/item", {
-  lazy: false,
-  transform: (items: any) => {
-    return items.sort((x, y) => {
+// const {
+//   pending,
+//   error,
+//   refresh,
+//   data: items,
+//   status,
+// } = await useFetch("/api/warehouse/item", {
+//   lazy: false,
+//   transform: (items: any) => {
+//     return items.sort((x, y) => {
+//       if (x.title < y.title) {
+//         return -1;
+//       }
+
+//       if (x.title > y.title) {
+//         return 1;
+//       }
+
+//       return x.locationID - y.locationID;
+//     });
+//   },
+// });
+
+onBeforeMount(async () => {
+  // warehouse items
+  items.value = await getWarehouseItems();
+  if (items.value) {
+    items.value = items.value.filter(
+      (item) => item.ownerID === +route.params.id
+    );
+    items.value = items.value.sort((x, y) => {
       if (x.title < y.title) {
         return -1;
       }
@@ -267,15 +249,20 @@ const {
 
       return x.locationID - y.locationID;
     });
-  },
-});
+  }
 
-onBeforeMount(async () => {
+  // salary funds
+  salaryFundArray.value = await getSalaryFunds();
+  if (salaryFundArray.value) {
+    salaryFundArray.value = salaryFundArray.value.filter(
+      (item) => item.bandID === +route.params.id
+    );
+  }
   // организации
   organizations.value = await getOrganizations();
   if (organizations.value) {
     organization.value = organizations.value.find(
-      (company) => company.id == route.params.id
+      (company) => company.id == +route.params.id
     );
   }
 
@@ -294,6 +281,16 @@ onBeforeMount(async () => {
   }
 
   //
+  async function getSalaryFunds() {
+    return await $fetch("/api/funds/salary");
+  }
+
+  //
+  async function getWarehouseItems() {
+    return await $fetch("/api/warehouse/item");
+  }
+
+  //
   async function getOrganizations() {
     return await $fetch("/api/organizations/organizations");
   }
@@ -306,11 +303,11 @@ onBeforeMount(async () => {
 onMounted(async () => {
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
   if (computedSalaryFund.value.length) {
-
     // Сортируем да дате окончания отчетного периода. Может имеет смысл добавить строку created_at и по ней сортировать???
-    computedSalaryFund.value.sort((a, b) => new Date(a.periodStart) - new Date(b.periodEnd))
-    
-    
+    computedSalaryFund.value.sort(
+      (a, b) => new Date(a.periodStart) - new Date(b.periodEnd)
+    );
+
     let lastFundInArray =
       computedSalaryFund.value[computedSalaryFund.value.length - 1];
     //
@@ -372,7 +369,7 @@ watch(currentYear, () => {
       periodStart: lastFundInArray.periodStart,
       periodEnd: lastFundInArray.periodEnd,
     };
-    // 
+    //
   }
 });
 watch(periodList, () => {

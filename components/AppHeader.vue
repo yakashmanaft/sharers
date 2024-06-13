@@ -432,12 +432,13 @@ a:visited {
   margin: 0;
 }
 .router-link-exact-active {
-  color: #fff!important;
-  background-color: green;
+  /* color: #fff!important; */
+  /* background-color: green; */
   /* box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2); */
-  padding: 0.3rem;
+  /* padding: 0.3rem; */
   /* padding-top: 1rem; */
   /* border-top-right-radius: 16px; */
+  font-weight: bold;
 }
 /* .header-features__list li {
   background-color: gray;
@@ -467,7 +468,7 @@ a:visited {
   }
   .header-logo span {
     background-color: #fff;
-    padding: 1rem 15rem 0.8rem 0;
+    /* padding: 1rem 15rem 0.8rem 0; */
   }
 
   .links_wrapper {
@@ -555,7 +556,7 @@ a:visited {
     position: relative;
     padding-left: 1rem;
     margin-left: -1rem;
-    padding: 0.3rem!important;
+    /* padding: 0.3rem!important; */
   }
 
   .account-menu_user .user_list a.router-link-exact-active{

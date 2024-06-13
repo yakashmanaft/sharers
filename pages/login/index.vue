@@ -38,14 +38,21 @@ const router = useRouter();
 //   router.push("/");
 // }
 const tempUser = ref({
-  email: "anfalov@camini-pk.ru",
-  password: null,
+  email: "",
+  password: "",
 });
 
 const login = async () => {
+  const { loadData } = useUsersStore();
+  const { users } = storeToRefs(useUsersStore());
   // Пользвоатель вводит данные в форму
   // tempUser.value.email = "anfalov@camini-pk.ru";
   // tempUser.value.password = "Anfalov123[eq";
+  // if (tempUser.value.password) {
+    // const hashedPassword = await bcrypt.hash(tempUser.password, 8);
+
+    // console.log(hashedPassword);
+  // }
 
   // Сравниваем с БД
 
@@ -53,9 +60,11 @@ const login = async () => {
   // Или в login post будем сравнивать пароли... потом надо думать как шифровать)
   if (tempUser.value.email) {
     await useAuthStore().signIn(tempUser.value);
-    // router.push("/dashboard");
+    if (useAuthStore().loggedIn) {
+      router.push("/dashboard");
+    }
   } else {
-    alert('Вы не указали email')
+    alert("Вы не указали email");
   }
 };
 
@@ -148,6 +157,7 @@ const onClickRegister = () => {
       >
         <label for="login">Введите имейл</label>
         <input id="login" v-model="tempUser.email" type="text" />
+        <input id="login" v-model="tempUser.password" type="text" />
       </div>
       <br />
 

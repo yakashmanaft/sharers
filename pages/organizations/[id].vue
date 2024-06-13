@@ -125,6 +125,8 @@ useHead({
   ],
 });
 
+const { user } = useUserSession()
+
 const route = useRoute();
 
 const organizations = ref(null);

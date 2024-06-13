@@ -7,7 +7,7 @@ export default defineEventHandler(async (event) => {
 
     // create a list of endpoints that we want to protect
     const protectedRoutes = [
-        '/api/usersList/users',
+        // '/api/usersList/users',
         '/api/warehouse/item',
         '/api/warehouse',
         '/api/projects/projects',

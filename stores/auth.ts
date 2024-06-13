@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-const router = useRouter();
+
 
 // await loadData()
 // // const users = loadData()
@@ -21,38 +21,32 @@ export const useAuthStore = defineStore('Auth', () => {
 
     const { loggedIn, user, session, clear, fetch } = useUserSession()
 
-
-    // const { loadData } = useUsersStore();
-    // const { users } = storeToRefs(useUsersStore());
-
     const signIn = async (loggedUser: any) => {
 
 
         const { loadData } = useUsersStore();
         const { users } = storeToRefs(useUsersStore());
-
-        await $fetch('/api/auth/login', {
-            method: 'POST',
-            headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(
-                loggedUser
-            ),
-        })
-
-
         await loadData()
-        if (users.value && loggedUser) {
-            let userObj = users.value.find(item => item.email === loggedUser.email)
-            if (userObj) {
-                console.log(userObj)
-                router.push('/dashboard')
-                await fetch()   
-            } else {
-                alert('Что-то неверно....')
-            }
 
+
+        if (users.value && loggedUser) {
+            let userObj = users.value.find(item => item.email === loggedUser.email && item.password === loggedUser.password)
+            if(userObj) {
+
+                await $fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'content-type': 'application/json' },
+                    body: JSON.stringify(
+                        userObj
+                    ),
+                })
+            } else {
+                alert('Введенные данные неверны... auth.ts')
+            }
+            // console.log(userObj)
         }
 
+        await fetch()
     }
 
     return {

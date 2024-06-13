@@ -1,25 +1,18 @@
-// import { useUsersStore } from '@/stores/users'
-
-// const { loadData } = useUsersStore();
-// const { users } = useUsersStore()
 
 export default defineEventHandler(async (event) => {
 
-    // await loadData()
-    // console.log(users.value)
 
     const body = await readBody(event)
 
     const user = {
-        id: 2,
-        // email: 'anfalov@camini-pk.ru',
+        id: body.id,
         email: body.email,
-        // password: 'Anfalov123[eq',
-        password: body.password,
-        surname: 'Анфалов',
-        name: 'Сергей',
-        middleName: 'Владимирович',
-        role: 'ADMIN'
+        // Пароль не показываем...
+        // password: body.password,
+        surname: body.surname,
+        name: body.name,
+        middleName: body.middleName,
+        role: body.role
     }
     // const user = {
     //     event.context.body,

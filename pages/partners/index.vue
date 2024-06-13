@@ -1,6 +1,6 @@
 <template>
   <!-- https://www.youtube.com/watch?v=3MPlTDgQaaE -->
-  <Container>
+  <Container style="padding-top: 5rem;">
     <!-- Modal EDIT USER???-->
     <div
       class="modal fade"
@@ -87,7 +87,7 @@
               <label for="editedUserStatusInGroup" class="form-label"
                 >Status in Group (foreman - бригадир, sectionForeman - начальник
                 участка, worker - рабочий, leader - лидер), projectManager -
-                менеджер проекта (снабжение)</label
+                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant - бухгалтер, marketolog - маркетолог</label
               >
               <input
                 v-model="editedUser.groupStatus"
@@ -119,6 +119,197 @@
       </div>
     </div>
 
+    <!-- MODAL CREATE USER -->
+    <div       
+      class="modal fade"
+      id="userCreateModal"
+      tabindex="-1"
+      aria-labelledby="userCreateModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <h1>Добавить соучастника</h1>
+
+            <!-- Фамилия -->
+            <div class="mb-3">
+              <label for="userSurname" class="form-label">Фамилия</label>
+              <input
+                v-model="user.surname"
+                type="text"
+                class="form-control"
+                id="userSurname"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- ИМЯ -->
+            <div class="mb-3">
+              <label for="userName" class="form-label">Имя</label>
+              <input
+                v-model="user.name"
+                type="text"
+                class="form-control"
+                id="userName"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- Отчество -->
+            <div class="mb-3">
+              <label for="userMiddleName" class="form-label">Отчество</label>
+              <input
+                v-model="user.middleName"
+                type="text"
+                class="form-control"
+                id="userMiddleName"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- Role in WEB SERVICE -->
+            <div class="mb-3">
+              <label for="userRole" class="form-label">Role в сервисе</label>
+              <input
+                v-model="user.role"
+                type="text"
+                class="form-control"
+                id="userRole"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- GROUP ID -->
+            <div class="mb-3">
+              <label for="userGroupID" class="form-label"
+                >groupID (1 - Камини, 2 - банда Славы)</label
+              >
+              <input
+                v-model="user.groupID"
+                type="number"
+                class="form-control"
+                id="userGroupID"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- USER STATUS IN GROUP -->
+            <div class="mb-3">
+              <label for="userStatusInGroup" class="form-label"
+                >Status in Group (foreman - бригадир, sectionForeman - начальник
+                участка, worker - рабочий, leader - лидер), projectManager -
+                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant - бухгалтер, marketolog - маркетолог</label
+              >
+              <input
+                v-model="user.groupStatus"
+                type="text"
+                class="form-control"
+                id="userStatusInGroup"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- EMAIL -->
+            <div class="mb-3">
+              <label for="userEmail" class="form-label">Email</label>
+              <input
+                v-model="user.email"
+                type="text"
+                class="form-control"
+                id="userEmail"
+                aria-describedby="nameHelp"
+              />
+            </div>
+            <!-- PASSWORD -->
+            <div class="mb-3">
+              <label for="userEmail" class="form-label">Password</label>
+              <input
+                v-model="user.password"
+                type="text"
+                class="form-control"
+                id="userEmail"
+                aria-describedby="nameHelp"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              :disabled="createUserBtnIsDisabled"
+              @click.prevent="checkAndAddUser(user)"
+            >
+              Добавить соучастника
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL CREATE COMPANY -->
+    <div       
+      class="modal fade createModal"
+      id="companyCreateModal"
+      tabindex="-1"
+      aria-labelledby="companyCreateModal"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <h1>Добавить банду</h1>
+            <div class="mb-3">
+              <label for="userName" class="form-label">Название</label>
+              <input
+                v-model="company.title"
+                type="text"
+                class="form-control"
+                id="userName"
+                aria-describedby="nameHelp"
+              />
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отмена
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              :disabled="createCompanyBtnIsDisabled"
+              @click.prevent="checkAndCreateCompany(company)"
+            >
+              Добавить банду
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- РАЗОБРАТЬСЯ КАК РЕНДЕРИТЬ ОШИБКУ ЧТО ЛИ... -->
     <!-- <div
       v-if="error"
@@ -134,124 +325,31 @@
         @click="error = null"
       ></button>
     </div> -->
-    <h1 class="mt-5rem">Соучастники</h1>
+    <h1>Соучастники</h1>
 
-    <!-- FORMS ADD SMTHNG -->
-    <div style="display: flex; gap: 2rem; margin-top: 2rem">
-      <!-- Форма добавления соучастника (у кого права создания будут?) -->
-      <form>
-        <h2>Add User</h2>
-        <!-- Фамилия -->
-        <div class="mb-3">
-          <label for="userSurname" class="form-label">Фамилия</label>
-          <input
-            v-model="user.surname"
-            type="text"
-            class="form-control"
-            id="userSurname"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <!-- ИМЯ -->
-        <div class="mb-3">
-          <label for="userName" class="form-label">Имя</label>
-          <input
-            v-model="user.name"
-            type="text"
-            class="form-control"
-            id="userName"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <!-- Отчество -->
-        <div class="mb-3">
-          <label for="userMiddleName" class="form-label">Отчество</label>
-          <input
-            v-model="user.middleName"
-            type="text"
-            class="form-control"
-            id="userMiddleName"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <!-- Role in WEB SERVICE -->
-        <div class="mb-3">
-          <label for="userRole" class="form-label">Role в сервисе</label>
-          <input
-            v-model="user.role"
-            type="text"
-            class="form-control"
-            id="userRole"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <!-- GROUP ID -->
-        <div class="mb-3">
-          <label for="userGroupID" class="form-label"
-            >groupID (1 - Камини, 2 - банда Славы)</label
-          >
-          <input
-            v-model="user.groupID"
-            type="number"
-            class="form-control"
-            id="userGroupID"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <!-- USER STATUS IN GROUP -->
-        <div class="mb-3">
-          <label for="userStatusInGroup" class="form-label"
-            >Status in Group (foreman - бригадир, sectionForeman - начальник
-            участка, worker - рабочий, leader - лидер), projectManager -
-            менеджер проекта (снабжение)</label
-          >
-          <input
-            v-model="user.groupStatus"
-            type="text"
-            class="form-control"
-            id="userStatusInGroup"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <div class="mb-3">
-          <label for="userEmail" class="form-label">Email</label>
-          <input
-            v-model="user.email"
-            type="text"
-            class="form-control"
-            id="userEmail"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          @click.prevent="addUser(user)"
-        >
-          Add User
-        </button>
-      </form>
-      <!-- Форма добавления компании -->
-      <form>
-        <h2>Add Company</h2>
-        <div class="mb-3">
-          <label for="userName" class="form-label">Название</label>
-          <input
-            v-model="company.title"
-            type="text"
-            class="form-control"
-            id="userName"
-            aria-describedby="nameHelp"
-          />
-        </div>
-        <button
-          type="submit"
-          class="btn btn-primary"
-          @click.prevent="addCompany(company)"
-        >
-          Add Company
-        </button>
-      </form>
+    <!-- BTNS OPEN MODAL CREATE -->
+    <div style="display: flex; align-items: center; gap: 1rem;">
+
+      <!-- КНОПКА СОЗДАТЬ Банду NeeD TO CHOOSE ROLE WITH ACCES -->
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#userCreateModal"
+        v-if="sessionUser.role === 'ADMIN'"
+      >
+        Соучастник +
+      </button>
+  
+      <!-- КНОПКА СОЗДАТЬ ПОЛЬЗОВАТЕЛЯ if user session role === 'ADMIN' -->
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-toggle="modal"
+        data-bs-target="#companyCreateModal"
+      >
+        Банда +
+      </button>
     </div>
 
     <!-- Отображение списка соучастников -->
@@ -269,7 +367,7 @@
     <!-- data is loaded -->
     <div v-else>
       <!-- USERS -->
-      <table class="table">
+      <table class="table" style="margin-top: 1rem;">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -358,7 +456,7 @@
 
 <script setup>
 import { Container } from "@/shared/container";
-
+//
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
 
@@ -368,7 +466,7 @@ const sessionUser = useUserSession().user
 const user = ref({
   uuid: null,
   email: null,
-  password: "Anfalov123[eq",
+  password: null,
   name: null,
   middleName: null,
   surname: null,
@@ -395,10 +493,37 @@ const editedUser = ref({
   groupStatus: null,
   role: null,
 });
+
+
+//
+const createCompanyBtnIsDisabled = ref(false)
+const createUserBtnIsDisabled = ref(false)
+
 onMounted(() => {
   // users.value = await getUsers()
   refresh();
   refreshCompanies();
+
+  // reset inputs in modals
+  // companies
+  const createCompanyModalEl = document.getElementById("companyCreateModal");
+  if(createCompanyModalEl) {
+    createCompanyModalEl.addEventListener('hidden.bs.modal', (event) => {
+      company.value = {
+        uuid: null,
+        title: null
+      }
+    })
+  }
+  // users
+  const createUserModalEl = document.getElementById("userCreatemodal");
+  if(createUserModalEl) {
+    createUserModalEl.addEventListener('hidden.bs.modal', (event) => {
+      user.value = {
+        surname: null
+      }
+    })
+  }
 });
 
 // const refreshCompanies = () => refreshNuxtData("companies");
@@ -431,42 +556,77 @@ const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
  * @desc Add user
  * @param user The user to add
  */
-async function addUser(user) {
-  let addedUser = null;
+async function checkAndAddUser(user) {
 
-  if (user) console.log(user);
-  addedUser = await $fetch("api/usersList/users", {
-    method: "POST",
-    body: {
-      uuid: uuidv4(),
-      email: user.email,
-      password: user.password,
-      name: user.name,
-      middleName: user.middleName,
-      surname: user.surname,
-      groupID: user.groupID,
-      groupStatus: user.groupStatus,
-      role: user.role,
-    },
-  });
+  let compareUser = users.value.find(
+    (e) => 
+      e.email === user.email &&
+      // e.password === user.password &&
+      e.name === user.name &&
+      e.middleName === user.middleName &&
+      e.surname === user.surname &&
+      e.groupID === user.groupID &&
+      e.groupStatus === user.groupStatus &&
+      e.role === user.role
+  )
 
-  // if (addedUser) users.value = await getUsers();
-  if (addedUser) refresh();
-}
-
-async function addCompany(company) {
-  let addedCompany = null;
-
-  if (company)
-    addedCompany = await $fetch("api/organizations/organizations", {
+  if(compareUser) {
+    alert('Соучастник уже есть')
+  } else {
+    let addedUser = null;
+  
+    if (user)
+    addedUser = await $fetch("api/usersList/users", {
       method: "POST",
       body: {
         uuid: uuidv4(),
-        title: company.title,
+        email: user.email,
+        password: user.password,
+        name: user.name,
+        middleName: user.middleName,
+        surname: user.surname,
+        groupID: user.groupID,
+        groupStatus: user.groupStatus,
+        role: user.role,
       },
     });
+  
+    // if (addedUser) users.value = await getUsers();
+    if (addedUser) refresh();
+  }
+}
 
-  if (addedCompany) refreshCompanies();
+async function checkAndCreateCompany (company) {
+  let compareCompany = companies.value.find(
+    (e) => 
+      e.title === company.title
+  )
+
+  if(compareCompany) {
+    alert('Банда с таким именем уже существует!')
+  } else {
+    let addedCompany = null;
+  
+    if (company)
+      addedCompany = await $fetch("api/organizations/organizations", {
+        method: "POST",
+        body: {
+          uuid: uuidv4(),
+          title: company.title,
+        },
+      });
+    // reset company comst
+    
+    // refresh list
+    if (addedCompany) refreshCompanies();
+    // company.value = {
+    //   uuid: null,
+    //   title: null
+    // };
+    // addedCompany = null
+    // company = null
+  }
+
 }
 
 /**
@@ -519,7 +679,11 @@ async function editUser(editedUser) {
   if (user) refresh();
 }
 
-// translate
+/**
+ * 
+
+ */
+// translaters
 const translateGroupData = (groupID, groupStatus) => {
   if (companies.value) {
     if (!groupID) {
@@ -531,6 +695,33 @@ const translateGroupData = (groupID, groupStatus) => {
     }
   }
 };
+
+watch(company.value, () => {
+  // console.log(company.value.title)
+  if(company.value.title) {
+    createCompanyBtnIsDisabled.value = false
+  } else {
+    createCompanyBtnIsDisabled.value = true
+  }
+})
+watch(user.value, () => {
+  console.log(user.value.surname) 
+  if(
+    user.value.email &&
+    user.value.password &&
+    user.value.name && 
+    user.value.middleName &&
+    user.value.surname && 
+    user.value.middleName &&
+    user.value.groupID >= 0 &&
+    user.value.groupStatus !== null &&
+    user.value.role
+  ) {
+    createUserBtnIsDisabled.value = false
+  } else {
+    createUserBtnIsDisabled.value = true
+  }
+})
 
 useHead({
   title: "Соучастники",
@@ -556,10 +747,15 @@ useHead({
 </script>
 
 <style scoped>
+
 .link {
   cursor: pointer;
 }
 .mt-5rem {
   margin-top: 5rem;
+}
+
+@media screen and (max-width: 767px) {
+
 }
 </style>

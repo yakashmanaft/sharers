@@ -42,46 +42,46 @@ const rest = ref(1150);
 const usersInBand = ref(null);
 
 usersInBand.value = [
-  {
-    id: 1,
-    uuid: uuidv4(),
-    name: "Вячеслав",
-    surname: "Клименко",
-    category: "#1",
-    hours: 62,
-    // Вписываем вручную
-    stakeIndex: 1.1,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 85900.0,
-  },
-  {
-    id: 2,
-    uuid: uuidv4(),
-    name: "Денис",
-    surname: "Байкалов",
-    category: "#1",
-    hours: 52,
-    stakeIndex: 1.1,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 72000.0,
-  },
-  {
-    id: 3,
-    uuid: uuidv4(),
-    name: "Дмитрий",
-    surname: "Лузин",
-    category: "#1",
-    hours: 52,
-    stakeIndex: 1.1,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 72000.0,
-  },
+  // {
+  //   id: 1,
+  //   uuid: uuidv4(),
+  //   name: "Вячеслав",
+  //   surname: "Клименко",
+  //   category: "#1",
+  //   hours: 62,
+  //   // Вписываем вручную
+  //   stakeIndex: 1.1,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 85900.0,
+  // },
+  // {
+  //   id: 2,
+  //   uuid: uuidv4(),
+  //   name: "Денис",
+  //   surname: "Байкалов",
+  //   category: "#1",
+  //   hours: 52,
+  //   stakeIndex: 1.1,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 72000.0,
+  // },
+  // {
+  //   id: 3,
+  //   uuid: uuidv4(),
+  //   name: "Дмитрий",
+  //   surname: "Лузин",
+  //   category: "#1",
+  //   hours: 52,
+  //   stakeIndex: 1.1,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 72000.0,
+  // },
   {
     id: 4,
     uuid: uuidv4(),
@@ -95,19 +95,19 @@ usersInBand.value = [
     // Вписываем вручную
     salary: 60600.0,
   },
-  {
-    id: 5,
-    uuid: uuidv4(),
-    name: "Александр",
-    surname: "Власов",
-    category: "#1",
-    hours: 48,
-    stakeIndex: 1.1,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 66900.0,
-  },
+  // {
+  //   id: 5,
+  //   uuid: uuidv4(),
+  //   name: "Александр",
+  //   surname: "Власов",
+  //   category: "#1",
+  //   hours: 48,
+  //   stakeIndex: 1.1,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 66900.0,
+  // },
   {
     id: 6,
     uuid: uuidv4(),
@@ -212,19 +212,19 @@ usersInBand.value = [
     // Вписываем вручную
     salary: 51800.0,
   },
-  {
-    id: 14,
-    uuid: uuidv4(),
-    name: "Алексей",
-    surname: "Безматерных",
-    category: "#1",
-    hours: 36,
-    stakeIndex: 0.7,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 31600.0,
-  },
+  // {
+  //   id: 14,
+  //   uuid: uuidv4(),
+  //   name: "Алексей",
+  //   surname: "Безматерных",
+  //   category: "#1",
+  //   hours: 36,
+  //   stakeIndex: 0.7,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 31600.0,
+  // },
   {
     id: 15,
     uuid: uuidv4(),

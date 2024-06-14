@@ -65,8 +65,10 @@
           </div>
         </div>
 
-        <!-- Таблицы ФОТ -->
+        <!-- ПОЛОСА -->
         <div style="border-top: 1px solid blue;"></div>
+
+        <!-- Таблицы ФОТ -->
         <div
           v-for="fund in salaryFundArray.filter(
             (item) =>
@@ -75,18 +77,21 @@
               item.periodEnd === choosenFundPeriod.periodEnd
           )"
           :key="fund.id"
-          style="display: flex; align-items: center; gap: 1rem"
+          style="display: flex; flex-direction: column; align-items: flex-start; justify-content: center;"
         >
-          <!-- <p>{{ fund.id }}</p> -->
-          <p>{{ fund.periodStart }}</p>
-          <p>{{ fund.periodEnd }}</p>
-          <p>wageRate: {{ fund.wageRate }}</p>
-          <p>band: {{ fund.bandID }}</p>
-          <p v-if="fund.list.length">list: 
-            <div v-for="el in fund.list ">
-              {{el}}
-            </div>
-          </p>
+          <div>
+            <p>Период: <span>{{ fund.periodStart }} - {{ fund.periodEnd }}</span></p>
+            <p>{{ fund.list.length }} человек</p>
+          </div>
+
+          <div>
+            <p>wageRate: {{ fund.wageRate }}</p>
+            <p v-if="fund.list.length">list: 
+              <div v-for="el in fund.list ">
+                <span>{{ translateUserName(el.userID) }}: {{el}}</span>
+              </div>
+            </p>
+          </div>
         </div>
       </div>
       <div v-else>Ни одной таблицы ФОТ...</div>
@@ -360,6 +365,15 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     }
   }
 };
+const translateUserName = (userID: any) => {
+  if(users.value) {
+    let elUser = users.value.find(el => el.id === +userID)
+    if(!elUser) {
+      return userID
+    } else 
+     return `${elUser?.surname} ${elUser?.name[0]}. ${elUser?.middleName[0]}.`;
+  }
+}
 
 // Wathers
 watch(choosenFundPeriod, () => {

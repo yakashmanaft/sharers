@@ -81,6 +81,11 @@
           <p>{{ fund.periodEnd }}</p>
           <p>wageRate: {{ fund.wageRate }}</p>
           <p>band: {{ fund.bandID }}</p>
+          <p v-if="fund.list.length">list: 
+            <div v-for="el in fund.list ">
+              {{el}}
+            </div>
+          </p>
         </div>
       </div>
       <div v-else>Ни одной таблицы ФОТ...</div>
@@ -171,6 +176,15 @@ const items = ref([]);
 const computedSalaryFund = computed(() => {
   // current ФОТ
   if (salaryFundArray.value) {
+    salaryFundArray.value.forEach((element) => {
+      try {
+        const result = JSON.parse(element).list;
+        console.log(result);
+      } catch (err) {
+        // 👇️ This runs
+        console.log("Error: ", err.message);
+      }
+    });
     return salaryFundArray.value;
   }
 });

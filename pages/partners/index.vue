@@ -325,7 +325,7 @@
         @click="error = null"
       ></button>
     </div> -->
-    <h1>Соучастники</h1>
+    <h1 class="show-max-767 ">Соучастники</h1>
 
     <!-- BTNS OPEN MODAL CREATE -->
     <div style="display: flex; align-items: center; gap: 1rem;">
@@ -509,19 +509,26 @@ onMounted(() => {
   const createCompanyModalEl = document.getElementById("companyCreateModal");
   if(createCompanyModalEl) {
     createCompanyModalEl.addEventListener('hidden.bs.modal', (event) => {
-      company.value = {
-        uuid: null,
-        title: null
-      }
+      // company.value = {
+      //   uuid: null,
+      //   title: null
+      // }
+      company.value.title = null;
     })
   }
   // users
-  const createUserModalEl = document.getElementById("userCreatemodal");
+  const createUserModalEl = document.getElementById("userCreateModal");
   if(createUserModalEl) {
     createUserModalEl.addEventListener('hidden.bs.modal', (event) => {
-      user.value = {
-        surname: null
-      }
+        user.value.uuid = null
+        user.value.email = null
+        user.value.password = null
+        user.value.name = null
+        user.value.middleName = null,    
+        user.value.surname = null
+        user.value.groupID = 0
+        user.value.groupStatus = null
+        user.value.role = "USER"
     })
   }
 });
@@ -593,6 +600,7 @@ async function checkAndAddUser(user) {
   
     // if (addedUser) users.value = await getUsers();
     if (addedUser) refresh();
+    createUserBtnIsDisabled.value = true
   }
 }
 
@@ -625,8 +633,8 @@ async function checkAndCreateCompany (company) {
     // };
     // addedCompany = null
     // company = null
+    // createCompanyBtnIsDisabled.value = true
   }
-
 }
 
 /**
@@ -697,7 +705,7 @@ const translateGroupData = (groupID, groupStatus) => {
 };
 
 watch(company.value, () => {
-  // console.log(company.value.title)
+  console.log(company.value.title)
   if(company.value.title) {
     createCompanyBtnIsDisabled.value = false
   } else {
@@ -755,6 +763,8 @@ useHead({
 }
 
 @media screen and (max-width: 767px) {
-
+  .show-max-767 {
+      display: none;
+    }
 }
 </style>

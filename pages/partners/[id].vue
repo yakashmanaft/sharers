@@ -82,19 +82,19 @@ usersInBand.value = [
   //   // Вписываем вручную
   //   salary: 72000.0,
   // },
-  {
-    id: 4,
-    uuid: uuidv4(),
-    name: "Михаил",
-    surname: "Лялин",
-    category: "#1",
-    hours: 48,
-    stakeIndex: 1.0,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 60600.0,
-  },
+  // {
+  //   id: 4,
+  //   uuid: uuidv4(),
+  //   name: "Михаил",
+  //   surname: "Лялин",
+  //   category: "#1",
+  //   hours: 48,
+  //   stakeIndex: 1.0,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 60600.0,
+  // },
   // {
   //   id: 5,
   //   uuid: uuidv4(),
@@ -121,19 +121,19 @@ usersInBand.value = [
     // Вписываем вручную
     salary: 82100.0,
   },
-  {
-    id: 7,
-    uuid: uuidv4(),
-    name: "Сергей",
-    surname: "Майер",
-    hours: 62,
-    stakeIndex: 1.1,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 85900.0,
-    category: "#1",
-  },
+  // {
+  //   id: 7,
+  //   uuid: uuidv4(),
+  //   name: "Сергей",
+  //   surname: "Майер",
+  //   hours: 62,
+  //   stakeIndex: 1.1,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 85900.0,
+  //   category: "#1",
+  // },
   {
     id: 8,
     uuid: uuidv4(),

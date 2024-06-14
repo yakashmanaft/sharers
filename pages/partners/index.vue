@@ -1,6 +1,6 @@
 <template>
   <!-- https://www.youtube.com/watch?v=3MPlTDgQaaE -->
-  <Container style="padding-top: 5rem;">
+  <Container style="padding-top: 5rem">
     <!-- Modal EDIT USER???-->
     <div
       class="modal fade"
@@ -87,7 +87,8 @@
               <label for="editedUserStatusInGroup" class="form-label"
                 >Status in Group (foreman - бригадир, sectionForeman - начальник
                 участка, worker - рабочий, leader - лидер), projectManager -
-                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant - бухгалтер, marketolog - маркетолог</label
+                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant -
+                бухгалтер, marketolog - маркетолог</label
               >
               <input
                 v-model="editedUser.groupStatus"
@@ -120,7 +121,7 @@
     </div>
 
     <!-- MODAL CREATE USER -->
-    <div       
+    <div
       class="modal fade"
       id="userCreateModal"
       tabindex="-1"
@@ -202,7 +203,8 @@
               <label for="userStatusInGroup" class="form-label"
                 >Status in Group (foreman - бригадир, sectionForeman - начальник
                 участка, worker - рабочий, leader - лидер), projectManager -
-                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant - бухгалтер, marketolog - маркетолог</label
+                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant -
+                бухгалтер, marketolog - маркетолог</label
               >
               <input
                 v-model="user.groupStatus"
@@ -258,8 +260,8 @@
     </div>
 
     <!-- MODAL CREATE COMPANY -->
-    <div       
-      class="modal fade createModal"
+    <div
+      class="modal fade"
       id="companyCreateModal"
       tabindex="-1"
       aria-labelledby="companyCreateModal"
@@ -325,11 +327,10 @@
         @click="error = null"
       ></button>
     </div> -->
-    <h1>Соучастники</h1>
+    <h1 class="show-max-767">Соучастники</h1>
 
     <!-- BTNS OPEN MODAL CREATE -->
-    <div style="display: flex; align-items: center; gap: 1rem;">
-
+    <div style="display: flex; align-items: center; gap: 1rem">
       <!-- КНОПКА СОЗДАТЬ Банду NeeD TO CHOOSE ROLE WITH ACCES -->
       <button
         type="button"
@@ -340,7 +341,7 @@
       >
         Соучастник +
       </button>
-  
+
       <!-- КНОПКА СОЗДАТЬ ПОЛЬЗОВАТЕЛЯ if user session role === 'ADMIN' -->
       <button
         type="button"
@@ -367,7 +368,7 @@
     <!-- data is loaded -->
     <div v-else>
       <!-- USERS -->
-      <table class="table" style="margin-top: 1rem;">
+      <table class="table" style="margin-top: 1rem">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -460,7 +461,7 @@ import { Container } from "@/shared/container";
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
 
-const sessionUser = useUserSession().user
+const sessionUser = useUserSession().user;
 
 // Шаблон нового user'a
 const user = ref({
@@ -494,10 +495,9 @@ const editedUser = ref({
   role: null,
 });
 
-
 //
-const createCompanyBtnIsDisabled = ref(false)
-const createUserBtnIsDisabled = ref(false)
+const createCompanyBtnIsDisabled = ref(false);
+const createUserBtnIsDisabled = ref(false);
 
 onMounted(() => {
   // users.value = await getUsers()
@@ -507,22 +507,28 @@ onMounted(() => {
   // reset inputs in modals
   // companies
   const createCompanyModalEl = document.getElementById("companyCreateModal");
-  if(createCompanyModalEl) {
-    createCompanyModalEl.addEventListener('hidden.bs.modal', (event) => {
+  if (createCompanyModalEl) {
+    createCompanyModalEl.addEventListener("hidden.bs.modal", (event) => {
       company.value = {
         uuid: null,
-        title: null
-      }
-    })
+        title: null,
+      };
+    });
   }
   // users
-  const createUserModalEl = document.getElementById("userCreatemodal");
-  if(createUserModalEl) {
-    createUserModalEl.addEventListener('hidden.bs.modal', (event) => {
-      user.value = {
-        surname: null
-      }
-    })
+  const createUserModalEl = document.getElementById("userCreateModal");
+  if (createUserModalEl) {
+    createUserModalEl.addEventListener("hidden.bs.modal", (event) => {
+      user.value.uuid = null;
+      user.value.email = null;
+      user.value.password = null;
+      user.value.name = null;
+      user.value.middleName = null;
+      user.value.surname = null;
+      user.value.groupID = 0;
+      user.value.groupStatus = null;
+      user.value.role = "USER";
+    });
   }
 });
 
@@ -557,9 +563,8 @@ const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
  * @param user The user to add
  */
 async function checkAndAddUser(user) {
-
   let compareUser = users.value.find(
-    (e) => 
+    (e) =>
       e.email === user.email &&
       // e.password === user.password &&
       e.name === user.name &&
@@ -568,45 +573,42 @@ async function checkAndAddUser(user) {
       e.groupID === user.groupID &&
       e.groupStatus === user.groupStatus &&
       e.role === user.role
-  )
+  );
 
-  if(compareUser) {
-    alert('Соучастник уже есть')
+  if (compareUser) {
+    alert("Соучастник уже есть");
   } else {
     let addedUser = null;
-  
+
     if (user)
-    addedUser = await $fetch("api/usersList/users", {
-      method: "POST",
-      body: {
-        uuid: uuidv4(),
-        email: user.email,
-        password: user.password,
-        name: user.name,
-        middleName: user.middleName,
-        surname: user.surname,
-        groupID: user.groupID,
-        groupStatus: user.groupStatus,
-        role: user.role,
-      },
-    });
-  
+      addedUser = await $fetch("api/usersList/users", {
+        method: "POST",
+        body: {
+          uuid: uuidv4(),
+          email: user.email,
+          password: user.password,
+          name: user.name,
+          middleName: user.middleName,
+          surname: user.surname,
+          groupID: user.groupID,
+          groupStatus: user.groupStatus,
+          role: user.role,
+        },
+      });
+
     // if (addedUser) users.value = await getUsers();
     if (addedUser) refresh();
   }
 }
 
-async function checkAndCreateCompany (company) {
-  let compareCompany = companies.value.find(
-    (e) => 
-      e.title === company.title
-  )
+async function checkAndCreateCompany(company) {
+  let compareCompany = companies.value.find((e) => e.title === company.title);
 
-  if(compareCompany) {
-    alert('Банда с таким именем уже существует!')
+  if (compareCompany) {
+    alert("Банда с таким именем уже существует!");
   } else {
     let addedCompany = null;
-  
+
     if (company)
       addedCompany = await $fetch("api/organizations/organizations", {
         method: "POST",
@@ -616,7 +618,7 @@ async function checkAndCreateCompany (company) {
         },
       });
     // reset company comst
-    
+
     // refresh list
     if (addedCompany) refreshCompanies();
     // company.value = {
@@ -626,7 +628,6 @@ async function checkAndCreateCompany (company) {
     // addedCompany = null
     // company = null
   }
-
 }
 
 /**
@@ -680,7 +681,7 @@ async function editUser(editedUser) {
 }
 
 /**
- * 
+ *
 
  */
 // translaters
@@ -698,30 +699,30 @@ const translateGroupData = (groupID, groupStatus) => {
 
 watch(company.value, () => {
   // console.log(company.value.title)
-  if(company.value.title) {
-    createCompanyBtnIsDisabled.value = false
+  if (company.value.title) {
+    createCompanyBtnIsDisabled.value = false;
   } else {
-    createCompanyBtnIsDisabled.value = true
+    createCompanyBtnIsDisabled.value = true;
   }
-})
+});
 watch(user.value, () => {
-  console.log(user.value.surname) 
-  if(
+  console.log(user.value);
+  if (
     user.value.email &&
     user.value.password &&
-    user.value.name && 
+    user.value.name &&
     user.value.middleName &&
-    user.value.surname && 
+    user.value.surname &&
     user.value.middleName &&
     user.value.groupID >= 0 &&
     user.value.groupStatus !== null &&
     user.value.role
   ) {
-    createUserBtnIsDisabled.value = false
+    createUserBtnIsDisabled.value = false;
   } else {
-    createUserBtnIsDisabled.value = true
+    createUserBtnIsDisabled.value = true;
   }
-})
+});
 
 useHead({
   title: "Соучастники",
@@ -747,7 +748,6 @@ useHead({
 </script>
 
 <style scoped>
-
 .link {
   cursor: pointer;
 }
@@ -756,6 +756,8 @@ useHead({
 }
 
 @media screen and (max-width: 767px) {
-
+  .show-max-767 {
+    display: none;
+  }
 }
 </style>

@@ -87,9 +87,9 @@ useHead({
 
 
 <template>
-    <Container>
+    <Container style="margin-top: 5rem;">
 
-        <h1>Заявка #{{ $route.params.id  }}</h1> 
+        <h1 class="show-max-767">Заявка #{{ $route.params.id  }}</h1> 
 
         <div>
 
@@ -109,13 +109,16 @@ useHead({
 <style scoped>
 
 @media screen and (max-width: 767px) {
-    h1 {
+    /* h1 {
         margin-top: 4rem;
+    } */
+         .show-max-767 {
+      display: none;
     }
 }
 @media screen and (min-width: 768px) {
-  h1 {
+  /* h1 {
     margin-top: 6rem;
-  }
+  } */
 }
 </style>

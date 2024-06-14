@@ -1,6 +1,6 @@
 <template>
-  <Container>
-    <h1 style="margin-top: 5rem">Банда #{{ $route.params.id }}</h1>
+  <Container style="padding-top: 5rem">
+    <h1 class="show-max-767">Банда #{{ $route.params.id }}</h1>
 
     <div v-if="organization">
       <p>{{ organization.title }}</p>
@@ -66,6 +66,7 @@
         </div>
 
         <!-- Таблицы ФОТ -->
+        <div style="border-top: 1px solid blue;"></div>
         <div
           v-for="fund in salaryFundArray.filter(
             (item) =>
@@ -391,4 +392,10 @@ watch(periodList, () => {
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+  @media screen and (max-width: 767px) {
+    .show-max-767 {
+      display: none;
+    }
+  }
+</style>

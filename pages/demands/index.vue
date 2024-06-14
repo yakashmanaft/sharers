@@ -288,8 +288,8 @@ const locationColorized = (location: string) => {
 };
 </script>
 <template>
-  <Container>
-    <h1>Заявки</h1>
+  <Container style="margin-top: 5rem;">
+    <h1 class="show-max-767">Заявки</h1>
 
     <!-- Фильтры -->
     <div v-if="demandFilterTypes.length">
@@ -412,13 +412,16 @@ const locationColorized = (location: string) => {
 }
 
 @media screen and (max-width: 767px) {
-  h1 {
+  /* h1 {
     margin-top: 4rem;
+  } */
+  .show-max-767 {
+    display: none;
   }
 }
 @media screen and (min-width: 768px) {
-  h1 {
+  /* h1 {
     margin-top: 6rem;
-  }
+  } */
 }
 </style>

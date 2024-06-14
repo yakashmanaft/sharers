@@ -158,8 +158,8 @@ watch(project.value, () => {
 });
 </script>
 <template>
-  <Container>
-    <h1 style="margin-top: 5rem">Проекты</h1>
+  <Container style="padding-top: 5rem" >
+    <h1 class="show-max-767">Проекты</h1>
 
     <!-- fetch data is error -->
     <div v-if="error">
@@ -409,5 +409,10 @@ watch(project.value, () => {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+@media screen and (max-width: 767px) {
+  .show-max-767 {
+    display: none;
+  }
 }
 </style>

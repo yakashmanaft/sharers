@@ -6,7 +6,7 @@
     <div class="dashboard-container">
 
       <!--  -->
-      <div class="dashboard-item">
+      <div class="dashboard-item" @click="router.push('/projects')">
         <h2 class="dashboard-item_header">Проекты</h2>
         <div class="dashboard-item_indicator">
           2 шт.
@@ -14,7 +14,7 @@
       </div>
 
       <!--  -->
-      <div class="dashboard-item">
+      <div class="dashboard-item" @click="router.push('/partners')">
         <h2 class="dashboard-item_header">Соучастники</h2>
         <div class="dashboard-item_indicator">
           12 Соучастников
@@ -25,7 +25,7 @@
       </div>
 
       <!--  -->
-      <div class="dashboard-item">
+      <div class="dashboard-item" @click="router.push('/demands')">
         <h2 class="dashboard-item_header">Заявки</h2>
         <div class="dashboard-item_indicator">
           3 Акутальные 
@@ -39,7 +39,7 @@
       </div>
 
       <!--  -->
-      <div class="dashboard-item">
+      <div class="dashboard-item" @click="router.push('/warehouse')">
         <h2 class="dashboard-item_header">Склад</h2>
         <div class="dashboard-item_indicator">
           3 220 300,00 Потенциальная капитализация
@@ -65,6 +65,8 @@
 
 <script lang="ts" setup>
 import { Container } from "@/shared/container";
+
+const router = useRouter();
 
 useHead({
   title: "Доска | Соучастники",

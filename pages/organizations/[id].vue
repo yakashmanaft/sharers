@@ -357,9 +357,9 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     const diffInDays = Math.round(diffInTime / oneDay);
 
     if (diffInDays <= 15 && date1.getDate() >= 1 && date1.getDate() <= 15) {
-      return `${monthTextUpper} 1`;
+      return `${monthTextUpper} (1ая)`;
     } else if (diffInDays <= 15 && date1.getDate() > 15) {
-      return `${monthTextUpper} 2`;
+      return `${monthTextUpper} (2ая)`;
     } else {
       return `${monthTextUpper}`;
     }

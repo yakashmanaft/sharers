@@ -134,84 +134,84 @@ usersInBand.value = [
   //   salary: 85900.0,
   //   category: "#1",
   // },
-  {
-    id: 8,
-    uuid: uuidv4(),
-    name: "Максим",
-    surname: "Плюснин",
-    category: "#1",
-    hours: 57,
-    stakeIndex: 0.9,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 64400.0,
-  },
-  {
-    id: 9,
-    uuid: uuidv4(),
-    name: "Владимир",
-    surname: "Юров",
-    category: "#1",
-    hours: 69,
-    stakeIndex: 1.1,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 96000.0,
-  },
-  {
-    id: 10,
-    uuid: uuidv4(),
-    name: "Никита",
-    surname: "Решетников",
-    category: "#1",
-    hours: 49,
-    stakeIndex: 0.7,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 42900.0,
-  },
-  {
-    id: 11,
-    uuid: uuidv4(),
-    name: "Вадим",
-    surname: "Ердяков",
-    category: "#1",
-    hours: 21,
-    stakeIndex: 0.6,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 16400.0,
-  },
-  {
-    id: 12,
-    uuid: uuidv4(),
-    name: "Александр",
-    surname: "Атрошкин",
-    category: "#1",
-    hours: 29,
-    stakeIndex: 0.7,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 25200.0,
-  },
-  {
-    id: 13,
-    uuid: uuidv4(),
-    name: "Олег",
-    surname: "Печенкин",
-    category: "#1",
-    hours: 58,
-    stakeIndex: 0.7,
-    // stakeHoursIndex: ???
-    // salary: ???
-    // Вписываем вручную
-    salary: 51800.0,
-  },
+  // {
+  //   id: 8,
+  //   uuid: uuidv4(),
+  //   name: "Максим",
+  //   surname: "Плюснин",
+  //   category: "#1",
+  //   hours: 57,
+  //   stakeIndex: 0.9,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 64400.0,
+  // },
+  // {
+  //   id: 9,
+  //   uuid: uuidv4(),
+  //   name: "Владимир",
+  //   surname: "Юров",
+  //   category: "#1",
+  //   hours: 69,
+  //   stakeIndex: 1.1,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 96000.0,
+  // },
+  // {
+  //   id: 10,
+  //   uuid: uuidv4(),
+  //   name: "Никита",
+  //   surname: "Решетников",
+  //   category: "#1",
+  //   hours: 49,
+  //   stakeIndex: 0.7,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 42900.0,
+  // },
+  // {
+  //   id: 11,
+  //   uuid: uuidv4(),
+  //   name: "Вадим",
+  //   surname: "Ердяков",
+  //   category: "#1",
+  //   hours: 21,
+  //   stakeIndex: 0.6,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 16400.0,
+  // },
+  // {
+  //   id: 12,
+  //   uuid: uuidv4(),
+  //   name: "Александр",
+  //   surname: "Атрошкин",
+  //   category: "#1",
+  //   hours: 29,
+  //   stakeIndex: 0.7,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 25200.0,
+  // },
+  // {
+  //   id: 13,
+  //   uuid: uuidv4(),
+  //   name: "Олег",
+  //   surname: "Печенкин",
+  //   category: "#1",
+  //   hours: 58,
+  //   stakeIndex: 0.7,
+  //   // stakeHoursIndex: ???
+  //   // salary: ???
+  //   // Вписываем вручную
+  //   salary: 51800.0,
+  // },
   // {
   //   id: 14,
   //   uuid: uuidv4(),

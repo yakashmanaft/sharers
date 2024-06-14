@@ -336,12 +336,12 @@
         class="btn btn-primary"
         data-bs-toggle="modal"
         data-bs-target="#userCreateModal"
-        v-if="sessionUser.role === 'ADMIN'"
+        v-if="sessionUser.role === 'SUPER_ADMIN'"
       >
         Соучастник +
       </button>
   
-      <!-- КНОПКА СОЗДАТЬ ПОЛЬЗОВАТЕЛЯ if user session role === 'ADMIN' -->
+      <!-- КНОПКА СОЗДАТЬ ПОЛЬЗОВАТЕЛЯ if user session role === 'SUPER_ADMIN' -->
       <button
         type="button"
         class="btn btn-primary"
@@ -383,15 +383,14 @@
             <td scope="col">{{ index + 1 }}</td>
             <td scope="col">
               <span @click="$router.push(`/partners/${user.id}`)" class="link">
-                {{ user.surname }} {{ user.name }} {{ user.middleName }} |
-                {{ user.role }}
-              </span>
+                {{ user.surname }} {{ user.name }} {{ user.middleName }}
+              </span> | {{ user.role }}
             </td>
             <td scope="col">
-              {{ translateGroupData(user.groupID, user.groupStatus) }}
+              <span class="link" @click="$router.push(`/organizations/${user.groupID}`)">{{ translateGroupData(user.groupID) }}</span> | {{ user.groupStatus }}
             </td>
             <td scope="col">{{ user.email }}</td>
-            <td scope="col" v-if="sessionUser.role === 'ADMIN'">
+            <td scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">
               <!-- Button trigger edit user modal -->
               <button
                 type="button"
@@ -413,7 +412,7 @@
                 Edit
               </button>
             </td>
-            <td scope="col" v-if="sessionUser.role === 'ADMIN'">
+            <td scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">
               <button
                 type="button"
                 class="btn btn-danger btn-sm"
@@ -692,14 +691,14 @@ async function editUser(editedUser) {
 
  */
 // translaters
-const translateGroupData = (groupID, groupStatus) => {
+const translateGroupData = (groupID) => {
   if (companies.value) {
     if (!groupID) {
       return `Одиночка`;
     } else {
       let group = companies.value.find((company) => company.id === groupID);
       // return `${groupID} | ${groupStatus}`
-      return `${group.title} | ${groupStatus}`;
+      return `${group.title}`;
     }
   }
 };
@@ -757,6 +756,9 @@ useHead({
 
 .link {
   cursor: pointer;
+}
+.link:hover {
+  color: var(--bs-primary)
 }
 .mt-5rem {
   margin-top: 5rem;

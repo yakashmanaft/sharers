@@ -56,7 +56,7 @@ const demands = ref([
     created_At: "2024.02.19",
     updated_At: "2024.02.21",
     deadline: "2024.06.29",
-    // title: "1",
+    type: "stuff",
     status: "research",
     deliveryDate: "",
     // type: "building-materials",
@@ -71,6 +71,7 @@ const demands = ref([
     updated_At: "2024.02.24",
     deadline: "2024.06.29",
     // title: "Заявка #002",
+    type: "consumables",
     status: "picking",
     deliveryDate: "",
     // type: "building-materials",
@@ -85,6 +86,7 @@ const demands = ref([
     updated_At: "2024.02.25",
     deadline: "2024.06.29",
     // title: "Заявка #003",
+    type: "stuff",
     status: "delivery",
     deliveryDate: "2024.02.25",
     // type: "building-materials",
@@ -99,6 +101,7 @@ const demands = ref([
     updated_At: "2024.02.25",
     deadline: "2024.06.29",
     // title: "Заявка #004",
+    type: "stuff",
     status: "completed",
     deliveryDate: "2024.02.25",
     // type: "building-materials",
@@ -113,6 +116,7 @@ const demands = ref([
     updated_At: "2024.02.25",
     deadline: "2024.06.29",
     // title: "Заявка #004",
+    type: "tools",
     status: "picking",
     deliveryDate: "",
     // type: "building-materials",
@@ -127,6 +131,7 @@ const demands = ref([
     updated_At: "2024.02.25",
     deadline: "2024.06.29",
     // title: "Заявка #004",
+    type: 'office equipment',
     status: "completed",
     deliveryDate: "",
     // type: "building-materials",
@@ -141,6 +146,7 @@ const demands = ref([
     updated_At: "2024.05.01",
     deadline: "2024.06.29",
     // title: "Заявка #004",
+    type: "stuff",
     status: "research",
     deliveryDate: "",
     // type: "tools",
@@ -148,6 +154,34 @@ const demands = ref([
     responserID: 15,
     locationType: "sklad",
     locationID: 5,
+  },
+]);
+
+// Категории ТМЦ (пока хардкорно)
+const warehouseCategories = ref([
+  {
+    type: "all",
+    name: "Все",
+  },
+  {
+    type: "tools",
+    name: "Инструмент",
+  },
+  {
+    type: "stuff",
+    name: "Материалы",
+  },
+  {
+    type: "consumables",
+    name: "Расходники",
+  },
+  {
+    type: "technic",
+    name: "Техника",
+  },
+  {
+    type: "office equipment",
+    name: "Оргтехника",
   },
 ]);
 
@@ -280,6 +314,13 @@ const translateLocation = (id: any, location: string) => {
   return location;
 };
 
+const translateType = (type: string) => {
+  let category = warehouseCategories.value.find(el => el.type === type)
+  if(type && category) {
+    return category.name
+  }
+}
+
 // Раскраски
 const locationColorized = (location: string) => {
   if (location) {
@@ -320,15 +361,15 @@ const locationColorized = (location: string) => {
         @click="$router.push(`demands/${demand.id}`)"
       >
         <!-- <h2>{{ translateDemandType(demand.type) }}</h2> -->
-        <!-- <h2>{{ demand.title }}</h2> -->
+        <h2>{{ translateType(demand.type) }}</h2>
         <p>
           Статус: {{ translateStatus(demand.status) }}
           <span v-if="demand.status === 'delivery'">{{
             demand.deliveryDate
           }}</span>
         </p>
-        <p>Автор: {{ translateDemandUsers(demand.creatorID) }}</p>
-        <p>Исполнитель: {{ translateDemandUsers(demand.responserID) }}</p>
+        <!-- <p>Автор: {{ translateDemandUsers(demand.creatorID) }}</p> -->
+        <!-- <p>Исполнитель: {{ translateDemandUsers(demand.responserID) }}</p> -->
         <p v-if="demand.deadline">Deadline: {{ demand.deadline }}</p>
         <span
           class="location"
@@ -343,12 +384,22 @@ const locationColorized = (location: string) => {
 <style scoped>
 .demands_wrapper {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* grid-template-columns: repeat(5, 1fr); */
   /* gap: 1rem; */
+  margin: 1rem auto;
 }
 .demands_item {
   padding: 1rem;
   transition: all 0.2s ease-in;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.demands_item h2,
+.demands_item p {
+  margin: 0;
 }
 .demands_item:hover {
   cursor: pointer;
@@ -357,6 +408,7 @@ const locationColorized = (location: string) => {
 .location {
   padding: 4px 10px;
   border-radius: 16px;
+  white-space: nowrap;
 }
 .location:hover {
   cursor: pointer;
@@ -376,6 +428,7 @@ const locationColorized = (location: string) => {
   width: 100%;
   overflow-x: auto;
   display: flex;
+  gap: 0.2rem;
   align-items: center;
   scrollbar-width: none;
 }
@@ -410,6 +463,16 @@ const locationColorized = (location: string) => {
   /* border-bottom-left-radius: unset;
   border-bottom-right-radius: unset; */
 }
+@media screen and (max-width: 575px) {
+  .demands_wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media screen and (min-width: 576px) and (max-width: 768px) {
+  .demands_wrapper {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 
 @media screen and (max-width: 767px) {
   /* h1 {
@@ -423,5 +486,15 @@ const locationColorized = (location: string) => {
   /* h1 {
     margin-top: 6rem;
   } */
+}
+@media screen and (min-width: 768px) and (max-width: 1199px) {
+  .demands_wrapper {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+@media screen and (min-width: 1200px) {
+  .demands_wrapper {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 </style>

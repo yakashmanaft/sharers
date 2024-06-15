@@ -338,7 +338,7 @@ watch(project.value, () => {
           <div class="project-completion">
             <span>{{ (project.completion * 100).toFixed(0) }}%</span>
           </div>
-          <div>
+          <div class="project-header">
             <h2>{{ project.title }}</h2>
             <span class="project-address"
               >{{ project.address }} | {{ project.workType }}</span
@@ -346,7 +346,7 @@ watch(project.value, () => {
           </div>
         </div>
         <div class="project-item_right">
-          <span>Куратор проекта: {{ translateCurator(project.curator) }}</span>
+          <span>Куратор: {{ translateCurator(project.curator) }}</span>
           <span
             >Заказчик:
             {{ translatePartner(project.partnerID, project.partnerType) }}</span
@@ -411,6 +411,18 @@ watch(project.value, () => {
   justify-content: center;
 }
 @media screen and (max-width: 767px) {
+  .project-item_container {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;  
+  }
+  .project-item_right {
+    align-items: unset;
+  }
+
+  .project-header {
+    align-self: flex-start;
+  }
   .show-max-767 {
     display: none;
   }

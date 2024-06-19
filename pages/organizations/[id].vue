@@ -13,11 +13,33 @@
     <!-- USERS IN BAND -->
     <div v-if="usersInBand">
       <h2>Соучастники</h2>
-      <p>Количество соучастников: {{ usersInBand.length }}</p>
-      <div>
-        <div v-for="(user, index) in usersInBand">
-          <p>{{ user }}</p>
-        </div>
+
+      <!-- Список участников -->
+      <div class="sharers-list_container">
+          <!-- ICON -->
+          <div class="sharers-list_icon_wrapper">
+            <label>
+              <input type="checkbox" id="sharers-list" />
+              <Icon
+                class="sharers-list_icon"
+                name="material-symbols-light:expand-more"
+                size="28px"
+                @click="toggleSharersList"
+              />
+            </label>
+            <p class="sharers-list_count">{{ usersInBand.length }} человек</p>
+          </div>
+          <!-- LIST -->
+          <div class="sharers-list_wrapper" v-if="sharersListIsOpened">
+            <div v-for="(user, index) in usersInBand">
+              <div style="display: flex; align-items: center;">
+                <p>{{user.surname}}</p>
+                <p>{{user.name}}</p>
+                <p>{{user.middleName}}</p>
+              </div>
+              <p>{{ user }}</p>
+            </div>
+          </div>
       </div>
     </div>
 
@@ -66,7 +88,7 @@
         </div>
 
         <!-- Таблицы ФОТ -->
-        <div style="border-top: 1px solid blue;"></div>
+        <div style="border-top: 1px solid blue"></div>
         <div
           v-for="fund in salaryFundArray.filter(
             (item) =>
@@ -82,11 +104,10 @@
           <p>{{ fund.periodEnd }}</p>
           <p>wageRate: {{ fund.wageRate }}</p>
           <p>band: {{ fund.bandID }}</p>
-          <p v-if="fund.list.length">list: 
-            <div v-for="el in fund.list ">
-              {{el}}
-            </div>
-          </p>
+          <div v-if="fund.list.length">
+            list:
+            <p v-for="(el, i) in fund.list">{{ i + 1 }}. {{ el }}</p>
+          </div>
         </div>
       </div>
       <div v-else>Ни одной таблицы ФОТ...</div>
@@ -151,6 +172,9 @@ const organization = ref(null);
 
 const users = ref(null);
 const usersInBand = ref(null);
+
+// SHARERS LIST
+const sharersListIsOpened = ref(false);
 
 // ФОТ
 const currentYear = ref();
@@ -223,6 +247,11 @@ const computedPeriodList = computed(() => {
   }
 });
 
+
+// SHARERS LIST
+const toggleSharersList = () => {
+  sharersListIsOpened.value = !sharersListIsOpened.value
+}
 // const {
 //   pending,
 //   error,
@@ -393,9 +422,31 @@ watch(periodList, () => {
 </script>
 
 <style scoped>
-  @media screen and (max-width: 767px) {
-    .show-max-767 {
-      display: none;
-    }
+/* list of sharers */
+label #sharers-list {
+  display: none;
+}
+label #sharers-list:checked + .sharers-list_icon {
+  transform: rotate(180deg);
+}
+.sharers-list_icon_wrapper {
+  display: flex;
+  align-items: center;
+}
+.sharers-list_icon_wrapper p {
+  margin: 0;
+}
+.sharers-list_icon {
+  cursor: pointer;
+}
+
+.sharers-list_wrapper {
+  margin-top: 1rem;
+}
+
+@media screen and (max-width: 767px) {
+  .show-max-767 {
+    display: none;
   }
+}
 </style>

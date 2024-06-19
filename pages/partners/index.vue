@@ -374,8 +374,8 @@
             <th scope="col">User</th>
             <th scope="col">Group | Status</th>
             <th scope="col">Email</th>
-            <th scope="col">Edit</th>
-            <th scope="col">Delete</th>
+            <th scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">Edit</th>
+            <th scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">Delete</th>
           </tr>
         </thead>
         <tbody>

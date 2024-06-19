@@ -11,11 +11,18 @@
     </div>
 
     <!-- USERS IN BAND -->
-    <div v-if="usersInBand">
+    <div>
       <h2>Соучастники</h2>
 
-      <!-- Список участников -->
-      <div class="sharers-list_container">
+      <!--  -->
+      <button type="button" class="btn btn-primary btn-create-modal-open-767">
+        <span>Добавить соучастника</span>
+      </button>
+
+      <!--  -->
+      <div v-if="usersInBand.length">
+        <!-- Список участников -->
+        <div class="sharers-list_container">
           <!-- ICON -->
           <div class="sharers-list_icon_wrapper">
             <label>
@@ -31,22 +38,40 @@
           </div>
           <!-- LIST -->
           <div class="sharers-list_wrapper" v-if="sharersListIsOpened">
-            <div v-for="(user, index) in usersInBand">
-              <div style="display: flex; align-items: center;">
-                <p>{{user.surname}}</p>
-                <p>{{user.name}}</p>
-                <p>{{user.middleName}}</p>
+            <div v-for="(user, index) in usersInBand" class="sharers-list_item">
+              <!-- NAME -->
+              <div
+                style="display: flex; align-items: space-between"
+                @click="$router.push(`/partners/${user.id}`)"
+                class="link"
+              >
+                <p style="margin: 0">
+                  <span style="font-weight: bold; display: block">{{
+                    user.surname
+                  }}</span>
+                  <span>{{ user.name }} {{ user.middleName }}</span>
+                </p>
               </div>
-              <p>{{ user }}</p>
+
+              <!--  -->
+              <div>
+                <p style="margin: 0; margin-top: 1rem">
+                  {{ user.groupStatus }}
+                </p>
+              </div>
+              <!-- <p>{{ user }}</p> -->
             </div>
           </div>
+        </div>
       </div>
+
+      <div v-else>Нет соучастников</div>
     </div>
 
     <!-- ФОТ -->
     <!-- Изменения может вносить только пахан -->
     <!-- v-if="user.role === 'MASTER' -->
-    <div>
+    <div v-if="usersInBand.length" style="margin-top: 0.5rem">
       <!-- Заголовок -->
       <h2>ФОТ</h2>
       <!-- data-bs-toggle="modal"
@@ -163,6 +188,8 @@ useHead({
   ],
 });
 
+const router = useRoute();
+
 const { user } = useUserSession();
 
 const route = useRoute();
@@ -171,7 +198,7 @@ const organizations = ref(null);
 const organization = ref(null);
 
 const users = ref(null);
-const usersInBand = ref(null);
+const usersInBand = ref([]);
 
 // SHARERS LIST
 const sharersListIsOpened = ref(false);
@@ -247,11 +274,10 @@ const computedPeriodList = computed(() => {
   }
 });
 
-
 // SHARERS LIST
 const toggleSharersList = () => {
-  sharersListIsOpened.value = !sharersListIsOpened.value
-}
+  sharersListIsOpened.value = !sharersListIsOpened.value;
+};
 // const {
 //   pending,
 //   error,
@@ -318,10 +344,43 @@ onBeforeMount(async () => {
 
   // пользователи в организации, по ним ФОТ и рассчитывается...
   users.value = await getAllUsers();
-  if (users.value) {
-    usersInBand.value = users.value.filter(
-      (user) => user.groupID === +route.params.id
-    );
+  if (users.value.length) {
+    // usersInBand.value = users.value.filter(
+    //   (user) => user.groupID === +route.params.id
+    // );
+
+    usersInBand.value = [...users.value]
+      .filter((user) => user.groupID === +route.params.id)
+      .map((user) => {
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          middleName: user.middleName,
+          surname: user.surname,
+          // role: user.role,
+          groupID: user.groupID,
+          groupStatus: user.groupStatus,
+          created_at: user.created_at,
+          update_at: user.update_at,
+        };
+        // if (user.groupID === +route.params.id) {
+        // } else {
+        //   console.log('map гавно...')
+        // }
+      });
+    // "id": 1,
+    // "uuid": "f230e473-1ee6-43a4-9d2b-bcf87d32b6de",
+    // "email": "klimenko@yandex.ru",
+    // "password": "123",
+    // "name": "Вячеслав",
+    // "middleName": "Николаевич",
+    // "surname": "Клименко",
+    // "role": "MASTER",
+    // "groupID": 2,
+    // "groupStatus": "leader",
+    // "created_at": "2024-03-21T05:06:39.000Z",
+    // "update_at": "2024-03-21T05:06:38.974Z"
   }
 
   //
@@ -432,6 +491,7 @@ label #sharers-list:checked + .sharers-list_icon {
 .sharers-list_icon_wrapper {
   display: flex;
   align-items: center;
+  margin-top: 1rem;
 }
 .sharers-list_icon_wrapper p {
   margin: 0;
@@ -442,6 +502,25 @@ label #sharers-list:checked + .sharers-list_icon {
 
 .sharers-list_wrapper {
   margin-top: 1rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+.sharers-list_item {
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+}
+
+.sharers-list_item:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.link:hover {
+  cursor: pointer;
+  color: var(--bs-primary);
 }
 
 @media screen and (max-width: 767px) {

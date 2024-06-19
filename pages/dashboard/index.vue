@@ -5,7 +5,7 @@
     <!--  -->
     <div class="dashboard-container">
 
-      <!--  -->
+      <!-- PROJECTS -->
       <div class="dashboard-item" @click="router.push('/projects')">
         <h2 class="dashboard-item_header">Проекты</h2>
         <div class="dashboard-item_indicator">
@@ -13,18 +13,18 @@
         </div>
       </div>
 
-      <!--  -->
-      <div class="dashboard-item" @click="router.push('/partners')">
+      <!-- USERS -->
+      <div class="dashboard-item" @click="router.push('/partners')" style="border: 1px solid rgba(0, 0, 0, 0.05);">
         <h2 class="dashboard-item_header">Соучастники</h2>
         <div class="dashboard-item_indicator">
-          12 Соучастников
-        </div>
-        <div class="dashboard-item_indicator">
-          3 Организации
+          <!-- ALL service users-->
+          <p v-if="users">{{ users.length }} {{ transformEndingTheWord('соучастников') }}</p>
+          <!-- ALL sevice organizations -->
+          <p v-if="organizations">{{ organizations.length }} {{ transformEndingTheWord('банды') }}</p>
         </div>
       </div>
 
-      <!--  -->
+      <!-- DEMANDS -->
       <div class="dashboard-item" @click="router.push('/demands')">
         <h2 class="dashboard-item_header">Заявки</h2>
         <div class="dashboard-item_indicator">
@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <!--  -->
+      <!-- WAREHOUSE -->
       <div class="dashboard-item" @click="router.push('/warehouse')">
         <h2 class="dashboard-item_header">Склад</h2>
         <div class="dashboard-item_indicator">
@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <!--  -->
+      <!-- BANK -->
       <div class="dashboard-item">
         <h2 class="dashboard-item_header">Деньги</h2>
         <div class="dashboard-item_indicator">
@@ -68,6 +68,8 @@ import { Container } from "@/shared/container";
 
 const router = useRouter();
 
+
+// HEADER
 useHead({
   title: "Доска | Соучастники",
   link: [
@@ -89,6 +91,69 @@ useHead({
     },
   ],
 });
+
+
+// BODY?
+const users = ref(null);
+const organizations = ref(null);
+
+onBeforeMount(async () => {
+
+  users.value = await getAllUsers();
+  organizations.value = await getOrganizations();
+
+  // BD
+  async function getAllUsers() {
+    return await $fetch("/api/usersList/users");
+  }
+  async function getOrganizations() {
+    return await $fetch("/api/organizations/organizations");
+  }
+})
+
+// TRANSFORMERS
+// Strings
+const transformEndingTheWord = (string) => {
+  // человек
+  if(string === 'человек') {
+    if (usersInBand.value.length) {
+      if (usersInBand.value.length % 10 === 4 || usersInBand.value.length % 10 === 2) {
+        return "человека";
+      } else {
+        return string;
+      }
+    }
+  }
+  // соучастчников
+  else if (string === 'соучастников') {
+    if(users.value.length) {
+      if(users.value.length % 10 === 1) {
+        return 'соучастник'
+      } 
+      if(users.value.length % 10 === 2 || users.value.length % 10 === 3 || users.value.length % 10 === 4) {
+        return 'соучастника'
+      }
+      else {
+        return string
+      }
+    }
+  }
+  // банды
+  else if (string === 'банды') {
+    if (organizations.value.length) {
+      if(organizations.value.length % 10 === 1) {
+        return 'банда'
+      }
+      else if (organizations.value.length % 10 === 2 || organizations.value.length % 10 === 3 || organizations.value.length % 10 === 4) {
+        return 'банды'
+      }
+      else{
+        return string
+      }
+    }
+  }
+};
+
 </script>
 
 <style scoped>

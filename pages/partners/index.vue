@@ -56,6 +56,19 @@
                 aria-describedby="nameHelp"
               />
             </div>
+            <!-- Телефон -->
+            <div class="mb-3">
+              <label for="editedUserPhone" class="form-label"
+                >Мобильный</label
+              >
+              <input
+                v-model="editedUser.phone"
+                type="phone"
+                class="form-control"
+                id="editedUserPhone"
+                aria-describedby="nameHelp"
+              />
+            </div>
             <!-- Role -->
             <div class="mb-3">
               <label for="editedUserRole" class="form-label"
@@ -173,6 +186,18 @@
                 aria-describedby="nameHelp"
               />
             </div>
+            <!-- ТЕЛЕФОН -->
+            <div class="mb-3">
+              <label for="userPhone" class="form-label">Мобильный</label>
+              <input
+                v-model="user.phone"
+                type="text"
+                class="form-control"
+                id="userPhone"
+                aria-describedby="nameHelp"
+              />
+            </div>
+
             <!-- Role in WEB SERVICE -->
             <div class="mb-3">
               <label for="userRole" class="form-label">Role в сервисе</label>
@@ -403,6 +428,7 @@
                     editedUser.surname = user.surname;
                     editedUser.name = user.name;
                     editedUser.middleName = user.middleName;
+                    editedUser.phone = user.phone;
                     editedUser.role = user.role;
                     editedUser.groupID = user.groupID;
                     editedUser.groupStatus = user.groupStatus;
@@ -469,6 +495,7 @@ const user = ref({
   name: null,
   middleName: null,
   surname: null,
+  phone: null,
   groupID: 0,
   groupStatus: null,
   role: "USER",
@@ -487,6 +514,7 @@ const editedUser = ref({
   password: null,
   name: null,
   middleName: null,
+  phone: null,
   surname: null,
   groupID: null,
   groupStatus: null,
@@ -525,6 +553,7 @@ onMounted(() => {
         user.value.name = null
         user.value.middleName = null,    
         user.value.surname = null
+        user.value.phone = null,
         user.value.groupID = 0
         user.value.groupStatus = null
         user.value.role = "USER"
@@ -571,6 +600,7 @@ async function checkAndAddUser(user) {
       e.name === user.name &&
       e.middleName === user.middleName &&
       e.surname === user.surname &&
+      e.phone === user.phone &&
       e.groupID === user.groupID &&
       e.groupStatus === user.groupStatus &&
       e.role === user.role
@@ -591,6 +621,7 @@ async function checkAndAddUser(user) {
         name: user.name,
         middleName: user.middleName,
         surname: user.surname,
+        phone: user.phone,
         groupID: user.groupID,
         groupStatus: user.groupStatus,
         role: user.role,
@@ -676,6 +707,7 @@ async function editUser(editedUser) {
         surname: editedUser.surname,
         name: editedUser.name,
         middleName: editedUser.middleName,
+        phone: editedUser.phone,
         role: editedUser.role,
         groupID: editedUser.groupID,
         groupStatus: editedUser.groupStatus,
@@ -719,6 +751,7 @@ watch(user.value, () => {
     user.value.name && 
     // user.value.middleName &&
     user.value.surname && 
+    user.value.phone &&
     user.value.groupID >= 0 &&
     user.value.groupStatus !== null &&
     user.value.role

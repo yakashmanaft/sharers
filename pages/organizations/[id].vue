@@ -11,7 +11,7 @@
     </div>
 
     <!-- USERS IN BAND -->
-    <div>
+    <div class="padding-left-right-1rem">
       <h2>Соучастники</h2>
 
       <!--  -->
@@ -24,9 +24,9 @@
         <!-- Список участников -->
         <div class="sharers-list_container">
           <!-- ICON -->
-          <div class="sharers-list_icon_wrapper">
+          <div class="sharers-list_icon_wrapper" @click="toggleSharersList">
             <label>
-              <input type="checkbox" id="sharers-list" />
+              <input type="checkbox" id="sharers-list" v-model="sharersListIsOpened"/>
               <Icon
                 class="sharers-list_icon"
                 name="material-symbols-light:expand-more"
@@ -55,7 +55,12 @@
                 </p>
               </div>
 
-              <!--  -->
+              <!-- PHONE -->
+              <div class="item_phone">
+                <nuxt-link :to="`tel:${user.phone}`">{{ user.phone }}</nuxt-link>
+              </div>
+
+              <!-- GROUP STATUS -->
               <div>
                 <p style="margin: 0; margin-top: 1rem">
                   {{ user.groupStatus }}
@@ -360,6 +365,7 @@ onBeforeMount(async () => {
           name: user.name,
           middleName: user.middleName,
           surname: user.surname,
+          phone: user.phone,
           // role: user.role,
           groupID: user.groupID,
           groupStatus: user.groupStatus,
@@ -450,13 +456,21 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     }
   }
 };
+
+// TRANSFORMERS
 const transformEndingTheWord = (string) => {
-  if (usersInBand.value.length) {
-    if (usersInBand.value.length % 10 === 4 || usersInBand.value.length % 10 === 2) {
-      return "человека";
-    } else {
-      return string;
+  // человек
+  if(string === 'человек') {
+    if (usersInBand.value.length) {
+      if (usersInBand.value.length % 10 === 4 || usersInBand.value.length % 10 === 2) {
+        return "человека";
+      } else {
+        return string;
+      }
     }
+  }
+  else if (string = 'банды') {
+
   }
 };
 
@@ -496,6 +510,9 @@ watch(periodList, () => {
 label #sharers-list {
   display: none;
 }
+/* label #sharers-list + .sharers-list_icon {
+  transform: rotate(270deg)
+} */
 label #sharers-list:checked + .sharers-list_icon {
   transform: rotate(180deg);
 }
@@ -517,7 +534,7 @@ label #sharers-list:checked + .sharers-list_icon {
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
-
+а
 .sharers-list_item {
   padding: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -529,15 +546,27 @@ label #sharers-list:checked + .sharers-list_icon {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
+.item_phone a{
+  text-decoration: none;
+}
+.item_phone a:active,
+.item_phone a:focus {
+  border: none;
+}
+
 .link:hover {
   cursor: pointer;
   color: var(--bs-primary);
 }
 
 @media screen and (max-width: 575px) {
+  .padding-left-right-1rem {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
   .sharers-list_wrapper {
     grid-template-columns: 1fr;
-    margin: 0 1rem;
+    /* margin: 0 1rem; */
   }
 }
 

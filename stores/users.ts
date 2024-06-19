@@ -7,6 +7,7 @@ type User = {
     password: string;
     name: string;
     middleName: string;
+    phone: string;
     surname: string;
     role: string
 }

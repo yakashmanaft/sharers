@@ -408,6 +408,7 @@ useHead({
     <div>
       <h2>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h2>
       <p>{{ user.role }}</p>
+      <p>{{ user }}</p>
     </div>
 
     <!-- USER ROlE - MASTER -->

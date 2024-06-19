@@ -15,7 +15,7 @@
       <h2>Соучастники</h2>
 
       <!--  -->
-      <button type="button" class="btn btn-primary btn-create-modal-open-767">
+      <button type="button" class="btn btn-primary btn-create-modal-open-767" @click="alert('В разработке...')">
         <span>Добавить соучастника</span>
       </button>
 
@@ -34,7 +34,9 @@
                 @click="toggleSharersList"
               />
             </label>
-            <p class="sharers-list_count">{{ usersInBand.length }} человек</p>
+            <p class="sharers-list_count">
+              {{ usersInBand.length }} {{ transformEndingTheWord("человек") }}
+            </p>
           </div>
           <!-- LIST -->
           <div class="sharers-list_wrapper" v-if="sharersListIsOpened">
@@ -65,7 +67,7 @@
         </div>
       </div>
 
-      <div v-else>Нет соучастников</div>
+      <div v-else style="margin-top: 1rem;">Нет соучастников</div>
     </div>
 
     <!-- ФОТ -->
@@ -139,7 +141,7 @@
     </div>
 
     <!-- ТМЦ организации -->
-    <div v-if="items">
+    <div v-if="items" style="margin-top: 1rem;">
       <!-- Заголовок -->
       <h2>ТМЦ</h2>
       <!--  -->
@@ -448,6 +450,15 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     }
   }
 };
+const transformEndingTheWord = (string) => {
+  if (usersInBand.value.length) {
+    if (usersInBand.value.length % 10 === 4 || usersInBand.value.length % 10 === 2) {
+      return "человека";
+    } else {
+      return string;
+    }
+  }
+};
 
 // Wathers
 watch(choosenFundPeriod, () => {
@@ -523,9 +534,34 @@ label #sharers-list:checked + .sharers-list_icon {
   color: var(--bs-primary);
 }
 
+@media screen and (max-width: 575px) {
+  .sharers-list_wrapper {
+    grid-template-columns: 1fr;
+    margin: 0 1rem;
+  }
+}
+
+@media screen and (min-width: 576px) {
+  .sharers-list_wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media screen and (max-width: 767px) {
   .show-max-767 {
     display: none;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .sharers-list_wrapper {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media screen and (min-width: 992px) {
+  .sharers-list_wrapper {
+    grid-template-columns: repeat(4, 1fr);
   }
 }
 </style>

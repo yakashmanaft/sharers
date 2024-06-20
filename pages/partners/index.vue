@@ -350,19 +350,22 @@
         @click="error = null"
       ></button>
     </div> -->
-    <div style="display: flex; align-items: center; gap: 1rem">
-      <h1 :class="currentTitle === 'sharers' ? 'title_current' : 'title'">
-        Соучастники
-      </h1>
-      <h1 :class="currentTitle === 'organizations' ? 'title_current' : 'title'">
-        Банды
-      </h1>
-    </div>
 
-    <div style="display: flex; align-items: center; gap: 1rem">
-      <div v-for="(title, i) in titles">
-        <input type="radio" :id="i" :value="title.name" v-model="currentTitle">
-        <label :for="i">{{ title.title }}</label>
+    <!-- TOGGLE TITLE -->
+    <div
+      style="display: flex; align-items: center; gap: 1rem"
+      class="toggle-title"
+    >
+      <div v-for="(title, i) in titles" class="switch-title_el">
+        <input
+          type="radio"
+          :id="i"
+          :value="title.name"
+          v-model="currentTitle"
+        />
+        <label :for="i"
+          ><h1>{{ title.title }}</h1></label
+        >
       </div>
     </div>
 
@@ -374,7 +377,7 @@
         class="btn btn-primary"
         data-bs-toggle="modal"
         data-bs-target="#userCreateModal"
-        v-if="sessionUser.role === 'SUPER_ADMIN'"
+        v-if="sessionUser.role === 'SUPER_ADMIN' && currentTitle === 'sharers'"
       >
         Соучастник +
       </button>
@@ -385,6 +388,7 @@
         class="btn btn-primary"
         data-bs-toggle="modal"
         data-bs-target="#companyCreateModal"
+        v-if="currentTitle === 'organizations'"
       >
         Банда +
       </button>
@@ -407,11 +411,31 @@
       <!-- USERS -->
       <div v-if="currentTitle === 'sharers'" class="partners_container">
         <!-- Search -->
-        <div class="partners-search_wrapper">Поиск...</div>
+        <div class="partners-search_wrapper">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Поиск по фамилии"
+            v-model="searchInput"
+          />
+          <Icon
+            name="ic:baseline-search"
+            size="24px"
+            color="var(--bs-body-color)"
+          />
+        </div>
 
         <!-- list -->
         <div class="partners-list_wrapper">
-          <div class="list_item" v-for="(user, index) in users" :key="index">
+          <!-- Если ничего не найдено -->
+          <div>
+            <div v-if="searchInput && !computedUsers.length">
+              По запросу ничего не найдено
+            </div>
+          </div>
+
+          <!-- Список пользователей -->
+          <div class="list_item" v-for="(user, index) in computedUsers" :key="index">
             <!--  -->
             <div>
               <!-- ФИО -->
@@ -629,6 +653,8 @@ const titles = ref([
 ]);
 const currentTitle = ref("sharers");
 
+const searchInput = ref("");
+
 onMounted(() => {
   // users.value = await getUsers()
   refresh();
@@ -714,6 +740,21 @@ const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
 // watch(companies, (newData) => {
 //   console.log(newData);
 // });
+
+// COMPUTED
+const computedUsers = computed(() =>
+  // {
+    searchInput.value === ""
+      ? users.value
+      : users.value.filter((user) =>
+          user.surname
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
+        )
+    // return users.value
+  // }
+)
 
 /**
  * @desc Add user
@@ -926,19 +967,47 @@ useHead({
 .link:hover {
   color: var(--bs-primary);
 }
-.mt-5rem {
-  margin-top: 5rem;
+.mt-1rem {
+  margin-top: 1rem;
 }
 
 /* toggle title */
-h1 {
-  cursor: pointer;
+.switch-title_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
 }
-.title {
+
+.switch-title_el label h1 {
   color: var(--bs-tertiary-color);
 }
-.title_current {
+.switch-title_el label h1:hover {
+  cursor: pointer;
+}
+
+.switch-title_el input[type="radio"]:checked + label h1 {
   color: unset;
+}
+
+/* SEARCH */
+.partners-search_wrapper {
+  position: relative;
+  /* align-self: flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-between !important; */
+}
+
+.partners-search_wrapper input {
+  padding-left: 2rem;
+}
+
+.partners-search_wrapper svg {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.5rem;
 }
 
 /* PARTNERS LIST */
@@ -992,10 +1061,21 @@ h1 {
   .item_icons {
     gap: 0.2rem;
   }
+  .partners-search_wrapper {
+    margin: 0.5rem;
+  }
 }
 @media screen and (max-width: 767px) {
   .show-max-767 {
     display: none;
+  }
+  .toggle-title {
+    margin-top: -1rem;
+  }
+}
+@media screen and (min-width: 768px) {
+  .toggle-title {
+    margin-top: 1rem;
   }
 }
 </style>

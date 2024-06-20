@@ -36,11 +36,12 @@ enum Role {
 }
 
 model Organizations {
-  id         Int       @id @default(autoincrement())
-  uuid       String    @unique(map: "uuid") @db.VarChar(60)
-  title      String    @db.VarChar(255)
-  created_at DateTime  @default(now()) @db.DateTime(0)
-  update_at  DateTime? @updatedAt
+  id             Int       @id @default(autoincrement())
+  uuid           String    @unique(map: "uuid") @db.VarChar(60)
+  title          String    @db.VarChar(255)
+  ownerID        Int?      @default(0)
+  created_at     DateTime  @default(now()) @db.DateTime(0)
+  update_at      DateTime? @updatedAt
 }
 
 model WarehouseItems {

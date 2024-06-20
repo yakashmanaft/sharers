@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
       data: {
         uuid: body.uuid,
         title: body.title,
+        ownerID: body.ownerID,
       },
     }).then((response) => {
       company = response

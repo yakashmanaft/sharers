@@ -264,7 +264,7 @@ onMounted(async () => {
         surname: user.surname,
         // "password": "Anfalov123[eq",
         phone: user.phone,
-        role: user.role,
+        // role: user.role,
         groupID: user.groupID,
         groupStatus: user.groupStatus,
         created_at: user.created_at,
@@ -421,8 +421,12 @@ useHead({
 
     <div>
       <h2>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h2>
-      <p>{{ user.role }}</p>
-      <p>{{ user.phone }}</p>
+      <!-- <p>{{ user.role }}</p> -->
+      <!-- PHONE -->
+      <div class="item_phone">
+        <!-- style="pointer-events: none;" -->
+        <nuxt-link :to="`tel:${user.phone}`">{{ user.phone }}</nuxt-link>
+      </div>
       <p>{{ user }}</p>
     </div>
 

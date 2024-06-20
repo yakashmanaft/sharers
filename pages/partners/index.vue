@@ -352,10 +352,7 @@
     </div> -->
 
     <!-- TOGGLE TITLE -->
-    <div
-      style="display: flex; align-items: center; gap: 1rem"
-      class="toggle-title"
-    >
+    <div class="toggle-title">
       <div v-for="(title, i) in titles" class="switch-title_el">
         <input
           type="radio"
@@ -435,7 +432,11 @@
           </div>
 
           <!-- Список пользователей -->
-          <div class="list_item" v-for="(user, index) in computedUsers" :key="index">
+          <div
+            class="list_item"
+            v-for="(user, index) in computedUsers"
+            :key="index"
+          >
             <!--  -->
             <div>
               <!-- ФИО -->
@@ -566,7 +567,71 @@
       </table> -->
 
       <!-- ORGANIZATIONS -->
-      <table v-if="currentTitle === 'organizations'" class="table">
+      <div v-if="currentTitle === 'organizations'" class="partners_container">
+        <!-- Search -->
+        <div class="partners-search_wrapper">
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Поиск названию"
+            v-model="searchOrganizationsInput"
+          />
+          <Icon
+            name="ic:baseline-search"
+            size="24px"
+            color="var(--bs-body-color)"
+          />
+        </div>
+
+        <!-- LIST -->
+        <div class="partners-list_wrapper">
+          <!-- Если ничего не найдено -->
+          <div>
+            <div
+              v-if="searchOrganizationsInput && !computedOrganizations.length"
+            >
+              По запросу ничего не найдено
+            </div>
+          </div>
+
+          <!-- Список -->
+          <div
+            v-for="(companyItem, index) in computedOrganizations"
+            class="list_item"
+          >
+            <div>
+              <!-- Наименование -->
+              <div>
+                <p
+                  class="link"
+                  style="margin: 0; font-weight: bold"
+                  @click="$router.push(`/organizations/${companyItem.id}`)"
+                >
+                  {{ companyItem.title }}
+                </p>
+              </div>
+              <!-- Кол-во участников -->
+              <div>
+                <p style="margin: 0">{{ countSharers(companyItem.id) }}</p>
+              </div>
+            </div>
+
+            <!-- Учредитель -->
+            <div>
+              <p style="margin: 0; text-align: right">Учредитель:</p>
+              <p style="margin: 0">
+                <span
+                  class="link"
+                  style="font-weight: bold"
+                  @click="goToOwnerCompany(companyItem.ownerID)"
+                  >{{ translateOwnerCompany(companyItem.ownerID) }}</span
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <table v-if="currentTitle === 'organizations'" class="table">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -588,7 +653,7 @@
             <td scope="col">{{ companyItem.uuid }}</td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
     </div>
   </Container>
 </template>
@@ -619,6 +684,7 @@ const user = ref({
 const company = ref({
   uuid: null,
   title: null,
+  // ownerID: sessionUser.id
 });
 
 // const error = ref(null);
@@ -654,6 +720,7 @@ const titles = ref([
 const currentTitle = ref("sharers");
 
 const searchInput = ref("");
+const searchOrganizationsInput = ref("");
 
 onMounted(() => {
   // users.value = await getUsers()
@@ -744,17 +811,27 @@ const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
 // COMPUTED
 const computedUsers = computed(() =>
   // {
-    searchInput.value === ""
-      ? users.value
-      : users.value.filter((user) =>
-          user.surname
-            .toLowerCase()
-            .replace(/\s+/g, "")
-            .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
-        )
-    // return users.value
-  // }
-)
+  searchInput.value === ""
+    ? users.value
+    : users.value.filter((user) =>
+        user.surname
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .includes(searchInput.value.toLowerCase().replace(/\s+/g, ""))
+      )
+);
+const computedOrganizations = computed(() =>
+  searchOrganizationsInput.value === ""
+    ? companies.value
+    : companies.value.filter((company) =>
+        company.title
+          .toLowerCase()
+          .replace(/\s+/g, "")
+          .includes(
+            searchOrganizationsInput.value.toLowerCase().replace(/\s+/g, "")
+          )
+      )
+);
 
 /**
  * @desc Add user
@@ -810,12 +887,13 @@ async function checkAndCreateCompany(company) {
   } else {
     let addedCompany = null;
 
-    if (company)
+    if (company && sessionUser)
       addedCompany = await $fetch("api/organizations/organizations", {
         method: "POST",
         body: {
           uuid: uuidv4(),
           title: company.title,
+          ownerID: sessionUser.value.id,
         },
       });
     // reset company comst
@@ -838,6 +916,13 @@ const goToOrganizations = (groupID) => {
     alert("Соучастник без банды... Один волк...");
   } else {
     router.push(`/organizations/${groupID}`);
+  }
+};
+const goToOwnerCompany = (ownerID) => {
+  if (ownerID === 0) {
+    alert("Нет в сервисе. Не соучастник.");
+  } else {
+    router.push(`/partners/${ownerID}`);
   }
 };
 
@@ -893,7 +978,7 @@ async function editUser(editedUser) {
 }
 
 /**
- * 
+ *
 
  */
 // translaters
@@ -905,6 +990,37 @@ const translateGroupData = (groupID) => {
       let group = companies.value.find((company) => company.id === groupID);
       // return `${groupID} | ${groupStatus}`
       return `${group.title}`;
+    }
+  }
+};
+const translateOwnerCompany = (ownerID) => {
+  if (ownerID && users.value) {
+    let owner = users.value.find((item) => item.id === ownerID);
+    return `${owner?.surname} ${owner?.name[0]}. ${owner?.middleName[0]}.`;
+  } else {
+    return "Не соучастник";
+  }
+};
+
+// COUNTS
+const countSharers = (companyID) => {
+  if (companyID && users.value.length) {
+    let usersInBand = [...users.value]
+      .filter((user) => user.groupID === companyID)
+      .map((user) => {
+        id: user.id;
+      });
+
+    let signature;
+
+    if (
+      usersInBand.length % 10 === 2 ||
+      usersInBand.length % 10 === 3 ||
+      usersInBand.length % 10 === 4
+    ) {
+      return `${usersInBand.length} человека`;
+    } else {
+      return `${usersInBand.length} человек`;
     }
   }
 };
@@ -972,6 +1088,11 @@ useHead({
 }
 
 /* toggle title */
+.toggle-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 .switch-title_el input[type="radio"] {
   opacity: 0;
   position: fixed;
@@ -1000,7 +1121,7 @@ useHead({
 }
 
 .partners-search_wrapper input {
-  padding-left: 2rem;
+  padding-left: 2.2rem;
 }
 
 .partners-search_wrapper svg {
@@ -1063,6 +1184,10 @@ useHead({
   }
   .partners-search_wrapper {
     margin: 0.5rem;
+  }
+  .toggle-title {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
   }
 }
 @media screen and (max-width: 767px) {

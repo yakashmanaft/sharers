@@ -1,7 +1,7 @@
 <template>
   <!-- https://www.youtube.com/watch?v=3MPlTDgQaaE -->
-  <Container style="padding-top: 5rem;">
-    <!-- Modal EDIT USER???-->
+  <Container style="padding-top: 5rem">
+    <!-- Modal EDIT USER-->
     <div
       class="modal fade"
       id="userEditModal"
@@ -58,9 +58,7 @@
             </div>
             <!-- Телефон -->
             <div class="mb-3">
-              <label for="editedUserPhone" class="form-label"
-                >Мобильный</label
-              >
+              <label for="editedUserPhone" class="form-label">Мобильный</label>
               <input
                 v-model="editedUser.phone"
                 type="phone"
@@ -100,7 +98,8 @@
               <label for="editedUserStatusInGroup" class="form-label"
                 >Status in Group (foreman - бригадир, sectionForeman - начальник
                 участка, worker - рабочий, leader - лидер), projectManager -
-                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant - бухгалтер, marketolog - маркетолог</label
+                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant -
+                бухгалтер, marketolog - маркетолог</label
               >
               <input
                 v-model="editedUser.groupStatus"
@@ -133,7 +132,7 @@
     </div>
 
     <!-- MODAL CREATE USER -->
-    <div       
+    <div
       class="modal fade"
       id="userCreateModal"
       tabindex="-1"
@@ -227,7 +226,8 @@
               <label for="userStatusInGroup" class="form-label"
                 >Status in Group (foreman - бригадир, sectionForeman - начальник
                 участка, worker - рабочий, leader - лидер), projectManager -
-                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant - бухгалтер, marketolog - маркетолог</label
+                менеджер проекта (снабжение), hrOfficer (Кадровик), accountant -
+                бухгалтер, marketolog - маркетолог</label
               >
               <input
                 v-model="user.groupStatus"
@@ -283,7 +283,7 @@
     </div>
 
     <!-- MODAL CREATE COMPANY -->
-    <div       
+    <div
       class="modal fade createModal"
       id="companyCreateModal"
       tabindex="-1"
@@ -350,11 +350,24 @@
         @click="error = null"
       ></button>
     </div> -->
-    <h1 class="show-max-767 ">Соучастники</h1>
+    <div style="display: flex; align-items: center; gap: 1rem">
+      <h1 :class="currentTitle === 'sharers' ? 'title_current' : 'title'">
+        Соучастники
+      </h1>
+      <h1 :class="currentTitle === 'organizations' ? 'title_current' : 'title'">
+        Банды
+      </h1>
+    </div>
+
+    <div style="display: flex; align-items: center; gap: 1rem">
+      <div v-for="(title, i) in titles">
+        <input type="radio" :id="i" :value="title.name" v-model="currentTitle">
+        <label :for="i">{{ title.title }}</label>
+      </div>
+    </div>
 
     <!-- BTNS OPEN MODAL CREATE -->
-    <div style="display: flex; align-items: center; gap: 1rem;">
-
+    <div style="display: flex; align-items: center; gap: 1rem">
       <!-- КНОПКА СОЗДАТЬ Банду NeeD TO CHOOSE ROLE WITH ACCES -->
       <button
         type="button"
@@ -365,7 +378,7 @@
       >
         Соучастник +
       </button>
-  
+
       <!-- КНОПКА СОЗДАТЬ ПОЛЬЗОВАТЕЛЯ if user session role === 'SUPER_ADMIN' -->
       <button
         type="button"
@@ -392,7 +405,77 @@
     <!-- data is loaded -->
     <div v-else>
       <!-- USERS -->
-      <table class="table" style="margin-top: 1rem;">
+      <div v-if="currentTitle === 'sharers'" class="partners_container">
+        <!-- Search -->
+        <div class="partners-search_wrapper">Поиск...</div>
+
+        <!-- list -->
+        <div class="partners-list_wrapper">
+          <div class="list_item" v-for="(user, index) in users" :key="index">
+            <!--  -->
+            <div>
+              <!-- ФИО -->
+              <div class="item_name">
+                <p
+                  class="link"
+                  style="margin: 0"
+                  @click="$router.push(`/partners/${user.id}`)"
+                >
+                  <span style="font-weight: bold">{{ user.surname }}</span>
+                  {{ user.name }} {{ user.middleName }}
+                </p>
+              </div>
+
+              <!-- GROUP | STATUS -->
+              <div class="item_group">
+                <p style="margin: 0">
+                  <span class="link" @click="goToOrganizations(user.groupID)">{{
+                    translateGroupData(user.groupID)
+                  }}</span>
+                </p>
+              </div>
+            </div>
+
+            <!-- ATCTION ICONS -->
+            <div class="item_icons" v-if="sessionUser.role === 'SUPER_ADMIN'">
+              <!-- EDIT -->
+              <button
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#userEditModal"
+                @click="
+                  {
+                    editedUser.id = user.id;
+                    editedUser.surname = user.surname;
+                    editedUser.name = user.name;
+                    editedUser.middleName = user.middleName;
+                    editedUser.phone = user.phone;
+                    editedUser.role = user.role;
+                    editedUser.groupID = user.groupID;
+                    editedUser.groupStatus = user.groupStatus;
+                  }
+                "
+              >
+                <Icon
+                  class="item_icon icon_edit"
+                  name="material-symbols-light:edit-note-outline-rounded"
+                  size="28px"
+                />
+              </button>
+              <!-- DELETE -->
+              <button type="button" @click="deleteUser(user.id)">
+                <Icon
+                  class="item_icon icon_delete"
+                  name="material-symbols-light:delete-forever-outline-rounded"
+                  size="28px"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- <table class="table" style="margin-top: 1rem">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -400,7 +483,9 @@
             <th scope="col">Group | Status</th>
             <th scope="col">Email</th>
             <th scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">Edit</th>
-            <th scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">Delete</th>
+            <th scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">
+              Delete
+            </th>
           </tr>
         </thead>
         <tbody>
@@ -409,14 +494,19 @@
             <td scope="col">
               <span @click="$router.push(`/partners/${user.id}`)" class="link">
                 {{ user.surname }} {{ user.name }} {{ user.middleName }}
-              </span> | {{ user.role }}
+              </span>
+              | {{ user.role }}
             </td>
             <td scope="col">
-              <span class="link" @click="$router.push(`/organizations/${user.groupID}`)">{{ translateGroupData(user.groupID) }}</span> | {{ user.groupStatus }}
+              <span
+                class="link"
+                @click="$router.push(`/organizations/${user.groupID}`)"
+                >{{ translateGroupData(user.groupID) }}</span
+              >
+              | {{ user.groupStatus }}
             </td>
             <td scope="col">{{ user.email }}</td>
             <td scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">
-              <!-- Button trigger edit user modal -->
               <button
                 type="button"
                 class="btn btn-warning"
@@ -449,10 +539,10 @@
             </td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
 
       <!-- ORGANIZATIONS -->
-      <table class="table">
+      <table v-if="currentTitle === 'organizations'" class="table">
         <thead>
           <tr>
             <th scope="col">#</th>
@@ -485,7 +575,8 @@ import { Container } from "@/shared/container";
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
 
-const sessionUser = useUserSession().user
+const sessionUser = useUserSession().user;
+const router = useRouter();
 
 // Шаблон нового user'a
 const user = ref({
@@ -521,10 +612,22 @@ const editedUser = ref({
   role: null,
 });
 
-
 //
-const createCompanyBtnIsDisabled = ref(false)
-const createUserBtnIsDisabled = ref(false)
+const createCompanyBtnIsDisabled = ref(false);
+const createUserBtnIsDisabled = ref(false);
+
+// choosen title
+const titles = ref([
+  {
+    title: "Соучастники",
+    name: "sharers",
+  },
+  {
+    title: "Банды",
+    name: "organizations",
+  },
+]);
+const currentTitle = ref("sharers");
 
 onMounted(() => {
   // users.value = await getUsers()
@@ -534,30 +637,28 @@ onMounted(() => {
   // reset inputs in modals
   // companies
   const createCompanyModalEl = document.getElementById("companyCreateModal");
-  if(createCompanyModalEl) {
-    createCompanyModalEl.addEventListener('hidden.bs.modal', (event) => {
+  if (createCompanyModalEl) {
+    createCompanyModalEl.addEventListener("hidden.bs.modal", (event) => {
       // company.value = {
       //   uuid: null,
       //   title: null
       // }
       company.value.title = null;
-    })
+    });
   }
   // users
   const createUserModalEl = document.getElementById("userCreateModal");
-  if(createUserModalEl) {
-    createUserModalEl.addEventListener('hidden.bs.modal', (event) => {
-        user.value.uuid = null
-        user.value.email = null
-        user.value.password = null
-        user.value.name = null
-        user.value.middleName = null,    
-        user.value.surname = null
-        user.value.phone = null,
-        user.value.groupID = 0
-        user.value.groupStatus = null
-        user.value.role = "USER"
-    })
+  if (createUserModalEl) {
+    createUserModalEl.addEventListener("hidden.bs.modal", (event) => {
+      user.value.uuid = null;
+      user.value.email = null;
+      user.value.password = null;
+      user.value.name = null;
+      (user.value.middleName = null), (user.value.surname = null);
+      (user.value.phone = null), (user.value.groupID = 0);
+      user.value.groupStatus = null;
+      user.value.role = "USER";
+    });
   }
 });
 
@@ -575,6 +676,33 @@ const {
   error,
 } = useFetch("api/usersList/users", {
   lazy: false,
+  transform: (users) => {
+    return users
+      .sort((x, y) => {
+        if (x.surname < y.surname) {
+          return -1;
+        }
+
+        if (x.surname > y.surname) {
+          return 1;
+        }
+      })
+      .map((user) => {
+        return {
+          id: user.id,
+          // email: user.email,
+          name: user.name,
+          middleName: user.middleName,
+          surname: user.surname,
+          // phone: user.phone,
+          // role: user.role,
+          groupID: user.groupID,
+          // groupStatus: user.groupStatus,
+          // created_at: user.created_at,
+          // update_at: user.update_at,
+        };
+      });
+  },
 });
 
 const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
@@ -592,9 +720,8 @@ const { refresh: refreshCompanies, data: companies } = await useLazyFetch(
  * @param user The user to add
  */
 async function checkAndAddUser(user) {
-
   let compareUser = users.value.find(
-    (e) => 
+    (e) =>
       e.email === user.email &&
       // e.password === user.password &&
       e.name === user.name &&
@@ -604,47 +731,44 @@ async function checkAndAddUser(user) {
       e.groupID === user.groupID &&
       e.groupStatus === user.groupStatus &&
       e.role === user.role
-  )
+  );
 
-  if(compareUser) {
-    alert('Соучастник уже есть')
+  if (compareUser) {
+    alert("Соучастник уже есть");
   } else {
     let addedUser = null;
-  
+
     if (user)
-    addedUser = await $fetch("api/usersList/users", {
-      method: "POST",
-      body: {
-        uuid: uuidv4(),
-        email: user.email,
-        password: user.password,
-        name: user.name,
-        middleName: user.middleName,
-        surname: user.surname,
-        phone: user.phone,
-        groupID: user.groupID,
-        groupStatus: user.groupStatus,
-        role: user.role,
-      },
-    });
-  
+      addedUser = await $fetch("api/usersList/users", {
+        method: "POST",
+        body: {
+          uuid: uuidv4(),
+          email: user.email,
+          password: user.password,
+          name: user.name,
+          middleName: user.middleName,
+          surname: user.surname,
+          phone: user.phone,
+          groupID: user.groupID,
+          groupStatus: user.groupStatus,
+          role: user.role,
+        },
+      });
+
     // if (addedUser) users.value = await getUsers();
     if (addedUser) refresh();
-    createUserBtnIsDisabled.value = true
+    createUserBtnIsDisabled.value = true;
   }
 }
 
-async function checkAndCreateCompany (company) {
-  let compareCompany = companies.value.find(
-    (e) => 
-      e.title === company.title
-  )
+async function checkAndCreateCompany(company) {
+  let compareCompany = companies.value.find((e) => e.title === company.title);
 
-  if(compareCompany) {
-    alert('Банда с таким именем уже существует!')
+  if (compareCompany) {
+    alert("Банда с таким именем уже существует!");
   } else {
     let addedCompany = null;
-  
+
     if (company)
       addedCompany = await $fetch("api/organizations/organizations", {
         method: "POST",
@@ -654,7 +778,7 @@ async function checkAndCreateCompany (company) {
         },
       });
     // reset company comst
-    
+
     // refresh list
     if (addedCompany) refreshCompanies();
     // company.value = {
@@ -666,6 +790,15 @@ async function checkAndCreateCompany (company) {
     // createCompanyBtnIsDisabled.value = true
   }
 }
+
+// router push functions
+const goToOrganizations = (groupID) => {
+  if (groupID === 0) {
+    alert("Соучастник без банды... Один волк...");
+  } else {
+    router.push(`/organizations/${groupID}`);
+  }
+};
 
 /**
  * @desc Delete users
@@ -736,31 +869,32 @@ const translateGroupData = (groupID) => {
 };
 
 watch(company.value, () => {
-  console.log(company.value.title)
-  if(company.value.title) {
-    createCompanyBtnIsDisabled.value = false
+  console.log(company.value.title);
+  if (company.value.title) {
+    createCompanyBtnIsDisabled.value = false;
   } else {
-    createCompanyBtnIsDisabled.value = true
+    createCompanyBtnIsDisabled.value = true;
   }
-})
+});
 watch(user.value, () => {
-  console.log(user.value.surname) 
-  if(
+  console.log(user.value.surname);
+  if (
     user.value.email &&
     user.value.password &&
-    user.value.name && 
+    user.value.name &&
     // user.value.middleName &&
-    user.value.surname && 
+    user.value.surname &&
     user.value.phone &&
+    user.value.phone.length === 12 &&
     user.value.groupID >= 0 &&
     user.value.groupStatus !== null &&
     user.value.role
   ) {
-    createUserBtnIsDisabled.value = false
+    createUserBtnIsDisabled.value = false;
   } else {
-    createUserBtnIsDisabled.value = true
+    createUserBtnIsDisabled.value = true;
   }
-})
+});
 
 useHead({
   title: "Соучастники",
@@ -786,20 +920,82 @@ useHead({
 </script>
 
 <style scoped>
-
 .link {
   cursor: pointer;
 }
 .link:hover {
-  color: var(--bs-primary)
+  color: var(--bs-primary);
 }
 .mt-5rem {
   margin-top: 5rem;
 }
 
+/* toggle title */
+h1 {
+  cursor: pointer;
+}
+.title {
+  color: var(--bs-tertiary-color);
+}
+.title_current {
+  color: unset;
+}
+
+/* PARTNERS LIST */
+.partners_container {
+  margin-top: 1rem;
+}
+.partners-search_wrapper {
+}
+.partners-list_wrapper {
+  margin-top: 1rem;
+}
+.list_item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin: 1rem 0; */
+  padding: 1rem;
+  box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.2);
+}
+.list_item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+.item_name {
+}
+.item_group {
+}
+.item_icons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+}
+.item_icons button {
+  background-color: unset;
+  padding: unset;
+  border: unset;
+}
+.item_icon {
+  color: var(--bs-primary);
+}
+.item_icon:hover {
+  cursor: pointer;
+}
+.item_icon:hover.icon_edit {
+  color: var(--bs-warning);
+}
+.item_icon:hover.icon_delete {
+  color: var(--bs-danger);
+}
+@media screen and (max-width: 575px) {
+  .item_icons {
+    gap: 0.2rem;
+  }
+}
 @media screen and (max-width: 767px) {
   .show-max-767 {
-      display: none;
-    }
+    display: none;
+  }
 }
 </style>

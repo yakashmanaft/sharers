@@ -2,7 +2,7 @@
   <Container style="padding-top: 5rem">
     <h1 class="show-max-767">Банда #{{ $route.params.id }}</h1>
 
-    <div v-if="organization">
+    <div v-if="organization" class="padding-left-right-1rem">
       <p>{{ organization.title }}</p>
       <p>Дата создания: {{ organization.created_at }}</p>
       <!-- <div>
@@ -15,7 +15,11 @@
       <h2>Соучастники</h2>
 
       <!--  -->
-      <button type="button" class="btn btn-primary btn-create-modal-open-767" @click="alert('В разработке...')">
+      <button
+        type="button"
+        class="btn btn-primary btn-create-modal-open-767"
+        @click.prevent="checkAndAddUser()"
+      >
         <span>Добавить соучастника</span>
       </button>
 
@@ -26,7 +30,11 @@
           <!-- ICON -->
           <div class="sharers-list_icon_wrapper" @click="toggleSharersList">
             <label>
-              <input type="checkbox" id="sharers-list" v-model="sharersListIsOpened"/>
+              <input
+                type="checkbox"
+                id="sharers-list"
+                v-model="sharersListIsOpened"
+              />
               <Icon
                 class="sharers-list_icon"
                 name="material-symbols-light:expand-more"
@@ -57,7 +65,10 @@
 
               <!-- PHONE -->
               <div class="item_phone">
-                <nuxt-link :to="`tel:${user.phone}`">{{ user.phone }}</nuxt-link>
+                <!-- style="pointer-events: none;" -->
+                <nuxt-link :to="`tel:${user.phone}`">{{
+                  user.phone
+                }}</nuxt-link>
               </div>
 
               <!-- GROUP STATUS -->
@@ -72,7 +83,7 @@
         </div>
       </div>
 
-      <div v-else style="margin-top: 1rem;">Нет соучастников</div>
+      <div v-else style="margin-top: 1rem">Нет соучастников</div>
     </div>
 
     <!-- ФОТ -->
@@ -83,7 +94,7 @@
       <h2>ФОТ</h2>
       <!-- data-bs-toggle="modal"
       data-bs-target="#newWarehouseItemModal" -->
-      <button type="button" class="btn btn-primary btn-create-modal-open-767">
+      <button type="button" class="btn btn-primary btn-create-modal-open-767" @click="checkAndAddFund()">
         <span> Создать новый</span>
       </button>
 
@@ -146,7 +157,7 @@
     </div>
 
     <!-- ТМЦ организации -->
-    <div v-if="items" style="margin-top: 1rem;">
+    <div v-if="items" style="margin-top: 1rem">
       <!-- Заголовок -->
       <h2>ТМЦ</h2>
       <!--  -->
@@ -460,19 +471,28 @@ const translateFundPeriod = (periodStart, periodEnd) => {
 // TRANSFORMERS
 const transformEndingTheWord = (string) => {
   // человек
-  if(string === 'человек') {
+  if (string === "человек") {
     if (usersInBand.value.length) {
-      if (usersInBand.value.length % 10 === 4 || usersInBand.value.length % 10 === 2) {
+      if (
+        usersInBand.value.length % 10 === 4 ||
+        usersInBand.value.length % 10 === 2
+      ) {
         return "человека";
       } else {
         return string;
       }
     }
-  }
-  else if (string = 'банды') {
-
+  } else if ((string = "банды")) {
   }
 };
+
+// CHECK AND CREATE
+const checkAndAddUser = () => {
+  alert('В разработке...')
+}
+const checkAndAddFund = () => {
+  alert('В разработке...')
+}
 
 // Wathers
 watch(choosenFundPeriod, () => {
@@ -524,7 +544,8 @@ label #sharers-list:checked + .sharers-list_icon {
 .sharers-list_icon_wrapper p {
   margin: 0;
 }
-.sharers-list_icon {
+.sharers-list_icon,
+.sharers-list_count {
   cursor: pointer;
 }
 
@@ -534,7 +555,7 @@ label #sharers-list:checked + .sharers-list_icon {
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
-а
+
 .sharers-list_item {
   padding: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -546,13 +567,17 @@ label #sharers-list:checked + .sharers-list_icon {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-.item_phone a{
+.item_phone a {
   text-decoration: none;
 }
 .item_phone a:active,
 .item_phone a:focus {
   border: none;
 }
+
+/* .item_phone_pointer-events_none {
+  pointer-events: none;
+} */
 
 .link:hover {
   cursor: pointer;

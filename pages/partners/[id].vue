@@ -22,12 +22,12 @@ const isFlipperPrevUserBtnExist = ref(true);
 const isFlipperNextUserBtnExist = ref(true);
 
 // ФОТ
-const date = new Date ()
-const currentYear = ref(date.getFullYear())
+const date = new Date();
+const currentYear = ref(date.getFullYear());
 const choosenFundPeriod = ref({
-  periodStart: '',
-  preriodEnd: ''
-})
+  periodStart: "",
+  preriodEnd: "",
+});
 const wageFund = ref(0);
 const productionFund = ref(0);
 // Ставка заработной платы
@@ -254,10 +254,24 @@ const items = ref([]);
 // console.log(btnPrev)
 onMounted(async () => {
   users.value = await getUsers();
-  user.value = users.value.find((item) => item.id == route.params.id);
-
-  // console.log(users.value.length - 1);
-  // console.log(users.value.indexOf(user.value));
+  user.value = [...users.value]
+    .map((user) => {
+      return {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        middleName: user.middleName,
+        surname: user.surname,
+        // "password": "Anfalov123[eq",
+        phone: user.phone,
+        role: user.role,
+        groupID: user.groupID,
+        groupStatus: user.groupStatus,
+        created_at: user.created_at,
+        update_at: user.update_at,
+      };
+    })
+    .find((item) => item.id === +route.params.id);
 
   if (users.value.indexOf(user.value) === 0) {
     isFlipperPrevUserBtnExist.value = false;
@@ -408,17 +422,17 @@ useHead({
     <div>
       <h2>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h2>
       <p>{{ user.role }}</p>
+      <p>{{ user.phone }}</p>
       <p>{{ user }}</p>
     </div>
 
     <!-- USER ROlE - MASTER -->
     <div v-if="user.role === 'MASTER'">
-
       <!-- Заголовок -->
       <h3>ФОТ банды</h3>
 
       <!-- Фильтры просмотра ФОТ -->
-      <div style="display: flex; align-items: center; gap: 1rem;">
+      <div style="display: flex; align-items: center; gap: 1rem">
         <!-- Выбор года -->
         <select name="" id="" v-model="currentYear">
           <option value="2023">2023</option>

@@ -6,10 +6,10 @@
     <div class="dashboard-container">
 
       <!-- PROJECTS -->
-      <div class="dashboard-item" @click="router.push('/projects')">
-        <h2 class="dashboard-item_header">Проекты</h2>
-        <div class="dashboard-item_indicator">
-          2 шт.
+      <div class="dashboard-item" @click="router.push('/projects')" style="border: 1px solid rgba(0, 0, 0, 0.05);">
+        <h2 class="dashboard-item_header">Текущие</h2>
+        <div class="dashboard-item_indicator" v-if="projects">
+          <p>{{ currentProjectsCount(projects) }} </p>
         </div>
       </div>
 
@@ -96,11 +96,13 @@ useHead({
 // BODY?
 const users = ref(null);
 const organizations = ref(null);
+const projects = ref(null)
 
 onBeforeMount(async () => {
 
   users.value = await getAllUsers();
   organizations.value = await getOrganizations();
+  projects.value = await getProjects();
 
   // BD
   async function getAllUsers() {
@@ -109,7 +111,31 @@ onBeforeMount(async () => {
   async function getOrganizations() {
     return await $fetch("/api/organizations/organizations");
   }
+    async function getProjects() {
+    return await $fetch("/api/projects/projects");
+  }
 })
+
+// COUNTS
+const currentProjectsCount = (projects) => {
+  if(projects) {
+    let currentProjects = [...projects].filter((project) => project.completion !== 1)
+
+    let signature;
+
+    if(currentProjects.length % 10 === 1) {
+      signature = 'проект'
+    } 
+    if(currentProjects.length % 10 === 2 || currentProjects.length % 10 === 3 || currentProjects.length % 10 === 4) {
+      signature = 'проекта'
+    }
+    else {
+      signature = 'проектов'
+    }
+
+    return `${currentProjects.length} ${signature}` 
+  }
+}
 
 // TRANSFORMERS
 // Strings
@@ -162,6 +188,7 @@ const transformEndingTheWord = (string) => {
 .dashboard-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
 }
 .dashboard-item {
   transition: all 0.2s ease-in;
@@ -170,8 +197,8 @@ const transformEndingTheWord = (string) => {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.05);
 }
-.dashboard-item_indicator {
-
+.dashboard-item_indicator p{
+  margin: 0;
 }
 
 /*  */

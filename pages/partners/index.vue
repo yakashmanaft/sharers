@@ -451,10 +451,17 @@
                 </p>
               </div>
 
-              <!-- GROUP | STATUS -->
-              <div class="item_group">
+              <!-- GROUP -->
+              <div
+                class="item_group"
+                :class="
+                  user.groupID === 0
+                    ? 'item_group-wo-group'
+                    : 'item_group-w-group'
+                "
+              >
                 <p style="margin: 0">
-                  <span class="link" @click="goToOrganizations(user.groupID)">{{
+                  <span @click="goToOrganizations(user.groupID)">{{
                     translateGroupData(user.groupID)
                   }}</span>
                 </p>
@@ -601,23 +608,32 @@
           >
             <div>
               <!-- Наименование -->
-              <div>
-                <p
-                  class="link"
-                  style="margin: 0; font-weight: bold"
-                  @click="$router.push(`/organizations/${companyItem.id}`)"
-                >
+              <div class="org_label">
+                <p @click="$router.push(`/organizations/${companyItem.id}`)">
                   {{ companyItem.title }}
                 </p>
               </div>
-              <!-- Кол-во участников -->
-              <div>
-                <p style="margin: 0">{{ countSharers(companyItem.id) }}</p>
+
+              <!-- Описание -->
+              <div style="margin-left: 0.5rem; margin-top: 0.5rem;">
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <div style="color: var(--bs-secondary-color)">
+                    Учредитель:
+                  </div>
+                  <div>
+                    <span
+                      class="link"
+                      @click="goToOwnerCompany(companyItem.ownerID)"
+                      >{{ translateOwnerCompany(companyItem.ownerID) }}</span
+                    >
+                  </div>
+                </div>
+                <div>{{ countSharers(companyItem.id) }}</div>
               </div>
             </div>
 
             <!-- Учредитель -->
-            <div>
+            <!-- <div>
               <p style="margin: 0; text-align: right">Учредитель:</p>
               <p style="margin: 0">
                 <span
@@ -627,7 +643,10 @@
                   >{{ translateOwnerCompany(companyItem.ownerID) }}</span
                 >
               </p>
-            </div>
+              <p style="margin: 0; text-align: right">
+                {{ countSharers(companyItem.id) }}
+              </p>
+            </div> -->
           </div>
         </div>
       </div>
@@ -1141,6 +1160,7 @@ useHead({
   margin-top: 1rem;
 }
 .list_item {
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -1153,7 +1173,25 @@ useHead({
 }
 .item_name {
 }
+.org_label p {
+  margin: 0;
+}
+.org_label,
 .item_group {
+  margin-top: 0.5rem;
+  display: inline-block;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 16px;
+  border: unset;
+}
+.org_label,
+.item_group-w-group {
+  background-color: var(--bs-body-color);
+  color: var(--bs-body-bg);
+}
+.item_group-wo-group {
+  background-color: var(--bs-secondary-bg);
 }
 .item_icons {
   display: flex;

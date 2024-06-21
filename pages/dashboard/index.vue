@@ -28,7 +28,7 @@
       <div class="dashboard-item" @click="router.push('/demands')">
         <h2 class="dashboard-item_header">Заявки</h2>
         <div class="dashboard-item_indicator">
-          3 Акутальные 
+          3 Акутальные  
         </div>
         <div class="dashboard-item_indicator">
           3 Я автор 
@@ -43,6 +43,10 @@
         <h2 class="dashboard-item_header">Склад</h2>
         <div class="dashboard-item_indicator">
           3 220 300,00 Потенциальная капитализация
+        </div>
+        <div class="dashboard-item_indicator">
+          100500 предметов личных
+          1000 предметов банды
         </div>
       </div>
 

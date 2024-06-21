@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Container } from "@/shared/container";
+import { onBeforeMount } from "vue";
 useHead({
   title: "Заявки",
   link: [
@@ -44,118 +45,7 @@ const demandStatusTypes = ref([
     title: "Исполнено",
   },
 ]);
-// const demandType = ref([
-//   {
-//     type: 'building-materials',
-//     title: 'Материалы'
-//   }
-// ])
-const demands = ref([
-  {
-    id: 1,
-    created_At: "2024.02.19",
-    updated_At: "2024.02.21",
-    deadline: "2024.06.29",
-    type: "stuff",
-    status: "research",
-    deliveryDate: "",
-    // type: "building-materials",
-    creatorID: 3,
-    responserID: 15,
-    locationType: "office",
-    locationID: 1,
-  },
-  {
-    id: 2,
-    created_At: "2024.02.22",
-    updated_At: "2024.02.24",
-    deadline: "2024.06.29",
-    // title: "Заявка #002",
-    type: "consumables",
-    status: "picking",
-    deliveryDate: "",
-    // type: "building-materials",
-    creatorID: 3,
-    responserID: 4,
-    locationType: "office",
-    locationID: 1,
-  },
-  {
-    id: 3,
-    created_At: "2024.02.23",
-    updated_At: "2024.02.25",
-    deadline: "2024.06.29",
-    // title: "Заявка #003",
-    type: "stuff",
-    status: "delivery",
-    deliveryDate: "2024.02.25",
-    // type: "building-materials",
-    creatorID: 2,
-    responserID: 1,
-    locationType: "project",
-    locationID: 6,
-  },
-  {
-    id: 4,
-    created_At: "2024.02.24",
-    updated_At: "2024.02.25",
-    deadline: "2024.06.29",
-    // title: "Заявка #004",
-    type: "stuff",
-    status: "completed",
-    deliveryDate: "2024.02.25",
-    // type: "building-materials",
-    creatorID: 1,
-    responserID: 3,
-    locationType: "project",
-    locationID: 4,
-  },
-  {
-    id: 5,
-    created_At: "2024.02.24",
-    updated_At: "2024.02.25",
-    deadline: "2024.06.29",
-    // title: "Заявка #004",
-    type: "tools",
-    status: "picking",
-    deliveryDate: "",
-    // type: "building-materials",
-    creatorID: 1,
-    responserID: 2,
-    locationType: "project",
-    locationID: 1,
-  },
-  {
-    id: 6,
-    created_At: "2024.02.24",
-    updated_At: "2024.02.25",
-    deadline: "2024.06.29",
-    // title: "Заявка #004",
-    type: 'office equipment',
-    status: "completed",
-    deliveryDate: "",
-    // type: "building-materials",
-    creatorID: 1,
-    responserID: 15,
-    locationType: "sklad",
-    locationID: 5,
-  },
-  {
-    id: 7,
-    created_At: "2024.05.29",
-    updated_At: "2024.05.01",
-    deadline: "2024.06.29",
-    // title: "Заявка #004",
-    type: "stuff",
-    status: "research",
-    deliveryDate: "",
-    // type: "tools",
-    creatorID: 1,
-    responserID: 15,
-    locationType: "sklad",
-    locationID: 5,
-  },
-]);
+const demands = ref([]);
 
 // Категории ТМЦ (пока хардкорно)
 const warehouseCategories = ref([
@@ -219,13 +109,30 @@ const computedDemands = computed(() => {
     } else {
       alert("Вы пытаетесь воспользоваться несуществуюющим фильтром :)");
     }
-  } else {
-    return `А что-о ничего нет...`;
   }
+  // else {
+  //   return `А ничего нет...`;
+  // }
+  // if(demands.value.length) {
+  //   return demands.value
+  // }
+  // else {
+  //   return 'А ничего нет...'
+  // }
 });
 
 const users = ref(null);
+const demdands = ref(null);
 // const userCreatorData = ref(null)
+
+onBeforeMount(async () => {
+  demands.value = await getDemands();
+
+  // BD
+  async function getDemands() {
+    return await $fetch("/api/demands/demand");
+  }
+});
 
 const { data: projects } = useLazyAsyncData("projects", () =>
   $fetch("api/projects/projects")
@@ -280,8 +187,9 @@ const translateLocation = (id: any, location: string) => {
     // PROJECT
     if (location === "project") {
       if (projects.value) {
-        let project = projects.value.find((project) => project.id == id);
-        return project.title;
+        let project = projects.value.find((project) => project.id === +id);
+        return `${project.title}`;
+        // return project
       }
     }
     // SKLAD (locations)
@@ -315,11 +223,11 @@ const translateLocation = (id: any, location: string) => {
 };
 
 const translateType = (type: string) => {
-  let category = warehouseCategories.value.find(el => el.type === type)
-  if(type && category) {
-    return category.name
+  let category = warehouseCategories.value.find((el) => el.type === type);
+  if (type && category) {
+    return category.name;
   }
-}
+};
 
 // Раскраски
 const locationColorized = (location: string) => {
@@ -329,7 +237,7 @@ const locationColorized = (location: string) => {
 };
 </script>
 <template>
-  <Container style="margin-top: 5rem;">
+  <Container style="margin-top: 5rem">
     <h1 class="show-max-767">Заявки</h1>
 
     <!-- Фильтры -->
@@ -353,14 +261,13 @@ const locationColorized = (location: string) => {
     </div>
 
     <!-- DEMANDS LIST -->
-    <div class="demands_wrapper">
+    <div class="demands_wrapper" v-if="computedDemands">
       <div
         class="demands_item"
         v-for="(demand, index) in computedDemands"
         :key="index"
         @click="$router.push(`demands/${demand.id}`)"
       >
-        <!-- <h2>{{ translateDemandType(demand.type) }}</h2> -->
         <h2>{{ translateType(demand.type) }}</h2>
         <p>
           Статус: {{ translateStatus(demand.status) }}
@@ -368,15 +275,20 @@ const locationColorized = (location: string) => {
             demand.deliveryDate
           }}</span>
         </p>
-        <!-- <p>Автор: {{ translateDemandUsers(demand.creatorID) }}</p> -->
-        <!-- <p>Исполнитель: {{ translateDemandUsers(demand.responserID) }}</p> -->
-        <p v-if="demand.deadline">Deadline: {{ demand.deadline }}</p>
-        <span
-          class="location"
-          :class="locationColorized(demand.locationType)"
-          >{{ translateLocation(demand.locationID, demand.locationType) }}</span
-        >
+        <div>
+          <p v-if="demand.deadline">Deadline: {{ demand.deadline }}</p>
+          <span
+            class="location"
+            :class="locationColorized(demand.locationType)"
+            >{{
+              translateLocation(demand.locationID, demand.locationType)
+            }}</span
+          >
+        </div>
       </div>
+    </div>
+    <div v-else style="margin: 0; padding: 1rem">
+      <p>А ничего нет...</p>
     </div>
   </Container>
 </template>
@@ -384,11 +296,12 @@ const locationColorized = (location: string) => {
 <style scoped>
 .demands_wrapper {
   display: grid;
-  /* grid-template-columns: repeat(5, 1fr); */
-  /* gap: 1rem; */
+  gap: 1rem;
   margin: 1rem auto;
 }
 .demands_item {
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
   padding: 1rem;
   transition: all 0.2s ease-in;
   display: flex;
@@ -397,13 +310,19 @@ const locationColorized = (location: string) => {
   flex-direction: column;
   justify-content: space-between;
 }
+.demands_item:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.05);
+}
 .demands_item h2,
 .demands_item p {
   margin: 0;
 }
-.demands_item:hover {
-  cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.05);
+.demands_item div {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
 }
 .location {
   padding: 4px 10px;
@@ -464,30 +383,37 @@ const locationColorized = (location: string) => {
   border-bottom-right-radius: unset; */
 }
 @media screen and (max-width: 575px) {
+  .filter-types_wrapper,
   .demands_wrapper {
-    grid-template-columns: repeat(2, 1fr);
+    padding: 0 0.5rem;
   }
-}
-@media screen and (min-width: 576px) and (max-width: 768px) {
   .demands_wrapper {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: 1fr;
   }
+  /* .demands_item div {
+    display: flex;
+  } */
 }
-
 @media screen and (max-width: 767px) {
   /* h1 {
-    margin-top: 4rem;
-  } */
+      margin-top: 4rem;
+    } */
   .show-max-767 {
     display: none;
   }
 }
-@media screen and (min-width: 768px) {
-  /* h1 {
-    margin-top: 6rem;
-  } */
+@media screen and (min-width: 576px) and (max-width: 767px) {
+  .demands_wrapper {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
-@media screen and (min-width: 768px) and (max-width: 1199px) {
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+  .demands_wrapper {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media screen and (min-width: 992px) and (max-width: 1199px) {
   .demands_wrapper {
     grid-template-columns: repeat(4, 1fr);
   }

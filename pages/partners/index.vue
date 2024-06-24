@@ -1187,8 +1187,8 @@ useHead({
 }
 .org_label,
 .item_group-w-group {
-  background-color: var(--bs-success-bg-subtle);
-  color: var(--bs-success)
+  background-color: var(--bs-primary);
+  color: var(--bs-body-bg)
 }
 .item_group-wo-group {
   background-color: var(--bs-secondary-bg);

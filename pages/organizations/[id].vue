@@ -94,66 +94,71 @@
       <h2>ФОТ</h2>
       <!-- data-bs-toggle="modal"
       data-bs-target="#newWarehouseItemModal" -->
-      <button type="button" class="btn btn-primary btn-create-modal-open-767" @click="checkAndAddFund()">
+      <button
+        type="button"
+        class="btn btn-primary btn-create-modal-open-767"
+        @click="checkAndAddFund()"
+      >
         <span> Создать новый</span>
       </button>
 
       <!-- ПЕРИОДы и просомтр ФОТ -->
-      <div v-if="computedSalaryFund.length !== 0">
-        <!-- Фильтры просмотра ФОТ -->
-        <div style="display: flex; align-items: center; gap: 1rem">
-          <!-- Выбор года -->
-          <select name="" id="" v-model="currentYear" style="cursor: pointer">
-            <option v-for="year in computedYearsList" :value="year">
-              {{ year }}
-            </option>
-            <!-- <option :value="2024">2024</option> -->
-          </select>
+      <div style="margin-top: 1rem;">
+        <div v-if="computedSalaryFund.length !== 0">
+          <!-- Фильтры просмотра ФОТ -->
+          <div class="filter-fund_wrapper" style="display: flex; align-items: center; gap: 1rem">
+            <!-- Выбор года -->
+            <select name="" id="" v-model="currentYear" style="cursor: pointer">
+              <option v-for="year in computedYearsList" :value="year">
+                {{ year }}
+              </option>
+              <!-- <option :value="2024">2024</option> -->
+            </select>
 
-          <!-- выбор по месяцам-->
-          <div style="display: flex; align-items: center; gap: 1rem">
-            <div v-for="(period, i) in computedPeriodList" :key="i">
-              <input
-                type="radio"
-                :id="`${i}`"
-                name="fund-period"
-                :value="{
-                  periodStart: period.periodStart,
-                  periodEnd: period.periodEnd,
-                }"
-                v-model="choosenFundPeriod"
-              />
-              <label :for="`${i}`" style="cursor: pointer">{{
-                translateFundPeriod(period.periodStart, period.periodEnd)
-              }}</label>
+            <!-- выбор по месяцам-->
+            <div style="display: flex; align-items: center; gap: 1rem">
+              <div v-for="(period, i) in computedPeriodList" :key="i">
+                <input
+                  type="radio"
+                  :id="`${i}`"
+                  name="fund-period"
+                  :value="{
+                    periodStart: period.periodStart,
+                    periodEnd: period.periodEnd,
+                  }"
+                  v-model="choosenFundPeriod"
+                />
+                <label :for="`${i}`" style="cursor: pointer">{{
+                  translateFundPeriod(period.periodStart, period.periodEnd)
+                }}</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Таблицы ФОТ -->
+          <div
+            v-for="fund in salaryFundArray.filter(
+              (item) =>
+                item.bandID === +route.params.id &&
+                item.periodStart === choosenFundPeriod.periodStart &&
+                item.periodEnd === choosenFundPeriod.periodEnd
+            )"
+            :key="fund.id"
+            style="display: flex; align-items: center; gap: 1rem"
+          >
+            <!-- <p>{{ fund.id }}</p> -->
+            <p>{{ fund.periodStart }}</p>
+            <p>{{ fund.periodEnd }}</p>
+            <p>wageRate: {{ fund.wageRate }}</p>
+            <p>band: {{ fund.bandID }}</p>
+            <div v-if="fund.list.length">
+              list:
+              <p v-for="(el, i) in fund.list">{{ i + 1 }}. {{ el }}</p>
             </div>
           </div>
         </div>
-
-        <!-- Таблицы ФОТ -->
-        <div style="border-top: 1px solid blue"></div>
-        <div
-          v-for="fund in salaryFundArray.filter(
-            (item) =>
-              item.bandID === +route.params.id &&
-              item.periodStart === choosenFundPeriod.periodStart &&
-              item.periodEnd === choosenFundPeriod.periodEnd
-          )"
-          :key="fund.id"
-          style="display: flex; align-items: center; gap: 1rem"
-        >
-          <!-- <p>{{ fund.id }}</p> -->
-          <p>{{ fund.periodStart }}</p>
-          <p>{{ fund.periodEnd }}</p>
-          <p>wageRate: {{ fund.wageRate }}</p>
-          <p>band: {{ fund.bandID }}</p>
-          <div v-if="fund.list.length">
-            list:
-            <p v-for="(el, i) in fund.list">{{ i + 1 }}. {{ el }}</p>
-          </div>
-        </div>
+        <div v-else>Ни одной таблицы ФОТ...</div>
       </div>
-      <div v-else>Ни одной таблицы ФОТ...</div>
     </div>
 
     <!-- ТМЦ организации -->
@@ -488,11 +493,11 @@ const transformEndingTheWord = (string) => {
 
 // CHECK AND CREATE
 const checkAndAddUser = () => {
-  alert('В разработке...')
-}
+  alert("В разработке...");
+};
 const checkAndAddFund = () => {
-  alert('В разработке...')
-}
+  alert("В разработке...");
+};
 
 // Wathers
 watch(choosenFundPeriod, () => {
@@ -582,6 +587,14 @@ label #sharers-list:checked + .sharers-list_icon {
 .link:hover {
   cursor: pointer;
   color: var(--bs-primary);
+}
+
+.filter-fund_wrapper {
+  overflow-x: scroll;
+  scrollbar-width: none;
+}
+.filter-fund_wrapper::-webkit-scrollbar {
+    display: none;
 }
 
 @media screen and (max-width: 575px) {

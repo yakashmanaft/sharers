@@ -264,7 +264,7 @@ onMounted(async () => {
         surname: user.surname,
         // "password": "Anfalov123[eq",
         phone: user.phone,
-        // role: user.role,
+        role: user.role,
         groupID: user.groupID,
         groupStatus: user.groupStatus,
         created_at: user.created_at,

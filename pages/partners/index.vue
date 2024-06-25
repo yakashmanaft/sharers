@@ -615,8 +615,8 @@
               </div>
 
               <!-- Описание -->
-              <div style="margin-left: 0.5rem; margin-top: 0.5rem;">
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
+              <div style="margin-left: 0.5rem; margin-top: 0.5rem">
+                <div style="display: flex; align-items: center; gap: 0.5rem">
                   <div style="color: var(--bs-secondary-color)">
                     Учредитель:
                   </div>
@@ -949,25 +949,30 @@ const goToOwnerCompany = (ownerID) => {
  * @desc Delete users
  */
 async function deleteUser(id) {
-  let deletedUserOrError = null;
-  // id = 'aoaoaoao'
+  let isUserReady = confirm("Точно удалить пользователя?");
 
-  if (id)
-    deletedUserOrError = await $fetch("api/usersList/users", {
-      method: "DELETE",
-      body: {
-        id: id,
-      },
-    });
+  if (isUserReady) {
+    let deletedUserOrError = null;
+    // id = 'aoaoaoao'
 
-  if (deletedUserOrError instanceof H3Error) {
-    error.value = deletedUserOrError;
-    console.log("error: ", error);
+    if (id)
+      deletedUserOrError = await $fetch("api/usersList/users", {
+        method: "DELETE",
+        body: {
+          id: id,
+        },
+      });
+
+    if (deletedUserOrError instanceof H3Error) {
+      error.value = deletedUserOrError;
+      console.log("error: ", error);
+      return;
+    }
+    // users.value = await getUsers();
+    refresh();
+  } else {
     return;
   }
-
-  // users.value = await getUsers();
-  refresh();
 }
 
 /**
@@ -1188,7 +1193,7 @@ useHead({
 .org_label,
 .item_group-w-group {
   background-color: var(--bs-primary);
-  color: var(--bs-body-bg)
+  color: var(--bs-body-bg);
 }
 .item_group-wo-group {
   background-color: var(--bs-secondary-bg);

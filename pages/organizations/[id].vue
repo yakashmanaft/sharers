@@ -103,12 +103,20 @@
       </button>
 
       <!-- ПЕРИОДы и просомтр ФОТ -->
-      <div style="margin-top: 1rem;">
+      <div style="margin-top: 1rem">
         <div v-if="computedSalaryFund.length !== 0">
           <!-- Фильтры просмотра ФОТ -->
-          <div class="filter-fund_wrapper" style="display: flex; align-items: center; gap: 1rem">
+          <div
+            class="filter-fund_wrapper"
+            style="display: flex; align-items: center; gap: 1rem"
+          >
             <!-- Выбор года -->
-            <select name="" id="" v-model="currentYear" style="cursor: pointer">
+            <select
+              name=""
+              id=""
+              v-model="currentYear"
+              class="filter-fund_select"
+            >
               <option v-for="year in computedYearsList" :value="year">
                 {{ year }}
               </option>
@@ -116,8 +124,12 @@
             </select>
 
             <!-- выбор по месяцам-->
-            <div style="display: flex; align-items: center; gap: 1rem">
-              <div v-for="(period, i) in computedPeriodList" :key="i">
+            <div class="filter-fund_period">
+              <div
+                class="filter-fund_period-el"
+                v-for="(period, i) in computedPeriodList"
+                :key="i"
+              >
                 <input
                   type="radio"
                   :id="`${i}`"
@@ -128,7 +140,7 @@
                   }"
                   v-model="choosenFundPeriod"
                 />
-                <label :for="`${i}`" style="cursor: pointer">{{
+                <label :for="`${i}`">{{
                   translateFundPeriod(period.periodStart, period.periodEnd)
                 }}</label>
               </div>
@@ -136,24 +148,30 @@
           </div>
 
           <!-- Таблицы ФОТ -->
-          <div
-            v-for="fund in salaryFundArray.filter(
-              (item) =>
-                item.bandID === +route.params.id &&
-                item.periodStart === choosenFundPeriod.periodStart &&
-                item.periodEnd === choosenFundPeriod.periodEnd
-            )"
-            :key="fund.id"
-            style="display: flex; align-items: center; gap: 1rem"
-          >
-            <!-- <p>{{ fund.id }}</p> -->
-            <p>{{ fund.periodStart }}</p>
-            <p>{{ fund.periodEnd }}</p>
-            <p>wageRate: {{ fund.wageRate }}</p>
-            <p>band: {{ fund.bandID }}</p>
-            <div v-if="fund.list.length">
-              list:
-              <p v-for="(el, i) in fund.list">{{ i + 1 }}. {{ el }}</p>
+          <div style="margin-top: 1rem">
+            <div
+              v-for="fund in salaryFundArray.filter(
+                (item) =>
+                  item.bandID === +route.params.id &&
+                  item.periodStart === choosenFundPeriod.periodStart &&
+                  item.periodEnd === choosenFundPeriod.periodEnd
+              )"
+              :key="fund.id"
+              style="display: flex; align-items: center; gap: 1rem"
+            >
+              <!-- <p>{{ fund.id }}</p> -->
+              <!-- <p>{{ fund.periodStart }}</p>
+              <p>{{ fund.periodEnd }}</p>
+              <p>wageRate: {{ fund.wageRate }}</p>
+              <p>band: {{ fund.bandID }}</p> -->
+              <div v-if="fund.list.length">
+                <!-- Строка участника банды -->
+                <tr v-for="(el, i) in fund.list" class="list-el_wrapper">
+                  <td>{{ i + 1 }}.</td>
+                  <td>{{ translateFundListUser(el.userID) }}</td>
+                  <p>{{ el }}</p>
+                </tr>
+              </div>
             </div>
           </div>
         </div>
@@ -464,12 +482,19 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     const diffInDays = Math.round(diffInTime / oneDay);
 
     if (diffInDays <= 15 && date1.getDate() >= 1 && date1.getDate() <= 15) {
-      return `${monthTextUpper} 1`;
+      return `${monthTextUpper} 1ая`;
     } else if (diffInDays <= 15 && date1.getDate() > 15) {
-      return `${monthTextUpper} 2`;
+      return `${monthTextUpper} 2ая`;
     } else {
       return `${monthTextUpper}`;
     }
+  }
+};
+const translateFundListUser = (userID) => {
+  if (usersInBand.value.length && userID) {
+    let usersArr = [...usersInBand.value].filter((user) => user.id === +userID);
+
+    return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}`;
   }
 };
 
@@ -594,7 +619,46 @@ label #sharers-list:checked + .sharers-list_icon {
   scrollbar-width: none;
 }
 .filter-fund_wrapper::-webkit-scrollbar {
-    display: none;
+  display: none;
+}
+.filter-fund_select {
+  padding: 4px 10px;
+  border-radius: 16px;
+  background-color: var(--bs-primary-bg-subtle);
+  border: unset;
+  outline: unset;
+  cursor: pointer;
+  appearance: none;
+}
+.filter-fund_period {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.filter-fund_period-el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.filter-fund_period-el label {
+  cursor: pointer;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 16px;
+  background-color: var(--bs-border-color);
+}
+.filter-fund_period-el input[type="radio"]:checked + label {
+  background-color: var(--bs-body-color);
+  color: var(--bs-body-bg);
+}
+.list-el_wrapper {
+  /* display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem; */
+}
+.list-el_wrapper > p {
+  margin: 0;
 }
 
 @media screen and (max-width: 575px) {

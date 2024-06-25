@@ -475,7 +475,7 @@ useHead({
           <!-- <th>ЗП (начисленная)</th>
           <th>Налог</th> -->
         </tr>
-        <tr v-for="item in usersInBand" :key="item.id" style="">
+        <tr v-for="item in usersInBand" :key="item.id">
           <td>
             <!-- ФИО -->
             {{ item.surname }}

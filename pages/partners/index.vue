@@ -1058,7 +1058,7 @@ watch(company.value, () => {
   }
 });
 watch(user.value, () => {
-  console.log(user.value.surname);
+  console.log(user.value);
   if (
     user.value.email &&
     user.value.password &&

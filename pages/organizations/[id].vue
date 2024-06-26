@@ -170,19 +170,20 @@
                 <div>Ставка: {{ fund.wageRate }} в час.</div>
 
                 <!-- Строка участника банды -->
-                <table style="width: 100%">
-                  <thead>
+                <table class="table">
+                  <thead class="item-table_header">
                     <tr>
-                      <th>№ п/п</th>
-                      <th>Соучастник</th>
-                      <th>Час</th>
-                      <th>КТУ</th>
-                      <th>Час * КТУ</th>
-                      <th>ЗП (выработка)</th>
+                      <th scope="col">№ п/п</th>
+                      <th scope="col">Соучастник</th>
+                      <th scope="col">Час</th>
+                      <th scope="col">КТУ</th>
+                      <th scope="col">Час * КТУ</th>
+                      <th scope="col">ЗП (Выработка)</th>
+                      <th scope="col">ЗП (К получению)</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(el, i) in fund.list" class="list-el_wrapper">
+                    <tr v-for="(el, i) in fund.list" class="table-row_wrapper">
                       <!-- № п/п -->
                       <td>{{ i + 1 }}.</td>
                       <!-- Соучастник -->
@@ -199,15 +200,31 @@
                       <td>{{ el.stakeIndex }}</td>
                       <!-- Час * КТУ -->
                       <td>
-                        {{ (el.hours * el.stakeIndex).toFixed(2) }}
+                        <span v-if="el.stakeIndex !== ''">{{
+                          (el.hours * el.stakeIndex).toFixed(2)
+                        }}</span>
+                        <span v-else>-</span>
                       </td>
                       <!-- ЗП (выработка) -->
                       <td>
-                        {{
-                          (el.hours * el.stakeIndex * fund.wageRate).toFixed(2)
-                        }}
+                        <span v-if="el.stakeIndex !== ''">
+                          {{
+                            (el.hours * el.stakeIndex * fund.wageRate).toFixed(
+                              2
+                            )
+                          }}
+                        </span>
+                        <span v-else>-</span>
+                      </td>
+                      <!-- ЗП (к получению) -->
+                      <td>
+                        Сюда вписывать надо... Если в БД еще не вписали, так и
+                        показываем что надо вписать
                       </td>
                     </tr>
+
+                    <!-- Итого -->
+                    <tr></tr>
                   </tbody>
                 </table>
               </div>
@@ -534,7 +551,7 @@ const translateFundListUser = (userID) => {
   if (usersInBand.value.length && userID) {
     let usersArr = [...usersInBand.value].filter((user) => user.id === +userID);
 
-    return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}`;
+    return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}.`;
   }
 };
 
@@ -702,8 +719,20 @@ label #sharers-list:checked + .sharers-list_icon {
 }
 
 /* Таблица ФОТ */
-.list-el_wrapper:hover {
-  background-color: var(--bs-border-color);
+.table {
+  width: 100%;
+}
+.item-table_header tr,
+.table-row_wrapper {
+  padding: 0;
+  width: 100%;
+}
+.item-table_header tr th,
+.table-row_wrapper td {
+  padding: 0;
+}
+.table-row_wrapper:hover td {
+  background-color: var(--bs-border-color) !important;
   cursor: pointer;
 }
 

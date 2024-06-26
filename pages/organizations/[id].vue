@@ -164,14 +164,54 @@
               <p>{{ fund.periodEnd }}</p>
               <p>wageRate: {{ fund.wageRate }}</p>
               <p>band: {{ fund.bandID }}</p> -->
+
               <div v-if="fund.list.length">
+                <!-- Ставка -->
+                <div>Ставка: {{ fund.wageRate }} в час.</div>
+
                 <!-- Строка участника банды -->
-                <tr v-for="(el, i) in fund.list" class="list-el_wrapper">
-                  <td>{{ i + 1 }}.</td>
-                  <td>{{ translateFundListUser(el.userID) }}</td>
-                  <p>{{ el }}</p>
-                </tr>
+                <table style="width: 100%">
+                  <thead>
+                    <tr>
+                      <th>№ п/п</th>
+                      <th>Соучастник</th>
+                      <th>Час</th>
+                      <th>КТУ</th>
+                      <th>Час * КТУ</th>
+                      <th>ЗП (выработка)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(el, i) in fund.list" class="list-el_wrapper">
+                      <!-- № п/п -->
+                      <td>{{ i + 1 }}.</td>
+                      <!-- Соучастник -->
+                      <td>
+                        <span
+                          class="link"
+                          @click="$router.push(`/partners/${el.userID}`)"
+                          >{{ translateFundListUser(el.userID) }}</span
+                        >
+                      </td>
+                      <!-- Отработано часов -->
+                      <td>{{ el.hours }}</td>
+                      <!-- КТУ -->
+                      <td>{{ el.stakeIndex }}</td>
+                      <!-- Час * КТУ -->
+                      <td>
+                        {{ (el.hours * el.stakeIndex).toFixed(2) }}
+                      </td>
+                      <!-- ЗП (выработка) -->
+                      <td>
+                        {{
+                          (el.hours * el.stakeIndex * fund.wageRate).toFixed(2)
+                        }}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
+              <!-- <p>{{ fund.list }}</p> -->
             </div>
           </div>
         </div>
@@ -659,6 +699,12 @@ label #sharers-list:checked + .sharers-list_icon {
 }
 .list-el_wrapper > p {
   margin: 0;
+}
+
+/* Таблица ФОТ */
+.list-el_wrapper:hover {
+  background-color: var(--bs-border-color);
+  cursor: pointer;
 }
 
 @media screen and (max-width: 575px) {

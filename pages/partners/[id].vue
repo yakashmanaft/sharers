@@ -18,8 +18,8 @@ const router = useRouter();
 const users = ref(null);
 const user = ref(null);
 
-const isFlipperPrevUserBtnExist = ref(true);
-const isFlipperNextUserBtnExist = ref(true);
+// const isFlipperPrevUserBtnExist = ref(true);
+// const isFlipperNextUserBtnExist = ref(true);
 
 // ФОТ
 const date = new Date();
@@ -273,11 +273,11 @@ onMounted(async () => {
     })
     .find((item) => item.id === +route.params.id);
 
-  if (users.value.indexOf(user.value) === 0) {
-    isFlipperPrevUserBtnExist.value = false;
-  } else if (users.value.length - 1 === users.value.indexOf(user.value)) {
-    isFlipperNextUserBtnExist.value = false;
-  }
+  // if (users.value.indexOf(user.value) === 0) {
+  //   isFlipperPrevUserBtnExist.value = false;
+  // } else if (users.value.length - 1 === users.value.indexOf(user.value)) {
+  //   isFlipperNextUserBtnExist.value = false;
+  // }
 
   wageFund.value = sumUserSalary() + rest.value;
   productionFund.value = sumUserProductionSalary() + rest.value;
@@ -301,22 +301,22 @@ async function getItems() {
 /**
  * @desc Users flipper
  */
-const usersFlipper = (user, actionType, usersArray) => {
-  let prevUserID = usersArray.indexOf(user)
-    ? usersArray[usersArray.indexOf(user) - 1].id
-    : null;
-  let nextUserID =
-    usersArray.indexOf(user) < usersArray.length - 1
-      ? usersArray[usersArray.indexOf(user) + 1].id
-      : null;
+// const usersFlipper = (user, actionType, usersArray) => {
+//   let prevUserID = usersArray.indexOf(user)
+//     ? usersArray[usersArray.indexOf(user) - 1].id
+//     : null;
+//   let nextUserID =
+//     usersArray.indexOf(user) < usersArray.length - 1
+//       ? usersArray[usersArray.indexOf(user) + 1].id
+//       : null;
 
-  if (actionType === "prev" && prevUserID) {
-    router.push(`${prevUserID}`);
-  }
-  if (actionType === "next" && nextUserID) {
-    router.push(`${nextUserID}`);
-  }
-};
+//   if (actionType === "prev" && prevUserID) {
+//     router.push(`${prevUserID}`);
+//   }
+//   if (actionType === "next" && nextUserID) {
+//     router.push(`${nextUserID}`);
+//   }
+// };
 
 /**
  * @desc  Calculation Salary
@@ -404,8 +404,8 @@ useHead({
 <template>
   <Container v-if="user">
     <div class="page-title">
-      <h1>Соучастник #{{ $route.params.id }}</h1>
-      <div class="page-title__btn-container">
+      <h1>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h1>
+      <!-- <div class="page-title__btn-container">
         <span
           :class="{ btn__disabled: !isFlipperPrevUserBtnExist }"
           @click="usersFlipper(user, 'prev', users)"
@@ -416,11 +416,11 @@ useHead({
           @click="usersFlipper(user, 'next', users)"
           >Next</span
         >
-      </div>
+      </div> -->
     </div>
 
     <div>
-      <h2>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h2>
+      <!-- <h2>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h2> -->
       <!-- <p>{{ user.role }}</p> -->
       <!-- PHONE -->
       <div class="item_phone">
@@ -570,10 +570,10 @@ useHead({
 .page-title__btn-container span:hover {
   cursor: pointer;
 }
-.btn__disabled {
+/* .btn__disabled {
   color: gray;
   opacity: 0.3;
-}
+} */
 
 @media screen and (max-width: 767px) {
   .page-title {

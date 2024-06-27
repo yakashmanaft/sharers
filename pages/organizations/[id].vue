@@ -145,10 +145,13 @@
                 }}</label>
               </div>
             </div>
+
+            <!-- <div>Today: {{ new Date() }}</div> -->
+            <!-- <div>{{computedPeriodList}}</div> -->
           </div>
 
           <!-- Таблицы ФОТ -->
-          <div style="margin-top: 1rem">
+          <div class="table-fund_wrapper">
             <div
               v-for="fund in salaryFundArray.filter(
                 (item) =>
@@ -166,14 +169,33 @@
               <p>band: {{ fund.bandID }}</p> -->
 
               <div v-if="fund.list.length">
+                <!-- Статус -->
+                <div v-if="fund.status" class="table-fund_status">
+                  <p style="margin: 0">Статус:</p>
+                  <!-- <div v-if="fund.status.status === 'paid out'">Выплачено</div>
+                  <div v-else>Ожидает оплаты</div> -->
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <span
+                      :class="
+                        fund.status.status === 'paid out'
+                          ? 'status_paid-out'
+                          : 'status_awaiting-payment'
+                      "
+                      >{{ transformShowFundStatus(fund.status) }}</span
+                    >
+                    <span v-if="fund.status.status === 'paid out'" style="color: var(--bs-tertiary-color)">{{
+                      transformFundStatusDate(fund.status.date)
+                    }}</span>
+                  </div>
+                </div>
                 <!-- Ставка -->
-                <div>Ставка: {{ fund.wageRate }} в час.</div>
+                <div style="margin-top: 1rem;">Ставка: {{ fund.wageRate }} в час.</div>
 
                 <!-- Строка участника банды -->
                 <table class="table">
                   <thead class="item-table_header">
                     <tr>
-                      <th scope="col">№ п/п</th>
+                      <th scope="col">п/п</th>
                       <th scope="col">Соучастник</th>
                       <th scope="col">Час</th>
                       <th scope="col">КТУ</th>
@@ -572,6 +594,20 @@ const transformEndingTheWord = (string) => {
   } else if ((string = "банды")) {
   }
 };
+const transformShowFundStatus = (statusObj) => {
+  if (statusObj.status === "paid out") {
+    return "Выплачено";
+  } else if (statusObj.status === "awaiting payment") {
+    return "Ожидает оплаты";
+  }
+};
+const transformFundStatusDate = (statusDate) => {
+  if(statusDate === '') {
+    return
+  } else {
+    return statusDate
+  }
+}
 
 // CHECK AND CREATE
 const checkAndAddUser = () => {
@@ -708,6 +744,27 @@ label #sharers-list:checked + .sharers-list_icon {
   background-color: var(--bs-body-color);
   color: var(--bs-body-bg);
 }
+.table-fund_wrapper {
+  margin-top: 1.5rem;
+}
+.table-fund_status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.status_awaiting-payment,
+.status_paid-out {
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+.status_awaiting-payment {
+  color: var(--bs-warning);
+  background-color: var(--bs-warning-bg-subtle);
+}
+.status_paid-out {
+  color: var(--bs-success);
+  background-color: var(--bs-success-bg-subtle);
+}
 .list-el_wrapper {
   /* display: flex;
   align-items: center;
@@ -720,16 +777,21 @@ label #sharers-list:checked + .sharers-list_icon {
 
 /* Таблица ФОТ */
 .table {
+  margin-top: 1rem;
   width: 100%;
 }
 .item-table_header tr,
 .table-row_wrapper {
   padding: 0;
   width: 100%;
+  display: inline-grid;
+  grid-template-columns: 50px 1fr 1fr 1fr 1fr 1fr 1fr;
 }
 .item-table_header tr th,
 .table-row_wrapper td {
   padding: 0;
+  display: flex;
+  align-items: center;
 }
 .table-row_wrapper:hover td {
   background-color: var(--bs-border-color) !important;

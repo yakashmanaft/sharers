@@ -9,7 +9,18 @@
         {{ item.ticket }} | {{ item.qty }}
       </li>
     </ul>
-
+    <br />
+    <div style="display: flex; align-items: center; gap: 0.5rem">
+      <div
+        style="cursor: pointer"
+        @click="moexTickerLast(`${promtTicker}`).then(console.log)"
+      >
+        <span>Запросить котировку по тикеру</span>
+      </div>
+      <input type="text" v-model="promtTicker" placeholder="Впишите тикер" />
+    </div>
+    <br />
+    <div @click="parser"><span style="cursor: pointer" >Парсить котировки</span></div>
     <br />
     <ul>
       <li v-for="item in testmyBondsList">
@@ -289,6 +300,8 @@ const bondsLedger = ref([
   },
 ]);
 
+const promtTicker = ref(null);
+
 onMounted(() => {
   myBondsList.value = Object.values(
     bondsLedger.value.reduce(
@@ -312,6 +325,36 @@ onMounted(() => {
     return +acc.toFixed(2);
   }, 0);
 });
+
+async function moexTickerLast(ticker) {
+  const json = await fetch(
+    "https://iss.moex.com/iss/engines/stock/markets/shares/securities/" +
+      ticker +
+      ".json"
+  ).then(function (res) {
+    return res.json();
+  });
+  // return json.marketdata.data.filter(function (d) {
+  //   return ["TQBR", "TQTF"].indexOf(d[1]) !== -1;
+  // })[0][12];
+  return json.marketdata.data.filter(function (d) {
+    return ["TQBR", "TQTF"].indexOf(d[1]) !== -1;
+  })[0];
+}
+
+const parser = async () => {
+  // console.log('/iss/securities')
+  const json = await fetch(
+    "https://iss.moex.com/iss/securities.json?group_by=group&group_by_filter=stock_shares&iss.meta=off&start=0&iss.json=extended"
+    // 'https://iss.moex.com/iss/securities.json?q=Yandex'
+    // "https://iss.moex.com/iss/securities.json?q=Северсталь&group_by=group&group_by_filter=stock_bonds&limit=10000&iss.meta=off&start=0&iss.json=extended"
+
+  ).then(function (res) {
+    return res.json();
+  });
+  console.log(json);
+  return json;
+};
 
 useHead({
   title: "Мои облигации",

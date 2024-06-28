@@ -68,6 +68,7 @@ const featuresListNoAuth = ref([
 
 // 
 onMounted(async () => {
+  console.log(useAuthStore().user)
 });
 
 const logout = () => {
@@ -270,6 +271,9 @@ watch(
             @click="closeBurgerMenu"
               >
                 <router-link :to="`${item.path}`" :class="{'current-feature': route.path === item.path && route.path.includes('partners')}">{{ item.title }}</router-link>
+              </li>
+              <li v-if="useAuthStore().user.id === 2">
+                <router-link to="/banks">banks</router-link>
               </li>
             </ul>
 

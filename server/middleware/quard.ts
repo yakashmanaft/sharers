@@ -10,6 +10,7 @@ export default defineEventHandler(async (event) => {
         // '/api/usersList/users',
         '/api/warehouse/item',
         '/api/warehouse',
+        '/api/banks',
         '/api/projects/projects',
         '/api/locations/locations',
         '/api/locations/organizations',

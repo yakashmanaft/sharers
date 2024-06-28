@@ -1,12 +1,54 @@
 <template>
   <Container>
-    <h2 style="margin-top: 5rem">My Bonds List</h2>
+
+    <!-- BANKS -->
+    <h2 style="margin-top: 5rem">Banks</h2>
+
+    <div v-for="bank in banks">
+      {{bank}}
+    </div>
+
+    <br />
+    <br />
+
+    <!-- INVEST -->
+    <h2>Invest</h2>
+    <div class="invest_wrapper">
+      <div class="invest_item">
+        <p>Наименование: ИС</p>
+        <p>Участники: Бочкарев И.А., Анфалов С.В.</p>
+        <p>Брокер: БКС</p>
+        <p>Брокерский счет</p>
+      </div>
+      <div class="invest_item">
+        <p>Наименование: Личный</p>
+        <p>Участники: Анфалов С.В.</p>
+        <p>Брокер: БКС</p>
+        <p>ИИС</p>
+      </div>
+      
+      <div class="invest_item">
+        <p>Наименование: ВОТ</p>
+        <p>Участники: АС, Анфалов С.В., Козлов А.Е., ЕС, Нецветаев А.А., ЮС, Титова Ю.О., Соучастники</p>
+        <p>Брокер: Т-Банк</p>
+        <p>Брокерский счет</p>
+      </div>
+      <div class="invest_item">
+        <p>Наименование: ЮС</p>
+        <p>Участники: Титова Ю.О., Анфалов С.В.</p>
+        <p>Брокер: Сбербанк</p>
+        <p>Брокерский счет</p>
+      </div>
+    </div>
+
+
+    <br>
     <p>На сумму: {{ summaryWastedValue }}</p>
     <ul>
       <li v-for="item in myBondsList">
         | На сумму: {{ item.buy_price }} (ЦенаКомиссия: {{ item.fee }}, НКД:
         {{ item.accumulated_coupon_income }}) | {{ item.name }} |
-        {{ item.ticket }} | {{ item.qty }}
+        {{ item.ticker }} | {{ item.qty }}
       </li>
     </ul>
     <br />
@@ -20,13 +62,15 @@
       <input type="text" v-model="promtTicker" placeholder="Впишите тикер" />
     </div>
     <br />
-    <div @click="parser"><span style="cursor: pointer" >Парсить котировки</span></div>
+    <div @click="parser">
+      <span style="cursor: pointer">Парсить котировки</span>
+    </div>
     <br />
     <ul>
       <li v-for="item in testmyBondsList">
         | На сумму: {{ item.buy_price }} (ЦенаКомиссия: {{ item.fee }}, НКД:
         {{ item.accumulated_coupon_income }}) | {{ item.name }} |
-        {{ item.ticket }} | {{ item.qty }}
+        {{ item.ticker }} | {{ item.qty }}
       </li>
     </ul>
 
@@ -47,7 +91,7 @@ const summaryWastedValue = ref(0);
 const state_tax = ref(0.13);
 const bondsList = ref({
   name: "Россети Центр 001Р-03",
-  ticket: "RU000A107AG6",
+  ticker: "RU000A107AG6",
   coupons: [
     {
       coupon_value: 13.89,
@@ -61,7 +105,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2024, 2, 4),
     name: "Россети Центр 001Р-03",
-    ticket: "RU000A107AG6",
+    ticker: "RU000A107AG6",
     buy_price: 1001,
     qty: 6,
     fee: 18.02,
@@ -72,7 +116,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2024, 1, 12),
     name: "Россети Центр 001Р-03",
-    ticket: "RU000A107AG6",
+    ticker: "RU000A107AG6",
     buy_price: 1000.8,
     qty: 1,
     fee: 3.0,
@@ -83,7 +127,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2024, 1, 2),
     name: "Россети Центр 001Р-03",
-    ticket: "RU000A107AG6",
+    ticker: "RU000A107AG6",
     buy_price: 1000.8,
     qty: 1,
     fee: 3.0,
@@ -94,7 +138,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2024, 0, 29),
     name: "Россети Центр 001Р-03",
-    ticket: "RU000A107AG6",
+    ticker: "RU000A107AG6",
     buy_price: 1000.2,
     qty: 1,
     fee: 3.0,
@@ -105,7 +149,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2024, 0, 26),
     name: "Нафтатранс Плюс выпуск 5",
-    ticket: "RU000A106Y21",
+    ticker: "RU000A106Y21",
     buy_price: 1032.3,
     qty: 1,
     fee: 3.1,
@@ -116,7 +160,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2024, 0, 18),
     name: "Россети Центр 001Р-03",
-    ticket: "RU000A107AG6",
+    ticker: "RU000A107AG6",
     buy_price: 1000.4,
     qty: 1,
     fee: 3.0,
@@ -127,7 +171,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2024, 0, 12),
     name: "РЖД 1P28R",
-    ticket: "RU000A106ZL5",
+    ticker: "RU000A106ZL5",
     buy_price: 1005.0,
     qty: 10,
     fee: 30.15,
@@ -138,7 +182,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 27),
     name: "РЖД 1P26R",
-    ticket: "RU000A106K43",
+    ticker: "RU000A106K43",
     buy_price: 1011.3,
     qty: 3,
     fee: 10,
@@ -149,7 +193,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 24),
     name: "ТЕХНО Лизинг выпуск 3",
-    ticket: "RU000A102234",
+    ticker: "RU000A102234",
     buy_price: 939.3,
     qty: 2,
     fee: 5.64,
@@ -160,7 +204,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 24),
     name: "ТЕХНО Лизинг выпуск 3",
-    ticket: "RU000A102234",
+    ticker: "RU000A102234",
     buy_price: 936.6,
     qty: 2,
     fee: 5.64,
@@ -171,7 +215,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 24),
     name: "СДЭК-Глобал выпуск 1",
-    ticket: "RU000A102SM7",
+    ticker: "RU000A102SM7",
     buy_price: 947.2,
     qty: 2,
     fee: 5.6,
@@ -182,7 +226,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 24),
     name: "СДЭК-Глобал выпуск 1",
-    ticket: "RU000A102SM7",
+    ticker: "RU000A102SM7",
     buy_price: 947.2,
     qty: 1,
     fee: 2.84,
@@ -193,7 +237,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 24),
     name: "Делимобиль 1Р-03",
-    ticket: "RU000A106UW3",
+    ticker: "RU000A106UW3",
     buy_price: 994.6,
     qty: 1,
     fee: 2.98,
@@ -204,7 +248,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 24),
     name: "Делимобиль 1Р-03",
-    ticket: "RU000A106UW3",
+    ticker: "RU000A106UW3",
     buy_price: 994.6,
     qty: 2,
     fee: 2.98,
@@ -215,7 +259,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2023, 9, 22),
     name: "Самолет БО-П112",
-    ticket: "RU000A104YT6",
+    ticker: "RU000A104YT6",
     buy_price: 1016.6,
     qty: 1,
     fee: 3.05,
@@ -226,7 +270,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2021, 10, 19),
     name: "МТС выпуск 14",
-    ticket: "RU000A101FH6",
+    ticker: "RU000A101FH6",
     buy_price: 908.22,
     qty: 1,
     fee: 2.72,
@@ -237,7 +281,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2021, 3, 8),
     name: "АФК Система выпуск 7",
-    ticket: "RU000A0ZYQY7",
+    ticker: "RU000A0ZYQY7",
     buy_price: 974.4,
     qty: 1,
     fee: 0.49,
@@ -248,7 +292,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2021, 3, 8),
     name: "МаксимаТелеком выпуск 2",
-    ticket: "RU000A102DK3",
+    ticker: "RU000A102DK3",
     buy_price: 994.4,
     qty: 1,
     fee: 0.5,
@@ -259,7 +303,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2021, 3, 8),
     name: "Ренессанс Кредит выпуск 6",
-    ticket: "RU000A102RN7",
+    ticker: "RU000A102RN7",
     buy_price: 987.8,
     qty: 1,
     fee: 0.49,
@@ -270,7 +314,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2021, 3, 8),
     name: "Ренессанс Кредит выпуск 4",
-    ticket: "RU000A102H83",
+    ticker: "RU000A102H83",
     buy_price: 994.5,
     qty: 1,
     fee: 0.5,
@@ -281,7 +325,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2021, 3, 8),
     name: "ОФЗ 26232",
-    ticket: "SU26232RMFS7",
+    ticker: "SU26232RMFS7",
     buy_price: 952.01,
     qty: 1,
     fee: 0.48,
@@ -292,7 +336,7 @@ const bondsLedger = ref([
     transaction_type: "buy",
     buy_at: new Date(2021, 3, 8),
     name: "Казахстан выпуск 11",
-    ticket: "RU000A101RZ3",
+    ticker: "RU000A101RZ3",
     buy_price: 967.2,
     qty: 1,
     fee: 0.48,
@@ -302,21 +346,36 @@ const bondsLedger = ref([
 
 const promtTicker = ref(null);
 
+const {
+  pending,
+  error,
+  refresh,
+  data: banks,
+  status,
+} = await useFetch("/api/banks/bank", {
+  lazy: false,
+  transform: (banks) => {
+    return banks.sort((x, y) => {
+      if (x.title < y.title) {
+        return -1;
+      }
+
+      if (x.title > y.title) {
+        return 1;
+      }
+    });
+  },
+});
+
 onMounted(() => {
   myBondsList.value = Object.values(
     bondsLedger.value.reduce(
       (a, n) => (
-        ((a[n.ticket] = a[n.ticket] || { ...n, qty: 0 }).qty += n.qty), a
+        ((a[n.ticker] = a[n.ticker] || { ...n, qty: 0 }).qty += n.qty), a
       ),
       {}
     )
   );
-
-  // testmyBondsList.value = Object.values(bondsLedger.value.reduce(
-  //     function (acc, current) {
-  //         return acc[current.ticket] = a[current.ticket] || {...current, qty: 0}
-  //     }
-  // ))
 
   summaryWastedValue.value = bondsLedger.value.reduce(function (acc, current) {
     acc +=
@@ -327,8 +386,9 @@ onMounted(() => {
 });
 
 async function moexTickerLast(ticker) {
+  // /iss/engines/[engine]/markets/[market]/securities/[security]
   const json = await fetch(
-    "https://iss.moex.com/iss/engines/stock/markets/shares/securities/" +
+    "https://iss.moex.com/iss/engines/stock/markets/bonds/securities/" +
       ticker +
       ".json"
   ).then(function (res) {
@@ -337,18 +397,19 @@ async function moexTickerLast(ticker) {
   // return json.marketdata.data.filter(function (d) {
   //   return ["TQBR", "TQTF"].indexOf(d[1]) !== -1;
   // })[0][12];
-  return json.marketdata.data.filter(function (d) {
-    return ["TQBR", "TQTF"].indexOf(d[1]) !== -1;
-  })[0];
+  return json.marketdata;
+  // .data
+  // .filter(function (d) {
+  //   return ["TQBR", "TQTF"].indexOf(d[1]) !== -1;
+  // });
 }
 
 const parser = async () => {
   // console.log('/iss/securities')
   const json = await fetch(
-    "https://iss.moex.com/iss/securities.json?group_by=group&group_by_filter=stock_shares&iss.meta=off&start=0&iss.json=extended"
+    "https://iss.moex.com/iss/securities.json?group_by=group&group_by_filter=stock_bonds&iss.meta=off&start=0&iss.json=extended"
     // 'https://iss.moex.com/iss/securities.json?q=Yandex'
     // "https://iss.moex.com/iss/securities.json?q=Северсталь&group_by=group&group_by_filter=stock_bonds&limit=10000&iss.meta=off&start=0&iss.json=extended"
-
   ).then(function (res) {
     return res.json();
   });
@@ -379,4 +440,21 @@ useHead({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+ .invest_wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1rem;
+ }
+ .invest_item {
+  padding: 1rem;
+  border: 1px solid var(	--bs-border-color);
+  border-radius: 16px;
+  transition: all 0.15s ease-in;
+ }
+ .invest_item:hover {
+  cursor: pointer;
+  background-color: var(--bs-secondary-bg);
+ }
+</style>

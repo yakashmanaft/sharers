@@ -101,6 +101,15 @@ model Projects {
   update_at   DateTime? @updatedAt
 }
 
+model Banks {
+  id          Int       @id @default(autoincrement())
+  title       String?    @db.VarChar(255)
+  creatorID   Int       @default(0)
+  users       Json
+  created_at  DateTime  @default(now()) @db.DateTime(0)
+  update_at   DateTime? @updatedAt
+}
+
 // места хранения компании (Склад, Офис, Ремонтные организации)
 model Locations {
   id         Int       @id @default(autoincrement())

@@ -2,42 +2,26 @@
   <Container>
 
     <!-- BANKS -->
-    <h2 style="margin-top: 5rem">Banks</h2>
+    <h2 style="margin-top: 6rem">Banks</h2>
 
-    <div v-for="bank in banks">
-      {{bank}}
+    <div class="items-container">
+      <div class="item-wrapper"v-for="bank in banks">
+        <p style="font-weight: bold;">{{ bank.title }}</p>
+        <p>{{ bank.users }}</p>
+        <p>Баланс: 999 999 999,99 Р</p>
+        <p>Долги: 000 000 000,00 Р</p>
+        <!-- {{bank}} -->
+      </div>
     </div>
 
-    <br />
-    <br />
-
     <!-- INVEST -->
-    <h2>Invest</h2>
-    <div class="invest_wrapper">
-      <div class="invest_item">
-        <p>Наименование: ИС</p>
-        <p>Участники: Бочкарев И.А., Анфалов С.В.</p>
-        <p>Брокер: БКС</p>
-        <p>Брокерский счет</p>
-      </div>
-      <div class="invest_item">
-        <p>Наименование: Личный</p>
-        <p>Участники: Анфалов С.В.</p>
-        <p>Брокер: БКС</p>
-        <p>ИИС</p>
-      </div>
-      
-      <div class="invest_item">
-        <p>Наименование: ВОТ</p>
-        <p>Участники: АС, Анфалов С.В., Козлов А.Е., ЕС, Нецветаев А.А., ЮС, Титова Ю.О., Соучастники</p>
-        <p>Брокер: Т-Банк</p>
-        <p>Брокерский счет</p>
-      </div>
-      <div class="invest_item">
-        <p>Наименование: ЮС</p>
-        <p>Участники: Титова Ю.О., Анфалов С.В.</p>
-        <p>Брокер: Сбербанк</p>
-        <p>Брокерский счет</p>
+    <h2 style="margin-top: 1rem;">Invest</h2>
+    <div class="items-container">
+      <div class="item-wrapper" v-for="fund in stockFunds">
+        <p style="font-weight: bold;">{{ fund.title }}</p>
+        <p>{{ fund.partners }}</p>
+        <p>{{ fund.stockBroker }}</p>
+        <p>{{ fund.accountType }}</p>
       </div>
     </div>
 
@@ -367,6 +351,10 @@ const {
   },
 });
 
+const { data: stockFunds } = await useFetch("/api/stock/partnerFunds", {
+  lazy: false
+})
+
 onMounted(() => {
   myBondsList.value = Object.values(
     bondsLedger.value.reduce(
@@ -441,19 +429,19 @@ useHead({
 </script>
 
 <style scoped>
- .invest_wrapper {
+ .items-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 1rem;
   margin-top: 1rem;
  }
- .invest_item {
+ .item-wrapper {
   padding: 1rem;
   border: 1px solid var(	--bs-border-color);
   border-radius: 16px;
   transition: all 0.15s ease-in;
  }
- .invest_item:hover {
+ .item-wrapper:hover {
   cursor: pointer;
   background-color: var(--bs-secondary-bg);
  }

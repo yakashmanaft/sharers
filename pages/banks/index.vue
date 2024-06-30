@@ -5,23 +5,43 @@
     <h2 style="margin-top: 6rem">Banks</h2>
 
     <div class="items-container">
-      <div class="item-wrapper"v-for="bank in banks">
+      <div class="item-wrapper" @click="$router.push(`banks/${bank.id}`)"  v-for="bank in banks">
+
+        <!-- Bank title -->
         <p style="font-weight: bold;">{{ bank.title }}</p>
-        <p>{{ bank.users }}</p>
-        <p>Баланс: 999 999 999,99 Р</p>
-        <p>Долги: 000 000 000,00 Р</p>
-        <!-- {{bank}} -->
+
+        <!-- Partners in Bank -->
+        <!-- <div style="display: flex; gap: 0.5rem;">
+          <div v-for="user in bank.users" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 48px;">
+            <div style="background-color: var(--bs-primary); width: 100%; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+              <span style="color: var(--bs-body-bg); font-weight: bold;">ЕП</span>
+            </div>
+            <span style="font-size: 0.7rem;">1/2</span>
+          </div>
+        </div> -->
+
+        <!-- <p>{{ bank.users }}</p> -->
+
+        <!-- Balance -->
+        <div style="margin-top: 1rem;">
+
+          <p>999 999 999,99 Р (Баланс)</p>
+          <p>000 000 000,00 Р (Долги)</p>
+        </div>
+
+
       </div>
     </div>
 
     <!-- INVEST -->
-    <h2 style="margin-top: 1rem;">Invest</h2>
+    <h2 style="margin-top: 1rem;">Stock IMOEX indested</h2>
     <div class="items-container">
-      <div class="item-wrapper" v-for="fund in stockFunds">
+      <div class="item-wrapper" @click="$router.push(`funds/${fund.id}`)" v-for="fund in stockFunds">
         <p style="font-weight: bold;">{{ fund.title }}</p>
-        <p>{{ fund.partners }}</p>
+        <!-- <p>{{ fund.partners }}</p> -->
         <p>{{ fund.stockBroker }}</p>
         <p>{{ fund.accountType }}</p>
+        <p>999 999 999,99 P (-999 999 999,99 P)</p>
       </div>
     </div>
 
@@ -69,6 +89,10 @@
 
 <script setup>
 import { Container } from "@/shared/container";
+
+// 
+const router = useRouter()
+
 const myBondsList = ref([]);
 const testmyBondsList = ref([]);
 const summaryWastedValue = ref(0);
@@ -351,7 +375,7 @@ const {
   },
 });
 
-const { data: stockFunds } = await useFetch("/api/stock/partnerFunds", {
+const { data: stockFunds } = await useFetch("/api/funds/partnerStockFunds", {
   lazy: false
 })
 

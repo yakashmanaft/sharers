@@ -34,13 +34,13 @@
     </div>
 
     <!-- INVEST -->
-    <h2 style="margin-top: 1rem;">Stock IMOEX invested</h2>
+    <h2 style="margin-top: 1rem;">Stock IMOEX/SPB invested</h2>
     <div class="items-container">
       <div class="item-wrapper" @click="$router.push(`funds/${fund.id}`)" v-for="fund in stockFunds">
         <p style="font-weight: bold;">{{ fund.title }}</p>
         <!-- <p>{{ fund.partners }}</p> -->
-        <p>{{ fund.stockBroker }}</p>
-        <p>{{ fund.accountType }}</p>
+        <p>{{ fund.stockBroker.title }}</p>
+        <p>{{ translateStockFundType(fund.accountType) }}</p>
         <p>999 999 999,99 P (-999 999 999,99 P)</p>
       </div>
     </div>
@@ -428,6 +428,17 @@ const parser = async () => {
   console.log(json);
   return json;
 };
+
+// Translaters
+const translateStockFundType = (type) => {
+  if(type) {
+    if(type === 'iia') {
+      return 'ИИС'
+    } else if (type === 'ba') {
+      return 'Брокерский счет'
+    }
+  }
+}
 
 useHead({
   title: "Мои облигации",

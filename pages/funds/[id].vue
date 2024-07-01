@@ -1,85 +1,141 @@
 <script setup>
-import {Container} from '@/shared/container'
+import { Container } from "@/shared/container";
 
-// 
-const route = useRoute()
+//
+const route = useRoute();
 
 useHead({
-        title: "Фонд",
-        link: [
-            { 
-                rel: 'stylesheet', 
-                href: 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css',
-                integrity: "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH",
-                crossorigin: "anonymous",
-                type: "text/css"
-            }
-        ],
-        script: [
-            {
-                src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
-                integrity: "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz",
-                crossorigin: "anonymous",
-            }
-        ]
-    })
+  title: "Фонд",
+  link: [
+    {
+      rel: "stylesheet",
+      href: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css",
+      integrity:
+        "sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH",
+      crossorigin: "anonymous",
+      type: "text/css",
+    },
+  ],
+  script: [
+    {
+      src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
+      integrity:
+        "sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz",
+      crossorigin: "anonymous",
+    },
+  ],
+});
 
-    // const listItemType = ref([])
+// choose title
+const titles = ref([
+  {
+    title: "Активы",
+    name: "assets",
+  },
+  {
+    title: "История",
+    name: "history",
+  },
+]);
+const currentTitle = ref("assets");
 
-    // Инструмент
-    // tools
+// const listItemType = ref([])
 
-    // Расходники
-    // consumables
+// Инструмент
+// tools
 
-    // Техника
-    // technic
+// Расходники
+// consumables
 
-    // Материалы
-    // stuff
+// Техника
+// technic
 
-    const computedFund = computed(() => funds.value[0])
+// Материалы
+// stuff
 
-    const { pending, error, refresh, data: funds, status } = await useFetch("/api/funds/partnerStockFunds", {
-        lazy: false,
-        transform: (funds) => {
-            return funds.filter(fund => fund.id === +route.params.id)
-        }
-    })
+const computedFund = computed(() => funds.value[0]);
 
+const {
+  pending,
+  error,
+  refresh,
+  data: funds,
+  status,
+} = await useFetch("/api/funds/partnerStockFunds", {
+  lazy: false,
+  transform: (funds) => {
+    return funds.filter((fund) => fund.id === +route.params.id);
+  },
+});
 </script>
 
-
 <template>
-    <Container style="margin-top: 5rem;">
+  <Container style="margin-top: 5rem">
+    <h1 class="show-max-767">Фонд {{ computedFund.title }}</h1>
 
-        <h1 class="show-max-767">Фонд {{ computedFund.title }}</h1> 
+    <div>
+      {{ computedFund }}
+    </div>
 
-        <div>
-            {{ computedFund }}
-        </div>
+    <br />
 
-        <br>
-        
-        <div>
+    <div>
+      <p>Дата создания</p>
+      <p>Creator</p>
+    </div>
 
-            <p>Дата создания</p>
-            <p>Creator</p>
-        </div>
+    <!-- Кнопки - заголовки -->
+    <h2 class="switch-title_container">
+      <div v-for="(title, i) in titles" class="switch-title_el">
+        <input
+          type="radio"
+          :id="i"
+          :value="title.name"
+          v-model="currentTitle"
+        />
+        <label :for="i">{{ title.title }}</label>
+      </div>
+    </h2>
 
-        <h2>Подзаголовок</h2>
-    </Container>
+    <!-- list of assets -->
+    <div v-if="currentTitle === 'assets'">list of assets</div>
+    <!-- list of history -->
+    <div v-else-if="currentTitle === 'history'">list of history</div>
+    <!-- list of else -->
+    <div v-else>Ни того, ни другого...</div>
+  </Container>
 </template>
 
 <style scoped>
+/*  */
+.switch-title_container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.switch-title_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.switch-title_el label {
+  color: var(--bs-tertiary-color);
+}
+.switch-title_el label:hover {
+  cursor: pointer;
+}
+.switch-title_el input[type="radio"]:checked + label {
+  color: unset;
+}
 
+/*  */
 @media screen and (max-width: 767px) {
-    /* h1 {
+  /* h1 {
         margin-top: 4rem;
     } */
-         .show-max-767 {
-      display: none;
-    }
+  .show-max-767 {
+    display: none;
+  }
 }
 @media screen and (min-width: 768px) {
   /* h1 {

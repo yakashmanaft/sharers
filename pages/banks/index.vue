@@ -34,7 +34,7 @@
     </div>
 
     <!-- INVEST -->
-    <h2 style="margin-top: 1rem;">Stock IMOEX indested</h2>
+    <h2 style="margin-top: 1rem;">Stock IMOEX invested</h2>
     <div class="items-container">
       <div class="item-wrapper" @click="$router.push(`funds/${fund.id}`)" v-for="fund in stockFunds">
         <p style="font-weight: bold;">{{ fund.title }}</p>

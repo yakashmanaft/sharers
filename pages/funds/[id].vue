@@ -53,8 +53,8 @@ const currentTitle = ref("assets");
 // Материалы
 // stuff
 
+// Находим выбранный ФОНД фондового рынка
 const computedFund = computed(() => funds.value[0]);
-
 const {
   pending,
   error,
@@ -67,6 +67,38 @@ const {
     return funds.filter((fund) => fund.id === +route.params.id);
   },
 });
+
+// Ищем транзакции по фонду в трех леджерах (бонды, акции, деньги)
+const computedTransactions = computed(() => {
+    let array = []
+
+    array = [...transactions_shares.value, ...transactions_bonds.value].filter(transaction => transaction.fundID === +route.params.id)
+
+    return array
+})
+const { data: transactions_bonds } = await useFetch("/api/funds/stockBondsLedger", {
+    lazy: false,
+    transform: (transactions) => {
+        return transactions
+    }
+})
+const { data: transactions_shares } = await useFetch("/api/funds/stockShareLedger", {
+    lazy: false,
+    transform: (transactions) => {
+        return transactions
+    }
+})
+
+// Translaters
+const translateStockFundType = (type) => {
+  if(type) {
+    if(type === 'iia') {
+      return 'ИИС'
+    } else if (type === 'ba') {
+      return 'Брокерский счет'
+    }
+  }
+}
 </script>
 
 <template>
@@ -80,8 +112,10 @@ const {
     <br />
 
     <div>
-      <p>Дата создания</p>
-      <p>Creator</p>
+      <p>Дата создания: {{ computedFund.created_at }}</p>
+      <p>Основатель: {{ computedFund.creatorID }}</p>
+      <p>Брокер: {{ computedFund.stockBroker.title }}</p>
+      <p>Тип счета: {{ translateStockFundType(computedFund.accountType) }}</p>
     </div>
 
     <!-- Кнопки - заголовки -->
@@ -98,9 +132,29 @@ const {
     </h2>
 
     <!-- list of assets -->
-    <div v-if="currentTitle === 'assets'">list of assets</div>
+    <div v-if="currentTitle === 'assets'">
+
+        <!--  -->
+        <div v-for="(asset, index) in computedFund.assets">
+            {{ asset }}
+        </div>
+    </div>
     <!-- list of history -->
-    <div v-else-if="currentTitle === 'history'">list of history</div>
+    <div v-else-if="currentTitle === 'history'">
+
+        <!--  -->
+        <div v-if="!computedTransactions.length">
+            ничего нет
+        </div>
+
+        <!--  -->
+        <div v-else>
+
+            <div v-for="(transaction) in computedTransactions">
+                {{ transaction }}
+            </div>
+        </div>
+    </div>
     <!-- list of else -->
     <div v-else>Ни того, ни другого...</div>
   </Container>

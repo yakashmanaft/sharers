@@ -38,7 +38,7 @@
     <div class="items-container">
       <div class="item-wrapper" @click="$router.push(`funds/${fund.id}`)" v-for="fund in stockFunds">
         <p style="font-weight: bold;">{{ fund.title }}</p>
-        <!-- <p>{{ fund.partners }}</p> -->
+        <!-- <p>{{ fund.assets }}</p> -->
         <p>{{ fund.stockBroker.title }}</p>
         <p>{{ translateStockFundType(fund.accountType) }}</p>
         <p>999 999 999,99 P (-999 999 999,99 P)</p>
@@ -441,7 +441,7 @@ const translateStockFundType = (type) => {
 }
 
 useHead({
-  title: "Мои облигации",
+  title: "Банки и фонды соучастников",
   link: [
     {
       rel: "stylesheet",

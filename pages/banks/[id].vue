@@ -59,13 +59,17 @@ useHead({
         <div>
             {{ computedBank }}
         </div>
-
-        <br>
         
-        <div>
+        <!-- Партнеры фонда -->
+        <div style="margin-top: 1rem;">
+            <div v-for="partner in computedBank.users">
+                {{ partner }}
+            </div>
+        </div>
 
-            <p>Дата создания</p>
-            <p>Creator</p>
+        <!-- Дата создания -->
+        <div style="margin-top: 1rem;">
+            <p>Дата создания: {{ computedBank.created_at }}</p>
         </div>
 
         <h2>Подзаголовок</h2>

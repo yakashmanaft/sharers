@@ -156,6 +156,17 @@ model StockShareLedger {
   fundID           Int      @default(0)
 }
 
+model StockFiatLedger {
+  id               Int      @id @default(autoincrement())
+  created_at       DateTime @default(now()) @db.DateTime(0)
+  created_AuthorID Int      @default(0)
+  // dividends / coupons / withdraw / cashin
+  type             String   @db.VarChar(60)
+  currency         String   @db.VarChar(60)
+  qty              Float    @default(0.00)
+  fundID           Int      @default(0)
+}
+
 // model StockShareLedger {}
 
 // accountType iia (individual investment account)) / ba (brokerage accounts)

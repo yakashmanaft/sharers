@@ -72,7 +72,7 @@ const {
 const computedTransactions = computed(() => {
     let array = []
 
-    array = [...transactions_shares.value, ...transactions_bonds.value].filter(transaction => transaction.fundID === +route.params.id)
+    array = [...transactions_shares.value, ...transactions_bonds.value, ...transactions_fiat.value].filter(transaction => transaction.fundID === +route.params.id)
 
     return array
 })
@@ -84,6 +84,12 @@ const { data: transactions_bonds } = await useFetch("/api/funds/stockBondsLedger
 })
 const { data: transactions_shares } = await useFetch("/api/funds/stockShareLedger", {
     lazy: false,
+    transform: (transactions) => {
+        return transactions
+    }
+})
+const { data: transactions_fiat } = await useFetch("/api/funds/stockFiatLedger", {
+    lzay: false,
     transform: (transactions) => {
         return transactions
     }
@@ -144,14 +150,14 @@ const translateStockFundType = (type) => {
 
         <!--  -->
         <div v-if="!computedTransactions.length">
-            ничего нет
+            Ничего нет...
         </div>
 
         <!--  -->
         <div v-else>
 
             <div v-for="(transaction) in computedTransactions">
-                {{ transaction }}
+                {{ transaction.type }} | {{ transaction }}
             </div>
         </div>
     </div>

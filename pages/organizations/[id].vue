@@ -174,7 +174,7 @@
                   <p style="margin: 0">Статус:</p>
                   <!-- <div v-if="fund.status.status === 'paid out'">Выплачено</div>
                   <div v-else>Ожидает оплаты</div> -->
-                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem">
                     <span
                       :class="
                         fund.status.status === 'paid out'
@@ -183,13 +183,17 @@
                       "
                       >{{ transformShowFundStatus(fund.status) }}</span
                     >
-                    <span v-if="fund.status.status === 'paid out'" style="color: var(--bs-tertiary-color)">{{
-                      transformFundStatusDate(fund.status.date)
-                    }}</span>
+                    <span
+                      v-if="fund.status.status === 'paid out'"
+                      style="color: var(--bs-tertiary-color)"
+                      >{{ transformFundStatusDate(fund.status.date) }}</span
+                    >
                   </div>
                 </div>
                 <!-- Ставка -->
-                <div style="margin-top: 1rem;">Ставка: {{ fund.wageRate }} в час.</div>
+                <div style="margin-top: 1rem">
+                  Ставка: {{ fund.wageRate }} в час.
+                </div>
 
                 <!-- Строка участника банды -->
                 <table class="table">
@@ -217,9 +221,15 @@
                         >
                       </td>
                       <!-- Отработано часов -->
-                      <td>{{ el.hours }}</td>
+                      <td @click="setRecievedHours()" class="recieved-data-to-change">
+                        <span>{{ el.hours }}</span>
+                      </td>
                       <!-- КТУ -->
-                      <td>{{ el.stakeIndex }}</td>
+                      <td @click="setRecievedStakeIndex()" class="recieved-data-to-change">
+                        <span>{{
+                          el.stakeIndex
+                        }}</span>
+                      </td>
                       <!-- Час * КТУ -->
                       <td>
                         <span v-if="el.stakeIndex !== ''">{{
@@ -239,9 +249,8 @@
                         <span v-else>-</span>
                       </td>
                       <!-- ЗП (к получению) -->
-                      <td>
-                        Сюда вписывать надо... Если в БД еще не вписали, так и
-                        показываем что надо вписать
+                      <td @click="setRecievedSalary()" class="recieved-data-to-change">
+                        <span>999 999 999,00</span>
                       </td>
                     </tr>
 
@@ -602,12 +611,12 @@ const transformShowFundStatus = (statusObj) => {
   }
 };
 const transformFundStatusDate = (statusDate) => {
-  if(statusDate === '') {
-    return
+  if (statusDate === "") {
+    return;
   } else {
-    return statusDate
+    return statusDate;
   }
-}
+};
 
 // CHECK AND CREATE
 const checkAndAddUser = () => {
@@ -616,6 +625,17 @@ const checkAndAddUser = () => {
 const checkAndAddFund = () => {
   alert("В разработке...");
 };
+
+// Установка значений Часы, КТУ, ЗП к получению
+const setRecievedSalary = () => {
+  alert("Установка значения ЗП... в разработке");
+};
+const setRecievedHours = () => {
+  alert("Установка значения Часов... в разработке")
+}
+const setRecievedStakeIndex = () => {
+  alert("Установка значения КТУ... в разработке")
+}
 
 // Wathers
 watch(choosenFundPeriod, () => {
@@ -785,17 +805,24 @@ label #sharers-list:checked + .sharers-list_icon {
   padding: 0;
   width: 100%;
   display: inline-grid;
-  grid-template-columns: 50px 1fr 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 50px 1fr 50px 50px 1fr 1fr 1fr;
 }
 .item-table_header tr th,
 .table-row_wrapper td {
-  padding: 0;
+  padding: 1rem;
+  /* padding-left: 1rem;
+  padding-right: 1rem; */
   display: flex;
   align-items: center;
 }
 .table-row_wrapper:hover td {
   background-color: var(--bs-border-color) !important;
   cursor: pointer;
+}
+
+.table-row_wrapper:hover .recieved-data-to-change:hover {
+  background-color: var(--bs-primary-bg-subtle) !important;
+  color: var(--bs-primary);
 }
 
 @media screen and (max-width: 575px) {

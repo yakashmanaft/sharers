@@ -171,10 +171,18 @@
               <div v-if="fund.list.length">
                 <!-- Статус -->
                 <div v-if="fund.status" class="table-fund_status">
-                  <p style="margin: 0">Статус:</p>
+                  <!-- <p style="margin: 0">Статус:</p> -->
                   <!-- <div v-if="fund.status.status === 'paid out'">Выплачено</div>
                   <div v-else>Ожидает оплаты</div> -->
-                  <div style="display: flex; align-items: center; gap: 0.5rem">
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: start;
+                      gap: 0.5rem;
+                    "
+                  >
+                    <p style="margin: 0">Статус:</p>
                     <span
                       :class="
                         fund.status.status === 'paid out'
@@ -191,8 +199,13 @@
                   </div>
                 </div>
                 <!-- Ставка -->
-                <div style="margin-top: 1rem">
-                  Ставка: {{ fund.wageRate }} в час.
+                <div class="wage-rate_container">
+                  <p>
+                    Ставка:
+                    <span @click="setRecievedWageRate(fund.id, fund.wageRate)"
+                      >{{ fund.wageRate }} в час.</span
+                    >
+                  </p>
                 </div>
 
                 <!-- Строка участника банды -->
@@ -200,7 +213,7 @@
                   <thead class="item-table_header">
                     <tr>
                       <th scope="col">п/п</th>
-                      <th scope="col">Соучастник</th>
+                      <th scope="col"><span style="width: 100%;text-align: start;">Соучастник</span></th>
                       <th scope="col">Час</th>
                       <th scope="col">КТУ</th>
                       <th scope="col">Час * КТУ</th>
@@ -215,20 +228,25 @@
                       <!-- Соучастник -->
                       <td>
                         <span
+                          style="width: 100%;text-align: start;"
                           class="link"
                           @click="$router.push(`/partners/${el.userID}`)"
                           >{{ translateFundListUser(el.userID) }}</span
                         >
                       </td>
                       <!-- Отработано часов -->
-                      <td @click="setRecievedHours()" class="recieved-data-to-change">
+                      <td
+                        @click="setRecievedHours(fund.id, el.userID, fund.list)"
+                        class="recieved-data-to-change"
+                      >
                         <span>{{ el.hours }}</span>
                       </td>
                       <!-- КТУ -->
-                      <td @click="setRecievedStakeIndex()" class="recieved-data-to-change">
-                        <span>{{
-                          el.stakeIndex
-                        }}</span>
+                      <td
+                        @click="setRecievedStakeIndex()"
+                        class="recieved-data-to-change"
+                      >
+                        <span>{{ el.stakeIndex }}</span>
                       </td>
                       <!-- Час * КТУ -->
                       <td>
@@ -249,7 +267,10 @@
                         <span v-else>-</span>
                       </td>
                       <!-- ЗП (к получению) -->
-                      <td @click="setRecievedSalary()" class="recieved-data-to-change">
+                      <td
+                        @click="setRecievedSalary()"
+                        class="recieved-data-to-change"
+                      >
                         <span>999 999 999,00</span>
                       </td>
                     </tr>
@@ -384,6 +405,24 @@ const computedYearsList = computed(() => {
   }
 });
 
+// const computedPeriodList = computed(() => {
+//   if (computedSalaryFund.value) {
+//     let monthPeriod = new Set(
+//       computedSalaryFund.value.map((el) => {
+//         let obj = {
+//           periodStart: el.periodStart,
+//           periodEnd: el.periodEnd,
+//         };
+//         return obj;
+//       })
+//     );
+//     periodList.value = [...monthPeriod];
+
+//     return periodList.value.filter(
+//       (period) => period.periodEnd.slice(0, 4) === currentYear.value
+//     );
+//   }
+// });
 const computedPeriodList = computed(() => {
   if (computedSalaryFund.value) {
     let monthPeriod = new Set(
@@ -512,26 +551,31 @@ onBeforeMount(async () => {
     // "created_at": "2024-03-21T05:06:39.000Z",
     // "update_at": "2024-03-21T05:06:38.974Z"
   }
-
-  //
-  async function getSalaryFunds() {
-    return await $fetch("/api/funds/salary");
-  }
-
-  //
-  async function getWarehouseItems() {
-    return await $fetch("/api/warehouse/item");
-  }
-
-  //
-  async function getOrganizations() {
-    return await $fetch("/api/organizations/organizations");
-  }
-
-  async function getAllUsers() {
-    return await $fetch("/api/usersList/users");
-  }
 });
+//
+async function getSalaryFunds() {
+  return await $fetch("/api/funds/salary");
+}
+// const { data: salaryFundArray } = useLazyAsyncData("salary", () => {
+//   $fetch('api/funds/salary')
+// })
+
+//
+async function getWarehouseItems() {
+  return await $fetch("/api/warehouse/item");
+}
+
+//
+async function getOrganizations() {
+  return await $fetch("/api/organizations/organizations");
+}
+
+async function getAllUsers() {
+  return await $fetch("/api/usersList/users");
+}
+
+// REFRESH
+// const refreshProjects = () => refreshNuxtData("projects");
 
 onMounted(async () => {
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
@@ -626,15 +670,83 @@ const checkAndAddFund = () => {
   alert("В разработке...");
 };
 
-// Установка значений Часы, КТУ, ЗП к получению
+// REFRESH
+const refreshSalaryFundArray = async () => {
+  salaryFundArray.value = await getSalaryFunds();
+  if (salaryFundArray.value) {
+    salaryFundArray.value = salaryFundArray.value.filter(
+      (item) => item.bandID === +route.params.id
+    );
+  }
+};
+
+// Установка значений Ставка, Часы, КТУ, ЗП к получению
+
+// SET WAGE RATE
+const setRecievedWageRate = async (fundID, wageRate) => {
+  alert(`Установка значения Ставки... фонд id: ${fundID}`);
+
+  let newWageRate = 1350;
+
+  // обновляем в бд и обновляем переменные
+  await setWageRate(fundID, newWageRate);
+  refreshSalaryFundArray();
+};
+
+// SET SALARY
 const setRecievedSalary = () => {
   alert("Установка значения ЗП... в разработке");
 };
-const setRecievedHours = () => {
-  alert("Установка значения Часов... в разработке")
-}
+
+// SET HOURS
+const setRecievedHours = async (fundID, userID, fundList) => {
+  alert(
+    `Установка значения Часов... в ФОТ id: ${fundID} для fund list user: ${userID}`
+  );
+  const result_array = JSON.parse(JSON.stringify(fundList));
+  const obj = result_array.find((el) => el.userID == userID);
+
+  let newHours = 61;
+
+  obj.hours = newHours.toString();
+
+  // обновляем в бд и обновляем переменные
+  await setUserHours(fundID, result_array);
+  refreshSalaryFundArray();
+};
 const setRecievedStakeIndex = () => {
-  alert("Установка значения КТУ... в разработке")
+  alert("Установка значения КТУ... в разработке");
+};
+
+// BD
+
+// HOURS
+async function setUserHours(salaryID, fundList) {
+  let salaryFund;
+
+  if (salaryID && fundList) {
+    salaryFund = await $fetch("/api/funds/salary", {
+      method: "PUT",
+      body: {
+        id: salaryID,
+        fundList: fundList,
+      },
+    });
+  }
+}
+
+// WAGE RATE
+async function setWageRate(salaryID, wageRate) {
+  let salaryFund;
+  if (salaryID && wageRate) {
+    salaryFund = await $fetch("/api/funds/salary", {
+      method: "PUT",
+      body: {
+        id: salaryID,
+        wageRate: wageRate,
+      },
+    });
+  }
 }
 
 // Wathers
@@ -708,6 +820,20 @@ label #sharers-list:checked + .sharers-list_icon {
 .sharers-list_item:hover {
   cursor: pointer;
   background-color: rgba(0, 0, 0, 0.05);
+}
+
+.wage-rate_container {
+  margin-top: 1rem;
+}
+.wage-rate_container span {
+  background-color: var(--bs-border-color);
+  padding: 4px 10px;
+  border-radius: 16px;
+}
+.wage-rate_container span:hover {
+  cursor: pointer;
+  background-color: var(--bs-primary-bg-subtle);
+  color: var(--bs-primary);
 }
 
 .item_phone a {
@@ -805,7 +931,7 @@ label #sharers-list:checked + .sharers-list_icon {
   padding: 0;
   width: 100%;
   display: inline-grid;
-  grid-template-columns: 50px 1fr 50px 50px 1fr 1fr 1fr;
+  grid-template-columns: 60px 1fr 50px 50px 1fr 1fr 1fr;
 }
 .item-table_header tr th,
 .table-row_wrapper td {
@@ -814,6 +940,7 @@ label #sharers-list:checked + .sharers-list_icon {
   padding-right: 1rem; */
   display: flex;
   align-items: center;
+  justify-content: center;
 }
 .table-row_wrapper:hover td {
   background-color: var(--bs-border-color) !important;

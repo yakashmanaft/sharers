@@ -10,9 +10,32 @@
       </div> -->
     </div>
 
+    <!-- Заголовок - Переключатель -->
+    <!-- TOGGLE TITLE -->
+    <!-- таблица ФОТ / Табель учета рабочего времени -->
+    <div class="toggle-title">
+      <div
+        v-for="(title, index) in titles"
+        class="switch-title_el"
+      >
+        <input
+          type="radio"
+          :id="`${index}_fund_hours`"
+          :value="title.name"
+          v-model="currentTitle"
+        />
+        <label :for="`${index}_fund_hours`"
+          ><h2>{{ title.title }}</h2></label
+        >
+      </div>
+    </div>
+
+    <!-- Изменения может вносить только пахан -->
+    <!-- v-if="user.role === 'MASTER' -->
+
     <!-- USERS IN BAND -->
-    <div class="padding-left-right-1rem">
-      <h2>Соучастники</h2>
+    <div  class="padding-left-right-1rem" style="margin-top: 1rem;" v-if="currentTitle === 'sharers'" >
+      <!-- <h2>Соучастники</h2> -->
 
       <!--  -->
       <button
@@ -72,11 +95,11 @@
               </div>
 
               <!-- GROUP STATUS -->
-              <div>
+              <!-- <div>
                 <p style="margin: 0; margin-top: 1rem">
                   {{ user.groupStatus }}
                 </p>
-              </div>
+              </div> -->
               <!-- <p>{{ user }}</p> -->
             </div>
           </div>
@@ -86,329 +109,308 @@
       <div v-else style="margin-top: 1rem">Нет соучастников</div>
     </div>
 
-    <!-- ФОТ -->
-    <!-- Изменения может вносить только пахан -->
-    <!-- v-if="user.role === 'MASTER' -->
-    <div v-if="usersInBand.length" style="margin-top: 0.5rem">
-      <!-- Заголовок - Переключатель -->
-      <!-- TOGGLE TITLE -->
-      <!-- таблица ФОТ / Табель учета рабочего времени -->
-      <div class="toggle-title">
+    <!-- ТАБЕЛЬ И ФОТ -->
+    <div v-if="usersInBand.length" class="fund-hours_conrainer">
+      <div v-if="computedSalaryFund.length !== 0">
+        <!-- Фильтры просмотра ФОТ -->
         <div
-          v-for="(title, index) in titles_fund_hours"
-          class="switch-title_el"
+          v-if="currentTitle !== 'sharers' && currentTitle !== 'warehouse-items'"
+          class="filter-fund_wrapper"
+          style="display: flex; align-items: center; gap: 1rem"
         >
-          <input
-            type="radio"
-            :id="`${index}_fund_hours`"
-            :value="title.name"
-            v-model="currentTitle"
-          />
-          <label :for="`${index}_fund_hours`"
-            ><h2>{{ title.title }}</h2></label
+          <!-- Выбор года -->
+          <select
+            name=""
+            id=""
+            v-model="currentYear"
+            class="filter-fund_select"
           >
-        </div>
-      </div>
+            <option v-for="year in computedYearsList" :value="year">
+              {{ year }}
+            </option>
+            <!-- <option :value="2024">2024</option> -->
+          </select>
 
-      <!-- ПЕРИОДы и просомтр ФОТ -->
-      <div style="margin-top: 1rem">
-        <div v-if="computedSalaryFund.length !== 0">
-          <!-- Фильтры просмотра ФОТ -->
-          <div
-            class="filter-fund_wrapper"
-            style="display: flex; align-items: center; gap: 1rem"
-          >
-            <!-- Выбор года -->
-            <select
-              name=""
-              id=""
-              v-model="currentYear"
-              class="filter-fund_select"
+          <!-- выбор по месяцам-->
+          <div class="filter-fund_period">
+            <div
+              class="filter-fund_period-el"
+              v-for="(period, i) in computedPeriodList"
+              :key="i"
             >
-              <option v-for="year in computedYearsList" :value="year">
-                {{ year }}
-              </option>
-              <!-- <option :value="2024">2024</option> -->
-            </select>
-
-            <!-- выбор по месяцам-->
-            <div class="filter-fund_period">
-              <div
-                class="filter-fund_period-el"
-                v-for="(period, i) in computedPeriodList"
-                :key="i"
-              >
-                <input
-                  type="radio"
-                  :id="`${i}`"
-                  name="fund-period"
-                  :value="{
-                    periodStart: period.periodStart,
-                    periodEnd: period.periodEnd,
-                  }"
-                  v-model="choosenFundPeriod"
-                />
-                <label :for="`${i}`">{{
-                  translateFundPeriod(period.periodStart, period.periodEnd)
-                }}</label>
-              </div>
-              <!-- data-bs-toggle="modal"
-              data-bs-target="#newWarehouseItemModal" -->
-              <button
-                style="border-radius: 16px; padding: 4px 10px"
-                type="button"
-                class="btn btn-primary btn-create-modal-open-767"
-                @click="checkAndAddFund()"
-              >
-                <span>Добавить</span>
-              </button>
+              <input
+                type="radio"
+                :id="`${i}`"
+                name="fund-period"
+                :value="{
+                  periodStart: period.periodStart,
+                  periodEnd: period.periodEnd,
+                }"
+                v-model="choosenFundPeriod"
+              />
+              <label :for="`${i}`">{{
+                translateFundPeriod(period.periodStart, period.periodEnd)
+              }}</label>
             </div>
-
-            <!-- <div>Today: {{ new Date() }}</div> -->
-            <!-- <div>{{computedPeriodList}}</div> -->
+            <!-- data-bs-toggle="modal"
+            data-bs-target="#newWarehouseItemModal" -->
+            <button
+              style="border-radius: 16px; padding: 4px 10px"
+              type="button"
+              class="btn btn-primary btn-create-modal-open-767"
+              @click="checkAndAddFund()"
+            >
+              <span>Добавить</span>
+            </button>
           </div>
 
-          <!-- Таблицы ФОТ -->
-          <div class="table-fund_wrapper">
-            <div
-              v-for="fund in salaryFundArray.filter(
-                (item) =>
-                  item.bandID === +route.params.id &&
-                  item.periodStart === choosenFundPeriod.periodStart &&
-                  item.periodEnd === choosenFundPeriod.periodEnd
-              )"
-              :key="fund.id"
-              style="display: flex; align-items: center; gap: 1rem"
-            >
-              <!-- <p>{{ fund.id }}</p> -->
-              <!-- <p>{{ fund.periodStart }}</p>
-              <p>{{ fund.periodEnd }}</p>
-              <p>wageRate: {{ fund.wageRate }}</p>
-              <p>band: {{ fund.bandID }}</p> -->
+          <!-- <div>Today: {{ new Date() }}</div> -->
+          <!-- <div>{{computedPeriodList}}</div> -->
+        </div>
 
-              <div v-if="fund.list.length">
-                <!--  -->
-                <div style="display: flex; align-items: center; gap: 1rem">
-                  <!-- Ставка -->
-                  <div
-                    v-if="currentTitle === 'fund'"
-                    class="wage-rate_container"
-                  >
-                    <p>
-                      <span style="color: var(--bs-tertiary-color)"
-                        >Ставка:
-                      </span>
-                      <span @click="setRecievedWageRate(fund.id, fund.wageRate)"
-                        >{{ fund.wageRate }} руб./час</span
-                      >
-                    </p>
-                  </div>
+        <!-- Таблицы ФОТ -->
+        <div class="table-fund_wrapper">
+          <div
+            v-for="fund in salaryFundArray.filter(
+              (item) =>
+                item.bandID === +route.params.id &&
+                item.periodStart === choosenFundPeriod.periodStart &&
+                item.periodEnd === choosenFundPeriod.periodEnd
+            )"
+            :key="fund.id"
+            style="display: flex; align-items: center; gap: 1rem"
+          >
+            <!-- <p>{{ fund.id }}</p> -->
+            <!-- <p>{{ fund.periodStart }}</p>
+            <p>{{ fund.periodEnd }}</p>
+            <p>wageRate: {{ fund.wageRate }}</p>
+            <p>band: {{ fund.bandID }}</p> -->
 
-                  <!-- Статус -->
-                  <div
-                    v-if="fund.status && currentTitle === 'fund'"
-                    class="table-fund_status"
-                  >
-                    <!-- <p style="margin: 0">Статус:</p> -->
-                    <!-- <div v-if="fund.status.status === 'paid out'">Выплачено</div>
-                  <div v-else>Ожидает оплаты</div> -->
-                    <div
-                      style="
-                        display: flex;
-                        align-items: center;
-                        justify-content: start;
-                        gap: 0.5rem;
-                      "
+            <div v-if="fund.list.length">
+              <!--  -->
+              <div style="display: flex; align-items: center; gap: 1rem">
+                <!-- Ставка -->
+                <div
+                  v-if="currentTitle === 'fund'"
+                  class="wage-rate_container"
+                >
+                  <p>
+                    <span style="color: var(--bs-tertiary-color)"
+                      >Ставка:
+                    </span>
+                    <span @click="setRecievedWageRate(fund.id, fund.wageRate)"
+                      >{{ fund.wageRate }} руб./час</span
                     >
-                      <p style="margin: 0; color: var(--bs-tertiary-color)">
-                        Статус:
-                      </p>
-                      <div style="display: flex; flex-direction: column;">
-                        <span
-                          :class="
-                            fund.status.status === 'paid out'
-                              ? 'status_paid-out'
-                              : 'status_awaiting-payment'
-                          "
-                          >{{ transformShowFundStatus(fund.status) }}</span
-                        >
-                        <span
-                          v-if="fund.status.status === 'paid out'"
-                          style="color: var(--bs-tertiary-color); font-size: 0.8rem;"
-                          >{{ transformFundStatusDate(fund.status.date) }}</span
-                        >
-                      </div>
+                  </p>
+                </div>
+
+                <!-- Статус -->
+                <div
+                  v-if="fund.status && currentTitle === 'fund'"
+                  class="table-fund_status"
+                >
+                  <!-- <p style="margin: 0">Статус:</p> -->
+                  <!-- <div v-if="fund.status.status === 'paid out'">Выплачено</div>
+                <div v-else>Ожидает оплаты</div> -->
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: start;
+                      gap: 0.5rem;
+                    "
+                  >
+                    <p style="margin: 0; color: var(--bs-tertiary-color)">
+                      Статус:
+                    </p>
+                    <div style="display: flex; flex-direction: column;">
+                      <span
+                        :class="
+                          fund.status.status === 'paid out'
+                            ? 'status_paid-out'
+                            : 'status_awaiting-payment'
+                        "
+                        >{{ transformShowFundStatus(fund.status) }}</span
+                      >
+                      <span
+                        v-if="fund.status.status === 'paid out'"
+                        style="color: var(--bs-tertiary-color); font-size: 0.8rem;"
+                        >{{ transformFundStatusDate(fund.status.date) }}</span
+                      >
                     </div>
                   </div>
                 </div>
+              </div>
 
-                <!-- УЧЕТ ЧАСОВ -->
-                <table v-if="currentTitle === 'working-hours'">
-                  <thead>
-                    <th scope="col">п/п</th>
-                    <th>Соучастник</th>
-                    <th>Сумма часов</th>
-                    <th
+              <!-- УЧЕТ ЧАСОВ -->
+              <table v-if="currentTitle === 'working-hours'">
+                <thead>
+                  <th scope="col">п/п</th>
+                  <th>Соучастник</th>
+                  <th>Сумма часов</th>
+                  <th
+                    v-for="day in countedDays(
+                      fund.periodStart,
+                      fund.periodEnd
+                    )"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        background-color: var(--bs-border-color);
+                      "
+                    >
+                      <span>{{ day.date.slice(-2) }}</span>
+                      <span>{{ day.dayOfWeek }}</span>
+                    </div>
+                  </th>
+                </thead>
+                <tbody>
+                  <tr v-for="(el, i) in fund.list">
+                    <!-- № п/п -->
+                    <td>{{ i + 1 }}.</td>
+                    <!-- Соучастник -->
+                    <td>{{ translateFundListUser(el.userID) }}</td>
+                    <td>
+                      {{ sumSharerHours(el.hours) }}
+                    </td>
+                    <td
+                      class="hour-per-day_cell"
                       v-for="day in countedDays(
                         fund.periodStart,
                         fund.periodEnd
                       )"
                     >
-                      <div
-                        style="
-                          display: flex;
-                          flex-direction: column;
-                          align-items: center;
-                          justify-content: center;
-                          background-color: var(--bs-border-color);
-                        "
+                      <!-- <div v-for="(hours, index) in el.hours">
+                        <div v-if="hours.date === day.date">
+                          {{ hours.hours }}
+                        </div>
+                        <div v-else>-</div>
+                      </div> -->
+                      {{ setWorkHourInToDay(day.date, fund.list, el.userID) }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                      <span style="font-weight: bold">{{
+                        sumTotalShareHours(fund.list)
+                      }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!-- ФОТ -->
+              <table class="table" v-if="currentTitle === 'fund'">
+                <thead class="item-table_header">
+                  <tr>
+                    <th scope="col">п/п</th>
+                    <th scope="col">
+                      <span style="width: 100%; text-align: start"
+                        >Соучастник</span
                       >
-                        <span>{{ day.date.slice(-2) }}</span>
-                        <span>{{ day.dayOfWeek }}</span>
-                      </div>
                     </th>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(el, i) in fund.list">
-                      <!-- № п/п -->
-                      <td>{{ i + 1 }}.</td>
-                      <!-- Соучастник -->
-                      <td>{{ translateFundListUser(el.userID) }}</td>
-                      <td>
-                        {{ sumSharerHours(el.hours) }}
-                      </td>
-                      <td
-                        class="hour-per-day_cell"
-                        v-for="day in countedDays(
-                          fund.periodStart,
-                          fund.periodEnd
-                        )"
+                    <!-- <th scope="col">Час</th> -->
+                    <th scope="col">КТУ</th>
+                    <th scope="col">Час * КТУ</th>
+                    <th scope="col">ЗП (Выработка)</th>
+                    <th scope="col">ЗП (К получению)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(el, i) in fund.list" class="table-row_wrapper">
+                    <!-- № п/п -->
+                    <td>{{ i + 1 }}.</td>
+                    <!-- Соучастник -->
+                    <td>
+                      <span
+                        style="width: 100%; text-align: start"
+                        class="link"
+                        @click="$router.push(`/partners/${el.userID}`)"
+                        >{{ translateFundListUser(el.userID) }}</span
                       >
-                        <!-- <div v-for="(hours, index) in el.hours">
-                          <div v-if="hours.date === day.date">
-                            {{ hours.hours }}
-                          </div>
-                          <div v-else>-</div>
-                        </div> -->
-                        {{ setWorkHourInToDay(day.date, fund.list, el.userID) }}
-                      </td>
-                    </tr>
-                    <tr>
-                      <td></td>
-                      <td></td>
-                      <td>
-                        <span style="font-weight: bold">{{
-                          sumTotalShareHours(fund.list)
-                        }}</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
+                    </td>
+                    <!-- Отработано часов -->
+                    <!-- @click="setRecievedHours(fund.id, el.userID, fund.list)" -->
+                    <!-- <td
+                      class="recieved-data-to-change"
+                    >
+                      <span>{{ el.hours }}</span>
+                    </td> -->
+                    <!-- КТУ -->
+                    <td
+                      @click="setRecievedStakeIndex()"
+                      class="recieved-data-to-change"
+                    >
+                      <span>{{ el.stakeIndex }}</span>
+                    </td>
+                    <!-- Час * КТУ -->
+                    <td>
+                      <span v-if="el.stakeIndex !== ''">{{
+                        (el.hours * el.stakeIndex).toFixed(2)
+                      }}</span>
+                      <span v-else>-</span>
+                    </td>
+                    <!-- ЗП (выработка) -->
+                    <td>
+                      <span v-if="el.stakeIndex !== ''">
+                        {{
+                          (el.hours * el.stakeIndex * fund.wageRate).toFixed(
+                            2
+                          )
+                        }}
+                      </span>
+                      <span v-else>-</span>
+                    </td>
+                    <!-- ЗП (к получению) -->
+                    <td
+                      @click="setRecievedSalary()"
+                      class="recieved-data-to-change"
+                    >
+                      <span>999 999 999,00</span>
+                    </td>
+                  </tr>
 
-                <!-- ФОТ -->
-                <table class="table" v-if="currentTitle === 'fund'">
-                  <thead class="item-table_header">
-                    <tr>
-                      <th scope="col">п/п</th>
-                      <th scope="col">
-                        <span style="width: 100%; text-align: start"
-                          >Соучастник</span
-                        >
-                      </th>
-                      <!-- <th scope="col">Час</th> -->
-                      <th scope="col">КТУ</th>
-                      <th scope="col">Час * КТУ</th>
-                      <th scope="col">ЗП (Выработка)</th>
-                      <th scope="col">ЗП (К получению)</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(el, i) in fund.list" class="table-row_wrapper">
-                      <!-- № п/п -->
-                      <td>{{ i + 1 }}.</td>
-                      <!-- Соучастник -->
-                      <td>
-                        <span
-                          style="width: 100%; text-align: start"
-                          class="link"
-                          @click="$router.push(`/partners/${el.userID}`)"
-                          >{{ translateFundListUser(el.userID) }}</span
-                        >
-                      </td>
-                      <!-- Отработано часов -->
-                      <!-- @click="setRecievedHours(fund.id, el.userID, fund.list)" -->
-                      <!-- <td
-                        class="recieved-data-to-change"
-                      >
-                        <span>{{ el.hours }}</span>
-                      </td> -->
-                      <!-- КТУ -->
-                      <td
-                        @click="setRecievedStakeIndex()"
-                        class="recieved-data-to-change"
-                      >
-                        <span>{{ el.stakeIndex }}</span>
-                      </td>
-                      <!-- Час * КТУ -->
-                      <td>
-                        <span v-if="el.stakeIndex !== ''">{{
-                          (el.hours * el.stakeIndex).toFixed(2)
-                        }}</span>
-                        <span v-else>-</span>
-                      </td>
-                      <!-- ЗП (выработка) -->
-                      <td>
-                        <span v-if="el.stakeIndex !== ''">
-                          {{
-                            (el.hours * el.stakeIndex * fund.wageRate).toFixed(
-                              2
-                            )
-                          }}
-                        </span>
-                        <span v-else>-</span>
-                      </td>
-                      <!-- ЗП (к получению) -->
-                      <td
-                        @click="setRecievedSalary()"
-                        class="recieved-data-to-change"
-                      >
-                        <span>999 999 999,00</span>
-                      </td>
-                    </tr>
-
-                    <!-- Итого -->
-                    <tr></tr>
-                  </tbody>
-                </table>
-              </div>
-              <!-- <p>{{ fund.list }}</p> -->
+                  <!-- Итого -->
+                  <tr></tr>
+                </tbody>
+              </table>
             </div>
+            <!-- <p>{{ fund.list }}</p> -->
           </div>
         </div>
-        <div v-else>Ни одной таблицы ФОТ...</div>
       </div>
+      <div v-else>Ни одной таблицы ФОТ...</div>
     </div>
 
     <!-- ТМЦ организации -->
-    <div v-if="items" style="margin-top: 1rem">
-      <!-- Заголовок -->
-      <h2>ТМЦ</h2>
-      <!--  -->
-      <!-- <div v-if="pending">Loading...</div> -->
-      <div>
-        <div v-if="items.length">
-          <div
-            v-for="(item, index) in items"
-            :key="index"
-            style="display: flex"
-          >
-            <div>{{ item.title }}</div>
-            <div>-{{ item.qty }} {{ item.measure }}</div>
-            <div>-{{ item.location }}_{{ item.ownerID }}</div>
+    <div v-if="currentTitle === 'warehouse-items'">
+      
+      <div v-if="items.length">
+        <!-- Заголовок -->
+        <!-- <h2>ТМЦ</h2> -->
+        <!--  -->
+        <!-- <div v-if="pending">Loading...</div> -->
+        <div>
+          <div v-if="items.length">
+            <div
+              v-for="(item, index) in items"
+              :key="index"
+              style="display: flex"
+            >
+              <div>{{ item.title }}</div>
+              <div>-{{ item.qty }} {{ item.measure }}</div>
+              <div>-{{ item.location }}_{{ item.ownerID }}</div>
+            </div>
           </div>
         </div>
-        <div v-else>Ничего нет</div>
       </div>
+      <div v-else>Нет ценностей...</div>
     </div>
   </Container>
 </template>
@@ -454,8 +456,12 @@ const usersInBand = ref([]);
 // SHARERS LIST
 const sharersListIsOpened = ref(false);
 
-// toggle-title (ФОТ / График)
-const titles_fund_hours = ref([
+// toggle title data
+const titles = ref([
+  {
+    title: "Соучастники",
+    name: 'sharers'
+  },
   {
     title: "Учет рабочего времени",
     name: "working-hours",
@@ -464,6 +470,10 @@ const titles_fund_hours = ref([
     title: "Таблица ФОТ",
     name: "fund",
   },
+  {
+    title: "ТМЦ",
+    name: 'warehouse-items'
+  }
 ]);
 const currentTitle = ref("working-hours");
 
@@ -1056,12 +1066,20 @@ label #sharers-list:checked + .sharers-list_icon {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
-/* TIGGLE TITLE */
+/* TOGGLE TITLE */
 .toggle-title {
   display: flex;
   align-items: center;
   gap: 1rem;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--bs-tertiary-color);
+  padding-bottom: 1rem;
 }
+.toggle-title::-webkit-scrollbar {
+  display: none;
+}
+
 .switch-title_el input[type="radio"] {
   opacity: 0;
   position: fixed;
@@ -1069,6 +1087,7 @@ label #sharers-list:checked + .sharers-list_icon {
 }
 .switch-title_el label h2 {
   color: var(--bs-tertiary-color);
+  white-space: nowrap;
 }
 .switch-title_el label h2:hover {
   cursor: pointer;
@@ -1093,6 +1112,9 @@ label #sharers-list:checked + .sharers-list_icon {
   color: var(--bs-primary);
 }
 
+.item_phone {
+  margin-top: 1rem;
+}
 .item_phone a {
   text-decoration: none;
 }
@@ -1109,7 +1131,9 @@ label #sharers-list:checked + .sharers-list_icon {
   cursor: pointer;
   color: var(--bs-primary);
 }
-
+.fund-hours_conrainer {
+    margin-top: 1rem;
+  }
 .filter-fund_wrapper {
   overflow-x: scroll;
   scrollbar-width: none;
@@ -1142,6 +1166,7 @@ label #sharers-list:checked + .sharers-list_icon {
   padding: 4px 10px;
   border-radius: 16px;
   background-color: var(--bs-border-color);
+  white-space: nowrap;
 }
 .filter-fund_period-el input[type="radio"]:checked + label {
   background-color: var(--bs-body-color);
@@ -1149,8 +1174,8 @@ label #sharers-list:checked + .sharers-list_icon {
 }
 .table-fund_wrapper {
   margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid var(--bs-border-color);
+  /* padding-top: 1rem; */
+  /* border-top: 1px solid var(--bs-border-color); */
 }
 .table-fund_status {
   display: flex;
@@ -1190,7 +1215,7 @@ label #sharers-list:checked + .sharers-list_icon {
   background-color: var(--bs-primary-bg-subtle);
 }
 .table {
-  margin-top: 1rem;
+  /* margin-top: 1rem; */
   width: 100%;
 }
 .item-table_header tr,
@@ -1225,6 +1250,11 @@ label #sharers-list:checked + .sharers-list_icon {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
   }
+  .filter-fund_wrapper,
+  .toggle-title {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
   .sharers-list_wrapper {
     grid-template-columns: 1fr;
     /* margin: 0 1rem; */
@@ -1247,11 +1277,19 @@ label #sharers-list:checked + .sharers-list_icon {
   .sharers-list_wrapper {
     grid-template-columns: repeat(3, 1fr);
   }
+  /* .fund-hours_conrainer {
+    margin-top: 1rem;
+  } */
 }
 
 @media screen and (min-width: 992px) {
   .sharers-list_wrapper {
     grid-template-columns: repeat(4, 1fr);
   }
+
+}
+
+@media screen and (min-width: 992px) {
+
 }
 </style>

@@ -398,7 +398,7 @@ a:visited {
   align-items: center;
   justify-content: space-between;
   /* padding: 1rem 0; */
-  gap: 1rem;
+  /* gap: 1rem; */
 }
 /* .burger {
   display: none;

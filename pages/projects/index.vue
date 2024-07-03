@@ -117,12 +117,17 @@ const clearModalInputs = (project: any) => {
 };
 
 //
-const translateCurator = (curatorID: number) => {
-  if (curatorID) {
-    let curator = users.value.find((user) => user.id === curatorID);
-    return `${curator?.surname} ${curator?.name[0]}. ${curator?.middleName[0]}`;
+const translateCurator = (curatorID: number, curatorType: string) => {
+  if (curatorID && curatorType) {
+    if(curatorType === 'user') {
+      let curator = [...users.value].find((user) => user.id === curatorID);
+      return `${curator?.surname} ${curator?.name[0]}. ${curator?.middleName[0]}`;
+
+    } else if (curatorType === 'company') {
+      let curator = [...organizations.value].find(company => company.id === curatorID)
+      return `${curator?.title}`
+    }
   }
-  // return curatorID
 };
 
 const translatePartner = (partnerID, partnerType) => {
@@ -346,7 +351,7 @@ watch(project.value, () => {
           </div>
         </div>
         <div class="project-item_right">
-          <span>Куратор: {{ translateCurator(project.curator) }}</span>
+          <span>Куратор: {{ translateCurator(project.curator, project.curatorType) }}</span>
           <span
             >Заказчик:
             {{ translatePartner(project.partnerID, project.partnerType) }}</span

@@ -17,6 +17,7 @@ const router = useRouter();
 
 const users = ref(null);
 const user = ref(null);
+const sessionUser = useUserSession().user;
 
 // const isFlipperPrevUserBtnExist = ref(true);
 // const isFlipperNextUserBtnExist = ref(true);
@@ -253,6 +254,7 @@ const items = ref([]);
 // let btnPrev = document.querySelector('#prevUserBtn')
 // console.log(btnPrev)
 onMounted(async () => {
+  console.log(organizations.value)
   users.value = await getUsers();
   user.value = [...users.value]
     .map((user) => {
@@ -287,7 +289,27 @@ onMounted(async () => {
   items.value = items.value.filter(
     (el) => el.ownerType === "user" && el.ownerID === user.value.id
   );
+  
 });
+
+const computedSharerOrganizations = computed(() => {
+  if(organizations.value) {
+    return [...organizations.value]
+  }
+})
+const computedMyOrganizations = computed(() => {
+  if(organizations.value) {
+    return [...organizations.value].filter((organization) => {
+      if(organization.ownerID === +route.params.id) {
+        return organization
+      }
+    })
+  }
+})
+console.log(route.params.id)
+const { data: organizations } = await useFetch("/api/organizations/organizations", {
+  lazy: false,
+  })
 /**
  * @desc Get users
  */
@@ -399,6 +421,27 @@ useHead({
     },
   ],
 });
+
+// toggle title data// toggle title data
+const titles = ref([
+{
+    title: 'Заявки',
+    name: 'demands'
+  },
+  {
+    title: 'Проекты',
+    name: 'projects'
+  },
+  {
+    title: 'Банды',
+    name: 'organizations'
+  },
+  {
+    title: 'ТМЦ',
+    name: 'warehouse-items'
+  }
+])
+const currentTitle = ref('demands')
 </script>
 
 <template>
@@ -430,111 +473,46 @@ useHead({
       <p>{{ user }}</p>
     </div>
 
-    <!-- USER ROlE - MASTER -->
-    <div v-if="user.role === 'MASTER'">
-      <!-- Заголовок -->
-      <h3>ФОТ банды</h3>
-
-      <!-- Фильтры просмотра ФОТ -->
-      <div style="display: flex; align-items: center; gap: 1rem">
-        <!-- Выбор года -->
-        <select name="" id="" v-model="currentYear">
-          <option value="2023">2023</option>
-          <option value="2024">2024</option>
-        </select>
-
-        <!-- Выбор периода -->
-        <p>Январь</p>
-        <p>Февраль</p>
-        <p>Март</p>
-        <p>Апрель</p>
-        <p>Май (1ая)</p>
-        <p>Май (2ая)</p>
-        <p>+</p>
-      </div>
-
-      <p>{{ usersInBand.length }} человек</p>
-      <p>
-        ФОТ (начисленный) <span>{{ wageFund }}</span>
-      </p>
-      <p>
-        ФОТ (по выработке)
-        <span
-          >{{ productionFund }} |
-          {{ +(productionFund - wageFund).toFixed(2) }}</span
+    <!-- Заголовок - Переключатель -->
+    <!-- TOGGLE TITLE -->
+    <div class="toggle-title">
+      <div
+        v-for="(title, index) in titles"
+        class="switch-title_el"
+      >
+        <input
+          type="radio"
+          :id="`${index}_fund_hours`"
+          :value="title.name"
+          v-model="currentTitle"
+        />
+        <label :for="`${index}_fund_hours`"
+          ><h2>{{ title.title }}</h2></label
         >
-      </p>
-
-      <table style="width: 100%">
-        <tr>
-          <th>ФИО</th>
-          <th>Час</th>
-          <th>КТУ</th>
-          <th>Час * КТУ</th>
-          <th>ЗП (выработка)</th>
-          <!-- <th>ЗП (начисленная)</th>
-          <th>Налог</th> -->
-        </tr>
-        <tr v-for="item in usersInBand" :key="item.id">
-          <td>
-            <!-- ФИО -->
-            {{ item.surname }}
-          </td>
-          <td>
-            <!-- Час -->
-            {{ item.hours }}
-          </td>
-          <td>
-            <!-- КТУ -->
-            <span v-if="item.category !== '#2'">{{ item.stakeIndex }}</span>
-            <span v-else>-</span>
-          </td>
-          <td>
-            <!-- Час * КТУ -->
-            <span v-if="item.category !== '#2'">{{
-              (item.hours * item.stakeIndex).toFixed(2)
-            }}</span>
-            <span v-else>-</span>
-          </td>
-          <td>
-            <!-- ЗП (выработка) -->
-            <span v-if="item.category !== '#2'">{{
-              (item.hours * item.stakeIndex * wageRate).toFixed(2)
-            }}</span>
-            <span v-else>-</span>
-          </td>
-          <td>
-            <!-- ЗП (начисленная) -->
-            <!-- {{ item.salary }} -->
-          </td>
-          <td>
-            <!-- НАЛОГ -->
-            <!-- <span v-if="item.category !== '#2'">{{
-              (item.hours * item.stakeIndex * wageRate - item.salary).toFixed(2)
-            }}</span>
-            <span v-else>-</span> -->
-          </td>
-        </tr>
-        <tr style="font-weight: bold">
-          <td>Итого</td>
-          <td>{{ test() }}</td>
-          <td></td>
-          <td>{{ sumUserHourStakeIndex() }}</td>
-          <td>{{ sumUserProductionSalary() }}</td>
-          <!-- <td>{{ sumUserSalary() }}</td>
-          <td>{{ sumCommunityTax() }}</td> -->
-        </tr>
-      </table>
-
-      <div>
-        <p>Прочее: {{ rest }}</p>
       </div>
     </div>
 
+    <!-- ORGANIZATIONS -->
+     <div v-if="currentTitle === 'organizations'">
+      <div v-if="computedMyOrganizations.length">
+        <p><span>Организовал</span></p>
+        <!-- <div v-for="organization in computedMyOrganizations">
+          {{ organization }}
+        </div> -->
+        <div v-for="organization in computedMyOrganizations">
+          <p><span>{{ organization }}</span><span v-if="sessionUser.id">Распустить</span></p>
+          
+        </div>
+      </div>
+      <div v-if=computedSharerOrganizations.length style="margin-top: 1rem;">
+        <span>Участник в:</span><span>Выйти</span>
+        {{ computedSharerOrganizations }}
+      </div>
+      <div v-else>Ничего нет</div>
+     </div>
+
     <!-- ТМЦ соучастника-->
-    <div>
-      <!--  -->
-      <h2>ТМЦ</h2>
+    <div v-if="currentTitle === 'warehouse-items'">
       <!--  -->
       <div v-if="items.length">
         <div v-for="(item, index) in items" :key="index">
@@ -574,10 +552,43 @@ useHead({
   color: gray;
   opacity: 0.3;
 } */
+/* TOGGLE TITLE */
+.toggle-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  border-bottom: 1px solid var(--bs-tertiary-color);
+  padding-bottom: 1rem;
+}
+.toggle-title::-webkit-scrollbar {
+  display: none;
+}
+.switch-title_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.switch-title_el label h2 {
+  color: var(--bs-tertiary-color);
+  white-space: nowrap;
+}
+.switch-title_el label h2:hover {
+  cursor: pointer;
+}
+
+.switch-title_el input[type="radio"]:checked + label h2 {
+  color: unset;
+}
 
 @media screen and (max-width: 767px) {
   .page-title {
     margin-top: 4rem;
+  }
+  .toggle-title {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
   }
 }
 @media screen and (min-width: 768px) and (max-width: 991px) {

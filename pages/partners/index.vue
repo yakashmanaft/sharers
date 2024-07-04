@@ -905,6 +905,12 @@ async function checkAndCreateCompany(company) {
     alert("Банда с таким именем уже существует!");
   } else {
     let addedCompany = null;
+    
+    let sharers = []
+    // sharers.push({
+    //   userID: sessionUser.value.id,
+    //   userType: 'user'
+    // })
 
     if (company && sessionUser)
       addedCompany = await $fetch("api/organizations/organizations", {
@@ -913,6 +919,7 @@ async function checkAndCreateCompany(company) {
           uuid: uuidv4(),
           title: company.title,
           ownerID: sessionUser.value.id,
+          sharers: sharers
         },
       });
     // reset company comst

@@ -12,6 +12,7 @@ export default defineEventHandler(async (event) => {
         uuid: body.uuid,
         title: body.title,
         ownerID: body.ownerID,
+        sharers: body.sharers
       },
     }).then((response) => {
       company = response

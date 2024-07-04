@@ -267,7 +267,7 @@ onMounted(async () => {
         // "password": "Anfalov123[eq",
         phone: user.phone,
         role: user.role,
-        groupID: user.groupID,
+        // groupID: user.groupID,
         groupStatus: user.groupStatus,
         created_at: user.created_at,
         update_at: user.update_at,
@@ -296,6 +296,12 @@ const computedSharerOrganizations = computed(() => {
   if(organizations.value) {
     return [...organizations.value]
   }
+  // sharers = [
+  //  {
+  //    userID: number
+  //    userType: string
+  //  }
+  // ]
 })
 const computedMyOrganizations = computed(() => {
   if(organizations.value) {
@@ -306,7 +312,6 @@ const computedMyOrganizations = computed(() => {
     })
   }
 })
-console.log(route.params.id)
 const { data: organizations } = await useFetch("/api/organizations/organizations", {
   lazy: false,
   })
@@ -344,12 +349,12 @@ async function getItems() {
  * @desc  Calculation Salary
  */
 
-const test = () => {
-  return Object.values(usersInBand.value).reduce((acc, current) => {
-    acc += current.hours;
-    return acc;
-  }, 0);
-};
+// const test = () => {
+//   return Object.values(usersInBand.value).reduce((acc, current) => {
+//     acc += current.hours;
+//     return acc;
+//   }, 0);
+// };
 
 //  <!-- Час * КТУ -->
 // {{ item.hours * item.c }}
@@ -393,6 +398,16 @@ const sumCommunityTax = () => {
     return +acc.toFixed(2);
   }, 0);
 };
+
+// Работа с моими организациями
+// Распуустить группу
+// А Что делать с участниками?
+const disolveMyOrganization = (organizationID) => {
+  if(organizationID) {
+
+    alert(`Роспуск организации ${organizationID} в разработке...`)
+  }
+}
 
 useHead({
   title: `Соучастники`,
@@ -500,7 +515,7 @@ const currentTitle = ref('demands')
           {{ organization }}
         </div> -->
         <div v-for="organization in computedMyOrganizations">
-          <p><span>{{ organization }}</span><span v-if="sessionUser.id">Распустить</span></p>
+          <p><span>{{ organization }}</span><span v-if="organization.ownerID === sessionUser.id" @click="disolveMyOrganization(organization.id)" style="font-weight: bold;">Распустить</span></p>
           
         </div>
       </div>

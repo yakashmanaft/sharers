@@ -261,6 +261,8 @@ const transformEndingTheWord = (string) => {
         organizations.value.length % 10 === 4
       ) {
         return "банды";
+      } else if (organizations.value.length % 10 === 7) {
+        return "банд";
       } else {
         return string;
       }

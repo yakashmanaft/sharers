@@ -47,61 +47,69 @@
       </button>
 
       <!--  -->
-      <div v-if="usersInBand.length">
+      <div v-if="computedUsersInBand || computedOragnizationsInBand">
+        <!-- {{ organization.sharers }} -->
         <!-- Список участников -->
         <div class="sharers-list_container">
-          <!-- ICON -->
-          <div class="sharers-list_icon_wrapper" @click="toggleSharersList">
-            <label>
-              <input
-                type="checkbox"
-                id="sharers-list"
-                v-model="sharersListIsOpened"
-              />
-              <Icon
-                class="sharers-list_icon"
-                name="material-symbols-light:expand-more"
-                size="28px"
-                @click="toggleSharersList"
-              />
-            </label>
-            <p class="sharers-list_count">
-              {{ usersInBand.length }} {{ transformEndingTheWord("человек") }}
-            </p>
-          </div>
+
           <!-- LIST -->
-          <div class="sharers-list_wrapper" v-if="sharersListIsOpened">
-            <div v-for="(user, index) in usersInBand" class="sharers-list_item">
-              <!-- NAME -->
-              <div
-                style="display: flex; align-items: space-between"
-                @click="$router.push(`/partners/${user.id}`)"
-                class="link"
-              >
-                <p style="margin: 0">
-                  <span style="font-weight: bold; display: block">{{
-                    user.surname
-                  }}</span>
-                  <span>{{ user.name }} {{ user.middleName }}</span>
-                </p>
+          <div>
+            <!--  -->
+            <div v-if="computedOragnizationsInBand.length" class="sharers-list_wrapper">
+              <!-- <h3 class="sharers-list_title">
+                Банды
+              </h3> -->
+              <div v-for="company in computedOragnizationsInBand" class="sharers-list_item">
+                <!-- TITLE -->
+                <div style="display: flex; align-items: space-between" @click="$router.push(`/organizations/${company.id}`)">
+                  <p style="margin: 0;">
+                    <span style="font-weight: bold">{{ company.title }}</span>
+                  </p>
+                </div>
+                <!-- INFO -->
+                 <div style="margin-top: 1rem;">
+                  <p style="margin: 0;">{{ company.sharers.length  }}<span></span> {{ transformEndingTheWord(company.sharers.length, "соучастник") }}</p>
+                   
+                 </div>
               </div>
-
-              <!-- PHONE -->
-              <div class="item_phone">
-                <!-- style="pointer-events: none;" -->
-                <nuxt-link :to="`tel:${user.phone}`">{{
-                  user.phone
-                }}</nuxt-link>
-              </div>
-
-              <!-- GROUP STATUS -->
-              <!-- <div>
-                <p style="margin: 0; margin-top: 1rem">
-                  {{ user.groupStatus }}
-                </p>
-              </div> -->
-              <!-- <p>{{ user }}</p> -->
             </div>
+            <!--  -->
+            <div v-if="computedUsersInBand?.length" class="sharers-list_wrapper">
+              <!-- <h3 class="sharers-list_title">Соучастники</h3> -->
+              <div v-for="(user, index) in computedUsersInBand" class="sharers-list_item">
+                <!-- NAME -->
+                <div
+                  style="display: flex; align-items: space-between"
+                  @click="$router.push(`/partners/${user.id}`)"
+                  class="link"
+                >
+                  <p style="margin: 0">
+                    <span style="font-weight: bold; display: block">{{
+                      user.surname
+                    }}</span>
+                    <span>{{ user.name }} {{ user.middleName }}</span>
+                  </p>
+                </div>
+  
+                <!-- PHONE -->
+                <div class="item_phone">
+                  <!-- style="pointer-events: none;" -->
+                  <nuxt-link :to="`tel:${user.phone}`">{{
+                    user.phone
+                  }}</nuxt-link>
+                </div>
+  
+                <!-- GROUP STATUS -->
+                <!-- <div>
+                  <p style="margin: 0; margin-top: 1rem">
+                    {{ user.groupStatus }}
+                  </p>
+                </div> -->
+                <!-- <p>{{ user }}</p> -->
+              </div>
+            </div>
+            <!--  -->
+            <div v-else>Соучастников не найдено</div>
           </div>
         </div>
       </div>
@@ -475,7 +483,7 @@ const titles = ref([
     name: 'warehouse-items'
   }
 ]);
-const currentTitle = ref("working-hours");
+const currentTitle = ref("sharers");
 
 // ФОТ
 const currentYear = ref();
@@ -605,10 +613,52 @@ const computedPeriodList = computed(() => {
   }
 });
 
+// пользователи в организации, по ним ФОТ и рассчитывается...
+// Пользователи
+const computedUsersInBand = computed(() => {
+  if(organization.value) {
+  let indexArray = organization.value.sharers.filter(sharer => sharer.userType === 'user')
+  let usersInBand = []
+
+  if(indexArray.length) {
+
+    indexArray.forEach(sharer => {
+  
+      if(users.value) {
+  
+        let userObj = [...users.value].find(user => user.id === sharer.userID)
+  
+        usersInBand.push(userObj)
+      }
+    })
+    
+  }
+  return usersInBand
+  }
+})
+// Банды
+const computedOragnizationsInBand = computed(() => {
+  if(organization.value) {
+    let indexArray = organization.value.sharers.filter(sharer => sharer.userType === 'company')
+    let companiesInBand = []
+
+    if(indexArray.length) {
+      indexArray.forEach(company => {
+        if(organizations.value.length) {
+          let companyObj = [...organizations.value].find(el => el.id === company.userID)
+
+          companiesInBand.push(companyObj)
+        }
+      })
+    }
+    return companiesInBand
+  }
+})
+
 // SHARERS LIST
-const toggleSharersList = () => {
-  sharersListIsOpened.value = !sharersListIsOpened.value;
-};
+// const toggleSharersList = () => {
+//   sharersListIsOpened.value = !sharersListIsOpened.value;
+// };
 // const {
 //   pending,
 //   error,
@@ -631,6 +681,8 @@ const toggleSharersList = () => {
 //     });
 //   },
 // });
+
+
 
 onBeforeMount(async () => {
   // warehouse items
@@ -673,7 +725,7 @@ onBeforeMount(async () => {
       item.ownerType === "company" && item.ownerID === organization.value.id
   );
 
-  // пользователи в организации, по ним ФОТ и рассчитывается...
+
   users.value = await getAllUsers();
   if (users.value.length) {
     // usersInBand.value = users.value.filter(
@@ -681,7 +733,7 @@ onBeforeMount(async () => {
     // );
 
     usersInBand.value = [...users.value]
-      .filter((user) => user.groupID === +route.params.id)
+      // .filter((user) => user.groupID === +route.params.id)
       .map((user) => {
         return {
           id: user.id,
@@ -691,7 +743,7 @@ onBeforeMount(async () => {
           surname: user.surname,
           phone: user.phone,
           // role: user.role,
-          groupID: user.groupID,
+          // groupID: user.groupID,
           groupStatus: user.groupStatus,
           created_at: user.created_at,
           update_at: user.update_at,
@@ -788,7 +840,7 @@ const countedDays = (start, end) => {
 };
 
 const setWorkHourInToDay = (dayDate, fundList, userID) => {
-  console.log(dayDate);
+  // console.log(dayDate);
   let hour = "-";
   // console.log(fundList);
 
@@ -875,20 +927,29 @@ const translateFundListUser = (userID) => {
 };
 
 // TRANSFORMERS
-const transformEndingTheWord = (string) => {
-  // человек
-  if (string === "человек") {
-    if (usersInBand.value.length) {
+const transformEndingTheWord = (length:number, string: string) => {
+  if (string === "соучастник") {
+    if (length) {
       if (
-        usersInBand.value.length % 10 === 4 ||
-        usersInBand.value.length % 10 === 2
+        length % 10 === 4 ||
+        length % 10 === 3 ||
+        length % 10 === 2
       ) {
-        return "человека";
-      } else {
+        return "соучастника";
+      } else if (        
+        length % 10 === 5 ||
+        length % 10 === 6 ||
+        length % 10 === 7 ||
+        length % 10 === 8 ||
+        length % 10 === 9 
+      ) {
+        return "соучастников";
+      } else if (length % 10 === 0) {
+        return 'Соучастник'
+      }else {
         return string;
       }
     }
-  } else if ((string = "банды")) {
   }
 };
 const transformShowFundStatus = (statusObj) => {
@@ -1026,27 +1087,27 @@ watch(periodList, () => {
 
 <style scoped>
 /* list of sharers */
-label #sharers-list {
+/* label #sharers-list {
   display: none;
-}
+} */
 /* label #sharers-list + .sharers-list_icon {
   transform: rotate(270deg)
 } */
-label #sharers-list:checked + .sharers-list_icon {
+/* label #sharers-list:checked + .sharers-list_icon {
   transform: rotate(180deg);
-}
-.sharers-list_icon_wrapper {
+} */
+/* .sharers-list_icon_wrapper {
   display: flex;
   align-items: center;
   margin-top: 1rem;
 }
 .sharers-list_icon_wrapper p {
   margin: 0;
-}
-.sharers-list_icon,
+} */
+/* .sharers-list_icon,
 .sharers-list_count {
   cursor: pointer;
-}
+} */
 
 .sharers-list_wrapper {
   margin-top: 1rem;
@@ -1054,7 +1115,14 @@ label #sharers-list:checked + .sharers-list_icon {
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
 }
-
+/* .sharers-list_title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+} */
 .sharers-list_item {
   padding: 1rem;
   border: 1px solid rgba(0, 0, 0, 0.05);

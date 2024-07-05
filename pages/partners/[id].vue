@@ -267,7 +267,6 @@ onMounted(async () => {
         // "password": "Anfalov123[eq",
         phone: user.phone,
         role: user.role,
-        // groupID: user.groupID,
         groupStatus: user.groupStatus,
         created_at: user.created_at,
         update_at: user.update_at,
@@ -484,24 +483,10 @@ const currentTitle = ref('demands')
 <template>
   <Container v-if="user">
     <div class="page-title">
-      <h1>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h1>
-      <!-- <div class="page-title__btn-container">
-        <span
-          :class="{ btn__disabled: !isFlipperPrevUserBtnExist }"
-          @click="usersFlipper(user, 'prev', users)"
-          >Prev</span
-        >
-        <span
-          :class="{ btn__disabled: !isFlipperNextUserBtnExist }"
-          @click="usersFlipper(user, 'next', users)"
-          >Next</span
-        >
-      </div> -->
+      <h1><span style="font-weight: bold;">{{ user.surname }} </span><br /> {{ user.name }} {{ user.middleName }}</h1>
     </div>
 
     <div>
-      <!-- <h2>{{ user.surname }} {{ user.name }} <br />{{ user.middleName }}</h2> -->
-      <!-- <p>{{ user.role }}</p> -->
       <!-- PHONE -->
       <div class="item_phone">
         <!-- style="pointer-events: none;" -->
@@ -529,8 +514,18 @@ const currentTitle = ref('demands')
       </div>
     </div>
 
+    <!-- Demands -->
+    <div v-if="currentTitle === 'demands'">
+      <div>Ничего нет</div>
+    </div>
+
+    <!-- Demands -->
+    <div v-if="currentTitle === 'projects'">
+      <div>Ничего нет</div>
+    </div>
+
     <!-- ORGANIZATIONS -->
-     <div v-if="currentTitle === 'organizations'">
+    <div v-if="currentTitle === 'organizations'">
 
       <!-- user is owner -->
       <div v-if="computedMyOrganizations.length">
@@ -557,9 +552,10 @@ const currentTitle = ref('demands')
           </p>
         </div>
       </div>
+
       <!-- else -->
       <div v-else>Ничего нет</div>
-     </div>
+    </div>
 
     <!-- ТМЦ соучастника-->
     <div v-if="currentTitle === 'warehouse-items'">
@@ -572,6 +568,8 @@ const currentTitle = ref('demands')
       <!-- { "id": 159, "uuid": "ac07b3c9-c0f2-45dc-a400-b6005d70c098", "title": "Щит опалубочный 1200х3000", "type": "stuff", "qty": 1, "measure": "шт.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T04:46:12.000Z", "update_at": "2024-05-29T04:46:11.784Z" } -->
       <div v-else>Ничего нет</div>
     </div>
+
+    
     <br />
     <br />
   </Container>

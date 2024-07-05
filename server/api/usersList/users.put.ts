@@ -10,14 +10,13 @@ export default defineEventHandler(async (event) => {
     const middleName = body.middleName
     const phone = body.phone
     const role = body.role
-    const groupID = body.groupID
     const groupStatus = body.groupStatus
 
-    if(!(id && surname && name && middleName && phone && role && groupID && groupStatus)) return createError({statusCode: 400, statusMessage: 'Missing id or some other data'})
+    if(!(id && surname && name && middleName && phone && role && groupStatus)) return createError({statusCode: 400, statusMessage: 'Missing id or some other data'})
 
     let user
 
-    if(id && surname && name && middleName && phone && role && groupID && groupStatus)
+    if(id && surname && name && middleName && phone && role && groupStatus)
     user = await prisma.users.update({
         where: {
             id: id,
@@ -28,7 +27,6 @@ export default defineEventHandler(async (event) => {
             middleName: middleName,
             phone: phone,
             role: role,
-            groupID: groupID,
             groupStatus: groupStatus 
         }
     })

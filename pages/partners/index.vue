@@ -80,19 +80,6 @@
                 aria-describedby="nameHelp"
               />
             </div>
-            <!-- GROUP ID -->
-            <div class="mb-3">
-              <label for="editedUserGroupID" class="form-label"
-                >groupID (1 - Камини, 2 - банда Славы)</label
-              >
-              <input
-                v-model="editedUser.groupID"
-                type="number"
-                class="form-control"
-                id="editedUserGroupID"
-                aria-describedby="nameHelp"
-              />
-            </div>
             <!-- User Status In Group -->
             <div class="mb-3">
               <label for="editedUserStatusInGroup" class="form-label"
@@ -205,19 +192,6 @@
                 type="text"
                 class="form-control"
                 id="userRole"
-                aria-describedby="nameHelp"
-              />
-            </div>
-            <!-- GROUP ID -->
-            <div class="mb-3">
-              <label for="userGroupID" class="form-label"
-                >groupID (1 - Камини, 2 - банда Славы)</label
-              >
-              <input
-                v-model="user.groupID"
-                type="number"
-                class="form-control"
-                id="userGroupID"
                 aria-describedby="nameHelp"
               />
             </div>
@@ -451,21 +425,6 @@
                 </p>
               </div>
 
-              <!-- GROUP -->
-              <div
-                class="item_group"
-                :class="
-                  user.groupID === 0
-                    ? 'item_group-wo-group'
-                    : 'item_group-w-group'
-                "
-              >
-                <p style="margin: 0">
-                  <span @click="goToOrganizations(user.groupID)">{{
-                    translateGroupData(user.groupID)
-                  }}</span>
-                </p>
-              </div>
             </div>
 
             <!-- ATCTION ICONS -->
@@ -483,7 +442,6 @@
                     editedUser.middleName = user.middleName;
                     editedUser.phone = user.phone;
                     editedUser.role = user.role;
-                    editedUser.groupID = user.groupID;
                     editedUser.groupStatus = user.groupStatus;
                   }
                 "
@@ -506,72 +464,6 @@
           </div>
         </div>
       </div>
-
-      <!-- <table class="table" style="margin-top: 1rem">
-        <thead>
-          <tr>
-            <th scope="col">#</th>
-            <th scope="col">User</th>
-            <th scope="col">Group | Status</th>
-            <th scope="col">Email</th>
-            <th scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">Edit</th>
-            <th scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">
-              Delete
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(user, index) in users" :key="index">
-            <td scope="col">{{ index + 1 }}</td>
-            <td scope="col">
-              <span @click="$router.push(`/partners/${user.id}`)" class="link">
-                {{ user.surname }} {{ user.name }} {{ user.middleName }}
-              </span>
-              | {{ user.role }}
-            </td>
-            <td scope="col">
-              <span
-                class="link"
-                @click="$router.push(`/organizations/${user.groupID}`)"
-                >{{ translateGroupData(user.groupID) }}</span
-              >
-              | {{ user.groupStatus }}
-            </td>
-            <td scope="col">{{ user.email }}</td>
-            <td scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">
-              <button
-                type="button"
-                class="btn btn-warning"
-                data-bs-toggle="modal"
-                data-bs-target="#userEditModal"
-                @click="
-                  {
-                    editedUser.id = user.id;
-                    editedUser.surname = user.surname;
-                    editedUser.name = user.name;
-                    editedUser.middleName = user.middleName;
-                    editedUser.phone = user.phone;
-                    editedUser.role = user.role;
-                    editedUser.groupID = user.groupID;
-                    editedUser.groupStatus = user.groupStatus;
-                  }
-                "
-              >
-                Edit
-              </button>
-            </td>
-            <td scope="col" v-if="sessionUser.role === 'SUPER_ADMIN'">
-              <button
-                type="button"
-                class="btn btn-danger btn-sm"
-                @click="deleteUser(user.id)"
-              >
-                Delete
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table> -->
 
       <!-- ORGANIZATIONS -->
       <div v-if="currentTitle === 'organizations'" class="partners_container">
@@ -606,47 +498,12 @@
             v-for="(companyItem, index) in computedOrganizations"
             class="list_item"
           >
-            <div>
-              <!-- Наименование -->
-              <div class="org_label">
-                <p @click="$router.push(`/organizations/${companyItem.id}`)">
-                  {{ companyItem.title }}
-                </p>
-              </div>
-
-              <!-- Описание -->
-              <div style="margin-left: 0.5rem; margin-top: 0.5rem">
-                <div style="display: flex; align-items: center; gap: 0.5rem">
-                  <div style="color: var(--bs-secondary-color)">
-                    Учредитель:
-                  </div>
-                  <div>
-                    <span
-                      class="link"
-                      @click="goToOwnerCompany(companyItem.ownerID)"
-                      >{{ translateOwnerCompany(companyItem.ownerID) }}</span
-                    >
-                  </div>
-                </div>
-                <div>{{ countSharers(companyItem.id) }}</div>
-              </div>
-            </div>
-
-            <!-- Учредитель -->
-            <!-- <div>
-              <p style="margin: 0; text-align: right">Учредитель:</p>
-              <p style="margin: 0">
-                <span
-                  class="link"
-                  style="font-weight: bold"
-                  @click="goToOwnerCompany(companyItem.ownerID)"
-                  >{{ translateOwnerCompany(companyItem.ownerID) }}</span
-                >
-              </p>
-              <p style="margin: 0; text-align: right">
-                {{ countSharers(companyItem.id) }}
-              </p>
-            </div> -->
+          <!-- Наименование -->
+          <div class="org_label">
+            <p @click="$router.push(`/organizations/${companyItem.id}`)">
+              {{ companyItem.title }}
+            </p>
+          </div>
           </div>
         </div>
       </div>
@@ -695,7 +552,6 @@ const user = ref({
   middleName: null,
   surname: null,
   phone: null,
-  groupID: 0,
   groupStatus: null,
   role: "USER",
 });
@@ -716,7 +572,6 @@ const editedUser = ref({
   middleName: null,
   phone: null,
   surname: null,
-  groupID: null,
   groupStatus: null,
   role: null,
 });
@@ -767,7 +622,7 @@ onMounted(() => {
       user.value.password = null;
       user.value.name = null;
       (user.value.middleName = null), (user.value.surname = null);
-      (user.value.phone = null), (user.value.groupID = 0);
+      (user.value.phone = null);
       user.value.groupStatus = null;
       user.value.role = "USER";
     });
@@ -808,7 +663,6 @@ const {
           surname: user.surname,
           // phone: user.phone,
           // role: user.role,
-          groupID: user.groupID,
           // groupStatus: user.groupStatus,
           // created_at: user.created_at,
           // update_at: user.update_at,
@@ -865,7 +719,6 @@ async function checkAndAddUser(user) {
       e.middleName === user.middleName &&
       e.surname === user.surname &&
       e.phone === user.phone &&
-      e.groupID === user.groupID &&
       e.groupStatus === user.groupStatus &&
       e.role === user.role
   );
@@ -886,7 +739,6 @@ async function checkAndAddUser(user) {
           middleName: user.middleName,
           surname: user.surname,
           phone: user.phone,
-          groupID: user.groupID,
           groupStatus: user.groupStatus,
           role: user.role,
         },
@@ -937,20 +789,6 @@ async function checkAndCreateCompany(company) {
 }
 
 // router push functions
-const goToOrganizations = (groupID) => {
-  if (groupID === 0) {
-    alert("Соучастник без банды... Один волк...");
-  } else {
-    router.push(`/organizations/${groupID}`);
-  }
-};
-const goToOwnerCompany = (ownerID) => {
-  if (ownerID === 0) {
-    alert("Нет в сервисе. Не соучастник.");
-  } else {
-    router.push(`/partners/${ownerID}`);
-  }
-};
 
 /**
  * @desc Delete users
@@ -999,7 +837,6 @@ async function editUser(editedUser) {
         middleName: editedUser.middleName,
         phone: editedUser.phone,
         role: editedUser.role,
-        groupID: editedUser.groupID,
         groupStatus: editedUser.groupStatus,
       },
     });
@@ -1008,53 +845,7 @@ async function editUser(editedUser) {
   if (user) refresh();
 }
 
-/**
- *
-
- */
-// translaters
-const translateGroupData = (groupID) => {
-  if (companies.value) {
-    if (!groupID) {
-      return `Одиночка`;
-    } else {
-      let group = companies.value.find((company) => company.id === groupID);
-      // return `${groupID} | ${groupStatus}`
-      return `${group.title}`;
-    }
-  }
-};
-const translateOwnerCompany = (ownerID) => {
-  if (ownerID && users.value) {
-    let owner = users.value.find((item) => item.id === ownerID);
-    return `${owner?.surname} ${owner?.name[0]}. ${owner?.middleName[0]}.`;
-  } else {
-    return "Не соучастник";
-  }
-};
-
-// COUNTS
-const countSharers = (companyID) => {
-  if (companyID && users.value.length) {
-    let usersInBand = [...users.value]
-      .filter((user) => user.groupID === companyID)
-      .map((user) => {
-        id: user.id;
-      });
-
-    let signature;
-
-    if (
-      usersInBand.length % 10 === 2 ||
-      usersInBand.length % 10 === 3 ||
-      usersInBand.length % 10 === 4
-    ) {
-      return `${usersInBand.length} человека`;
-    } else {
-      return `${usersInBand.length} человек`;
-    }
-  }
-};
+// WATHERS
 
 watch(company.value, () => {
   console.log(company.value.title);
@@ -1074,7 +865,6 @@ watch(user.value, () => {
     user.value.surname &&
     user.value.phone &&
     user.value.phone.length === 12 &&
-    user.value.groupID >= 0 &&
     user.value.groupStatus !== null &&
     user.value.role
   ) {
@@ -1185,10 +975,25 @@ useHead({
 }
 .item_name {
 }
+.org_label {
+  display: flex;
+  gap: 0.3rem;
+}
 .org_label p {
   margin: 0;
+  font-weight: bold;
 }
-.org_label,
+.org_label:hover p{
+  color: var(--bs-primary);
+  cursor:pointer;
+}
+/* .org_desc {
+
+}
+.org_desc p {
+  margin: 0;
+} */
+/* .org_label, */
 .item_group {
   margin-top: 0.5rem;
   display: inline-block;
@@ -1197,14 +1002,14 @@ useHead({
   border-radius: 16px;
   border: unset;
 }
-.org_label,
-.item_group-w-group {
+/* .org_label,  */
+/* .item_group-w-group {
   background-color: var(--bs-primary);
   color: var(--bs-body-bg);
-}
-.item_group-wo-group {
+} */
+/* .item_group-wo-group {
   background-color: var(--bs-secondary-bg);
-}
+} */
 .item_icons {
   display: flex;
   align-items: center;

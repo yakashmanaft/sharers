@@ -1118,7 +1118,6 @@ watch(periodList, () => {
   background-color: rgba(0, 0, 0, 0.05) ;
   color: unset;
   border: unset;
-  /* border: 1px so  lid rgba(0, 0, 0, 0.05)!important; */
 }
 
 .sharers-list_item-button:hover {

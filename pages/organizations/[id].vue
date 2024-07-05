@@ -38,15 +38,6 @@
       <!-- <h2>Соучастники</h2> -->
 
       <!--  -->
-      <button
-        type="button"
-        class="btn btn-primary btn-create-modal-open-767"
-        @click.prevent="checkAndAddUser()"
-      >
-        <span>Добавить соучастника</span>
-      </button>
-
-      <!--  -->
       <div v-if="computedUsersInBand || computedOragnizationsInBand">
         <!-- {{ organization.sharers }} -->
         <!-- Список участников -->
@@ -72,6 +63,18 @@
                    
                  </div>
               </div>
+              <!-- Добавить -->
+              <button
+                  type="button"
+                  class="btn btn-primary sharers-list_item-button"
+                  style="text-align: start; padding: 1rem;"
+                  @click.prevent="inviteBandToBand()"
+                > 
+                <p style="margin: 0;">
+
+                  <span style="font-weight: bold;">Пригласить</span><br>банду
+                </p>
+              </button>
             </div>
             <!--  -->
             <div v-if="computedUsersInBand?.length" class="sharers-list_wrapper">
@@ -107,6 +110,17 @@
                 </div> -->
                 <!-- <p>{{ user }}</p> -->
               </div>
+                <!-- Добавить -->
+                <button
+                  type="button"
+                  class="btn btn-primary sharers-list_item-button"
+                  @click.prevent="inviteUserToBand()"
+                > 
+                <p style="margin: 0;">
+
+                  <span style="font-weight: bold;">Пригласить</span><br>соучастника в банду
+                </p>
+              </button>
             </div>
             <!--  -->
             <div v-else>Соучастников не найдено</div>
@@ -118,7 +132,7 @@
     </div>
 
     <!-- ТАБЕЛЬ И ФОТ -->
-    <div v-if="usersInBand.length" class="fund-hours_conrainer">
+    <div v-if="computedUsersInBand  " class="fund-hours_conrainer">
       <div v-if="computedSalaryFund.length !== 0">
         <!-- Фильтры просмотра ФОТ -->
         <div
@@ -727,45 +741,6 @@ onBeforeMount(async () => {
 
 
   users.value = await getAllUsers();
-  if (users.value.length) {
-    // usersInBand.value = users.value.filter(
-    //   (user) => user.groupID === +route.params.id
-    // );
-
-    usersInBand.value = [...users.value]
-      // .filter((user) => user.groupID === +route.params.id)
-      .map((user) => {
-        return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          middleName: user.middleName,
-          surname: user.surname,
-          phone: user.phone,
-          // role: user.role,
-          // groupID: user.groupID,
-          groupStatus: user.groupStatus,
-          created_at: user.created_at,
-          update_at: user.update_at,
-        };
-        // if (user.groupID === +route.params.id) {
-        // } else {
-        //   console.log('map гавно...')
-        // }
-      });
-    // "id": 1,
-    // "uuid": "f230e473-1ee6-43a4-9d2b-bcf87d32b6de",
-    // "email": "klimenko@yandex.ru",
-    // "password": "123",
-    // "name": "Вячеслав",
-    // "middleName": "Николаевич",
-    // "surname": "Клименко",
-    // "role": "MASTER",
-    // "groupID": 2,
-    // "groupStatus": "leader",
-    // "created_at": "2024-03-21T05:06:39.000Z",
-    // "update_at": "2024-03-21T05:06:38.974Z"
-  }
 });
 //
 async function getSalaryFunds() {
@@ -919,8 +894,8 @@ const translateFundPeriod = (periodStart, periodEnd) => {
   }
 };
 const translateFundListUser = (userID) => {
-  if (usersInBand.value.length && userID) {
-    let usersArr = [...usersInBand.value].filter((user) => user.id === +userID);
+  if (computedUsersInBand.value.length && userID) {
+    let usersArr = [...computedUsersInBand.value].filter((user) => user.id === +userID);
 
     return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}.`;
   }
@@ -968,8 +943,11 @@ const transformFundStatusDate = (statusDate) => {
 };
 
 // CHECK AND CREATE
-const checkAndAddUser = () => {
-  alert("В разработке...");
+const inviteUserToBand = () => {
+  alert("Приглашение соучастник... В разработке...");
+};
+const inviteBandToBand = () => {
+  alert("Приглашениее банды в банду... В разработке...");
 };
 const checkAndAddFund = () => {
   alert("В разработке...");
@@ -1131,9 +1109,25 @@ watch(periodList, () => {
 
 .sharers-list_item:hover {
   cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: rgba(0, 0, 0, 0.05) ;
 }
 
+.sharers-list_item-button {
+  text-align: start; 
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.05) ;
+  color: unset;
+  border: unset;
+  /* border: 1px so  lid rgba(0, 0, 0, 0.05)!important; */
+}
+
+.sharers-list_item-button:hover {
+  background-color: var(--bs-primary-bg-subtle);
+} 
+.sharers-list_item-button:focus {
+  color: unset;
+  border: unset!important;
+}
 /* TOGGLE TITLE */
 .toggle-title {
   display: flex;

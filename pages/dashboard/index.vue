@@ -38,10 +38,19 @@
           <p v-if="users">
             {{ users.length }} {{ transformEndingTheWord("соучастников") }}
           </p>
-          <!-- ALL sevice organizations -->
-          <p v-if="organizations">
-            {{ organizations.length }} {{ transformEndingTheWord("банды") }}
-          </p>
+
+          <!-- ORGANIZAATIONS -->
+          <div style="border-top: 1px solid var(--bs-border-color); margin-top: 1rem; padding-top: 1rem;">
+          
+            <!-- ALL sevice organizations -->
+            <p v-if="organizations">
+              {{ organizations.length }} {{ transformEndingTheWord("банды") }}
+            </p>
+            <!-- My organizations -->
+            <p v-if="organizations">
+              {{  computedMyOrganizations  }} организовал {{ computedSharerOrganizations }} соучаствую
+            </p>
+          </div>
         </div>
       </div>
 
@@ -96,6 +105,7 @@ import { Container } from "@/shared/container";
 
 const sessionUser = useUserSession().user;
 const router = useRouter();
+const route = useRoute()
 
 // HEADER
 useHead({
@@ -216,6 +226,29 @@ const demandsCount = () => {
     });
   }
 };
+
+const computedMyOrganizations = computed(() => {
+  if(organizations.value) {
+    let array = [...organizations.value].filter(organization => organization.ownerID === sessionUser.value.id)
+    return array.length
+  }
+})
+
+const computedSharerOrganizations = computed(() => {
+  if(organizations.value) {
+    let organizationsArrayWhereUserIs = []
+
+    organizations.value.forEach(organization => {
+      organization.sharers.forEach(sharer => {
+        if(sharer.userType === 'user' && sharer.userID === sessionUser.value.id) {
+          organizationsArrayWhereUserIs.push(organization)
+        }
+      })
+    })
+
+    return organizationsArrayWhereUserIs.length
+  }
+})
 
 // TRANSFORMERS
 // Strings

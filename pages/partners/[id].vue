@@ -254,7 +254,7 @@ const items = ref([]);
 // let btnPrev = document.querySelector('#prevUserBtn')
 // console.log(btnPrev)
 onMounted(async () => {
-  console.log(organizations.value)
+  // console.log(organizations.value)
   users.value = await getUsers();
   user.value = [...users.value]
     .map((user) => {
@@ -294,7 +294,21 @@ onMounted(async () => {
 
 const computedSharerOrganizations = computed(() => {
   if(organizations.value) {
-    return [...organizations.value]
+
+    let organizationsArrayWhereUserIs = []
+
+    organizations.value.forEach(organization => {
+      if(organization.sharers.length) {
+        organization.sharers.forEach(sharer => {
+          if(sharer.userType === 'user' && sharer.userID === +route.params.id) {
+
+            organizationsArrayWhereUserIs.push(organization)
+          }
+
+        })
+      }
+    })
+    return organizationsArrayWhereUserIs
   }
   // sharers = [
   //  {
@@ -302,6 +316,9 @@ const computedSharerOrganizations = computed(() => {
   //    userType: string
   //  }
   // ]
+
+  // Users - id
+  // organizations.value.sharers
 })
 const computedMyOrganizations = computed(() => {
   if(organizations.value) {
@@ -358,14 +375,14 @@ async function getItems() {
 
 //  <!-- Час * КТУ -->
 // {{ item.hours * item.c }}
-const sumUserHourStakeIndex = () => {
-  return Object.values(usersInBand.value).reduce((acc, current) => {
-    if (current.category !== "#2") {
-      acc += current.hours * current.stakeIndex;
-    }
-    return +acc.toFixed(2);
-  }, 0);
-};
+// const sumUserHourStakeIndex = () => {
+//   return Object.values(usersInBand.value).reduce((acc, current) => {
+//     if (current.category !== "#2") {
+//       acc += current.hours * current.stakeIndex;
+//     }
+//     return +acc.toFixed(2);
+//   }, 0);
+// };
 
 // <!-- ЗП (выработка) -->
 // {{ (item.hours * item.stakeIndex) * wageRate }}
@@ -389,23 +406,28 @@ const sumUserSalary = () => {
 
 // <!-- НАЛОГ -->
 // {{ (((item.hours * item.stakeIndex) * wageRate) - item.salary).toFixed(2) }}
-const sumCommunityTax = () => {
-  return Object.values(usersInBand.value).reduce((acc, current) => {
-    if (current.category !== "#2") {
-      acc +=
-        current.hours * current.stakeIndex * wageRate.value - current.salary;
-    }
-    return +acc.toFixed(2);
-  }, 0);
-};
+// const sumCommunityTax = () => {
+//   return Object.values(usersInBand.value).reduce((acc, current) => {
+//     if (current.category !== "#2") {
+//       acc +=
+//         current.hours * current.stakeIndex * wageRate.value - current.salary;
+//     }
+//     return +acc.toFixed(2);
+//   }, 0);
+// };
 
-// Работа с моими организациями
-// Распуустить группу
-// А Что делать с участниками?
+// Работа с бандами
+// Распустить банду
 const disolveMyOrganization = (organizationID) => {
   if(organizationID) {
 
-    alert(`Роспуск организации ${organizationID} в разработке...`)
+    alert(`Роспуск банды ${organizationID} в разработке...`)
+  }
+}
+// Выйти из банды
+const leaveCurrentBand = (organizationID) => {
+  if(organizationID) {
+    alert(`Выйти из банды ${organizationID} в разработке...`)
   }
 }
 
@@ -509,20 +531,33 @@ const currentTitle = ref('demands')
 
     <!-- ORGANIZATIONS -->
      <div v-if="currentTitle === 'organizations'">
+
+      <!-- user is owner -->
       <div v-if="computedMyOrganizations.length">
+        <!-- title -->
         <p><span>Организовал</span></p>
-        <!-- <div v-for="organization in computedMyOrganizations">
-          {{ organization }}
-        </div> -->
+        <!-- List -->
         <div v-for="organization in computedMyOrganizations">
-          <p><span>{{ organization }}</span><span v-if="organization.ownerID === sessionUser.id" @click="disolveMyOrganization(organization.id)" style="font-weight: bold;">Распустить</span></p>
-          
+          <p>
+            <span>{{ organization }}</span>
+            <span v-if="organization.ownerID === sessionUser.id" @click="disolveMyOrganization(organization.id)" style="font-weight: bold;">Распустить</span>
+          </p>
         </div>
       </div>
+
+      <!-- user is participant -->
       <div v-if=computedSharerOrganizations.length style="margin-top: 1rem;">
-        <span>Участник в:</span><span>Выйти</span>
-        {{ computedSharerOrganizations }}
+        <!-- Titie -->
+        <p><span>Соучастник в бандах:</span></p>
+        <!-- List -->
+        <div v-for="organization in computedSharerOrganizations">
+          <p>
+            <span>{{ organization }}</span>
+            <span @click="leaveCurrentBand(organization.id)" v-if="+route.params.id === sessionUser.id"style="font-weight: bold;">Выйти из банды</span>
+          </p>
+        </div>
       </div>
+      <!-- else -->
       <div v-else>Ничего нет</div>
      </div>
 

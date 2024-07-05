@@ -132,7 +132,7 @@
     </div>
 
     <!-- ТАБЕЛЬ И ФОТ -->
-    <div v-if="computedUsersInBand  " class="fund-hours_conrainer">
+    <div v-if="computedUsersInBand " class="fund-hours_conrainer">
       <div v-if="computedSalaryFund.length !== 0">
         <!-- Фильтры просмотра ФОТ -->
         <div
@@ -407,7 +407,7 @@
           </div>
         </div>
       </div>
-      <div v-else>Ни одной таблицы ФОТ...</div>
+      <div v-if="!computedSalaryFund.length && (currentTitle === 'fund' || currentTitle === 'working-hours')">Ни одной таблицы ФОТ...</div>
     </div>
 
     <!-- ТМЦ организации -->
@@ -434,6 +434,10 @@
       </div>
       <div v-else>Нет ценностей...</div>
     </div>
+
+    <br>
+    <br>
+    <br>
   </Container>
 </template>
 

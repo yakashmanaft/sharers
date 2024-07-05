@@ -478,6 +478,40 @@ const titles = ref([
   }
 ])
 const currentTitle = ref('demands')
+
+// TRANSFORMERS
+const transformEndingTheWord = (length, string) => {
+  if (string === "соучастник") {
+    if (length) {
+      if (
+        length % 10 === 4 ||
+        length % 10 === 3 ||
+        length % 10 === 2
+      ) {
+        return "соучастника";
+      } else if (        
+        length % 10 === 5 ||
+        length % 10 === 6 ||
+        length % 10 === 7 ||
+        length % 10 === 8 ||
+        length % 10 === 9 
+      ) {
+        return "соучастников";
+      } else if (length % 10 === 0) {
+        return 'cоучастник'
+      } else {
+        return string;
+      }
+    } else {
+      return 'соучастников'
+    }
+  }
+};
+
+// CREATE
+const createMyNewBand = () => {
+  alert('Создание новой банды... в разработке...')
+}
 </script>
 
 <template>
@@ -528,15 +562,56 @@ const currentTitle = ref('demands')
     <div v-if="currentTitle === 'organizations'">
 
       <!-- user is owner -->
-      <div v-if="computedMyOrganizations.length">
+      <div v-if="computedMyOrganizations.length" style="margin-top: 1rem;">
         <!-- title -->
-        <p><span>Организовал</span></p>
-        <!-- List -->
-        <div v-for="organization in computedMyOrganizations">
-          <p>
-            <span>{{ organization }}</span>
-            <span v-if="organization.ownerID === sessionUser.id" @click="disolveMyOrganization(organization.id)" style="font-weight: bold;">Распустить</span>
-          </p>
+         <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;">
+           <p style="margin: 0;"><span>Организовал</span></p>                  <Icon   
+            name="mdi:crown"
+            size="24px"
+            color="var(--bs-warning)"
+          />
+         </div>
+
+        <div class="org_container">
+
+          <!-- List -->
+          <div v-for="organization in computedMyOrganizations" class="org_wrapper">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+              <!-- TITLE -->
+              <div style="display: flex; align-items: space-between" @click="$router.push(`/organizations/${organization.id}`)" class="link">
+                <p style="margin: 0;">
+                  <span style="font-weight: bold">{{ organization.title }}</span>
+                </p>
+              </div>
+              <!-- BTN DISOLVE BAND -->
+              <span v-if="organization.ownerID === sessionUser.id" class="link" @click="disolveMyOrganization(organization.id)">Распустить</span>
+  
+            </div>
+            <!-- INFO -->
+            <div style="margin-top: 1rem;">
+              <p style="margin: 0;">{{ organization.sharers.length }} {{ transformEndingTheWord(organization.sharers.length, "соучастник")  }}</p>
+            </div>
+  
+          </div>
+
+          <!-- Добавить -->
+          <button
+              v-if="+route.params.id === sessionUser.id"
+              type="button"
+              class="btn btn-primary org_btn-new-band"
+              style="text-align: start; padding: 1rem;"
+              @click.prevent="createMyNewBand()"
+            > 
+            <p style="margin: 0;">
+
+              <span style="font-weight: bold;">Организовать</span><br>новую банду
+            </p>
+            <Icon
+              name="material-symbols:add-rounded"
+              size="32px"
+              color="var(--bs-primary)"
+              />
+          </button>
         </div>
       </div>
 
@@ -554,7 +629,11 @@ const currentTitle = ref('demands')
       </div>
 
       <!-- else -->
-      <div v-else>Ничего нет</div>
+      <div v-else style="margin-top: 1rem;">
+        <p>
+          Пока ничего нет. Сколотите свою <span style="color: var(--bs-primary); cursor: pointer;" @click="createMyNewBand()">первую банду</span>.
+        </p>
+      </div>
     </div>
 
     <!-- ТМЦ соучастника-->
@@ -566,7 +645,9 @@ const currentTitle = ref('demands')
         </div>
       </div>
       <!-- { "id": 159, "uuid": "ac07b3c9-c0f2-45dc-a400-b6005d70c098", "title": "Щит опалубочный 1200х3000", "type": "stuff", "qty": 1, "measure": "шт.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T04:46:12.000Z", "update_at": "2024-05-29T04:46:11.784Z" } -->
-      <div v-else>Ничего нет</div>
+      <div v-else>
+        <p style="margin: 0;">Ничего нет</p>
+      </div>
     </div>
 
     
@@ -576,6 +657,10 @@ const currentTitle = ref('demands')
 </template>
 
 <style scoped>
+.link:hover {
+  color: var(--bs-primary);
+  cursor: pointer;
+}
 .page-title {
   display: flex;
   align-items: center;
@@ -628,6 +713,35 @@ const currentTitle = ref('demands')
 
 .switch-title_el input[type="radio"]:checked + label h2 {
   color: unset;
+}
+
+/*  */
+.org_container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+.org_wrapper {
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  border-radius: 1rem;
+}
+.org_btn-new-band {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-align: start; 
+  padding: 1rem;
+  background-color: var(--bs-primary-bg-subtle);
+  color: unset;
+  border: unset;
+}
+.org_btn-new-band:hover {
+  background-color: var(--bs-primary-bg-subtle);
+} 
+.org_btn-new-band:focus {
+  color: unset;
+  border: unset!important;
 }
 
 @media screen and (max-width: 767px) {

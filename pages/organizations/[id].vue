@@ -52,19 +52,20 @@
               </h3> -->
               <div v-for="company in computedOragnizationsInBand" class="sharers-list_item">
                 <!-- TITLE -->
-                <div style="display: flex; align-items: space-between" @click="$router.push(`/organizations/${company.id}`)">
+                <div class="link" style="display: flex; align-items: space-between" @click="$router.push(`/organizations/${company.id}`)">
                   <p style="margin: 0;">
                     <span style="font-weight: bold">{{ company.title }}</span>
                   </p>
                 </div>
                 <!-- INFO -->
                  <div style="margin-top: 1rem;">
-                  <p style="margin: 0;">{{ company.sharers.length  }}<span></span> {{ transformEndingTheWord(company.sharers.length, "соучастник") }}</p>
+                  <p style="margin: 0;">{{ company.sharers.length  }} {{ transformEndingTheWord(company.sharers.length, "соучастник") }}</p>
                    
                  </div>
               </div>
               <!-- Добавить -->
               <button
+                v-if="organization.ownerID === user.id"
                   type="button"
                   class="btn btn-primary sharers-list_item-button"
                   style="text-align: start; padding: 1rem;"
@@ -74,6 +75,11 @@
 
                   <span style="font-weight: bold;">Пригласить</span><br>банду
                 </p>
+                <Icon
+                  name="material-symbols:add-rounded"
+                  size="32px"
+                  color="var(--bs-primary)"
+                  />
               </button>
             </div>
             <!--  -->
@@ -82,16 +88,25 @@
               <div v-for="(user, index) in computedUsersInBand" class="sharers-list_item">
                 <!-- NAME -->
                 <div
-                  style="display: flex; align-items: space-between"
+                  style="display: flex; align-items: center; justify-content: space-between;"
                   @click="$router.push(`/partners/${user.id}`)"
                   class="link"
                 >
-                  <p style="margin: 0">
+                  <p style="margin: 0;">
+
                     <span style="font-weight: bold; display: block">{{
                       user.surname
                     }}</span>
                     <span>{{ user.name }} {{ user.middleName }}</span>
                   </p>
+         
+                    <Icon
+                      v-if="organization.ownerID === user.id"
+                      name="mdi:crown"
+                      size="24px"
+                      color="var(--bs-warning)"
+                    />
+
                 </div>
   
                 <!-- PHONE -->
@@ -101,25 +116,24 @@
                     user.phone
                   }}</nuxt-link>
                 </div>
-  
-                <!-- GROUP STATUS -->
-                <!-- <div>
-                  <p style="margin: 0; margin-top: 1rem">
-                    {{ user.groupStatus }}
-                  </p>
-                </div> -->
-                <!-- <p>{{ user }}</p> -->
               </div>
+
                 <!-- Добавить -->
                 <button
+                  v-if="organization.ownerID === user.id"
                   type="button"
                   class="btn btn-primary sharers-list_item-button"
                   @click.prevent="inviteUserToBand()"
                 > 
                 <p style="margin: 0;">
 
-                  <span style="font-weight: bold;">Пригласить</span><br>соучастника в банду
+                  <span style="font-weight: bold;">Пригласить</span> <br>соучастника в банду
                 </p>
+                <Icon
+                  name="material-symbols:add-rounded"
+                  size="32px"
+                  color="var(--bs-primary)"
+                  />
               </button>
             </div>
             <!--  -->
@@ -924,10 +938,12 @@ const transformEndingTheWord = (length:number, string: string) => {
       ) {
         return "соучастников";
       } else if (length % 10 === 0) {
-        return 'Соучастник'
+        return 'соучастник'
       }else {
         return string;
       }
+    } else {
+      return 'соучастников'
     }
   }
 };
@@ -1117,9 +1133,12 @@ watch(periodList, () => {
 }
 
 .sharers-list_item-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   text-align: start; 
   padding: 1rem;
-  background-color: rgba(0, 0, 0, 0.05) ;
+  background-color: var(--bs-primary-bg-subtle);
   color: unset;
   border: unset;
 }

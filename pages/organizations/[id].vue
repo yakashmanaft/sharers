@@ -239,7 +239,7 @@
         </div>
 
         <!-- Таблицы ФОТ -->
-        <div class="table-fund_wrapper">
+        <div class="table-fund_container">
           <div
             v-for="fund in salaryFundArray.filter(
               (item) =>
@@ -248,7 +248,6 @@
                 item.periodEnd === choosenFundPeriod.periodEnd
             )"
             :key="fund.id"
-            style="display: flex; align-items: center; gap: 1rem"
           >
             <!-- <p>{{ fund.id }}</p> -->
             <!-- <p>{{ fund.periodStart }}</p>
@@ -313,67 +312,72 @@
               </div>
 
               <!-- УЧЕТ ЧАСОВ -->
-              <table v-if="currentTitle === 'working-hours'">
-                <thead>
-                  <th scope="col">п/п</th>
-                  <th>Соучастник</th>
-                  <th>Сумма часов</th>
-                  <th
-                    v-for="day in countedDays(fund.periodStart, fund.periodEnd)"
-                  >
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        background-color: var(--bs-border-color);
-                      "
-                    >
-                      <span>{{ day.date.slice(-2) }}</span>
-                      <span>{{ day.dayOfWeek }}</span>
-                    </div>
-                  </th>
-                </thead>
-                <tbody>
-                  <tr v-for="(el, i) in fund.list">
-                    <!-- № п/п -->
-                    <td>{{ i + 1 }}.</td>
-                    <!-- Соучастник -->
-                    <td>{{ translateFundListUser(el.userID) }}</td>
-                    <td>
-                      {{ sumSharerHours(el.hours) }}
-                    </td>
-                    <td
-                      class="hour-per-day_cell"
+              <div class="table_hours">
+                <table
+                  v-if="currentTitle === 'working-hours'"
+                  class="working-hours_wrapper"
+                >
+                  <!-- Заголовки -->
+                  <thead>
+                    <th scope="col">п/п</th>
+                    <th style="padding-right: 1rem">Соучастник</th>
+                    <th class="working-hours_sum">Сумма<br />часов</th>
+                    <th
                       v-for="day in countedDays(
                         fund.periodStart,
                         fund.periodEnd
                       )"
-                      @click="
-                        setSharerHourAtDay(el.userID, day.date, fund.list)
-                      "
                     >
-                      <!-- <div v-for="(hours, index) in el.hours">
-                        <div v-if="hours.date === day.date">
-                          {{ hours.hours }}
-                        </div>
-                        <div v-else>-</div>
-                      </div> -->
-                      {{ setWorkHourInToDay(day.date, fund.list, el.userID) }}
-                    </td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                    <td>
-                      <span style="font-weight: bold">{{
-                        sumTotalShareHours(fund.list)
-                      }}</span>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+                      <div>
+                        <span>{{ day.date.slice(-2) }}</span>
+                        <span style="font-weight: normal">{{
+                          translateDayOfWeek(day.dayOfWeek)
+                        }}</span>
+                      </div>
+                    </th>
+                  </thead>
+                  <tbody>
+                    <!-- Строки -->
+                    <tr v-for="(el, i) in fund.list">
+                      <!-- № п/п -->
+                      <td>{{ i + 1 }}.</td>
+                      <!-- Соучастник -->
+                      <td
+                        class="working-hours_sharer link"
+                        @click="$router.push(`/partners/${el.userID}`)"
+                      >
+                        {{ translateFundListUser(el.userID) }}
+                      </td>
+                      <td style="text-align: center; font-weight: bold">
+                        {{ sumSharerHours(el.hours) }}
+                      </td>
+                      <td
+                        class="hour-per-day_cell"
+                        v-for="day in countedDays(
+                          fund.periodStart,
+                          fund.periodEnd
+                        )"
+                        @click="
+                          setSharerHourAtDay(el.userID, day.date, fund.list)
+                        "
+                      >
+                        <span>{{
+                          setWorkHourInToDay(day.date, fund.list, el.userID)
+                        }}</span>
+                      </td>
+                    </tr>
+                    <tr style="border-top: 1px solid var(--bs-border-color)">
+                      <td></td>
+                      <td></td>
+                      <td style="text-align: center">
+                        <span style="font-weight: bold">{{
+                          sumTotalShareHours(fund.list)
+                        }}</span>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
 
               <!-- ФОТ -->
               <table class="table" v-if="currentTitle === 'fund'">
@@ -385,7 +389,7 @@
                         >Соучастник</span
                       >
                     </th>
-                    <!-- <th scope="col">Час</th> -->
+                    <th scope="col">Час</th>
                     <th scope="col">КТУ</th>
                     <th scope="col">Час * КТУ</th>
                     <th scope="col">ЗП (Выработка)</th>
@@ -407,11 +411,9 @@
                     </td>
                     <!-- Отработано часов -->
                     <!-- @click="setRecievedHours(fund.id, el.userID, fund.list)" -->
-                    <!-- <td
-                      class="recieved-data-to-change"
-                    >
-                      <span>{{ el.hours }}</span>
-                    </td> -->
+                    <td>
+                      <span>{{ sumSharerHours(el.hours) }}</span>
+                    </td>
                     <!-- КТУ -->
                     <td
                       @click="setRecievedStakeIndex()"
@@ -967,6 +969,25 @@ const translateFundListUser = (userID) => {
     return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}.`;
   }
 };
+const translateDayOfWeek = (dayNumber) => {
+  if (dayNumber === 0) {
+    return "Вс";
+  } else if (dayNumber === 1) {
+    return 'Пн'
+  } else if (dayNumber === 2) {
+    return 'Вт'
+  } else if (dayNumber === 3) {
+    return 'Ср'
+  } else if (dayNumber === 4) {
+    return 'Чт'
+  } else if (dayNumber === 5) {
+    return 'Пт'
+  } else if (dayNumber === 6) {
+    return 'Сб'
+  } else {
+    return dayNumber;
+  }
+};
 
 // TRANSFORMERS
 const transformEndingTheWord = (length: number, string: string) => {
@@ -997,6 +1018,8 @@ const transformShowFundStatus = (statusObj) => {
     return "Выплачено";
   } else if (statusObj.status === "awaiting payment") {
     return "Ожидает оплаты";
+  } else if (statusObj.status === "working") {
+    return "Трудимся";
   }
 };
 const transformFundStatusDate = (statusDate) => {
@@ -1047,27 +1070,27 @@ const setRecievedSalary = () => {
 };
 
 // SET HOURS
-const setRecievedHours = async (fundID, userID, fundList) => {
-  alert(
-    `Установка значения Часов... в ФОТ id: ${fundID} для fund list user: ${userID}`
-  );
-  const result_array = JSON.parse(JSON.stringify(fundList));
-  const obj = result_array.find((el) => el.userID == userID);
+// const setRecievedHours = async (fundID, userID, fundList) => {
+//   alert(
+//     `Установка значения Часов... в ФОТ id: ${fundID} для fund list user: ${userID}`
+//   );
+//   const result_array = JSON.parse(JSON.stringify(fundList));
+//   const obj = result_array.find((el) => el.userID == userID);
 
-  let newHours = 61;
+//   let newHours = 61;
 
-  obj.hours = newHours.toString();
+//   obj.hours = newHours.toString();
 
-  // обновляем в бд и обновляем переменные
-  await setUserHours(fundID, result_array);
-  refreshSalaryFundArray();
-};
+//   // обновляем в бд и обновляем переменные
+//   await setUserHours(fundID, result_array);
+//   refreshSalaryFundArray();
+// };
 
 const setSharerHourAtDay = (userID, dayDate, fundList) => {
   let obj = {
     id: null,
     date: "",
-    hour: 0,
+    hours: 0,
   };
   // let hour = 0;
 
@@ -1078,15 +1101,13 @@ const setSharerHourAtDay = (userID, dayDate, fundList) => {
 
       item.hours.forEach((el) => {
         if (dayDate === el.date) {
-
-            obj.hour = +el.hours
-
+          obj.hours = +el.hours;
         }
       });
     }
   });
 
-  // alert("Установка значения... в разработке")
+  alert(`user: ${obj.id}, дата: ${obj.date}, hours: ${obj.hours}`);
   console.log(obj);
 };
 
@@ -1330,7 +1351,7 @@ watch(periodList, () => {
   background-color: var(--bs-body-color);
   color: var(--bs-body-bg);
 }
-.table-fund_wrapper {
+.table-fund_container {
   margin-top: 1rem;
   /* padding-top: 1rem; */
   /* border-top: 1px solid var(--bs-border-color); */
@@ -1365,11 +1386,64 @@ watch(periodList, () => {
 
 /* Таблица ФОТ */
 /* График учета часов работы */
+.table_hours {
+  overflow-x: scroll;
+  scrollbar-width: none;
+}
+.table_hours::-webkit-scrollbar {
+  display: none;
+}
+.working-hours_wrapper {
+  width: 100%;
+}
+
+.working-hours_wrapper thead {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.working-hours_wrapper thead th {
+  padding-bottom: 1rem;
+}
+.working-hours_wrapper thead th div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.working-hours_wrapper tbody tr td {
+  padding: 1rem;
+}
+
+.working-hours_wrapper tbody tr:hover {
+  background-color: var(--bs-border-color) !important;
+  cursor: pointer;
+}
+
+/* .working-hours_wrapper tbody tr:hover .working-hours_sharer {
+  background-color: var(--bs-border-color);
+} */
+
+
+.working-hours_sum {
+  text-align: center;
+  width: max-content;
+}
+.working-hours_sharer {
+  width: max-content;
+  white-space: nowrap;
+  padding-left: unset !important;
+  /* Для скролла */
+  /* position: fixed; */
+  /* background-color: var(--bs-body-bg); */
+}
+
 .hour-per-day_cell {
   cursor: pointer;
+  text-align: center;
   /* transition: all 0.1s ease-in; */
 }
 .hour-per-day_cell:hover {
+  color: var(--bs-primary);
   background-color: var(--bs-primary-bg-subtle);
 }
 .table {
@@ -1380,7 +1454,7 @@ watch(periodList, () => {
 .table-row_wrapper {
   padding: 0;
   /* width: 100%; */
-  display: flex;
+  /* display: flex; */
   /* display: inline-grid; */
   /* grid-template-columns: 60px 1fr 50px 50px 1fr 1fr 1fr; */
 }
@@ -1389,9 +1463,9 @@ watch(periodList, () => {
   padding: 1rem;
   /* padding-left: 1rem;
   padding-right: 1rem; */
-  display: flex;
+  /* display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; */
 }
 .table-row_wrapper:hover td {
   background-color: var(--bs-border-color) !important;

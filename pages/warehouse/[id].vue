@@ -561,7 +561,7 @@ watch(infoActionBtn, (next, prev) => {
                 <li>Тип: {{ translateItemType(item.type) }}</li>
                 <li>Серийник: {{ item.serial }}</li>
                 <li>Дата производства: {{ item.productionDate }}</li>
-                <li>Закупочная цена?</li>
+                <li>Закупочная цена: {{ item.price }}</li>
               </ul>
             </div>
             <!-- Материалы -->

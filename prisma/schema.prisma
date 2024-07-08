@@ -52,6 +52,7 @@ model WarehouseItems {
   title          String    @db.VarChar(255)
   type           String    @db.VarChar(255)
   qty            Int       @default(0)
+  price          Decimal?  @default(0)
   measure        String    @db.VarChar(255)
   location       String    @db.VarChar(255)
   locationID     Int       @default(1)

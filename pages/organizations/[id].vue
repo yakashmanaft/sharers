@@ -14,10 +14,7 @@
     <!-- TOGGLE TITLE -->
     <!-- таблица ФОТ / Табель учета рабочего времени -->
     <div class="toggle-title">
-      <div
-        v-for="(title, index) in titles"
-        class="switch-title_el"
-      >
+      <div v-for="(title, index) in titles" class="switch-title_el">
         <input
           type="radio"
           :id="`${index}_fund_hours`"
@@ -34,7 +31,11 @@
     <!-- v-if="user.role === 'MASTER' -->
 
     <!-- USERS IN BAND -->
-    <div  class="padding-left-right-1rem" style="margin-top: 1rem;" v-if="currentTitle === 'sharers'" >
+    <div
+      class="padding-left-right-1rem"
+      style="margin-top: 1rem"
+      v-if="currentTitle === 'sharers'"
+    >
       <!-- <h2>Соучастники</h2> -->
 
       <!--  -->
@@ -42,81 +43,108 @@
         <!-- {{ organization.sharers }} -->
         <!-- Список участников -->
         <div class="sharers-list_container">
-
           <!-- LIST -->
           <div>
             <!--  -->
-            <div v-if="computedOragnizationsInBand.length" class="sharers-list_wrapper">
-              <!-- <h3 class="sharers-list_title">
-                Банды
-              </h3> -->
-              <div v-for="company in computedOragnizationsInBand" class="sharers-list_item">
-                <!-- TITLE -->
-                <div class="link" style="display: flex; align-items: space-between" @click="$router.push(`/organizations/${company.id}`)">
-                  <p style="margin: 0;">
-                    <span style="font-weight: bold">{{ company.title }}</span>
-                  </p>
-                </div>
-                <!-- INFO -->
-                 <div style="margin-top: 1rem;">
-                  <p style="margin: 0;">{{ company.sharers.length  }} {{ transformEndingTheWord(company.sharers.length, "соучастник") }}</p>
-                   
-                 </div>
+            <div v-if="computedOragnizationsInBand.length">
+              <!-- title -->
+              <div v-if="computedUsersInBand?.length">
+                <p>Банды-соучастники</p>
               </div>
-              <!-- Добавить -->
-              <button
-                v-if="organization.ownerID === user.id"
+              <!-- Банды-соучастники -->
+              <div class="sharers-list_wrapper">
+                <div
+                  v-for="company in computedOragnizationsInBand"
+                  class="sharers-list_item"
+                >
+                  <!-- TITLE -->
+                  <div
+                    class="link"
+                    style="display: flex; align-items: space-between"
+                    @click="$router.push(`/organizations/${company.id}`)"
+                  >
+                    <p style="margin: 0">
+                      <span style="font-weight: bold">{{ company.title }}</span>
+                    </p>
+                  </div>
+                  <!-- INFO -->
+                  <div style="margin-top: 1rem">
+                    <p style="margin: 0">
+                      {{ company.sharers.length }}
+                      {{
+                        transformEndingTheWord(
+                          company.sharers.length,
+                          "соучастник"
+                        )
+                      }}
+                    </p>
+                  </div>
+                </div>
+                <!-- Добавить -->
+                <button
+                  v-if="organization.ownerID === user.id"
                   type="button"
                   class="btn btn-primary sharers-list_item-button"
-                  style="text-align: start; padding: 1rem;"
+                  style="text-align: start; padding: 1rem"
                   @click.prevent="inviteBandToBand()"
-                > 
-                <p style="margin: 0;">
-
-                  <span style="font-weight: bold;">Пригласить</span><br>банду
-                </p>
-                <Icon
-                  name="material-symbols:add-rounded"
-                  size="32px"
-                  color="var(--bs-primary)"
-                  />
-              </button>
-            </div>
-            <!--  -->
-            <div v-if="computedUsersInBand?.length" class="sharers-list_wrapper">
-              <!-- <h3 class="sharers-list_title">Соучастники</h3> -->
-              <div v-for="(user, index) in computedUsersInBand" class="sharers-list_item">
-                <!-- NAME -->
-                <div
-                  style="display: flex; align-items: center; justify-content: space-between;"
-                  @click="$router.push(`/partners/${user.id}`)"
-                  class="link"
                 >
-                  <p style="margin: 0;">
-
-                    <span style="font-weight: bold; display: block">{{
-                      user.surname
-                    }}</span>
-                    <span>{{ user.name }} {{ user.middleName }}</span>
+                  <p style="margin: 0">
+                    <span style="font-weight: bold">Пригласить</span><br />банду
                   </p>
-         
+                  <Icon
+                    name="material-symbols:add-rounded"
+                    size="32px"
+                    color="var(--bs-primary)"
+                  />
+                </button>
+              </div>
+            </div>
+
+            <!-- Соучастники-пользователи -->
+            <div v-if="computedUsersInBand?.length">
+              <!-- title -->
+              <div style="margin-top: 1rem;" v-if="computedOragnizationsInBand.length">
+                <p>Cоучастники</p>
+              </div>
+              <!-- Соучастники -->
+              <div class="sharers-list_wrapper">
+                <div
+                  v-for="(user, index) in computedUsersInBand"
+                  class="sharers-list_item"
+                >
+                  <!-- NAME -->
+                  <div
+                    style="
+                      display: flex;
+                      align-items: center;
+                      justify-content: space-between;
+                    "
+                    @click="$router.push(`/partners/${user.id}`)"
+                    class="link"
+                  >
+                    <p style="margin: 0">
+                      <span style="font-weight: bold; display: block">{{
+                        user.surname
+                      }}</span>
+                      <span>{{ user.name }} {{ user.middleName }}</span>
+                    </p>
+
                     <Icon
                       v-if="organization.ownerID === user.id"
                       name="mdi:crown"
                       size="24px"
                       color="var(--bs-warning)"
                     />
+                  </div>
 
+                  <!-- PHONE -->
+                  <div class="item_phone">
+                    <!-- style="pointer-events: none;" -->
+                    <nuxt-link :to="`tel:${user.phone}`">{{
+                      user.phone
+                    }}</nuxt-link>
+                  </div>
                 </div>
-  
-                <!-- PHONE -->
-                <div class="item_phone">
-                  <!-- style="pointer-events: none;" -->
-                  <nuxt-link :to="`tel:${user.phone}`">{{
-                    user.phone
-                  }}</nuxt-link>
-                </div>
-              </div>
 
                 <!-- Добавить -->
                 <button
@@ -124,17 +152,18 @@
                   type="button"
                   class="btn btn-primary sharers-list_item-button"
                   @click.prevent="inviteUserToBand()"
-                > 
-                <p style="margin: 0;">
-
-                  <span style="font-weight: bold;">Пригласить</span> <br>соучастника в банду
-                </p>
-                <Icon
-                  name="material-symbols:add-rounded"
-                  size="32px"
-                  color="var(--bs-primary)"
+                >
+                  <p style="margin: 0">
+                    <span style="font-weight: bold">Пригласить</span>
+                    <br />соучастника в банду
+                  </p>
+                  <Icon
+                    name="material-symbols:add-rounded"
+                    size="32px"
+                    color="var(--bs-primary)"
                   />
-              </button>
+                </button>
+              </div>
             </div>
             <!--  -->
             <div v-else>Соучастников не найдено</div>
@@ -146,11 +175,13 @@
     </div>
 
     <!-- ТАБЕЛЬ И ФОТ -->
-    <div v-if="computedUsersInBand " class="fund-hours_conrainer">
+    <div v-if="computedUsersInBand" class="fund-hours_conrainer">
       <div v-if="computedSalaryFund.length !== 0">
         <!-- Фильтры просмотра ФОТ -->
         <div
-          v-if="currentTitle !== 'sharers' && currentTitle !== 'warehouse-items'"
+          v-if="
+            currentTitle !== 'sharers' && currentTitle !== 'warehouse-items'
+          "
           class="filter-fund_wrapper"
           style="display: flex; align-items: center; gap: 1rem"
         >
@@ -226,10 +257,7 @@
               <!--  -->
               <div style="display: flex; align-items: center; gap: 1rem">
                 <!-- Ставка -->
-                <div
-                  v-if="currentTitle === 'fund'"
-                  class="wage-rate_container"
-                >
+                <div v-if="currentTitle === 'fund'" class="wage-rate_container">
                   <p>
                     <span style="color: var(--bs-tertiary-color)"
                       >Ставка:
@@ -259,7 +287,7 @@
                     <p style="margin: 0; color: var(--bs-tertiary-color)">
                       Статус:
                     </p>
-                    <div style="display: flex; flex-direction: column;">
+                    <div style="display: flex; flex-direction: column">
                       <span
                         :class="
                           fund.status.status === 'paid out'
@@ -270,7 +298,10 @@
                       >
                       <span
                         v-if="fund.status.status === 'paid out'"
-                        style="color: var(--bs-tertiary-color); font-size: 0.8rem;"
+                        style="
+                          color: var(--bs-tertiary-color);
+                          font-size: 0.8rem;
+                        "
                         >{{ transformFundStatusDate(fund.status.date) }}</span
                       >
                     </div>
@@ -285,10 +316,7 @@
                   <th>Соучастник</th>
                   <th>Сумма часов</th>
                   <th
-                    v-for="day in countedDays(
-                      fund.periodStart,
-                      fund.periodEnd
-                    )"
+                    v-for="day in countedDays(fund.periodStart, fund.periodEnd)"
                   >
                     <div
                       style="
@@ -319,6 +347,9 @@
                         fund.periodStart,
                         fund.periodEnd
                       )"
+                      @click="
+                        setSharerHourAtDay(el.userID, day.date, fund.list)
+                      "
                     >
                       <!-- <div v-for="(hours, index) in el.hours">
                         <div v-if="hours.date === day.date">
@@ -396,9 +427,7 @@
                     <td>
                       <span v-if="el.stakeIndex !== ''">
                         {{
-                          (el.hours * el.stakeIndex * fund.wageRate).toFixed(
-                            2
-                          )
+                          (el.hours * el.stakeIndex * fund.wageRate).toFixed(2)
                         }}
                       </span>
                       <span v-else>-</span>
@@ -421,12 +450,18 @@
           </div>
         </div>
       </div>
-      <div v-if="!computedSalaryFund.length && (currentTitle === 'fund' || currentTitle === 'working-hours')">Ни одной таблицы ФОТ...</div>
+      <div
+        v-if="
+          !computedSalaryFund.length &&
+          (currentTitle === 'fund' || currentTitle === 'working-hours')
+        "
+      >
+        Ни одной таблицы ФОТ...
+      </div>
     </div>
 
     <!-- ТМЦ организации -->
     <div v-if="currentTitle === 'warehouse-items'">
-      
       <div v-if="items.length">
         <!-- Заголовок -->
         <!-- <h2>ТМЦ</h2> -->
@@ -449,9 +484,9 @@
       <div v-else>Нет ценностей...</div>
     </div>
 
-    <br>
-    <br>
-    <br>
+    <br />
+    <br />
+    <br />
   </Container>
 </template>
 
@@ -500,7 +535,7 @@ const sharersListIsOpened = ref(false);
 const titles = ref([
   {
     title: "Соучастники",
-    name: 'sharers'
+    name: "sharers",
   },
   {
     title: "Учет рабочего времени",
@@ -512,8 +547,8 @@ const titles = ref([
   },
   {
     title: "ТМЦ",
-    name: 'warehouse-items'
-  }
+    name: "warehouse-items",
+  },
 ]);
 const currentTitle = ref("sharers");
 
@@ -648,44 +683,48 @@ const computedPeriodList = computed(() => {
 // пользователи в организации, по ним ФОТ и рассчитывается...
 // Пользователи
 const computedUsersInBand = computed(() => {
-  if(organization.value) {
-  let indexArray = organization.value.sharers.filter(sharer => sharer.userType === 'user')
-  let usersInBand = []
+  if (organization.value) {
+    let indexArray = organization.value.sharers.filter(
+      (sharer) => sharer.userType === "user"
+    );
+    let usersInBand = [];
 
-  if(indexArray.length) {
+    if (indexArray.length) {
+      indexArray.forEach((sharer) => {
+        if (users.value) {
+          let userObj = [...users.value].find(
+            (user) => user.id === sharer.userID
+          );
 
-    indexArray.forEach(sharer => {
-  
-      if(users.value) {
-  
-        let userObj = [...users.value].find(user => user.id === sharer.userID)
-  
-        usersInBand.push(userObj)
-      }
-    })
-    
+          usersInBand.push(userObj);
+        }
+      });
+    }
+    return usersInBand;
   }
-  return usersInBand
-  }
-})
+});
 // Банды
 const computedOragnizationsInBand = computed(() => {
-  if(organization.value) {
-    let indexArray = organization.value.sharers.filter(sharer => sharer.userType === 'company')
-    let companiesInBand = []
+  if (organization.value) {
+    let indexArray = organization.value.sharers.filter(
+      (sharer) => sharer.userType === "company"
+    );
+    let companiesInBand = [];
 
-    if(indexArray.length) {
-      indexArray.forEach(company => {
-        if(organizations.value.length) {
-          let companyObj = [...organizations.value].find(el => el.id === company.userID)
+    if (indexArray.length) {
+      indexArray.forEach((company) => {
+        if (organizations.value.length) {
+          let companyObj = [...organizations.value].find(
+            (el) => el.id === company.userID
+          );
 
-          companiesInBand.push(companyObj)
+          companiesInBand.push(companyObj);
         }
-      })
+      });
     }
-    return companiesInBand
+    return companiesInBand;
   }
-})
+});
 
 // SHARERS LIST
 // const toggleSharersList = () => {
@@ -713,8 +752,6 @@ const computedOragnizationsInBand = computed(() => {
 //     });
 //   },
 // });
-
-
 
 onBeforeMount(async () => {
   // warehouse items
@@ -756,7 +793,6 @@ onBeforeMount(async () => {
     (item) =>
       item.ownerType === "company" && item.ownerID === organization.value.id
   );
-
 
   users.value = await getAllUsers();
 });
@@ -913,37 +949,35 @@ const translateFundPeriod = (periodStart, periodEnd) => {
 };
 const translateFundListUser = (userID) => {
   if (computedUsersInBand.value.length && userID) {
-    let usersArr = [...computedUsersInBand.value].filter((user) => user.id === +userID);
+    let usersArr = [...computedUsersInBand.value].filter(
+      (user) => user.id === +userID
+    );
 
     return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}.`;
   }
 };
 
 // TRANSFORMERS
-const transformEndingTheWord = (length:number, string: string) => {
+const transformEndingTheWord = (length: number, string: string) => {
   if (string === "соучастник") {
     if (length) {
-      if (
-        length % 10 === 4 ||
-        length % 10 === 3 ||
-        length % 10 === 2
-      ) {
+      if (length % 10 === 4 || length % 10 === 3 || length % 10 === 2) {
         return "соучастника";
-      } else if (        
+      } else if (
         length % 10 === 5 ||
         length % 10 === 6 ||
         length % 10 === 7 ||
         length % 10 === 8 ||
-        length % 10 === 9 
+        length % 10 === 9
       ) {
         return "соучастников";
       } else if (length % 10 === 0) {
-        return 'соучастник'
-      }else {
+        return "соучастник";
+      } else {
         return string;
       }
     } else {
-      return 'соучастников'
+      return "соучастников";
     }
   }
 };
@@ -1019,6 +1053,11 @@ const setRecievedHours = async (fundID, userID, fundList) => {
 };
 const setRecievedStakeIndex = () => {
   alert("Установка значения КТУ... в разработке");
+};
+
+const setSharerHourAtDay = (userID, dayDate, fundList) => {
+  console.log(`user-${userID}: ${dayDate}`);
+  alert(`Назначить отработанные часы...В разработке`);
 };
 
 // BD
@@ -1129,26 +1168,27 @@ watch(periodList, () => {
 
 .sharers-list_item:hover {
   cursor: pointer;
-  background-color: rgba(0, 0, 0, 0.05) ;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .sharers-list_item-button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  text-align: start; 
+  text-align: start;
   padding: 1rem;
   background-color: var(--bs-primary-bg-subtle);
   color: unset;
   border: unset;
+  border-radius: 16px;
 }
 
 .sharers-list_item-button:hover {
   background-color: var(--bs-primary-bg-subtle);
-} 
+}
 .sharers-list_item-button:focus {
   color: unset;
-  border: unset!important;
+  border: unset !important;
 }
 /* TOGGLE TITLE */
 .toggle-title {
@@ -1216,8 +1256,8 @@ watch(periodList, () => {
   color: var(--bs-primary);
 }
 .fund-hours_conrainer {
-    margin-top: 1rem;
-  }
+  margin-top: 1rem;
+}
 .filter-fund_wrapper {
   overflow-x: scroll;
   scrollbar-width: none;
@@ -1370,10 +1410,8 @@ watch(periodList, () => {
   .sharers-list_wrapper {
     grid-template-columns: repeat(4, 1fr);
   }
-
 }
 
 @media screen and (min-width: 992px) {
-
 }
 </style>

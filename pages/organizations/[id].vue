@@ -103,7 +103,10 @@
             <!-- Соучастники-пользователи -->
             <div v-if="computedUsersInBand?.length">
               <!-- title -->
-              <div style="margin-top: 1rem;" v-if="computedOragnizationsInBand.length">
+              <div
+                style="margin-top: 1rem"
+                v-if="computedOragnizationsInBand.length"
+              >
                 <p>Cоучастники</p>
               </div>
               <!-- Соучастники -->
@@ -700,7 +703,15 @@ const computedUsersInBand = computed(() => {
         }
       });
     }
-    return usersInBand;
+    return usersInBand.sort((x, y) => {
+      if (x.surname < y.surname) {
+        return -1;
+      }
+
+      if (x.surname > y.surname) {
+        return 1;
+      }
+    });
   }
 });
 // Банды
@@ -1051,13 +1062,36 @@ const setRecievedHours = async (fundID, userID, fundList) => {
   await setUserHours(fundID, result_array);
   refreshSalaryFundArray();
 };
-const setRecievedStakeIndex = () => {
-  alert("Установка значения КТУ... в разработке");
-};
 
 const setSharerHourAtDay = (userID, dayDate, fundList) => {
-  console.log(`user-${userID}: ${dayDate}`);
-  alert(`Назначить отработанные часы...В разработке`);
+  let obj = {
+    id: null,
+    date: "",
+    hour: 0,
+  };
+  // let hour = 0;
+
+  [...fundList].forEach((item) => {
+    if (userID === item.userID) {
+      obj.id = +item.userID;
+      obj.date = dayDate;
+
+      item.hours.forEach((el) => {
+        if (dayDate === el.date) {
+
+            obj.hour = +el.hours
+
+        }
+      });
+    }
+  });
+
+  // alert("Установка значения... в разработке")
+  console.log(obj);
+};
+
+const setRecievedStakeIndex = () => {
+  alert("Установка значения КТУ... в разработке");
 };
 
 // BD

@@ -366,7 +366,7 @@
                         }}</span>
                       </td>
                     </tr>
-                    <tr style="border-top: 1px solid var(--bs-border-color)">
+                    <tr>
                       <td></td>
                       <td></td>
                       <td style="text-align: center">
@@ -384,10 +384,8 @@
                 <thead class="item-table_header">
                   <tr>
                     <th scope="col">п/п</th>
-                    <th scope="col">
-                      <span style="width: 100%; text-align: start"
-                        >Соучастник</span
-                      >
+                    <th scope="col" style="text-align: start">
+                      <span>Соучастник</span>
                     </th>
                     <th scope="col">Час</th>
                     <th scope="col">КТУ</th>
@@ -401,7 +399,7 @@
                     <!-- № п/п -->
                     <td>{{ i + 1 }}.</td>
                     <!-- Соучастник -->
-                    <td>
+                    <td style="text-align: start">
                       <span
                         style="width: 100%; text-align: start"
                         class="link"
@@ -416,23 +414,38 @@
                     </td>
                     <!-- КТУ -->
                     <td
-                      @click="setRecievedStakeIndex()"
+                      @click="
+                        setRecievedStakeIndex(fund.id, el.userID, fund.list)
+                      "
                       class="recieved-data-to-change"
                     >
-                      <span>{{ el.stakeIndex }}</span>
+                      <span v-if="el.stakeIndex">{{ el.stakeIndex }}</span>
+                      <span v-else>-</span>
                     </td>
                     <!-- Час * КТУ -->
                     <td>
-                      <span v-if="el.stakeIndex !== ''">{{
-                        (el.hours * el.stakeIndex).toFixed(2)
-                      }}</span>
+                      <span v-if="el.stakeIndex !== '' && fund.list.length">
+                        <!-- {{ (el.hours * el.stakeIndex).toFixed(2) }} -->
+                        {{
+                          calcHourMultiplyStakeIndex(
+                            fund.list,
+                            el.hours,
+                            el.stakeIndex,
+                            el.userID
+                          )
+                        }}
+                      </span>
                       <span v-else>-</span>
                     </td>
                     <!-- ЗП (выработка) -->
                     <td>
                       <span v-if="el.stakeIndex !== ''">
                         {{
-                          (el.hours * el.stakeIndex * fund.wageRate).toFixed(2)
+                          calcProductionSalary(
+                            el.hours,
+                            el.stakeIndex,
+                            fund.wageRate
+                          )
                         }}
                       </span>
                       <span v-else>-</span>
@@ -447,7 +460,19 @@
                   </tr>
 
                   <!-- Итого -->
-                  <tr></tr>
+                  <tr class="table-row_wrapper">
+                    <td></td>
+                    <td></td>
+                    <td style="font-weight: bold">
+                      {{ sumTotalShareHours(fund.list) }}
+                    </td>
+                    <td></td>
+                    <td></td>
+                    <td style="font-weight: bold">
+                      {{ sumAllProductionSalary(fund.wageRate, fund.list) }}
+                    </td>
+                    <td></td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -904,7 +929,8 @@ const setWorkHourInToDay = (dayDate, fundList, userID) => {
   // return '-'
 };
 
-// ФУНКЦИИ СУММИРОВАНИЯ
+// ФУНКЦИИ СУММИРОВАНИЯ (SUM, CALC, etc...)
+// часы конкретного пользователя за период
 const sumSharerHours = (hours) => {
   if (hours.length) {
     let array = [];
@@ -917,6 +943,7 @@ const sumSharerHours = (hours) => {
     return sum === 0 ? "-" : sum;
   }
 };
+// Сумма всех наработанных часов за период
 const sumTotalShareHours = (fundList) => {
   let num = 0;
 
@@ -931,6 +958,55 @@ const sumTotalShareHours = (fundList) => {
   }
 
   return num;
+};
+// ЧАСЫ * КТУ по конкретному пользователю за период
+const calcHourMultiplyStakeIndex = (fundList, hours, stakeIndex, userID) => {
+  // let userFund = fundList.filter((list) => list.userID === userID);
+
+  if (hours.length) {
+    let sum = sumSharerHours(hours);
+
+    if (sum !== "-") {
+      return (sum * stakeIndex).toFixed(2);
+    } else {
+      return "-";
+    }
+  } else {
+    return "-";
+  }
+};
+// Выработка зп по конкретному пользвоателю за период
+const calcProductionSalary = (hours, stakeIndex, wageRate) => {
+  if (hours.length && stakeIndex !== "" && wageRate !== "") {
+    let sumHours = sumSharerHours(hours);
+
+    if (sumHours !== "-") {
+      return (sumHours * stakeIndex * wageRate).toFixed(2);
+    } else {
+      return "-";
+    }
+  } else {
+    return "-";
+  }
+};
+// Сумма всех выработок по зп за конкретный период
+const sumAllProductionSalary = (wageRate, fundList) => {
+  let productionSalaryArray = [];
+
+  fundList.forEach((item) => {
+    console.log(item);
+
+    let sumHoursArray = [];
+
+    item.hours.forEach((el) => {
+      sumHoursArray.push(+el.hours);
+    });
+
+    let sum = sumHoursArray.reduce((acc, current) => (acc += current * item.stakeIndex * wageRate), 0);
+
+    productionSalaryArray.push(sum)
+  });
+  return productionSalaryArray.reduce((acc, current) => (acc += current), 0).toFixed(2);
 };
 
 // TRANSLATERS
@@ -973,17 +1049,17 @@ const translateDayOfWeek = (dayNumber) => {
   if (dayNumber === 0) {
     return "Вс";
   } else if (dayNumber === 1) {
-    return 'Пн'
+    return "Пн";
   } else if (dayNumber === 2) {
-    return 'Вт'
+    return "Вт";
   } else if (dayNumber === 3) {
-    return 'Ср'
+    return "Ср";
   } else if (dayNumber === 4) {
-    return 'Чт'
+    return "Чт";
   } else if (dayNumber === 5) {
-    return 'Пт'
+    return "Пт";
   } else if (dayNumber === 6) {
-    return 'Сб'
+    return "Сб";
   } else {
     return dayNumber;
   }
@@ -1082,7 +1158,7 @@ const setRecievedSalary = () => {
 //   obj.hours = newHours.toString();
 
 //   // обновляем в бд и обновляем переменные
-//   await setUserHours(fundID, result_array);
+//   await setUserFundList(fundID, result_array);
 //   refreshSalaryFundArray();
 // };
 
@@ -1111,14 +1187,27 @@ const setSharerHourAtDay = (userID, dayDate, fundList) => {
   console.log(obj);
 };
 
-const setRecievedStakeIndex = () => {
-  alert("Установка значения КТУ... в разработке");
+const setRecievedStakeIndex = async (fundID, userID, fundList) => {
+  alert(
+    `Установка значения STATE INDEX... в ФОТ id: ${fundID} для fund list user: ${userID}`
+  );
+
+  const result_array = JSON.parse(JSON.stringify(fundList));
+  const obj = result_array.find((el) => el.userID == userID);
+
+  let newStakeIndex = 0.7;
+
+  obj.stakeIndex = String(newStakeIndex);
+
+  // обновляем в бд и обновляем переменные
+  await setUserFundList(fundID, result_array);
+  refreshSalaryFundArray();
 };
 
 // BD
 
 // HOURS
-async function setUserHours(salaryID, fundList) {
+async function setUserFundList(salaryID, fundList) {
   let salaryFund;
 
   if (salaryID && fundList) {
@@ -1410,11 +1499,15 @@ watch(periodList, () => {
   justify-content: center;
 }
 
+.working-hours_wrapper tbody tr:not(:last-child) {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
 .working-hours_wrapper tbody tr td {
   padding: 1rem;
 }
 
-.working-hours_wrapper tbody tr:hover {
+.working-hours_wrapper tbody tr:not(:last-child):hover {
   background-color: var(--bs-border-color) !important;
   cursor: pointer;
 }
@@ -1422,7 +1515,6 @@ watch(periodList, () => {
 /* .working-hours_wrapper tbody tr:hover .working-hours_sharer {
   background-color: var(--bs-border-color);
 } */
-
 
 .working-hours_sum {
   text-align: center;
@@ -1457,6 +1549,11 @@ watch(periodList, () => {
   /* display: flex; */
   /* display: inline-grid; */
   /* grid-template-columns: 60px 1fr 50px 50px 1fr 1fr 1fr; */
+  /* border: unset!important */
+}
+.item-table_header tr,
+.table-row_wrapper:not(:last-child) {
+  border-bottom: 1px solid var(--bs-border-color);
 }
 .item-table_header tr th,
 .table-row_wrapper td {
@@ -1466,8 +1563,12 @@ watch(periodList, () => {
   /* display: flex;
   align-items: center;
   justify-content: center; */
+  text-align: center;
+  border: unset;
+  width: max-content;
 }
-.table-row_wrapper:hover td {
+
+.table-row_wrapper:not(:last-child):hover td {
   background-color: var(--bs-border-color) !important;
   cursor: pointer;
 }
@@ -1522,4 +1623,35 @@ watch(periodList, () => {
 
 @media screen and (min-width: 992px) {
 }
+
+@media screen and (min-width: 1200px) {
+}
+
+@media screen and (max-width: 1399px) {
+  .table_hours {
+    /* position: relative; */
+    overflow: auto;
+  }
+  .working-hours_wrapper thead {
+    position: sticky;
+    top: 0;
+    /* table-layout: fixed; */
+  }
+  .working-hours_wrapper tbody tr {
+    /* position: relative; */
+    /* position: absolute;
+    top: 0;
+    left: 0; */
+  }
+  .working-hours_wrapper tbody tr .working-hours_sharer {
+    color: red;
+    /* position: sticky; */
+  }
+}
+
+@media screen and (min-width: 1400px) {
+}
+
+/* working-hours_wrapper tbody tr working-hours_sharer*/
+/* working-hours_sharer */
 </style>

@@ -1,5 +1,66 @@
 <template>
   <Container style="padding-top: 5rem">
+    <!-- MODAL SET HOUR TO SHARER -->
+    <div
+      class="modal fade"
+      id="setSharerHourModal"
+      tabindex="-1"
+      aria-labelledby="setSharerHourModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="setSharerHourModalLabel">
+              Отработано часов
+            </h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
+            <!-- {{ tempSetSharerHour }} -->
+            <div class="temp-sharer-hour_container">
+              <button
+                :disabled="tempSetSharerHour.hour === 0"
+                @click="tempSetSharerHour.hour--"
+              >
+                -
+              </button>
+
+              <div>{{ tempSetSharerHour.hour }}</div>
+
+              <button @click="tempSetSharerHour.hour++">+</button>
+            </div>
+          </div>
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="setSharerHourAtDayDB()"
+            >
+              Сохранить
+            </button>
+            <!-- @click="editUser(editedUser)" -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <h1 class="show-max-767">Банда #{{ $route.params.id }}</h1>
 
     <div v-if="organization" class="padding-left-right-1rem">
@@ -358,12 +419,22 @@
                           fund.periodEnd
                         )"
                         @click="
-                          setSharerHourAtDay(el.userID, day.date, fund.list)
+                          setSharerHourAtDay(
+                            organization.ownerID,
+                            fund.id,
+                            el.userID,
+                            day.date,
+                            fund.list
+                          )
                         "
+                        data-bs-toggle="modal"
+                        data-bs-target="#setSharerHourModal"
                       >
-                        <span>{{
-                          setWorkHourInToDay(day.date, fund.list, el.userID)
-                        }}</span>
+                        <span>
+                          {{
+                            setWorkHourInToDay(day.date, fund.list, el.userID)
+                          }}</span
+                        >
                       </td>
                     </tr>
                     <tr>
@@ -602,63 +673,15 @@ const salaryFundArray = ref([]);
 
 // warehouse items
 const items = ref([]);
-// [
-//     {
-//         "hours": "61",
-//         "userID": "21",
-//         "stakeIndex": "0.7"
-//     },
-//     {
-//         "hours": "36",
-//         "userID": "20",
-//         "stakeIndex": "1.1"
-//     },
-//     {
-//         "hours": "62",
-//         "userID": "1",
-//         "stakeIndex": "1.1"
-//     },
-//     {
-//         "hours": "48",
-//         "userID": "22",
-//         "stakeIndex": "1.1"
-//     },
-//     {
-//         "hours": "52",
-//         "userID": "24",
-//         "stakeIndex": "1.1"
-//     },
-//     {
-//         "hours": "48",
-//         "userID": "25",
-//         "stakeIndex": "1.0"
-//     },
-//     {
-//         "hours": "62",
-//         "userID": "26",
-//         "stakeIndex": "1.1"
-//     },
-//     {
-//         "hours": "69",
-//         "userID": "30",
-//         "stakeIndex": "1.1"
-//     },
-//     {
-//         "hours": "61",
-//         "userID": "28",
-//         "stakeIndex": "0.7"
-//     },
-//     {
-//         "hours": "58",
-//         "userID": "27",
-//         "stakeIndex": "0.7"
-//     },
-//     {
-//         "hours": "59",
-//         "userID": "29",
-//         "stakeIndex": "1.1"
-//     }
-// ]
+
+// set hours obj
+const tempSetSharerHour = ref({
+  userID: null,
+  date: "",
+  hour: null,
+});
+// currentFundList
+const currentFundID = ref();
 
 // COMPUTED
 const computedSalaryFund = computed(() => {
@@ -857,6 +880,14 @@ async function getAllUsers() {
 }
 
 onMounted(async () => {
+  // close modal and reset data #setSharerHourModal
+  const sharerHourModalEl = document.getElementById("setSharerHourModal");
+  if (sharerHourModalEl) {
+    sharerHourModalEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #setSharerHourModal закрыта");
+      // console.log(tempSetSharerHour.value);
+    });
+  }
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
   if (computedSalaryFund.value.length) {
     // Сортируем да дате окончания отчетного периода. Может имеет смысл добавить строку created_at и по ней сортировать???
@@ -1002,11 +1033,16 @@ const sumAllProductionSalary = (wageRate, fundList) => {
       sumHoursArray.push(+el.hours);
     });
 
-    let sum = sumHoursArray.reduce((acc, current) => (acc += current * item.stakeIndex * wageRate), 0);
+    let sum = sumHoursArray.reduce(
+      (acc, current) => (acc += current * item.stakeIndex * wageRate),
+      0
+    );
 
-    productionSalaryArray.push(sum)
+    productionSalaryArray.push(sum);
   });
-  return productionSalaryArray.reduce((acc, current) => (acc += current), 0).toFixed(2);
+  return productionSalaryArray
+    .reduce((acc, current) => (acc += current), 0)
+    .toFixed(2);
 };
 
 // TRANSLATERS
@@ -1162,30 +1198,73 @@ const setRecievedSalary = () => {
 //   refreshSalaryFundArray();
 // };
 
-const setSharerHourAtDay = (userID, dayDate, fundList) => {
-  let obj = {
-    id: null,
-    date: "",
-    hours: 0,
-  };
-  // let hour = 0;
+// setSharerHourAtDayDB
+const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, fundList) => {
+  if (ownerID !== user.value.id) {
+    alert("Меня значение часов может только основатель банды...");
+  } else {
+    let obj = {
+      id: null,
+      date: "",
+      hours: 0,
+    };
+    // let hour = 0;
 
-  [...fundList].forEach((item) => {
-    if (userID === item.userID) {
-      obj.id = +item.userID;
-      obj.date = dayDate;
+    [...fundList].forEach((item) => {
+      if (userID === item.userID) {
+        obj.id = +item.userID;
+        obj.date = dayDate;
 
-      item.hours.forEach((el) => {
-        if (dayDate === el.date) {
-          obj.hours = +el.hours;
-        }
-      });
-    }
-  });
+        item.hours.forEach((el) => {
+          if (dayDate === el.date) {
+            obj.hours = +el.hours;
+          }
+        });
+      }
+    });
 
-  alert(`user: ${obj.id}, дата: ${obj.date}, hours: ${obj.hours}`);
-  console.log(obj);
+    // Передаем значения в переменную, используемую в модалке
+    tempSetSharerHour.value.userID = obj.id;
+    tempSetSharerHour.value.date = obj.date;
+    tempSetSharerHour.value.hour = obj.hours;
+    // Передаем значение currentFundList
+    currentFundID.value = fundID;
+  }
 };
+const setSharerHourAtDayDB = async () => {
+
+  // Получаем текущую строчку из БД salary
+  let fund = [...computedSalaryFund.value].find(
+    (item) => item.id === currentFundID.value
+  );
+  // Получаем фонд зарплаты конкретного соучастника (ну где кликнули)
+  const result_array = JSON.parse(JSON.stringify(fund.list));
+  const sharer_hours_array = result_array.find(
+    (el) => el.userID == tempSetSharerHour.value.userID
+  );
+  // Находим у него часы по выбранной дате (клетка которую ткнули в таблице)
+  let obj = sharer_hours_array.hours.find(
+    (el) => el.date === tempSetSharerHour.value.date
+  );
+
+  // Если есть значения уже - меняем их
+  if (obj) {
+    obj.hours = String(tempSetSharerHour.value.hour);
+  } 
+  // Если нету - создаем и добавляем в массив дат
+  else {
+    sharer_hours_array.hours.push({
+      date: tempSetSharerHour.value.date,
+      hours: String(tempSetSharerHour.value.hour),
+    });
+  }
+
+  // обновляем в бд и обновляем переменные
+  await setUserFundList(currentFundID.value, result_array);
+  refreshSalaryFundArray();
+};
+
+// 
 
 const setRecievedStakeIndex = async (fundID, userID, fundList) => {
   alert(
@@ -1333,6 +1412,12 @@ watch(periodList, () => {
 .sharers-list_item-button:focus {
   color: unset;
   border: unset !important;
+}
+
+.temp-sharer-hour_container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 }
 /* TOGGLE TITLE */
 .toggle-title {
@@ -1644,7 +1729,7 @@ watch(periodList, () => {
     left: 0; */
   }
   .working-hours_wrapper tbody tr .working-hours_sharer {
-    color: red;
+    /* color: red; */
     /* position: sticky; */
   }
 }

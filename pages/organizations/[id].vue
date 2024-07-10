@@ -55,7 +55,77 @@
             >
               Сохранить
             </button>
-            <!-- @click="editUser(editedUser)" -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL SET STAKE INDEX -->
+    <div
+      class="modal fade"
+      id="setStakeIndexModal"
+      tabindex="-1"
+      aria-labelledby="setStakeIndexModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="setStakeIndexModalLabel">
+              Значение КТУ
+            </h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
+            <!-- {{tempSetStakeIndex}}
+            {{currentFundID}} -->
+            <div class="temp-sharer-stake-index_container">
+              <button
+                :disabled="tempSetStakeIndex.stake === 0"
+                @click="
+                  tempSetStakeIndex.stake = +(
+                    tempSetStakeIndex.stake - 0.1
+                  ).toFixed(2)
+                "
+              >
+                -
+              </button>
+              <div>{{ tempSetStakeIndex.stake }}</div>
+              <button
+                @click="
+                  tempSetStakeIndex.stake = +(
+                    tempSetStakeIndex.stake + 0.1
+                  ).toFixed(2)
+                "
+              >
+                +
+              </button>
+            </div>
+          </div>
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="setRecievedStakeIndexDB()"
+            >
+              Сохранить
+            </button>
           </div>
         </div>
       </div>
@@ -310,12 +380,6 @@
             )"
             :key="fund.id"
           >
-            <!-- <p>{{ fund.id }}</p> -->
-            <!-- <p>{{ fund.periodStart }}</p>
-            <p>{{ fund.periodEnd }}</p>
-            <p>wageRate: {{ fund.wageRate }}</p>
-            <p>band: {{ fund.bandID }}</p> -->
-
             <div v-if="fund.list.length">
               <!--  -->
               <div style="display: flex; align-items: center; gap: 1rem">
@@ -427,8 +491,14 @@
                             fund.list
                           )
                         "
-                        data-bs-toggle="modal"
-                        data-bs-target="#setSharerHourModal"
+                        :data-bs-toggle="
+                          organization.ownerID === user.id ? `modal` : ''
+                        "
+                        :data-bs-target="
+                          organization.ownerID === user.id
+                            ? `#setSharerHourModal`
+                            : ''
+                        "
                       >
                         <span>
                           {{
@@ -486,7 +556,20 @@
                     <!-- КТУ -->
                     <td
                       @click="
-                        setRecievedStakeIndex(fund.id, el.userID, fund.list)
+                        setRecievedStakeIndex(
+                          organization.ownerID,
+                          fund.id,
+                          el.userID,
+                          fund.list
+                        )
+                      "
+                      :data-bs-toggle="
+                        organization.ownerID === user.id ? 'modal' : ''
+                      "
+                      :data-bs-target="
+                        organization.ownerID === user.id
+                          ? '#setStakeIndexModal'
+                          : ''
                       "
                       class="recieved-data-to-change"
                     >
@@ -679,6 +762,11 @@ const tempSetSharerHour = ref({
   userID: null,
   date: "",
   hour: null,
+});
+// set stake index
+const tempSetStakeIndex = ref({
+  userID: null,
+  stake: null,
 });
 // currentFundList
 const currentFundID = ref();
@@ -888,6 +976,13 @@ onMounted(async () => {
       // console.log(tempSetSharerHour.value);
     });
   }
+  // close modal and reset data #setStakeIndexModal
+  const setStakeIndexModalEl = document.getElementById("setStakeIndexModal");
+  if (setStakeIndexModal) {
+    setStakeIndexModalEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #setStakeIndexModal закрыта");
+    });
+  }
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
   if (computedSalaryFund.value.length) {
     // Сортируем да дате окончания отчетного периода. Может имеет смысл добавить строку created_at и по ней сортировать???
@@ -1012,7 +1107,10 @@ const calcProductionSalary = (hours, stakeIndex, wageRate) => {
     let sumHours = sumSharerHours(hours);
 
     if (sumHours !== "-") {
-      return (sumHours * stakeIndex * wageRate).toFixed(2);
+      // return (sumHours * stakeIndex * wageRate).toFixed(2);
+      let calc = (sumHours * stakeIndex * wageRate).toFixed(2);
+      let calcTransform = new Intl.NumberFormat('ru-RU').format(calc)
+      return calcTransform
     } else {
       return "-";
     }
@@ -1040,9 +1138,12 @@ const sumAllProductionSalary = (wageRate, fundList) => {
 
     productionSalaryArray.push(sum);
   });
-  return productionSalaryArray
+
+  let calc = productionSalaryArray
     .reduce((acc, current) => (acc += current), 0)
     .toFixed(2);
+  let calcFormatted = new Intl.NumberFormat('ru-RU').format(calc)
+  return calcFormatted
 };
 
 // TRANSLATERS
@@ -1198,10 +1299,10 @@ const setRecievedSalary = () => {
 //   refreshSalaryFundArray();
 // };
 
-// setSharerHourAtDayDB
+// =============== set Sharer Hour At Day ======================
 const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, fundList) => {
   if (ownerID !== user.value.id) {
-    alert("Меня значение часов может только основатель банды...");
+    alert("Менять значение часов может только основатель банды...");
   } else {
     let obj = {
       id: null,
@@ -1232,7 +1333,6 @@ const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, fundList) => {
   }
 };
 const setSharerHourAtDayDB = async () => {
-
   // Получаем текущую строчку из БД salary
   let fund = [...computedSalaryFund.value].find(
     (item) => item.id === currentFundID.value
@@ -1250,7 +1350,7 @@ const setSharerHourAtDayDB = async () => {
   // Если есть значения уже - меняем их
   if (obj) {
     obj.hours = String(tempSetSharerHour.value.hour);
-  } 
+  }
   // Если нету - создаем и добавляем в массив дат
   else {
     sharer_hours_array.hours.push({
@@ -1264,23 +1364,54 @@ const setSharerHourAtDayDB = async () => {
   refreshSalaryFundArray();
 };
 
-// 
+// =============== set Recieved Stake Index ====================
+const setRecievedStakeIndex = async (ownerID, fundID, userID, fundList) => {
+  if (ownerID !== user.value.id) {
+    alert("Менять значение КТУ может только основатель банды...");
+  } else {
+    const result_array = JSON.parse(JSON.stringify(fundList));
+    const obj = result_array.find((el) => el.userID == userID);
 
-const setRecievedStakeIndex = async (fundID, userID, fundList) => {
-  alert(
-    `Установка значения STATE INDEX... в ФОТ id: ${fundID} для fund list user: ${userID}`
+    // let newStakeIndex = 0.7;
+
+    // obj.stakeIndex = String(newStakeIndex);
+
+    tempSetStakeIndex.value.userID = userID;
+    if (obj.stakeIndex !== "") {
+      tempSetStakeIndex.value.stake = +obj.stakeIndex;
+    } else {
+      tempSetStakeIndex.value.stake = 0;
+    }
+    // Передаем значение currentFundList
+    currentFundID.value = fundID;
+
+    // // обновляем в бд и обновляем переменные
+    // await setUserFundList(fundID, result_array);
+    // refreshSalaryFundArray();
+  }
+};
+const setRecievedStakeIndexDB = async () => {
+  // Получаем текущую строчку из БД salary
+  let fund = [...computedSalaryFund.value].find(
+    (item) => item.id === currentFundID.value
+  );
+  // Получаем фонд зарплаты конкретного соучастника (ну где кликнули)
+  const result_array = JSON.parse(JSON.stringify(fund.list));
+  const sharer_hours_obj = result_array.find(
+    (el) => el.userID == tempSetStakeIndex.value.userID
   );
 
-  const result_array = JSON.parse(JSON.stringify(fundList));
-  const obj = result_array.find((el) => el.userID == userID);
-
-  let newStakeIndex = 0.7;
-
-  obj.stakeIndex = String(newStakeIndex);
-
+  if(tempSetStakeIndex.value.stake !== 0) {
+    sharer_hours_obj.stakeIndex = String(tempSetStakeIndex.value.stake)
+  } else {
+    sharer_hours_obj.stakeIndex = ''
+  }
   // обновляем в бд и обновляем переменные
-  await setUserFundList(fundID, result_array);
+  await setUserFundList(currentFundID.value, result_array);
   refreshSalaryFundArray();
+  // console.log(currentFundID.value);
+  console.log(tempSetStakeIndex.value);
+  console.log(sharer_hours_obj);
 };
 
 // BD
@@ -1343,6 +1474,9 @@ watch(currentYear, () => {
 watch(periodList, () => {
   // console.log(choosenFundPeriod.value);
 });
+// watch(tempSetStakeIndex, () => {
+//   tempSetStakeIndex.value = Math.floor(tempSetStakeIndex.value, 2)
+// })
 </script>
 
 <style scoped>
@@ -1414,6 +1548,7 @@ watch(periodList, () => {
   border: unset !important;
 }
 
+.temp-sharer-stake-index_container,
 .temp-sharer-hour_container {
   display: flex;
   align-items: center;

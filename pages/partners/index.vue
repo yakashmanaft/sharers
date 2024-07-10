@@ -577,8 +577,8 @@ const editedUser = ref({
 });
 
 //
-const createCompanyBtnIsDisabled = ref(false);
-const createUserBtnIsDisabled = ref(false);
+const createCompanyBtnIsDisabled = ref(true);
+const createUserBtnIsDisabled = ref(true);
 
 // choosen title
 const titles = ref([
@@ -621,8 +621,9 @@ onMounted(() => {
       user.value.email = null;
       user.value.password = null;
       user.value.name = null;
-      (user.value.middleName = null), (user.value.surname = null);
-      (user.value.phone = null);
+      user.value.middleName = null; 
+      user.value.surname = null;
+      user.value.phone = null;
       user.value.groupStatus = null;
       user.value.role = "USER";
     });
@@ -661,9 +662,9 @@ const {
           name: user.name,
           middleName: user.middleName,
           surname: user.surname,
-          // phone: user.phone,
-          // role: user.role,
-          // groupStatus: user.groupStatus,
+          phone: user.phone,
+          role: user.role,
+          groupStatus: user.groupStatus,
           // created_at: user.created_at,
           // update_at: user.update_at,
         };

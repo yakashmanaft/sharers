@@ -30,12 +30,12 @@
                 :disabled="tempSetSharerHour.hour === 0"
                 @click="tempSetSharerHour.hour--"
               >
-                -
+                <span>-</span>
               </button>
 
               <div>{{ tempSetSharerHour.hour }}</div>
 
-              <button @click="tempSetSharerHour.hour++">+</button>
+              <button @click="tempSetSharerHour.hour++"><span>+</span></button>
             </div>
           </div>
           <!-- MODAL FOOTER -->
@@ -95,7 +95,7 @@
                   ).toFixed(2)
                 "
               >
-                -
+                <span>-</span>
               </button>
               <div>{{ tempSetStakeIndex.stake }}</div>
               <button
@@ -105,7 +105,7 @@
                   ).toFixed(2)
                 "
               >
-                +
+                <span>+</span>
               </button>
             </div>
           </div>
@@ -127,6 +127,62 @@
               Сохранить
             </button>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL SET WAGE RATE -->
+    <div       
+      class="modal fade"
+      id="setWageRateModal"
+      tabindex="-1"
+      aria-labelledby="setWageRateModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="setWageRateModalLabel">
+              Ставка в час
+            </h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
+            <!-- {{ tempSetWageRate }} -->
+            <!-- INPUT TEMP WAGE RATE -->
+            <div class="mb-3">
+              <label for="editedWageRate" class="form-label">Укажите стоимость ставки в час в рублях</label>
+              <input v-model="tempSetWageRate.rate" type="number" class="form-control" id="editedWageRate" aria-describedby="nameHelp">
+            </div>
+            <!-- <input type="number" v-model="tempSetWageRate.rate"> -->
+          </div>
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              :disabled="tempSetWageRate.rate === 0 || tempSetWageRate.rate ? false : true"
+              @click="setWageRateDB()"
+              >
+              <!-- @click="setSharerHourAtDayDB()" -->
+              Сохранить
+            </button>
+          </div> 
         </div>
       </div>
     </div>
@@ -309,7 +365,7 @@
     </div>
 
     <!-- ТАБЕЛЬ И ФОТ -->
-    <div v-if="computedUsersInBand" class="fund-hours_conrainer">
+    <div v-if="computedUsersInBand" class="fund-hours_container">
       <div v-if="computedSalaryFund.length !== 0">
         <!-- Фильтры просмотра ФОТ -->
         <div
@@ -383,13 +439,23 @@
             <div v-if="fund.list.length">
               <!--  -->
               <div style="display: flex; align-items: center; gap: 1rem">
+
                 <!-- Ставка -->
                 <div v-if="currentTitle === 'fund'" class="wage-rate_container">
                   <p>
                     <span style="color: var(--bs-tertiary-color)"
                       >Ставка:
                     </span>
-                    <span @click="setRecievedWageRate(fund.id, fund.wageRate)"
+                    <span 
+                      @click="setWageRate(organization.ownerID, fund.id, fund.wageRate)"
+                      :data-bs-toggle="
+                          organization.ownerID === user.id ? `modal` : ''
+                        "
+                        :data-bs-target="
+                          organization.ownerID === user.id
+                            ? `#setWageRateModal`
+                            : ''
+                        "
                       >{{ fund.wageRate }} руб./час</span
                     >
                   </p>
@@ -768,6 +834,11 @@ const tempSetStakeIndex = ref({
   userID: null,
   stake: null,
 });
+// set wage rate
+const tempSetWageRate = ref({
+  fundID: null,
+  rate: null
+})
 // currentFundList
 const currentFundID = ref();
 
@@ -978,10 +1049,18 @@ onMounted(async () => {
   }
   // close modal and reset data #setStakeIndexModal
   const setStakeIndexModalEl = document.getElementById("setStakeIndexModal");
-  if (setStakeIndexModal) {
+  if (setStakeIndexModalEl) {
     setStakeIndexModalEl.addEventListener("hidden.bs.modal", (event) => {
       console.log("Модалка #setStakeIndexModal закрыта");
     });
+  }
+  // close modal and reset data #setWageRateModal
+  const setWageRateModalEl = document.getElementById("setWageRateModal");
+  if(setWageRateModalEl) {
+    setWageRateModalEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #setWageRateModalEl закрыта");
+      tempSetWageRate.value.rate = null
+    })
   }
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
   if (computedSalaryFund.value.length) {
@@ -1266,16 +1345,30 @@ const refreshSalaryFundArray = async () => {
 
 // Установка значений Ставка, Часы, КТУ, ЗП к получению
 
-// SET WAGE RATE
-const setRecievedWageRate = async (fundID, wageRate) => {
-  alert(`Установка значения Ставки... фонд id: ${fundID}`);
+// =================== SET WAGE RATE ====================
+const setWageRate = async (ownerID, fundID, wageRate) => {
+  if(ownerID !== user.value.id) {
+    alert('Менять ставку может только основатель банды...')
+  } else {
+    console.log('доделать... setWageRate func')
 
-  let newWageRate = 1350;
+    tempSetWageRate.value.rate = +wageRate
+    tempSetWageRate.value.fundID = fundID
 
+  }
+  // alert(`Установка значения Ставки... фонд id: ${fundID}`);
+  
+  // let newWageRate = 1350;
+  
   // обновляем в бд и обновляем переменные
-  await setWageRate(fundID, newWageRate);
-  refreshSalaryFundArray();
+  // await setWageRate(fundID, newWageRate);
 };
+const setWageRateDB = async () => {
+  await setFundWageRate(tempSetWageRate.value.fundID, tempSetWageRate.value.rate)
+  refreshSalaryFundArray();
+  // console.log('отправляем данные в бД')
+  // setFundWageRate(tempSetWageRate.value.fundID, tempSetWageRate.value.rate)
+}
 
 // SET SALARY
 const setRecievedSalary = () => {
@@ -1416,7 +1509,7 @@ const setRecievedStakeIndexDB = async () => {
 
 // BD
 
-// HOURS
+// FUND LIST
 async function setUserFundList(salaryID, fundList) {
   let salaryFund;
 
@@ -1432,7 +1525,7 @@ async function setUserFundList(salaryID, fundList) {
 }
 
 // WAGE RATE
-async function setWageRate(salaryID, wageRate) {
+async function setFundWageRate(salaryID, wageRate) {
   let salaryFund;
   if (salaryID && wageRate) {
     salaryFund = await $fetch("/api/funds/salary", {
@@ -1504,7 +1597,7 @@ watch(periodList, () => {
 } */
 
 .sharers-list_wrapper {
-  margin-top: 1rem;
+  margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
@@ -1552,7 +1645,41 @@ watch(periodList, () => {
 .temp-sharer-hour_container {
   display: flex;
   align-items: center;
+  /* justify-content: center; */
   gap: 1rem;
+}
+
+.temp-sharer-hour_container button,
+.temp-sharer-stake-index_container button {
+  border: unset;
+  background-color: var(--bs-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  /* border-raaius: 100%; */
+}
+.temp-sharer-hour_container  div,
+.temp-sharer-stake-index_container div {
+  width: 3rem;
+  font-size: 2rem;
+  text-align: center;
+}
+
+.temp-sharer-hour_container  button:disabled,
+.temp-sharer-stake-index_container button:disabled {
+  background-color: var(--bs-tertiary-bg)
+}
+
+.temp-sharer-hour_container button:disabled span,
+.temp-sharer-stake-index_container button:disabled span {
+  color: var(--bs-secondary-bg)
+}
+
+.temp-sharer-hour_container  button span,
+.temp-sharer-stake-index_container button span {
+  color: var(--bs-body-bg)
 }
 /* TOGGLE TITLE */
 .toggle-title {
@@ -1619,8 +1746,8 @@ watch(periodList, () => {
   cursor: pointer;
   color: var(--bs-primary);
 }
-.fund-hours_conrainer {
-  margin-top: 1rem;
+.fund-hours_container {
+  margin-top: 2rem;
 }
 .filter-fund_wrapper {
   overflow-x: scroll;
@@ -1661,7 +1788,7 @@ watch(periodList, () => {
   color: var(--bs-body-bg);
 }
 .table-fund_container {
-  margin-top: 1rem;
+  margin-top: 2rem;
   /* padding-top: 1rem; */
   /* border-top: 1px solid var(--bs-border-color); */
 }
@@ -1830,7 +1957,7 @@ watch(periodList, () => {
   .sharers-list_wrapper {
     grid-template-columns: repeat(3, 1fr);
   }
-  /* .fund-hours_conrainer {
+  /* .fund-hours_container {
     margin-top: 1rem;
   } */
 }

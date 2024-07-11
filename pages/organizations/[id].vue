@@ -1188,7 +1188,7 @@ const calcProductionSalary = (hours, stakeIndex, wageRate) => {
     if (sumHours !== "-") {
       // return (sumHours * stakeIndex * wageRate).toFixed(2);
       let calc = (sumHours * stakeIndex * wageRate).toFixed(2);
-      let calcTransform = new Intl.NumberFormat('ru-RU').format(calc)
+      let calcTransform = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(calc)
       return calcTransform
     } else {
       return "-";
@@ -1221,7 +1221,7 @@ const sumAllProductionSalary = (wageRate, fundList) => {
   let calc = productionSalaryArray
     .reduce((acc, current) => (acc += current), 0)
     .toFixed(2);
-  let calcFormatted = new Intl.NumberFormat('ru-RU').format(calc)
+  let calcFormatted = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(calc)
   return calcFormatted
 };
 

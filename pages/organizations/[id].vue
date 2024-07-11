@@ -1,5 +1,12 @@
 <template>
   <Container style="padding-top: 5rem">
+    <!-- 
+      Status in Group (foreman - бригадир, sectionForeman - начальник
+      участка, worker - рабочий, leader - лидер), projectManager -
+      менеджер проекта (снабжение), hrOfficer (Кадровик), accountant -
+      бухгалтер, marketolog - маркетолог 
+    -->
+
     <!-- MODAL SET HOUR TO SHARER -->
     <div
       class="modal fade"
@@ -132,7 +139,7 @@
     </div>
 
     <!-- MODAL SET WAGE RATE -->
-    <div       
+    <div
       class="modal fade"
       id="setWageRateModal"
       tabindex="-1"
@@ -158,8 +165,16 @@
             <!-- {{ tempSetWageRate }} -->
             <!-- INPUT TEMP WAGE RATE -->
             <div class="mb-3">
-              <label for="editedWageRate" class="form-label">Укажите стоимость ставки в час в рублях</label>
-              <input v-model="tempSetWageRate.rate" type="number" class="form-control" id="editedWageRate" aria-describedby="nameHelp">
+              <label for="editedWageRate" class="form-label"
+                >Укажите стоимость ставки в час в рублях</label
+              >
+              <input
+                v-model="tempSetWageRate.rate"
+                type="number"
+                class="form-control"
+                id="editedWageRate"
+                aria-describedby="nameHelp"
+              />
             </div>
             <!-- <input type="number" v-model="tempSetWageRate.rate"> -->
           </div>
@@ -176,13 +191,13 @@
               type="button"
               class="btn btn-primary"
               data-bs-dismiss="modal"
-              :disabled="tempSetWageRate.rate === 0 || tempSetWageRate.rate ? false : true"
+              :disabled="tempSetWageRate.rate ? false : true"
               @click="setWageRateDB()"
-              >
+            >
               <!-- @click="setSharerHourAtDayDB()" -->
               Сохранить
             </button>
-          </div> 
+          </div>
         </div>
       </div>
     </div>
@@ -299,7 +314,7 @@
               <!-- Соучастники -->
               <div class="sharers-list_wrapper">
                 <div
-                  v-for="(user, index) in computedUsersInBand"
+                  v-for="(sharer, index) in computedUsersInBand"
                   class="sharers-list_item"
                 >
                   <!-- NAME -->
@@ -309,29 +324,38 @@
                       align-items: center;
                       justify-content: space-between;
                     "
-                    @click="$router.push(`/partners/${user.id}`)"
-                    class="link"
                   >
-                    <p style="margin: 0">
+                    <p
+                      style="margin: 0"
+                      class="link"
+                      @click="$router.push(`/partners/${sharer.id}`)"
+                    >
                       <span style="font-weight: bold; display: block">{{
-                        user.surname
+                        sharer.surname
                       }}</span>
-                      <span>{{ user.name }} {{ user.middleName }}</span>
+                      <span>{{ sharer.name }} {{ sharer.middleName }}</span>
                     </p>
 
-                    <Icon
-                      v-if="organization.ownerID === user.id"
-                      name="mdi:crown"
-                      size="24px"
-                      color="var(--bs-warning)"
-                    />
+                    <div style="display: flex; flex-direction: column; align-items: center;">
+                      <!-- ICON -->
+                      <Icon
+                        v-if="organization.ownerID === sharer.id"
+                        name="mdi:crown"
+                        size="24px"
+                        color="var(--bs-warning)"
+                      />
+                      <!-- Status -->
+                      <div style="font-size: 0.8rem; color: var(--bs-tertiary-color)" v-if="organization.ownerID === user.id">
+                        {{ sharer.groupStatus }}
+                      </div>
+                    </div>
                   </div>
 
                   <!-- PHONE -->
                   <div class="item_phone">
                     <!-- style="pointer-events: none;" -->
-                    <nuxt-link :to="`tel:${user.phone}`">{{
-                      user.phone
+                    <nuxt-link :to="`tel:${sharer.phone}`">{{
+                      sharer.phone
                     }}</nuxt-link>
                   </div>
                 </div>
@@ -439,23 +463,28 @@
             <div v-if="fund.list.length">
               <!--  -->
               <div style="display: flex; align-items: center; gap: 1rem">
-
                 <!-- Ставка -->
                 <div v-if="currentTitle === 'fund'" class="wage-rate_container">
                   <p>
                     <span style="color: var(--bs-tertiary-color)"
                       >Ставка:
                     </span>
-                    <span 
-                      @click="setWageRate(organization.ownerID, fund.id, fund.wageRate)"
+                    <span
+                      @click="
+                        setWageRate(
+                          organization.ownerID,
+                          fund.id,
+                          fund.wageRate
+                        )
+                      "
                       :data-bs-toggle="
-                          organization.ownerID === user.id ? `modal` : ''
-                        "
-                        :data-bs-target="
-                          organization.ownerID === user.id
-                            ? `#setWageRateModal`
-                            : ''
-                        "
+                        organization.ownerID === user.id ? `modal` : ''
+                      "
+                      :data-bs-target="
+                        organization.ownerID === user.id
+                          ? `#setWageRateModal`
+                          : ''
+                      "
                       >{{ fund.wageRate }} руб./час</span
                     >
                   </p>
@@ -837,8 +866,8 @@ const tempSetStakeIndex = ref({
 // set wage rate
 const tempSetWageRate = ref({
   fundID: null,
-  rate: null
-})
+  rate: null,
+});
 // currentFundList
 const currentFundID = ref();
 
@@ -1056,11 +1085,11 @@ onMounted(async () => {
   }
   // close modal and reset data #setWageRateModal
   const setWageRateModalEl = document.getElementById("setWageRateModal");
-  if(setWageRateModalEl) {
+  if (setWageRateModalEl) {
     setWageRateModalEl.addEventListener("hidden.bs.modal", (event) => {
       console.log("Модалка #setWageRateModalEl закрыта");
-      tempSetWageRate.value.rate = null
-    })
+      tempSetWageRate.value.rate = null;
+    });
   }
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
   if (computedSalaryFund.value.length) {
@@ -1188,8 +1217,11 @@ const calcProductionSalary = (hours, stakeIndex, wageRate) => {
     if (sumHours !== "-") {
       // return (sumHours * stakeIndex * wageRate).toFixed(2);
       let calc = (sumHours * stakeIndex * wageRate).toFixed(2);
-      let calcTransform = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(calc)
-      return calcTransform
+      let calcTransform = new Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "RUB",
+      }).format(calc);
+      return calcTransform;
     } else {
       return "-";
     }
@@ -1221,8 +1253,12 @@ const sumAllProductionSalary = (wageRate, fundList) => {
   let calc = productionSalaryArray
     .reduce((acc, current) => (acc += current), 0)
     .toFixed(2);
-  let calcFormatted = new Intl.NumberFormat('ru-RU', { style: 'currency', currency: 'RUB' }).format(calc)
-  return calcFormatted
+  let calcFormatted = new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+    // currencyDisplay: "code",
+  }).format(calc);
+  return calcFormatted;
 };
 
 // TRANSLATERS
@@ -1347,28 +1383,30 @@ const refreshSalaryFundArray = async () => {
 
 // =================== SET WAGE RATE ====================
 const setWageRate = async (ownerID, fundID, wageRate) => {
-  if(ownerID !== user.value.id) {
-    alert('Менять ставку может только основатель банды...')
+  if (ownerID !== user.value.id) {
+    alert("Менять ставку может только основатель банды...");
   } else {
-    console.log('доделать... setWageRate func')
+    console.log("доделать... setWageRate func");
 
-    tempSetWageRate.value.rate = +wageRate
-    tempSetWageRate.value.fundID = fundID
-
+    tempSetWageRate.value.rate = +wageRate;
+    tempSetWageRate.value.fundID = fundID;
   }
   // alert(`Установка значения Ставки... фонд id: ${fundID}`);
-  
+
   // let newWageRate = 1350;
-  
+
   // обновляем в бд и обновляем переменные
   // await setWageRate(fundID, newWageRate);
 };
 const setWageRateDB = async () => {
-  await setFundWageRate(tempSetWageRate.value.fundID, tempSetWageRate.value.rate)
+  await setFundWageRate(
+    tempSetWageRate.value.fundID,
+    tempSetWageRate.value.rate
+  );
   refreshSalaryFundArray();
   // console.log('отправляем данные в бД')
   // setFundWageRate(tempSetWageRate.value.fundID, tempSetWageRate.value.rate)
-}
+};
 
 // SET SALARY
 const setRecievedSalary = () => {
@@ -1494,10 +1532,10 @@ const setRecievedStakeIndexDB = async () => {
     (el) => el.userID == tempSetStakeIndex.value.userID
   );
 
-  if(tempSetStakeIndex.value.stake !== 0) {
-    sharer_hours_obj.stakeIndex = String(tempSetStakeIndex.value.stake)
+  if (tempSetStakeIndex.value.stake !== 0) {
+    sharer_hours_obj.stakeIndex = String(tempSetStakeIndex.value.stake);
   } else {
-    sharer_hours_obj.stakeIndex = ''
+    sharer_hours_obj.stakeIndex = "";
   }
   // обновляем в бд и обновляем переменные
   await setUserFundList(currentFundID.value, result_array);
@@ -1660,26 +1698,26 @@ watch(periodList, () => {
   height: 2rem;
   /* border-raaius: 100%; */
 }
-.temp-sharer-hour_container  div,
+.temp-sharer-hour_container div,
 .temp-sharer-stake-index_container div {
   width: 3rem;
   font-size: 2rem;
   text-align: center;
 }
 
-.temp-sharer-hour_container  button:disabled,
+.temp-sharer-hour_container button:disabled,
 .temp-sharer-stake-index_container button:disabled {
-  background-color: var(--bs-tertiary-bg)
+  background-color: var(--bs-tertiary-bg);
 }
 
 .temp-sharer-hour_container button:disabled span,
 .temp-sharer-stake-index_container button:disabled span {
-  color: var(--bs-secondary-bg)
+  color: var(--bs-secondary-bg);
 }
 
-.temp-sharer-hour_container  button span,
+.temp-sharer-hour_container button span,
 .temp-sharer-stake-index_container button span {
-  color: var(--bs-body-bg)
+  color: var(--bs-body-bg);
 }
 /* TOGGLE TITLE */
 .toggle-title {

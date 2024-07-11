@@ -23,7 +23,7 @@ model Users {
   phone       String?   @db.VarChar(15)
   role        Role      @default(USER)
   // groupID     Int?      @default(0)
-  groupStatus String?   @db.VarChar(255)
+  // groupStatus String?   @db.VarChar(255)
   created_at  DateTime  @default(now()) @db.DateTime(0)
   update_at   DateTime? @updatedAt
 }

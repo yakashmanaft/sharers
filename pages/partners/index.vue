@@ -81,7 +81,7 @@
               />
             </div>
             <!-- User Status In Group -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label for="editedUserStatusInGroup" class="form-label"
                 >Status in Group (foreman - бригадир, sectionForeman - начальник
                 участка, worker - рабочий, leader - лидер), projectManager -
@@ -95,7 +95,7 @@
                 id="editedUserStatusInGroup"
                 aria-describedby="nameHelp"
               />
-            </div>
+            </div> -->
           </div>
           <div class="modal-footer">
             <button
@@ -196,7 +196,7 @@
               />
             </div>
             <!-- USER STATUS IN GROUP -->
-            <div class="mb-3">
+            <!-- <div class="mb-3">
               <label for="userStatusInGroup" class="form-label"
                 >Status in Group (foreman - бригадир, sectionForeman - начальник
                 участка, worker - рабочий, leader - лидер), projectManager -
@@ -210,7 +210,7 @@
                 id="userStatusInGroup"
                 aria-describedby="nameHelp"
               />
-            </div>
+            </div> -->
             <!-- EMAIL -->
             <div class="mb-3">
               <label for="userEmail" class="form-label">Email</label>
@@ -442,10 +442,10 @@
                     editedUser.middleName = user.middleName;
                     editedUser.phone = user.phone;
                     editedUser.role = user.role;
-                    editedUser.groupStatus = user.groupStatus;
                   }
                 "
               >
+                    <!-- editedUser.groupStatus = user.groupStatus; -->
                 <Icon
                   class="item_icon icon_edit"
                   name="material-symbols-light:edit-note-outline-rounded"
@@ -552,7 +552,7 @@ const user = ref({
   middleName: null,
   surname: null,
   phone: null,
-  groupStatus: null,
+  // groupStatus: null,
   role: "USER",
 });
 
@@ -572,7 +572,7 @@ const editedUser = ref({
   middleName: null,
   phone: null,
   surname: null,
-  groupStatus: null,
+  // groupStatus: null,
   role: null,
 });
 
@@ -624,7 +624,7 @@ onMounted(() => {
       user.value.middleName = null; 
       user.value.surname = null;
       user.value.phone = null;
-      user.value.groupStatus = null;
+      // user.value.groupStatus = null;
       user.value.role = "USER";
     });
   }
@@ -664,7 +664,7 @@ const {
           surname: user.surname,
           phone: user.phone,
           role: user.role,
-          groupStatus: user.groupStatus,
+          // groupStatus: user.groupStatus,
           // created_at: user.created_at,
           // update_at: user.update_at,
         };
@@ -720,7 +720,7 @@ async function checkAndAddUser(user) {
       e.middleName === user.middleName &&
       e.surname === user.surname &&
       e.phone === user.phone &&
-      e.groupStatus === user.groupStatus &&
+      // e.groupStatus === user.groupStatus &&
       e.role === user.role
   );
 
@@ -740,7 +740,7 @@ async function checkAndAddUser(user) {
           middleName: user.middleName,
           surname: user.surname,
           phone: user.phone,
-          groupStatus: user.groupStatus,
+          // groupStatus: user.groupStatus,
           role: user.role,
         },
       });
@@ -838,7 +838,7 @@ async function editUser(editedUser) {
         middleName: editedUser.middleName,
         phone: editedUser.phone,
         role: editedUser.role,
-        groupStatus: editedUser.groupStatus,
+        // groupStatus: editedUser.groupStatus,
       },
     });
 
@@ -866,7 +866,7 @@ watch(user.value, () => {
     user.value.surname &&
     user.value.phone &&
     user.value.phone.length === 12 &&
-    user.value.groupStatus !== null &&
+    // user.value.groupStatus !== null &&
     user.value.role
   ) {
     createUserBtnIsDisabled.value = false;

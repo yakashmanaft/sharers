@@ -336,7 +336,13 @@
                       <span>{{ sharer.name }} {{ sharer.middleName }}</span>
                     </p>
 
-                    <div style="display: flex; flex-direction: column; align-items: center;">
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                      "
+                    >
                       <!-- ICON -->
                       <Icon
                         v-if="organization.ownerID === sharer.id"
@@ -345,7 +351,13 @@
                         color="var(--bs-warning)"
                       />
                       <!-- Status -->
-                      <div style="font-size: 0.8rem; color: var(--bs-tertiary-color)" v-if="organization.ownerID === user.id">
+                      <div
+                      v-if="organization.ownerID === user.id"
+                        style="
+                          font-size: 0.8rem;
+                          color: var(--bs-tertiary-color);
+                        "
+                      >
                         {{ sharer.groupStatus }}
                       </div>
                     </div>
@@ -933,9 +945,20 @@ const computedUsersInBand = computed(() => {
     if (indexArray.length) {
       indexArray.forEach((sharer) => {
         if (users.value) {
-          let userObj = [...users.value].find(
+          let part1 = [...users.value].find(
             (user) => user.id === sharer.userID
           );
+
+          let part2 = sharer
+          
+          let userObj = {
+            id: part1.id,
+            name: part1.name,
+            middleName: part1.middleName,
+            surname: part1.surname,
+            phone: part1.phone,
+            groupStatus: part2.groupStatus
+          }
 
           usersInBand.push(userObj);
         }

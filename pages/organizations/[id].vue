@@ -7,6 +7,55 @@
       бухгалтер, marketolog - маркетолог 
     -->
 
+    <!-- MODAL ADD SHARER TO SELECTED FUND LIST -->
+    <div
+      class="modal fade"
+      id="addSharerToFundModal"
+      tabindex="-1"
+      aria-labelledby="addSharerToFundModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="addSharerToFundModalLabel">
+              Добавляем соучастника в ФОТ
+            </h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
+            {{ currentFundID }}
+            {{ tempSelectedFund }}
+          </div>
+          <!-- MODAL FOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              <!-- @click="setSharerHourAtDayDB()" -->
+              Добавить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL SET HOUR TO SHARER -->
     <div
       class="modal fade"
@@ -470,7 +519,7 @@
             :key="fund.id"
           >
             <div v-if="fund.list.length">
-              <!--  -->
+              <!-- СТАВКА, СТАТУС -->
               <div
                 class="fund-options_container"
                 style="display: flex; align-items: center; gap: 1rem"
@@ -565,10 +614,22 @@
                         </p>
                         <div
                           @click="
-                            addSharerToFund(fund.list, organization.ownerID)
+                            addSharerToFund(
+                              fund.id,
+                              fund.list,
+                              organization.ownerID
+                            )
                           "
                           class="working-hours_add-sharer_btn"
                           v-if="organization.ownerID === user.id"
+                          :data-bs-toggle="
+                            organization.ownerID === user.id ? `modal` : ''
+                          "
+                          :data-bs-target="
+                            organization.ownerID === user.id
+                              ? `#addSharerToFundModal`
+                              : ''
+                          "
                         >
                           <Icon
                             name="material-symbols:add-rounded"
@@ -595,7 +656,8 @@
                   </thead>
                   <tbody>
                     <!-- Строки -->
-                    <tr v-for="(el, i) in fund.list">
+                    <tr v-for="(el, i) in sortFundSharer(fund.list)">
+                      <!-- {{el}} -->
                       <!-- № п/п -->
                       <td>{{ i + 1 }}.</td>
                       <!-- Соучастник -->
@@ -603,7 +665,9 @@
                         class="working-hours_sharer link"
                         @click="$router.push(`/partners/${el.userID}`)"
                       >
-                        {{ translateFundListUser(el.userID) }}
+                        <!-- {{ translateFundListUser(el.userID) }} -->
+                        {{ el.surname }} {{ el.name[0] }}.
+                        {{ el.middleName[0] }}
                       </td>
                       <td style="text-align: center; font-weight: bold">
                         {{ sumSharerHours(el.hours) }}
@@ -620,7 +684,7 @@
                             fund.id,
                             el.userID,
                             day.date,
-                            fund.list
+                            el.hours
                           )
                         "
                         :data-bs-toggle="
@@ -632,11 +696,7 @@
                             : ''
                         "
                       >
-                        <span>
-                          {{
-                            setWorkHourInToDay(day.date, fund.list, el.userID)
-                          }}</span
-                        >
+                        <span> {{ setWorkHourInDay(day.date, el.hours) }}</span>
                       </td>
                     </tr>
                     <tr>
@@ -672,9 +732,19 @@
                             <span>Соучастник</span>
                           </p>
                           <div
-                            @click="addSharerToFund(fund.list, organization.ownerID)"
+                            @click="
+                              addSharerToFund(fund.list, organization.ownerID)
+                            "
                             class="working-hours_add-sharer_btn"
                             v-if="organization.ownerID === user.id"
+                            :data-bs-toggle="
+                              organization.ownerID === user.id ? `modal` : ''
+                            "
+                            :data-bs-target="
+                              organization.ownerID === user.id
+                                ? `#addSharerToFundModal`
+                                : ''
+                            "
                           >
                             <Icon
                               name="material-symbols:add-rounded"
@@ -692,7 +762,10 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="(el, i) in fund.list" class="table-row_wrapper">
+                    <tr
+                      v-for="(el, i) in sortFundSharer(fund.list)"
+                      class="table-row_wrapper"
+                    >
                       <!-- № п/п -->
                       <td style="padding: unset; padding: 1rem 0">
                         {{ i + 1 }}.
@@ -703,8 +776,11 @@
                           style="width: 100%; text-align: start"
                           class="link"
                           @click="$router.push(`/partners/${el.userID}`)"
-                          >{{ translateFundListUser(el.userID) }}</span
                         >
+                          <!-- {{ translateFundListUser(el.userID) }} -->
+                          {{ el.surname }} {{ el.name[0] }}.
+                          {{ el.middleName[0] }}
+                        </span>
                       </td>
                       <!-- Отработано часов -->
                       <!-- @click="setRecievedHours(fund.id, el.userID, fund.list)" -->
@@ -718,7 +794,7 @@
                             organization.ownerID,
                             fund.id,
                             el.userID,
-                            fund.list
+                            el.stakeIndex
                           )
                         "
                         :data-bs-toggle="
@@ -916,6 +992,8 @@ const salaryFundArray = ref([]);
 // warehouse items
 const items = ref([]);
 
+// add sharer to selected fund list
+const tempSelectedFund = ref([]);
 // set hours obj
 const tempSetSharerHour = ref({
   userID: null,
@@ -985,8 +1063,7 @@ const computedPeriodList = computed(() => {
   }
 });
 
-// пользователи в организации, по ним ФОТ и рассчитывается...
-// Пользователи
+// Пользователи в банде
 const computedUsersInBand = computed(() => {
   if (organization.value) {
     let indexArray = organization.value.sharers.filter(
@@ -1077,6 +1154,45 @@ const computedOragnizationsInBand = computed(() => {
 //   },
 // });
 
+// ========================= SORT =========================
+
+// sort fund sharer by surname
+const sortFundSharer = (fundList) => {
+  if (fundList.length) {
+    //
+    let result_array = [];
+    //
+    fundList.forEach((el) => {
+      //
+      let sharerInFund = [...computedUsersInBand.value].find(
+        (user) => user.id === +el.userID
+      );
+
+      //
+      let result_sharer_obj = {
+        userID: sharerInFund.id,
+        name: sharerInFund.name,
+        middleName: sharerInFund.middleName,
+        surname: sharerInFund.surname,
+        hours: el.hours,
+        stakeIndex: el.stakeIndex,
+      };
+      // console.log(sharerInFund)
+      result_array.push(result_sharer_obj);
+    });
+
+    return result_array.sort((x, y) => {
+      if (x.surname < y.surname) {
+        return -1;
+      }
+
+      if (x.surname > y.surname) {
+        return 1;
+      }
+    });
+  }
+};
+
 onBeforeMount(async () => {
   // warehouse items
   items.value = await getWarehouseItems();
@@ -1143,6 +1259,14 @@ async function getAllUsers() {
 }
 
 onMounted(async () => {
+  // close modal and reset data #addSharerToFundModal
+  const addSharerToFundEl = document.getElementById("addSharerToFundModal");
+  if (addSharerToFundEl) {
+    addSharerToFundEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #addSharerToFundModal закрыта");
+      // console.log(tempSetSharerHour.value);
+    });
+  }
   // close modal and reset data #setSharerHourModal
   const sharerHourModalEl = document.getElementById("setSharerHourModal");
   if (sharerHourModalEl) {
@@ -1213,6 +1337,17 @@ const countedDays = (start, end) => {
     dayListArray.value = daylist;
     return daylist;
   }
+};
+
+const setWorkHourInDay = (dayDate, sharerHours) => {
+  let hour = "-";
+
+  sharerHours.forEach((item) => {
+    if (dayDate === item.date) {
+      +item.hours === 0 ? (hour = "-") : (hour = item.hours);
+    }
+  });
+  return hour;
 };
 
 const setWorkHourInToDay = (dayDate, fundList, userID) => {
@@ -1309,7 +1444,7 @@ const sumAllProductionSalary = (wageRate, fundList) => {
   let productionSalaryArray = [];
 
   fundList.forEach((item) => {
-    console.log(item);
+    // console.log(item);
 
     let sumHoursArray = [];
 
@@ -1363,15 +1498,15 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     }
   }
 };
-const translateFundListUser = (userID) => {
-  if (computedUsersInBand.value.length && userID) {
-    let usersArr = [...computedUsersInBand.value].filter(
-      (user) => user.id === +userID
-    );
+// const translateFundListUser = (userID) => {
+//   if (computedUsersInBand.value.length && userID) {
+//     let usersArr = [...computedUsersInBand.value].filter(
+//       (user) => user.id === +userID
+//     );
 
-    return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}.`;
-  }
-};
+//     return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}.`;
+//   }
+// };
 const translateDayOfWeek = (dayNumber) => {
   if (dayNumber === 0) {
     return "Вс";
@@ -1434,16 +1569,18 @@ const transformFundStatusDate = (statusDate) => {
 };
 
 // CHECK AND CREATE OR ADD
-const addSharerToFund = (funList, ownerID) => {
+const addSharerToFund = (fundID, fundList, ownerID) => {
   // Защитку так на всякий слуай, хотя м в рендере скрываем кнопку еще...
   if (+ownerID === user.value.id) {
-    alert("add sharer to fund... В разработке...");
-    console.log(funList);
+    // alert("add sharer to fund... В разработке...");
+    currentFundID.value = fundID;
+    tempSelectedFund.value = fundList;
+    // console.log(funList);
   } else {
     alert("Только орагнизатор банды может добавить соучастника к ФОТ");
   }
-  console.log(ownerID)
-  console.log(user.value.id)
+  // console.log(ownerID);
+  // console.log(user.value.id);
 };
 const inviteUserToBand = () => {
   alert("Приглашение соучастник... В разработке...");
@@ -1517,10 +1654,16 @@ const setRecievedSalary = () => {
 // };
 
 // =============== set Sharer Hour At Day ======================
-const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, fundList) => {
+const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, sharerHours) => {
   if (ownerID !== user.value.id) {
     alert("Менять значение часов может только основатель банды...");
   } else {
+    // console.log(ownerID);
+    // console.log(fundID);
+    // console.log(userID);
+    // console.log(dayDate);
+    // console.log(sharerHours);
+
     let obj = {
       id: null,
       date: "",
@@ -1528,16 +1671,16 @@ const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, fundList) => {
     };
     // let hour = 0;
 
-    [...fundList].forEach((item) => {
-      if (userID === item.userID) {
-        obj.id = +item.userID;
-        obj.date = dayDate;
+    // [...sharerHours].forEach((item) => {
+    //   if (userID === item.userID) {
 
-        item.hours.forEach((el) => {
-          if (dayDate === el.date) {
-            obj.hours = +el.hours;
-          }
-        });
+    //     }
+    // });
+    obj.id = userID;
+    obj.date = dayDate;
+    sharerHours.forEach((el) => {
+      if (dayDate === el.date) {
+        obj.hours = +el.hours;
       }
     });
 
@@ -1547,6 +1690,8 @@ const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, fundList) => {
     tempSetSharerHour.value.hour = obj.hours;
     // Передаем значение currentFundList
     currentFundID.value = fundID;
+
+    // console.log(obj);
   }
 };
 const setSharerHourAtDayDB = async () => {
@@ -1582,20 +1727,24 @@ const setSharerHourAtDayDB = async () => {
 };
 
 // =============== set Recieved Stake Index ====================
-const setRecievedStakeIndex = async (ownerID, fundID, userID, fundList) => {
+const setRecievedStakeIndex = async (ownerID, fundID, userID, stakeIndex) => {
   if (ownerID !== user.value.id) {
     alert("Менять значение КТУ может только основатель банды...");
   } else {
-    const result_array = JSON.parse(JSON.stringify(fundList));
-    const obj = result_array.find((el) => el.userID == userID);
+    // const obj = JSON.parse(JSON.stringify(sharerHours));
+    // const obj = result_array.find((el) => el.userID == userID);
 
+    // console.log(ownerID)
+    // console.log(fundID)
+    // console.log(userID)
+    // console.log(stakeIndex)
     // let newStakeIndex = 0.7;
 
     // obj.stakeIndex = String(newStakeIndex);
 
     tempSetStakeIndex.value.userID = userID;
-    if (obj.stakeIndex !== "") {
-      tempSetStakeIndex.value.stake = +obj.stakeIndex;
+    if (stakeIndex !== "") {
+      tempSetStakeIndex.value.stake = +stakeIndex;
     } else {
       tempSetStakeIndex.value.stake = 0;
     }

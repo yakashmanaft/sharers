@@ -248,9 +248,9 @@
           <!-- LIST -->
           <div>
             <!--  -->
-            <div v-if="computedOragnizationsInBand.length">
+            <div>
               <!-- title -->
-              <div v-if="computedUsersInBand?.length">
+              <div style="margin-top: 1rem;">
                 <p>Банды-соучастники</p>
               </div>
               <!-- Банды-соучастники -->
@@ -303,11 +303,10 @@
             </div>
 
             <!-- Соучастники-пользователи -->
-            <div v-if="computedUsersInBand?.length">
+            <div>
               <!-- title -->
               <div
                 style="margin-top: 1rem"
-                v-if="computedOragnizationsInBand.length"
               >
                 <p>Cоучастники</p>
               </div>
@@ -392,12 +391,12 @@
               </div>
             </div>
             <!--  -->
-            <div v-else>Соучастников не найдено</div>
+            <!-- <div v-else style="margin-top: 1rem;">Соучастников не найдено</div> -->
           </div>
         </div>
       </div>
 
-      <div v-else style="margin-top: 1rem">Нет соучастников</div>
+      <!-- <div v-else style="margin-top: 1rem">Нет соучастников</div> -->
     </div>
 
     <!-- ТАБЕЛЬ И ФОТ -->
@@ -474,7 +473,10 @@
           >
             <div v-if="fund.list.length">
               <!--  -->
-              <div class="fund-options_container" style="display: flex; align-items: center; gap: 1rem">
+              <div
+                class="fund-options_container"
+                style="display: flex; align-items: center; gap: 1rem"
+              >
                 <!-- Ставка -->
                 <div v-if="currentTitle === 'fund'" class="wage-rate_container">
                   <p>
@@ -551,8 +553,31 @@
                 >
                   <!-- Заголовки -->
                   <thead>
-                    <th scope="col">п/п</th>
-                    <th style="padding-right: 1rem">Соучастник</th>
+                    <th scope="col"><span>п/п</span></th>
+                    <th scope="col">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          justify-content: flex-start;
+                        "
+                      >
+                        <p style="margin: 0">
+                          <span>Соучастник</span>
+                        </p>
+                        <div
+                          @click="addSharerToFund(fund.list)"
+                          class="working-hours_add-sharer_btn"
+                          v-if="organization.ownerID === user.id"
+                        >
+                          <Icon
+                            name="material-symbols:add-rounded"
+                            size="32px"
+                            color="var(--bs-primary)"
+                          />
+                        </div>
+                      </div>
+                    </th>
                     <th class="working-hours_sum">Сумма<br />часов</th>
                     <th
                       v-for="day in countedDays(
@@ -562,7 +587,7 @@
                     >
                       <div>
                         <span>{{ day.date.slice(-2) }}</span>
-                        <span style="font-weight: normal">{{
+                        <span style="font-weight: normal; font-size: 0.8rem">{{
                           translateDayOfWeek(day.dayOfWeek)
                         }}</span>
                       </div>
@@ -632,9 +657,32 @@
                 <table class="table" v-if="currentTitle === 'fund'">
                   <thead class="item-table_header">
                     <tr>
-                      <th scope="col">п/п</th>
-                      <th scope="col" style="text-align: start">
-                        <span>Соучастник</span>
+                      <th style="padding: unset; padding: 1rem 0" scope="col">
+                        п/п
+                      </th>
+                      <th scope="col" style="pdding: unset">
+                        <div
+                          style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-start;
+                          "
+                        >
+                          <p style="margin: 0">
+                            <span>Соучастник</span>
+                          </p>
+                          <div
+                            @click="addSharerToFund(fund.list)"
+                            class="working-hours_add-sharer_btn"
+                            v-if="organization.ownerID === user.id"
+                          >
+                            <Icon
+                              name="material-symbols:add-rounded"
+                              size="32px"
+                              color="var(--bs-primary)"
+                            />
+                          </div>
+                        </div>
                       </th>
                       <th scope="col">Час</th>
                       <th scope="col">КТУ</th>
@@ -646,7 +694,9 @@
                   <tbody>
                     <tr v-for="(el, i) in fund.list" class="table-row_wrapper">
                       <!-- № п/п -->
-                      <td>{{ i + 1 }}.</td>
+                      <td style="padding: unset; padding: 1rem 0">
+                        {{ i + 1 }}.
+                      </td>
                       <!-- Соучастник -->
                       <td style="text-align: start">
                         <span
@@ -1383,7 +1433,11 @@ const transformFundStatusDate = (statusDate) => {
   }
 };
 
-// CHECK AND CREATE
+// CHECK AND CREATE OR ADD
+const addSharerToFund = (funList) => {
+  alert("add sharer to fund... В разработке...");
+  console.log(funList);
+};
 const inviteUserToBand = () => {
   alert("Приглашение соучастник... В разработке...");
 };
@@ -1660,7 +1714,7 @@ watch(periodList, () => {
 } */
 
 .sharers-list_wrapper {
-  margin-top: 2rem;
+  margin-top: 1rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
@@ -1891,7 +1945,7 @@ watch(periodList, () => {
   scrollbar-width: none;
 }
 .table_hours::-webkit-scrollbar,
-.table_fund::-webkit-scrollbar  {
+.table_fund::-webkit-scrollbar {
   display: none;
 }
 .working-hours_wrapper {
@@ -1899,7 +1953,7 @@ watch(periodList, () => {
 }
 
 .working-hours_wrapper thead {
-  border-bottom: 1px solid var(--bs-border-color);
+  border-bottom: 1px solid var(--bs-primary);
 }
 .working-hours_wrapper thead th {
   padding-bottom: 1rem;
@@ -1940,6 +1994,12 @@ watch(periodList, () => {
   /* position: fixed; */
   /* background-color: var(--bs-body-bg); */
 }
+.working-hours_add-sharer_btn {
+  margin: 0 1rem;
+}
+.working-hours_add-sharer_btn:hover {
+  cursor: pointer;
+}
 
 .hour-per-day_cell {
   cursor: pointer;
@@ -1963,10 +2023,15 @@ watch(periodList, () => {
   /* grid-template-columns: 60px 1fr 50px 50px 1fr 1fr 1fr; */
   /* border: unset!important */
 }
-.item-table_header tr,
+.item-table_header tr {
+   border-bottom: 1px solid var(	--bs-primary);
+}
 .table-row_wrapper:not(:last-child) {
   border-bottom: 1px solid var(--bs-border-color);
 }
+/* .item-table_header tr th {
+  
+} */
 .item-table_header tr th,
 .table-row_wrapper td {
   padding: 1rem;
@@ -1976,6 +2041,7 @@ watch(periodList, () => {
   align-items: center;
   justify-content: center; */
   text-align: center;
+  vertical-align: middle;
   border: unset;
   width: max-content;
 }

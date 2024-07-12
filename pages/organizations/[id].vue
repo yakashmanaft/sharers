@@ -250,7 +250,7 @@
             <!--  -->
             <div>
               <!-- title -->
-              <div style="margin-top: 1rem;">
+              <div style="margin-top: 1rem">
                 <p>Банды-соучастники</p>
               </div>
               <!-- Банды-соучастники -->
@@ -305,9 +305,7 @@
             <!-- Соучастники-пользователи -->
             <div>
               <!-- title -->
-              <div
-                style="margin-top: 1rem"
-              >
+              <div style="margin-top: 1rem">
                 <p>Cоучастники</p>
               </div>
               <!-- Соучастники -->
@@ -566,7 +564,9 @@
                           <span>Соучастник</span>
                         </p>
                         <div
-                          @click="addSharerToFund(fund.list)"
+                          @click="
+                            addSharerToFund(fund.list, organization.ownerID)
+                          "
                           class="working-hours_add-sharer_btn"
                           v-if="organization.ownerID === user.id"
                         >
@@ -672,7 +672,7 @@
                             <span>Соучастник</span>
                           </p>
                           <div
-                            @click="addSharerToFund(fund.list)"
+                            @click="addSharerToFund(fund.list, organization.ownerID)"
                             class="working-hours_add-sharer_btn"
                             v-if="organization.ownerID === user.id"
                           >
@@ -1434,9 +1434,16 @@ const transformFundStatusDate = (statusDate) => {
 };
 
 // CHECK AND CREATE OR ADD
-const addSharerToFund = (funList) => {
-  alert("add sharer to fund... В разработке...");
-  console.log(funList);
+const addSharerToFund = (funList, ownerID) => {
+  // Защитку так на всякий слуай, хотя м в рендере скрываем кнопку еще...
+  if (+ownerID === user.value.id) {
+    alert("add sharer to fund... В разработке...");
+    console.log(funList);
+  } else {
+    alert("Только орагнизатор банды может добавить соучастника к ФОТ");
+  }
+  console.log(ownerID)
+  console.log(user.value.id)
 };
 const inviteUserToBand = () => {
   alert("Приглашение соучастник... В разработке...");
@@ -2024,7 +2031,7 @@ watch(periodList, () => {
   /* border: unset!important */
 }
 .item-table_header tr {
-   border-bottom: 1px solid var(	--bs-primary);
+  border-bottom: 1px solid var(--bs-primary);
 }
 .table-row_wrapper:not(:last-child) {
   border-bottom: 1px solid var(--bs-border-color);

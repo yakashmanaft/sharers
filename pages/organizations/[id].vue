@@ -352,7 +352,7 @@
                       />
                       <!-- Status -->
                       <div
-                      v-if="organization.ownerID === user.id"
+                        v-if="organization.ownerID === user.id"
                         style="
                           font-size: 0.8rem;
                           color: var(--bs-tertiary-color);
@@ -474,7 +474,7 @@
           >
             <div v-if="fund.list.length">
               <!--  -->
-              <div style="display: flex; align-items: center; gap: 1rem">
+              <div class="fund-options_container" style="display: flex; align-items: center; gap: 1rem">
                 <!-- Ставка -->
                 <div v-if="currentTitle === 'fund'" class="wage-rate_container">
                   <p>
@@ -628,114 +628,116 @@
               </div>
 
               <!-- ФОТ -->
-              <table class="table" v-if="currentTitle === 'fund'">
-                <thead class="item-table_header">
-                  <tr>
-                    <th scope="col">п/п</th>
-                    <th scope="col" style="text-align: start">
-                      <span>Соучастник</span>
-                    </th>
-                    <th scope="col">Час</th>
-                    <th scope="col">КТУ</th>
-                    <th scope="col">Час * КТУ</th>
-                    <th scope="col">ЗП (Выработка)</th>
-                    <th scope="col">ЗП (К получению)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(el, i) in fund.list" class="table-row_wrapper">
-                    <!-- № п/п -->
-                    <td>{{ i + 1 }}.</td>
-                    <!-- Соучастник -->
-                    <td style="text-align: start">
-                      <span
-                        style="width: 100%; text-align: start"
-                        class="link"
-                        @click="$router.push(`/partners/${el.userID}`)"
-                        >{{ translateFundListUser(el.userID) }}</span
+              <div class="table_fund">
+                <table class="table" v-if="currentTitle === 'fund'">
+                  <thead class="item-table_header">
+                    <tr>
+                      <th scope="col">п/п</th>
+                      <th scope="col" style="text-align: start">
+                        <span>Соучастник</span>
+                      </th>
+                      <th scope="col">Час</th>
+                      <th scope="col">КТУ</th>
+                      <th scope="col">Час * КТУ</th>
+                      <th scope="col">ЗП (Выработка)</th>
+                      <th scope="col">ЗП (К получению)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="(el, i) in fund.list" class="table-row_wrapper">
+                      <!-- № п/п -->
+                      <td>{{ i + 1 }}.</td>
+                      <!-- Соучастник -->
+                      <td style="text-align: start">
+                        <span
+                          style="width: 100%; text-align: start"
+                          class="link"
+                          @click="$router.push(`/partners/${el.userID}`)"
+                          >{{ translateFundListUser(el.userID) }}</span
+                        >
+                      </td>
+                      <!-- Отработано часов -->
+                      <!-- @click="setRecievedHours(fund.id, el.userID, fund.list)" -->
+                      <td>
+                        <span>{{ sumSharerHours(el.hours) }}</span>
+                      </td>
+                      <!-- КТУ -->
+                      <td
+                        @click="
+                          setRecievedStakeIndex(
+                            organization.ownerID,
+                            fund.id,
+                            el.userID,
+                            fund.list
+                          )
+                        "
+                        :data-bs-toggle="
+                          organization.ownerID === user.id ? 'modal' : ''
+                        "
+                        :data-bs-target="
+                          organization.ownerID === user.id
+                            ? '#setStakeIndexModal'
+                            : ''
+                        "
+                        class="recieved-data-to-change"
                       >
-                    </td>
-                    <!-- Отработано часов -->
-                    <!-- @click="setRecievedHours(fund.id, el.userID, fund.list)" -->
-                    <td>
-                      <span>{{ sumSharerHours(el.hours) }}</span>
-                    </td>
-                    <!-- КТУ -->
-                    <td
-                      @click="
-                        setRecievedStakeIndex(
-                          organization.ownerID,
-                          fund.id,
-                          el.userID,
-                          fund.list
-                        )
-                      "
-                      :data-bs-toggle="
-                        organization.ownerID === user.id ? 'modal' : ''
-                      "
-                      :data-bs-target="
-                        organization.ownerID === user.id
-                          ? '#setStakeIndexModal'
-                          : ''
-                      "
-                      class="recieved-data-to-change"
-                    >
-                      <span v-if="el.stakeIndex">{{ el.stakeIndex }}</span>
-                      <span v-else>-</span>
-                    </td>
-                    <!-- Час * КТУ -->
-                    <td>
-                      <span v-if="el.stakeIndex !== '' && fund.list.length">
-                        <!-- {{ (el.hours * el.stakeIndex).toFixed(2) }} -->
-                        {{
-                          calcHourMultiplyStakeIndex(
-                            fund.list,
-                            el.hours,
-                            el.stakeIndex,
-                            el.userID
-                          )
-                        }}
-                      </span>
-                      <span v-else>-</span>
-                    </td>
-                    <!-- ЗП (выработка) -->
-                    <td>
-                      <span v-if="el.stakeIndex !== ''">
-                        {{
-                          calcProductionSalary(
-                            el.hours,
-                            el.stakeIndex,
-                            fund.wageRate
-                          )
-                        }}
-                      </span>
-                      <span v-else>-</span>
-                    </td>
-                    <!-- ЗП (к получению) -->
-                    <td
-                      @click="setRecievedSalary()"
-                      class="recieved-data-to-change"
-                    >
-                      <span>999 999 999,00</span>
-                    </td>
-                  </tr>
+                        <span v-if="el.stakeIndex">{{ el.stakeIndex }}</span>
+                        <span v-else>-</span>
+                      </td>
+                      <!-- Час * КТУ -->
+                      <td>
+                        <span v-if="el.stakeIndex !== '' && fund.list.length">
+                          <!-- {{ (el.hours * el.stakeIndex).toFixed(2) }} -->
+                          {{
+                            calcHourMultiplyStakeIndex(
+                              fund.list,
+                              el.hours,
+                              el.stakeIndex,
+                              el.userID
+                            )
+                          }}
+                        </span>
+                        <span v-else>-</span>
+                      </td>
+                      <!-- ЗП (выработка) -->
+                      <td>
+                        <span v-if="el.stakeIndex !== ''">
+                          {{
+                            calcProductionSalary(
+                              el.hours,
+                              el.stakeIndex,
+                              fund.wageRate
+                            )
+                          }}
+                        </span>
+                        <span v-else>-</span>
+                      </td>
+                      <!-- ЗП (к получению) -->
+                      <td
+                        @click="setRecievedSalary()"
+                        class="recieved-data-to-change"
+                      >
+                        <span>999 999 999,00</span>
+                      </td>
+                    </tr>
 
-                  <!-- Итого -->
-                  <tr class="table-row_wrapper">
-                    <td></td>
-                    <td></td>
-                    <td style="font-weight: bold">
-                      {{ sumTotalShareHours(fund.list) }}
-                    </td>
-                    <td></td>
-                    <td></td>
-                    <td style="font-weight: bold">
-                      {{ sumAllProductionSalary(fund.wageRate, fund.list) }}
-                    </td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>
+                    <!-- Итого -->
+                    <tr class="table-row_wrapper">
+                      <td></td>
+                      <td></td>
+                      <td style="font-weight: bold">
+                        {{ sumTotalShareHours(fund.list) }}
+                      </td>
+                      <td></td>
+                      <td></td>
+                      <td style="font-weight: bold">
+                        {{ sumAllProductionSalary(fund.wageRate, fund.list) }}
+                      </td>
+                      <td></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <!-- <p>{{ fund.list }}</p> -->
           </div>
@@ -949,16 +951,16 @@ const computedUsersInBand = computed(() => {
             (user) => user.id === sharer.userID
           );
 
-          let part2 = sharer
-          
+          let part2 = sharer;
+
           let userObj = {
             id: part1.id,
             name: part1.name,
             middleName: part1.middleName,
             surname: part1.surname,
             phone: part1.phone,
-            groupStatus: part2.groupStatus
-          }
+            groupStatus: part2.groupStatus,
+          };
 
           usersInBand.push(userObj);
         }
@@ -1883,11 +1885,13 @@ watch(periodList, () => {
 
 /* Таблица ФОТ */
 /* График учета часов работы */
-.table_hours {
+.table_hours,
+.table_fund {
   overflow-x: scroll;
   scrollbar-width: none;
 }
-.table_hours::-webkit-scrollbar {
+.table_hours::-webkit-scrollbar,
+.table_fund::-webkit-scrollbar  {
   display: none;
 }
 .working-hours_wrapper {
@@ -1992,7 +1996,8 @@ watch(periodList, () => {
     margin-right: 0.5rem;
   }
   .filter-fund_wrapper,
-  .toggle-title {
+  .toggle-title,
+  .fund-options_container {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }

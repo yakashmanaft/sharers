@@ -38,6 +38,25 @@ useHead({
     // Материалы
     // stuff
 
+    const trns_toggle_type = ref('all')
+    const trns_toggle_type_array = ref([
+        {
+            id: 1,
+            name: 'income',
+            translate: 'Доход'
+        },
+        {
+            id: 2,
+            name: 'expense',
+            translate: 'Расход'
+        },
+        {
+            id: 3,
+            name: 'invest',
+            translate: 'Инвестиции'
+        }
+    ])
+    
     const computedBank = computed(() => banks.value[0])
 
     const { pending, error, refresh, data: banks, status } = await useFetch("/api/banks/bank", {
@@ -46,6 +65,59 @@ useHead({
             return banks.filter(bank => bank.id === +route.params.id)
         }
     })
+
+    const computedBank_ledger = computed(() => transactions.value.filter(item => {
+        if(trns_toggle_type.value === 'all') {
+            return item
+        }
+        if(item.type === trns_toggle_type.value) {
+            return item.type === trns_toggle_type.value
+        }
+    }))
+
+    const { data: transactions } = await useFetch("/api/funds/partnerLedger", {
+        lazy: false,
+        transform: (trns) => {
+            return trns.filter(trn => trn.bankID === +route.params.id)
+        }
+    })
+
+    const computedBalance = computed(() => {
+        if(transactions.value.length) {
+
+            let result = 0
+
+            result = [...transactions.value].reduce((acc, current) => {
+                if(current.type === 'income') {
+
+                    return acc += current.price * current.qty
+                } else if (current.type === 'invest') {
+                    return acc -= current.price * current.qty
+                } else {
+                    return acc -= current.price * current.qty
+                }
+            }, 0)
+
+            return result
+        } else {
+            return 0
+        }
+    })
+
+    // TRANSFORM
+    const setTrnsSign = (type) => {
+        if(type) {
+            if(type === 'income') {
+                return '+'
+            }
+            if(type === 'expense') {
+                return '-'
+            }
+            if(type === 'invest') {
+                return '-'
+            }
+        }
+    }
 
 </script>
 
@@ -59,24 +131,85 @@ useHead({
         <div>
             {{ computedBank }}
         </div>
-        
-        <!-- Партнеры фонда -->
-        <div style="margin-top: 1rem;">
-            <div v-for="partner in computedBank.users">
-                {{ partner }}
-            </div>
-        </div>
 
         <!-- Дата создания -->
         <div style="margin-top: 1rem;">
             <p>Дата создания: {{ computedBank.created_at }}</p>
         </div>
+        
+        <!-- Партнеры фонда -->
+        <div style="margin-top: 1rem;">
+            <h2>Партнеры</h2>
+            <div v-for="partner in computedBank.users">
+                {{ partner }}
+            </div>
+        </div>
 
-        <h2>Подзаголовок</h2>
+        <!-- balance -->
+         <div>
+            <h2>{{ computedBalance }}</h2>
+            {{ transactions }}
+         </div>
+
+        <!-- current banks ledger -->
+        <div style="margin-top: 1rem;">
+            <h2>Операции</h2>
+            
+            <!-- Фильтры по транзакциям -->
+            <div class="filter-toggle-type_container">
+                <div class="filter-toggle-type_el">
+                    <input type="radio" name="trn-input" id="i-0" value="all" v-model="trns_toggle_type">
+                    <label for="i-0">Все</label>    
+                </div>
+                <div class="filter-toggle-type_el" v-for="(trn, i) in trns_toggle_type_array" :key="i">
+                    <input type="radio" name="trn-input" :id="i" :value="trn.name" v-model="trns_toggle_type">
+                    <label :for="i">{{ trn.translate }}</label>
+                </div>
+            </div>
+
+            <div v-if="computedBank_ledger.length">
+                <div v-for="transactionItem in computedBank_ledger">
+
+                    <div>
+                        <span>{{ setTrnsSign(transactionItem.type) }}</span>{{ transactionItem.price * transactionItem.qty }} {{ transactionItem.currency }}
+                        <span>{{ transactionItem.desc }}</span>
+                        <span> ({{ transactionItem.created_at }})</span>
+                        <span> ({{ transactionItem.authorType }}-{{transactionItem.authorID}})</span>
+                    </div>
+
+                </div>
+            </div>
+            <div v-else>
+                Нет историии транзакций
+            </div>
+        </div>
     </Container>
 </template>
 
 <style scoped>
+
+.filter-toggle-type_container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.filter-toggle-type_el input[type="radio"]{
+    opacity: 0;
+    position: fixed;
+    width: 0;
+}
+.filter-toggle-type_el label {
+  cursor: pointer;
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 16px;
+  background-color: var(--bs-border-color);
+  white-space: nowrap;
+}
+.filter-toggle-type_el input[type="radio"]:checked + label {
+  background-color: var(--bs-body-color);
+  color: var(--bs-body-bg);
+}
 
 @media screen and (max-width: 767px) {
     /* h1 {

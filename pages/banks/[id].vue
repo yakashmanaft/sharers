@@ -146,9 +146,8 @@ useHead({
         </div>
 
         <!-- balance -->
-         <div>
+         <div style="margin-top: 2rem;">
             <h2>{{ computedBalance }}</h2>
-            {{ transactions }}
          </div>
 
         <!-- current banks ledger -->

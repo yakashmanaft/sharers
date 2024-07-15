@@ -8,7 +8,6 @@ const router = useRouter();
 const burgerIsOpened = ref(false);
 const accountMenuIsOpened = ref(false);
 
-
 // FEATURES LISTS
 const featuresListAuth = ref([
   {
@@ -66,9 +65,9 @@ const featuresListNoAuth = ref([
   },
 ]);
 
-// 
+//
 onMounted(async () => {
-  console.log(useAuthStore().user)
+  console.log(useAuthStore().user);
 });
 
 const logout = () => {
@@ -94,14 +93,16 @@ const closeBurgerMenu = () => {
 
 // display link to modules if has access
 const userAccesedLink = (moduleName) => {
-  let userModulesArray = []
-  if(useAuthStore().user) {
-    useAuthStore().user.accessModules.forEach(item => userModulesArray.push(item.name))
+  let userModulesArray = [];
+  if (useAuthStore().user) {
+    useAuthStore().user.accessModules.forEach((item) =>
+      userModulesArray.push(item.name)
+    );
 
-    return userModulesArray.includes(moduleName)
+    return userModulesArray.includes(moduleName);
   }
   // return useAuthStore().user.id === 2
-}
+};
 
 const toggleAccountMenu = () => {
   accountMenuIsOpened.value = !accountMenuIsOpened.value;
@@ -149,6 +150,14 @@ const translateRoutePath = (path: string) => {
     let id = path.substr(startIndex + 1);
     return `Заявка #${id}`;
   }
+  // BANKS
+  else if (path === "/banks") {
+    return "Банки"
+  } else if (path.includes("/banks/")) {
+    let startIndex = path.lastIndexOf("/");
+    let id = path.substr(startIndex + 1);
+    return `Банк #${id}`;
+  }
   // WAREHOUSE
   else if (path === "/warehouse") {
     return "ТМЦ";
@@ -166,17 +175,16 @@ const translateRoutePath = (path: string) => {
     return `Банда #${id}`;
   }
   // LOCATIONS
-  else if (path.includes('/locations/')) {
+  else if (path.includes("/locations/")) {
     let startIndex = path.lastIndexOf("/");
     let id = path.substr(startIndex + 1);
-    return `Локация #${id}`
+    return `Локация #${id}`;
   }
   // ELSE
   else {
     return path;
   }
 };
-
 
 // WATCHERS
 watch(burgerIsOpened, () => {
@@ -237,7 +245,9 @@ watch(
           <!-- Back BTN -->
           <div
             class="back-btn"
-            v-if="prevPage !== null && route.path !== '/' && route.path !== '/login'"
+            v-if="
+              prevPage !== null && route.path !== '/' && route.path !== '/login'
+            "
             @click="router.go(-1)"
           >
             <Icon
@@ -275,16 +285,24 @@ watch(
               class="header-features__list"
               v-if="useAuthStore().loggedIn === true"
             >
-            <!-- .current-feature -->
-            <!-- :class="{'current-feature': route.path === '/dashboard'}" -->
-            <li
-            v-for="(item, index) in featuresListAuth"
-            @click="closeBurgerMenu"
+              <!-- .current-feature -->
+              <!-- :class="{'current-feature': route.path === '/dashboard'}" -->
+              <li
+                v-for="(item, index) in featuresListAuth"
+                @click="closeBurgerMenu"
               >
-                <router-link :to="`${item.path}`" :class="{'current-feature': route.path === item.path && route.path.includes('partners')}">{{ item.title }}</router-link>
+                <router-link
+                  :to="`${item.path}`"
+                  :class="{
+                    'current-feature':
+                      route.path === item.path &&
+                      route.path.includes('partners'),
+                  }"
+                  >{{ item.title }}</router-link
+                >
               </li>
-              
-              <li v-if="userAccesedLink('banks')">
+
+              <li v-if="userAccesedLink('banks')" @click="closeBurgerMenu">
                 <router-link to="/banks">banks</router-link>
               </li>
             </ul>
@@ -336,15 +354,19 @@ watch(
                     <!-- ПОльзвоательские кнопки -->
                     <div class="account-menu_user">
                       <div class="user_info">
-                        <router-link :to="`/partners/${useAuthStore().user.id}`" @click="closeBurgerMenu">
-                          <span style="font-weight: bold">{{ useAuthStore().user.surname}}</span>
+                        <router-link
+                          :to="`/partners/${useAuthStore().user.id}`"
+                          @click="closeBurgerMenu"
+                        >
+                          <span style="font-weight: bold">{{
+                            useAuthStore().user.surname
+                          }}</span>
                           <div class="user_name">
                             <span>{{ useAuthStore().user.name }}</span>
 
                             <span>{{ useAuthStore().user.middleName }}</span>
                           </div>
                         </router-link>
-                        
                       </div>
                       <div class="line"></div>
 
@@ -355,15 +377,6 @@ watch(
                             <span>Настройки аккаунта</span>
                           </router-link>
                         </div>
-                        <!--  -->
-                        <!-- <div>
-                          <router-link
-                            to="/partners/1"
-                            @click="closeBurgerMenu"
-                          >
-                            <span>Моя страница</span>
-                          </router-link>
-                        </div> -->
                       </div>
                       <!--  -->
                       <div class="user_logout">
@@ -464,12 +477,12 @@ a:visited {
 }
 .user_list a,
 .account-menu_user .user_info a {
-    background-color: unset!important;
-    color: var(--bs-primary)!important;
+  background-color: unset !important;
+  color: var(--bs-primary) !important;
 }
 .user_list a {
-  padding: unset!important;
-  padding-left: -1rem!important; 
+  padding: unset !important;
+  padding-left: -1rem !important;
 }
 .account-menu_user .user_name {
   display: flex;
@@ -575,12 +588,12 @@ a:visited {
     /* padding: 0.3rem!important; */
   }
 
-  .account-menu_user .user_list a.router-link-exact-active{
-    color: #fff!important;
-    background-color: green!important;
-    padding-left: 1rem!important;
+  .account-menu_user .user_list a.router-link-exact-active {
+    color: #fff !important;
+    background-color: green !important;
+    padding-left: 1rem !important;
     margin-left: -1rem;
-    padding: 0.3rem!important;
+    padding: 0.3rem !important;
   }
 
   .login_wrapper {
@@ -702,7 +715,6 @@ a:visited {
     flex-direction: column;
     gap: 0.5rem;
   }
-  
 
   .user_logout {
     margin-top: 1rem;

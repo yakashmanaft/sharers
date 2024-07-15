@@ -513,6 +513,8 @@ const createMyNewBand = () => {
 
 <template>
   <Container v-if="user">
+
+    <!-- PAGE TITLE -->
     <div class="page-title">
       <h1>
         <span style="font-weight: bold">{{ user.surname }} </span><br />
@@ -520,7 +522,8 @@ const createMyNewBand = () => {
       </h1>
     </div>
 
-    <div>
+    <!-- SHARER INFO -->
+    <div class="sharer-info_wrapper">
       <!-- PHONE -->
       <div class="item_phone">
         <!-- style="pointer-events: none;" -->
@@ -560,14 +563,7 @@ const createMyNewBand = () => {
       <!-- user is owner -->
       <div v-if="computedMyOrganizations.length" style="margin-top: 1rem">
         <!-- title -->
-        <div
-          style="
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-          "
-        >
+        <div class="org_title">
           <p style="margin: 0"><span>Организовал</span></p>
           <Icon name="mdi:crown" size="24px" color="var(--bs-warning)" />
         </div>
@@ -643,7 +639,7 @@ const createMyNewBand = () => {
       <!-- user is participant -->
       <div v-if="computedSharerOrganizations.length" style="margin-top: 1rem">
         <!-- Titie -->
-        <p><span>Соучастник в бандах:</span></p>
+        <p class="org_title"><span>Соучастник в бандах:</span></p>
 
         <div class="org_container">
           <!-- List -->
@@ -767,6 +763,9 @@ const createMyNewBand = () => {
 .page-title__btn-container span:hover {
   cursor: pointer;
 }
+.sharer-info_wrapper {
+  margin-top: 1rem;
+} 
 /* .btn__disabled {
   color: gray;
   opacity: 0.3;
@@ -802,6 +801,12 @@ const createMyNewBand = () => {
 }
 
 /*  */
+.org_title {
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
 .org_container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -836,6 +841,28 @@ const createMyNewBand = () => {
   border: unset !important;
 }
 
+@media screen and (max-width: 576px) {
+  .page-title {
+    margin: 0 1rem;
+    border: unset;
+  }
+  .sharer-info_wrapper {
+    margin: 0 1rem;
+  }
+  .toggle-title {
+    margin: 1rem 1rem 0 1rem;
+    padding: unset!important;
+    border: unset
+  }
+  .org_title {
+    margin-left: 1rem;
+  }
+  .org_container {
+    grid-template-columns: 1fr !important;
+    margin: 0 1rem;
+  }
+}
+
 @media screen and (max-width: 767px) {
   .page-title {
     margin-top: 4rem;
@@ -844,10 +871,16 @@ const createMyNewBand = () => {
     padding-left: 0.5rem;
     padding-right: 0.5rem;
   }
+  .org_container {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 @media screen and (min-width: 768px) and (max-width: 991px) {
   .page-title {
     margin-top: 6rem;
+  }
+  .org_container {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 </style>

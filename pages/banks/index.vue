@@ -1,20 +1,38 @@
 <template>
-  <Container>
+  <Container style="margin-top: 5rem">
     <!-- BANKS -->
-    <h2 style="margin-top: 6rem">Banks</h2>
+    <!-- <h1 class="show-max-767">Банки</h1> -->
 
-    <!-- Если есть банки в управлении или session user принимает участие  -->
-    <div v-if="computedBanks.length" class="items-container">
-      <div
-        class="item-wrapper"
-        @click="$router.push(`banks/${bank.id}`)"
-        v-for="bank in computedBanks"
-      >
-        <!-- Bank title -->
-        <p style="font-weight: bold">{{ bank.title }}</p>
+    <!-- TOGGLE TITLE -->
+    <div class="toggle-title">
+      <div v-for="(title, i) in titles" class="switch-title_el">
+        <input
+          type="radio"
+          :id="i"
+          :value="title.name"
+          v-model="currentTitle"
+        />
+        <label :for="i"
+          ><h1>{{ title.title }}</h1></label
+        >
+      </div>
+    </div>
 
-        <!-- Partners in Bank -->
-        <!-- <div style="display: flex; gap: 0.5rem;">
+    <!-- БАНКИ -->
+    <div v-if="currentTitle === 'banks'">
+      <!-- <h2 style="margin-top: 1rem">Банки</h2> -->
+      <!-- Если есть банки в управлении или session user принимает участие  -->
+      <div v-if="computedBanks.length" class="items-container">
+        <div
+          class="item-wrapper"
+          @click="$router.push(`banks/${bank.id}`)"
+          v-for="bank in computedBanks"
+        >
+          <!-- Bank title -->
+          <p style="font-weight: bold">{{ bank.title }}</p>
+
+          <!-- Partners in Bank -->
+          <!-- <div style="display: flex; gap: 0.5rem;">
           <div v-for="user in bank.users" style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 48px;">
             <div style="background-color: var(--bs-primary); width: 100%; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
               <span style="color: var(--bs-body-bg); font-weight: bold;">ЕП</span>
@@ -23,37 +41,40 @@
           </div>
         </div> -->
 
-        <!-- <p>{{ bank.users }}</p> -->
+          <!-- <p>{{ bank.users }}</p> -->
 
-        <!-- Balance -->
-        <div style="margin-top: 1rem">
-          <p>999 999 999,99 Р (Баланс)</p>
-          <p>000 000 000,00 Р (Долги)</p>
+          <!-- Balance -->
+          <div style="margin-top: 1rem">
+            <p>999 999 999,99 Р (Баланс)</p>
+            <p>000 000 000,00 Р (Долги)</p>
+          </div>
         </div>
       </div>
+      <!-- Если пусто -->
+      <div v-else>У вас нет банков</div>
     </div>
-    <!-- Если пусто -->
-    <div v-else>У вас нет банков</div>
 
     <!-- INVEST -->
-    <h2 style="margin-top: 1rem">Stock IMOEX/SPB invested</h2>
+    <div v-if="currentTitle === 'stock_invested'">
+      <!-- <h2 style="margin-top: 1rem">Stock IMOEX/SPB invested</h2> -->
 
-    <!-- Если есть фонды в управлении или session user принимает участие  -->
-    <div v-if="computedStockFunds.length" class="items-container">
-      <div
-        class="item-wrapper"
-        @click="$router.push(`funds/${fund.id}`)"
-        v-for="fund in computedStockFunds"
-      >
-        <p style="font-weight: bold">{{ fund.title }}</p>
-        <!-- <p>{{ fund.assets }}</p> -->
-        <p>{{ fund.stockBroker.title }}</p>
-        <p>{{ translateStockFundType(fund.accountType) }}</p>
-        <p>999 999 999,99 P (-999 999 999,99 P)</p>
+      <!-- Если есть фонды в управлении или session user принимает участие  -->
+      <div v-if="computedStockFunds.length" class="items-container">
+        <div
+          class="item-wrapper"
+          @click="$router.push(`funds/${fund.id}`)"
+          v-for="fund in computedStockFunds"
+        >
+          <p style="font-weight: bold">{{ fund.title }}</p>
+          <!-- <p>{{ fund.assets }}</p> -->
+          <p>{{ fund.stockBroker.title }}</p>
+          <p>{{ translateStockFundType(fund.accountType) }}</p>
+          <p>999 999 999,99 P (-999 999 999,99 P)</p>
+        </div>
       </div>
+      <!-- Если пусто -->
+      <div v-else>У вас нет фондов</div>
     </div>
-    <!-- Если пусто -->
-    <div v-else>У вас нет фондов</div>
 
     <br />
     <p>На сумму: {{ summaryWastedValue }}</p>
@@ -363,6 +384,20 @@ const bondsLedger = ref([
   },
 ]);
 
+// current choosen title
+const currentTitle = ref("banks");
+// choosen title
+const titles = ref([
+  {
+    title: "Банки",
+    name: "banks",
+  },
+  {
+    title: "Фонды IMOEX/SPB",
+    name: "stock_invested",
+  },
+]);
+
 const promtTicker = ref(null);
 
 // BANKS
@@ -548,9 +583,29 @@ useHead({
 </script>
 
 <style scoped>
+.toggle-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.switch-title_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.switch-title_el label h1 {
+  color: var(--bs-tertiary-color);
+}
+.switch-title_el label h1:hover {
+  cursor: pointer;
+}
+
+.switch-title_el input[type="radio"]:checked + label h1 {
+  color: unset;
+}
 .items-container {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
   margin-top: 1rem;
 }
@@ -563,5 +618,46 @@ useHead({
 .item-wrapper:hover {
   cursor: pointer;
   background-color: var(--bs-secondary-bg);
+}
+@media screen and (max-width: 575px) {
+  .items-container {
+    grid-template-columns: 1fr !important;
+    margin: 0 1rem;
+  }
+  .toggle-title {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+}
+@media screen and (min-width: 576px) and (max-width: 767px) {
+  .items-container {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+@media screen and (max-width: 767px) {
+  .show-max-767 {
+    display: none;
+  }
+  .items-container {
+    margin-top: 2rem;
+  }
+}
+@media screen and (min-width: 768px) and (max-width: 1199px){
+  .toggle-title {
+    margin-top: 6rem;
+  }
+}
+@media screen and (max-width: 991px) {
+  .items-container {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .items-container {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+  }
+  .toggle-title {
+    margin-top: 6rem;
+  }
 }
 </style>

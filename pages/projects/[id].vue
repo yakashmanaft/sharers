@@ -74,7 +74,7 @@ async function getItems() {
   <Container>
     <div v-if="project">
       <!-- <h1 style="margin-top: 5rem;">Проект {{ $route.params.id }}</h1> -->
-      <h1 style="margin-top: 5rem">Проект "{{ project.title }}"</h1>
+      <h1 style="margin-top: 5rem">{{ project.title }}</h1>
       <p>
         Вид работ: <span>{{ project.workType }}</span>
       </p>
@@ -90,7 +90,7 @@ async function getItems() {
       <!-- ТМЦ на проекте -->
       <div>
         <!--  -->
-        <h2>ТМЦ</h2>
+        <h2>ТМЦ в проекте</h2>
         <!--  -->
         <div v-if="items.length">
           <div v-for="(item, index) in items" :key="index">

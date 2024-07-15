@@ -9,11 +9,6 @@
         v-if="projects"
         class="dashboard-item"
         @click="router.push('/projects')"
-        style="
-          border: 1px solid rgba(0, 0, 0, 0.05);
-          padding: 1rem;
-          border-radius: 1rem;
-        "
       >
         <h2 class="dashboard-item_header">Текущие</h2>
         <div class="dashboard-item_indicator" v-if="projects">
@@ -26,11 +21,6 @@
         v-if="users"
         class="dashboard-item"
         @click="router.push('/partners')"
-        style="
-          border: 1px solid rgba(0, 0, 0, 0.05);
-          padding: 1rem;
-          border-radius: 1rem;
-        "
       >
         <h2 class="dashboard-item_header">Соучастники</h2>
         <div class="dashboard-item_indicator">
@@ -40,15 +30,21 @@
           </p>
 
           <!-- ORGANIZAATIONS -->
-          <div style="border-top: 1px solid var(--bs-border-color); margin-top: 1rem; padding-top: 1rem;">
-          
+          <div
+            style="
+              border-top: 1px solid var(--bs-border-color);
+              margin-top: 1rem;
+              padding-top: 1rem;
+            "
+          >
             <!-- ALL sevice organizations -->
             <p v-if="organizations">
               {{ organizations.length }} {{ transformEndingTheWord("банды") }}
             </p>
             <!-- My organizations -->
             <p v-if="organizations">
-              {{  computedMyOrganizations  }} организовал {{ computedSharerOrganizations }} соучаствую
+              {{ computedMyOrganizations }} организовал
+              {{ computedSharerOrganizations }} соучаствую
             </p>
           </div>
         </div>
@@ -59,11 +55,6 @@
         class="dashboard-item"
         v-if="demands"
         @click="router.push('/demands')"
-        style="
-          border: 1px solid rgba(0, 0, 0, 0.05);
-          padding: 1rem;
-          border-radius: 1rem;
-        "
       >
         <h2 class="dashboard-item_header">Заявки</h2>
         <!--  -->
@@ -105,7 +96,7 @@ import { Container } from "@/shared/container";
 
 const sessionUser = useUserSession().user;
 const router = useRouter();
-const route = useRoute()
+const route = useRoute();
 
 // HEADER
 useHead({
@@ -228,27 +219,32 @@ const demandsCount = () => {
 };
 
 const computedMyOrganizations = computed(() => {
-  if(organizations.value) {
-    let array = [...organizations.value].filter(organization => organization.ownerID === sessionUser.value.id)
-    return array.length
+  if (organizations.value) {
+    let array = [...organizations.value].filter(
+      (organization) => organization.ownerID === sessionUser.value.id
+    );
+    return array.length;
   }
-})
+});
 
 const computedSharerOrganizations = computed(() => {
-  if(organizations.value) {
-    let organizationsArrayWhereUserIs = []
+  if (organizations.value) {
+    let organizationsArrayWhereUserIs = [];
 
-    organizations.value.forEach(organization => {
-      organization.sharers.forEach(sharer => {
-        if(sharer.userType === 'user' && sharer.userID === sessionUser.value.id) {
-          organizationsArrayWhereUserIs.push(organization)
+    organizations.value.forEach((organization) => {
+      organization.sharers.forEach((sharer) => {
+        if (
+          sharer.userType === "user" &&
+          sharer.userID === sessionUser.value.id
+        ) {
+          organizationsArrayWhereUserIs.push(organization);
         }
-      })
-    })
+      });
+    });
 
-    return organizationsArrayWhereUserIs.length
+    return organizationsArrayWhereUserIs.length;
   }
-})
+});
 
 // TRANSFORMERS
 // Strings
@@ -313,6 +309,10 @@ const transformEndingTheWord = (string) => {
 }
 .dashboard-item {
   transition: all 0.2s ease-in;
+
+  border: 1px solid var(--bs-border-color);
+  padding: 1rem;
+  border-radius: 1rem;
 }
 .dashboard-item:hover {
   cursor: pointer;
@@ -323,9 +323,18 @@ const transformEndingTheWord = (string) => {
 }
 
 /*  */
-@media screen and (max-width: 585px) {
+@media screen and (max-width: 575px) {
+  .dashboard-container {
+    grid-template-columns: 1fr !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
+
 @media screen and (max-width: 767px) {
+  .dashboard-container {
+    grid-template-columns: 1fr 1fr;
+  }
   .max-width-585_hide {
     display: none;
   }

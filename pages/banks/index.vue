@@ -1,14 +1,17 @@
 <template>
   <Container>
-
     <!-- BANKS -->
     <h2 style="margin-top: 6rem">Banks</h2>
 
-    <div class="items-container">
-      <div class="item-wrapper" @click="$router.push(`banks/${bank.id}`)"  v-for="bank in banks">
-
+    <!-- Если есть банки в управлении или session user принимает участие  -->
+    <div v-if="computedBanks.length" class="items-container">
+      <div
+        class="item-wrapper"
+        @click="$router.push(`banks/${bank.id}`)"
+        v-for="bank in computedBanks"
+      >
         <!-- Bank title -->
-        <p style="font-weight: bold;">{{ bank.title }}</p>
+        <p style="font-weight: bold">{{ bank.title }}</p>
 
         <!-- Partners in Bank -->
         <!-- <div style="display: flex; gap: 0.5rem;">
@@ -23,30 +26,36 @@
         <!-- <p>{{ bank.users }}</p> -->
 
         <!-- Balance -->
-        <div style="margin-top: 1rem;">
-
+        <div style="margin-top: 1rem">
           <p>999 999 999,99 Р (Баланс)</p>
           <p>000 000 000,00 Р (Долги)</p>
         </div>
-
-
       </div>
     </div>
+    <!-- Если пусто -->
+    <div v-else>У вас нет банков</div>
 
     <!-- INVEST -->
-    <h2 style="margin-top: 1rem;">Stock IMOEX/SPB invested</h2>
-    <div class="items-container">
-      <div class="item-wrapper" @click="$router.push(`funds/${fund.id}`)" v-for="fund in stockFunds">
-        <p style="font-weight: bold;">{{ fund.title }}</p>
+    <h2 style="margin-top: 1rem">Stock IMOEX/SPB invested</h2>
+
+     <!-- Если есть фонды в управлении или session user принимает участие  -->
+    <div v-if="computedStockFunds.length" class="items-container">
+      <div
+        class="item-wrapper"
+        @click="$router.push(`funds/${fund.id}`)"
+        v-for="fund in computedStockFunds"
+      >
+        <p style="font-weight: bold">{{ fund.title }}</p>
         <!-- <p>{{ fund.assets }}</p> -->
         <p>{{ fund.stockBroker.title }}</p>
         <p>{{ translateStockFundType(fund.accountType) }}</p>
         <p>999 999 999,99 P (-999 999 999,99 P)</p>
       </div>
     </div>
+    <!-- Если пусто -->
+    <div v-else>У вас нет фондов</div>
 
-
-    <br>
+    <br />
     <p>На сумму: {{ summaryWastedValue }}</p>
     <ul>
       <li v-for="item in myBondsList">
@@ -90,8 +99,9 @@
 <script setup>
 import { Container } from "@/shared/container";
 
-// 
-const router = useRouter()
+//
+const router = useRouter();
+const sessionUser = useAuthStore().user;
 
 const myBondsList = ref([]);
 const testmyBondsList = ref([]);
@@ -354,6 +364,28 @@ const bondsLedger = ref([
 
 const promtTicker = ref(null);
 
+// BANKS
+const computedBanks = computed(() => {
+  let banksArray = [];
+
+  if (banks.value.length) {
+    [...banks.value].forEach((item) => {
+      // iamapartner
+      item.users.forEach((el) => {
+        if (el.partnerType === "user" && +el.partnerID === sessionUser.id) {
+          banksArray.push(item);
+        }
+      });
+      // iamacreator
+      if (+item.creatorID === sessionUser.id) {
+        banksArray.push(item);
+      }
+    });
+  }
+
+  return [...new Set(banksArray)];
+});
+
 const {
   pending,
   error,
@@ -375,9 +407,41 @@ const {
   },
 });
 
+// STOCK FUNDS
+const computedStockFunds = computed(() => {
+  let fundsArray = [];
+
+  if (stockFunds.value.length) {
+    [...stockFunds.value].forEach((item) => {
+      // iamapartner
+      item.partners.forEach((el) => {
+        if (el.partnerType === "user" && +el.partnerID === sessionUser.id) {
+          fundsArray.push(item);
+        }
+      });
+      // iamacreator
+      if (+item.creatorID === sessionUser.id) {
+        fundsArray.push(item);
+      }
+    });
+  }
+  return [...new Set(fundsArray)]
+});
+
 const { data: stockFunds } = await useFetch("/api/funds/partnerStockFunds", {
-  lazy: false
-})
+  lazy: false,
+  transform: (stockFunds) => {
+    return stockFunds.sort((x, y) => {
+      if (x.title < y.title) {
+        return -1;
+      }
+
+      if (x.title > y.title) {
+        return 1;
+      }
+    });
+  },
+});
 
 onMounted(() => {
   myBondsList.value = Object.values(
@@ -431,14 +495,14 @@ const parser = async () => {
 
 // Translaters
 const translateStockFundType = (type) => {
-  if(type) {
-    if(type === 'iia') {
-      return 'ИИС'
-    } else if (type === 'ba') {
-      return 'Брокерский счет'
+  if (type) {
+    if (type === "iia") {
+      return "ИИС";
+    } else if (type === "ba") {
+      return "Брокерский счет";
     }
   }
-}
+};
 
 useHead({
   title: "Банки и фонды соучастников",
@@ -464,20 +528,20 @@ useHead({
 </script>
 
 <style scoped>
- .items-container {
+.items-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 1rem;
   margin-top: 1rem;
- }
- .item-wrapper {
+}
+.item-wrapper {
   padding: 1rem;
-  border: 1px solid var(	--bs-border-color);
+  border: 1px solid var(--bs-border-color);
   border-radius: 16px;
   transition: all 0.15s ease-in;
- }
- .item-wrapper:hover {
+}
+.item-wrapper:hover {
   cursor: pointer;
   background-color: var(--bs-secondary-bg);
- }
+}
 </style>

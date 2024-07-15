@@ -272,7 +272,8 @@ watch(
               >
                 <router-link :to="`${item.path}`" :class="{'current-feature': route.path === item.path && route.path.includes('partners')}">{{ item.title }}</router-link>
               </li>
-              <li v-if="useAuthStore().user.id === 2">
+              <!-- v-if="useAuthStore().user.id === 2" -->
+              <li >
                 <router-link to="/banks">banks</router-link>
               </li>
             </ul>

@@ -92,6 +92,17 @@ const closeBurgerMenu = () => {
   }
 };
 
+// display link to modules if has access
+const userAccesedLink = (moduleName) => {
+  let userModulesArray = []
+  if(useAuthStore().user) {
+    useAuthStore().user.accessModules.forEach(item => userModulesArray.push(item.name))
+
+    return userModulesArray.includes(moduleName)
+  }
+  // return useAuthStore().user.id === 2
+}
+
 const toggleAccountMenu = () => {
   accountMenuIsOpened.value = !accountMenuIsOpened.value;
 };
@@ -272,8 +283,8 @@ watch(
               >
                 <router-link :to="`${item.path}`" :class="{'current-feature': route.path === item.path && route.path.includes('partners')}">{{ item.title }}</router-link>
               </li>
-              <!-- v-if="useAuthStore().user.id === 2" -->
-              <li >
+              
+              <li v-if="userAccesedLink('banks')">
                 <router-link to="/banks">banks</router-link>
               </li>
             </ul>

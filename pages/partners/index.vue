@@ -96,6 +96,56 @@
                 aria-describedby="nameHelp"
               />
             </div> -->
+            <!--  -->
+            <div class="mb-3">
+              <label class="form-label">Модули</label>
+              <div>
+                <label
+                  :for="`edited-module-${idx}`"
+                  v-for="(item, idx) in editedUser.accessModules"
+                >
+                  <input
+                    type="checkbox"
+                    :id="`edited-module-${idx}`"
+                    :name="`edited-module-${idx}`"
+                    :value="item"
+                    v-model="editedUser.accessModules"
+                  />
+                  {{ item.name }}
+                </label>
+
+                <!--  -->
+                <label
+                  v-for="(el, id) in accessModulesArray.filter((el) => {
+                    let modulesNames = [];
+                    editedUser.accessModules.forEach((item) =>
+                      modulesNames.push(item.name)
+                    );
+
+                    if (modulesNames.includes(el.name)) {
+                      return;
+                    } else {
+                      return el;
+                    }
+                  })"
+                  :for="`add-module-${id}`"
+                >
+                  <input
+                    type="checkbox"
+                    :id="`add-module-${id}`"
+                    :name="`add-module-${id}`"
+                    :value="{
+                      name: el.name,
+                      accessTo: '',
+                      accessFrom: '',
+                    }"
+                    v-model="editedUser.accessModules"
+                  />
+                  {{ el.name }}
+                </label>
+              </div>
+              {{ editedUser.accessModules }}
+            </div>
           </div>
           <div class="modal-footer">
             <button
@@ -211,6 +261,31 @@
                 aria-describedby="nameHelp"
               />
             </div> -->
+            <!--  -->
+            <div class="mb-3">
+              <label class="form-label">Модули</label>
+              <div>
+                <label
+                  :for="`module-${idx}`"
+                  v-for="(item, idx) in accessModulesArray"
+                >
+                  <input
+                    type="checkbox"
+                    :id="`module-${idx}`"
+                    :name="`module-${idx}`"
+                    :value="{
+                      name: item.name,
+                      accessTo: '',
+                      accessFrom: '',
+                    }"
+                    v-model="user.accessModules"
+                  />
+                  {{ item.name }}
+                </label>
+              </div>
+
+              {{ user.accessModules }}
+            </div>
             <!-- EMAIL -->
             <div class="mb-3">
               <label for="userEmail" class="form-label">Email</label>
@@ -421,10 +496,15 @@
                   @click="$router.push(`/partners/${user.id}`)"
                 >
                   <span style="font-weight: bold">{{ user.surname }}</span>
-                  {{ user.name }} {{ user.middleName }}
+                  {{ user.name }} {{ user.middleName }} 
+
+                  <!-- accessed modules fo users -->
+                  <div style="display: flex; flex-direction: column;">
+
+                  <div v-for="moduleObj in user.accessModules" style="font-size: 0.8rem;" v-if="sessionUser.role === 'SUPER_ADMIN'">{{ moduleObj }}</div>
+                  </div>
                 </p>
               </div>
-
             </div>
 
             <!-- ATCTION ICONS -->
@@ -442,10 +522,11 @@
                     editedUser.middleName = user.middleName;
                     editedUser.phone = user.phone;
                     editedUser.role = user.role;
+                    editedUser.accessModules = user.accessModules;
                   }
                 "
               >
-                    <!-- editedUser.groupStatus = user.groupStatus; -->
+                <!-- editedUser.groupStatus = user.groupStatus; -->
                 <Icon
                   class="item_icon icon_edit"
                   name="material-symbols-light:edit-note-outline-rounded"
@@ -498,12 +579,12 @@
             v-for="(companyItem, index) in computedOrganizations"
             class="list_item"
           >
-          <!-- Наименование -->
-          <div class="org_label">
-            <p @click="$router.push(`/organizations/${companyItem.id}`)">
-              {{ companyItem.title }}
-            </p>
-          </div>
+            <!-- Наименование -->
+            <div class="org_label">
+              <p @click="$router.push(`/organizations/${companyItem.id}`)">
+                {{ companyItem.title }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -543,6 +624,18 @@ import { v4 as uuidv4 } from "uuid";
 const sessionUser = useUserSession().user;
 const router = useRouter();
 
+const accessModulesArray = ref([
+  {
+    name: "banks",
+  },
+  {
+    name: "warehouse",
+  },
+  {
+    name: "projects",
+  },
+]);
+
 // Шаблон нового user'a
 const user = ref({
   uuid: null,
@@ -552,6 +645,7 @@ const user = ref({
   middleName: null,
   surname: null,
   phone: null,
+  accessModules: [],
   // groupStatus: null,
   role: "USER",
 });
@@ -572,6 +666,7 @@ const editedUser = ref({
   middleName: null,
   phone: null,
   surname: null,
+  accessModules: [],
   // groupStatus: null,
   role: null,
 });
@@ -595,6 +690,9 @@ const currentTitle = ref("sharers");
 
 const searchInput = ref("");
 const searchOrganizationsInput = ref("");
+
+// accessed modules
+const tempModulesArray = ref([]);
 
 onMounted(() => {
   // users.value = await getUsers()
@@ -621,9 +719,10 @@ onMounted(() => {
       user.value.email = null;
       user.value.password = null;
       user.value.name = null;
-      user.value.middleName = null; 
+      user.value.middleName = null;
       user.value.surname = null;
       user.value.phone = null;
+      user.value.accessModules = [];
       // user.value.groupStatus = null;
       user.value.role = "USER";
     });
@@ -658,12 +757,13 @@ const {
       .map((user) => {
         return {
           id: user.id,
-          // email: user.email,
+          email: user.email,
           name: user.name,
           middleName: user.middleName,
           surname: user.surname,
           phone: user.phone,
           role: user.role,
+          accessModules: user.accessModules,
           // groupStatus: user.groupStatus,
           // created_at: user.created_at,
           // update_at: user.update_at,
@@ -718,12 +818,12 @@ async function checkAndAddUser(user) {
       // e.password === user.password &&
       e.name === user.name &&
       e.middleName === user.middleName &&
-      e.surname === user.surname &&
-      e.phone === user.phone &&
-      // e.groupStatus === user.groupStatus &&
-      e.role === user.role
+      e.surname === user.surname
+    // e.phone === user.phone
+    // e.accessModules === user.accessModules && тут такто массив...
+    // e.groupStatus === user.groupStatus &&
+    // e.role === user.role
   );
-
   if (compareUser) {
     alert("Соучастник уже есть");
   } else {
@@ -740,6 +840,7 @@ async function checkAndAddUser(user) {
           middleName: user.middleName,
           surname: user.surname,
           phone: user.phone,
+          accessModules: user.accessModules,
           // groupStatus: user.groupStatus,
           role: user.role,
         },
@@ -758,8 +859,8 @@ async function checkAndCreateCompany(company) {
     alert("Банда с таким именем уже существует!");
   } else {
     let addedCompany = null;
-    
-    let sharers = []
+
+    let sharers = [];
     // sharers.push({
     //   userID: sessionUser.value.id,
     //   userType: 'user'
@@ -772,7 +873,7 @@ async function checkAndCreateCompany(company) {
           uuid: uuidv4(),
           title: company.title,
           ownerID: sessionUser.value.id,
-          sharers: sharers
+          sharers: sharers,
         },
       });
     // reset company comst
@@ -838,6 +939,7 @@ async function editUser(editedUser) {
         middleName: editedUser.middleName,
         phone: editedUser.phone,
         role: editedUser.role,
+        accessModules: editedUser.accessModules,
         // groupStatus: editedUser.groupStatus,
       },
     });
@@ -849,7 +951,7 @@ async function editUser(editedUser) {
 // WATHERS
 
 watch(company.value, () => {
-  console.log(company.value.title);
+  // console.log(company.value.title);
   if (company.value.title) {
     createCompanyBtnIsDisabled.value = false;
   } else {
@@ -857,7 +959,7 @@ watch(company.value, () => {
   }
 });
 watch(user.value, () => {
-  console.log(user.value);
+  // console.log(user.value);
   if (
     user.value.email &&
     user.value.password &&
@@ -867,12 +969,19 @@ watch(user.value, () => {
     user.value.phone &&
     user.value.phone.length === 12 &&
     // user.value.groupStatus !== null &&
+    user.value.accessModules.length > 0 &&
     user.value.role
   ) {
     createUserBtnIsDisabled.value = false;
   } else {
     createUserBtnIsDisabled.value = true;
   }
+});
+watch(editedUser.value, () => {
+  // let modulesArray = editedUser.value.accessModules
+  // let modulesNames = []
+  // modulesArray.forEach(item => modulesArray.push(item.name))
+  // console.log(tempModulesArray.value)
 });
 
 useHead({
@@ -984,9 +1093,9 @@ useHead({
   margin: 0;
   font-weight: bold;
 }
-.org_label:hover p{
+.org_label:hover p {
   color: var(--bs-primary);
-  cursor:pointer;
+  cursor: pointer;
 }
 /* .org_desc {
 

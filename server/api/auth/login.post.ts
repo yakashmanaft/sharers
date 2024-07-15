@@ -12,7 +12,8 @@ export default defineEventHandler(async (event) => {
         surname: body.surname,
         name: body.name,
         middleName: body.middleName,
-        role: body.role
+        role: body.role,
+        accessModules: body.accessModules
     }
     // const user = {
     //     event.context.body,

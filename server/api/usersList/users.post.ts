@@ -16,7 +16,8 @@ export default defineEventHandler(async (event) => {
         middleName: body.middleName,
         surname: body.surname,
         phone: body.phone,
-        groupStatus: body.groupStatus,
+        // groupStatus: body.groupStatus,
+        accessModules: body.accessModules,
         role: body.role
       },
     }).then((response) => {

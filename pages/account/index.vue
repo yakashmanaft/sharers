@@ -177,6 +177,44 @@
             </div>
           </div>
         </div>
+
+        <!-- MANAGE MODULES -->
+        <div>
+          <!-- Button trigger modal -->
+          <button
+            type="button"
+            class="btn btn-primary"
+            data-bs-toggle="modal"
+            data-bs-target="#manageSubscribeModal"
+          >
+            Управление подпиской
+          </button>
+          <!-- Modal -->
+          <div
+            class="modal fade"
+            id="manageSubscribeModal"
+            tabindex="-1"
+            aria-labelledby="manageSubscribeModal"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <form class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="manageSubscribeModal">
+                    Управление подпиской
+                  </h1>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">123</div>
+              </form>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- waiting for a data -->

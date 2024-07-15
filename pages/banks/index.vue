@@ -38,7 +38,7 @@
     <!-- INVEST -->
     <h2 style="margin-top: 1rem">Stock IMOEX/SPB invested</h2>
 
-     <!-- Если есть фонды в управлении или session user принимает участие  -->
+    <!-- Если есть фонды в управлении или session user принимает участие  -->
     <div v-if="computedStockFunds.length" class="items-container">
       <div
         class="item-wrapper"
@@ -98,6 +98,7 @@
 
 <script setup>
 import { Container } from "@/shared/container";
+import { onBeforeMount } from "vue";
 
 //
 const router = useRouter();
@@ -425,7 +426,7 @@ const computedStockFunds = computed(() => {
       }
     });
   }
-  return [...new Set(fundsArray)]
+  return [...new Set(fundsArray)];
 });
 
 const { data: stockFunds } = await useFetch("/api/funds/partnerStockFunds", {
@@ -441,6 +442,25 @@ const { data: stockFunds } = await useFetch("/api/funds/partnerStockFunds", {
       }
     });
   },
+});
+
+onBeforeMount(() => {
+  // console.log(sessionUser)
+
+  if (sessionUser) {
+    let userModulesArray = [];
+    sessionUser.accessModules.forEach((item) =>
+      userModulesArray.push(item.name)
+    );
+
+    if (userModulesArray.includes("banks")) {
+      return;
+    } else {
+      alert("У вас нет подписки на данный модуль");
+
+      router.push("/");
+    }
+  }
 });
 
 onMounted(() => {

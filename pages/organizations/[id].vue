@@ -299,7 +299,10 @@
             <!--  -->
             <div>
               <!-- title -->
-              <div style="margin-top: 1rem">
+              <div v-if="!computedOragnizationsInBand.length && organization.ownerID !== user.id" style="margin-top: 1rem">
+                <p>В составе нет банд</p>
+              </div>
+              <div v-else style="margin-top: 1rem">
                 <p>Банды-соучастники</p>
               </div>
               <!-- Банды-соучастники -->
@@ -354,7 +357,10 @@
             <!-- Соучастники-пользователи -->
             <div>
               <!-- title -->
-              <div style="margin-top: 1rem">
+              <div v-if="!computedUsersInBand.length && organization.ownerID !== user.id" style="margin-top: 1rem">
+                <p>В банде нет соучастников</p>
+              </div>
+              <div v-else style="margin-top: 1rem">
                 <p>Cоучастники</p>
               </div>
               <!-- Соучастники -->

@@ -31,11 +31,10 @@
           </div>
           <!-- MODAL BODY -->
           <div class="modal-body">
-            bandID: {{organization.id}}
-            <br>
+            bandID: {{ $route.params.id }}
+            <br />
             tempNewFund: {{ tempNewFund }}
-            
-            </div>
+          </div>
           <!-- MODAL FOOTER -->
           <div class="modal-footer">
             <button
@@ -83,7 +82,7 @@
           <!-- MODAL BODY -->
           <div class="modal-body">
             currentFundID: {{ currentFundID }}
-            <br>
+            <br />
             Добавляем к этому массиву: {{ tempSelectedFund }}
           </div>
           <!-- MODAL FOTER -->
@@ -1702,6 +1701,10 @@ const inviteBandToBand = () => {
 const checkAndAddFund = (ownerID) => {
   // ownerID
   if (ownerID === user.value.id) {
+    if (organization.value) {
+      tempNewFund.value.bandID = +route.params.id;
+      console.log(tempNewFund.value);
+    }
   } else {
     alert("Только основатель банды может добавлять ФОТ");
   }

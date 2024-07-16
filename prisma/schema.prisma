@@ -107,28 +107,31 @@ model Projects {
 }
 
 model Banks {
-  id         Int       @id @default(autoincrement())
-  title      String?   @db.VarChar(255)
-  creatorID  Int       @default(0)
-  users      Json
-  created_at DateTime  @default(now()) @db.DateTime(0)
-  update_at  DateTime? @updatedAt
+  id              Int       @id @default(autoincrement())
+  title           String?   @db.VarChar(255)
+  creatorID       Int       @default(0)
+  users           Json
+  walletBank      Json?
+  created_at      DateTime  @default(now()) @db.DateTime(0)
+  update_at       DateTime? @updatedAt
 }
 
 // type: expense / income / invest
 // authorType: user / company
 // currency: 'RUB'
 model BanksLedger {
-  id         Int      @id @default(autoincrement())
-  type       String   @db.VarChar(60)
-  desc       String   @db.VarChar(255)
-  authorID   Int      @default(0)
-  authorType String   @db.VarChar(60)
-  bankID     Int      @default(0)
-  price      Float?   @default(0.00)
-  qty        Float?   @default(0.00)
-  currency   String?  @db.VarChar(60)
-  created_at DateTime @default(now()) @db.DateTime(0)
+  id                      Int      @id @default(autoincrement())
+  type                    String   @db.VarChar(60)
+  appointment             String   @db.VarChar(255)
+  appointmentTarget       String?  @db.VarChar(255)
+  authorID                Int      @default(0)
+  authorType              String   @db.VarChar(60)
+  bankID                  Int      @default(0)
+  price                   Float?   @default(0.00)
+  qty                     Float?   @default(0.00)
+  currency                String?  @db.VarChar(60)
+  walletBank              Json?
+  created_at              DateTime @default(now()) @db.DateTime(0)
 }
 
 model BanksStockInvestFunds {

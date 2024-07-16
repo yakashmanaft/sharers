@@ -170,10 +170,11 @@ useHead({
                 <div v-for="transactionItem in computedBank_ledger">
 
                     <div>
-                        <span>{{ setTrnsSign(transactionItem.type) }}</span>{{ transactionItem.price * transactionItem.qty }} {{ transactionItem.currency }}
-                        <span>{{ transactionItem.desc }}</span>
-                        <span> ({{ transactionItem.created_at }})</span>
-                        <span> ({{ transactionItem.authorType }}-{{transactionItem.authorID}})</span>
+                        <span>{{ setTrnsSign(transactionItem.type) }}</span>{{ transactionItem.price * transactionItem.qty }} {{ transactionItem.currency }} -
+                        <span>{{ transactionItem.appointment }} - {{transactionItem.appointmentTarget}}</span>
+                        <span> - ({{ transactionItem.created_at }})</span>
+                        <span> - ({{ transactionItem.authorType }}-{{transactionItem.authorID}})</span>
+                        <span>{{transactionItem.walletBank}}</span>
                     </div>
 
                 </div>

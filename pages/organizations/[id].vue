@@ -7,6 +7,57 @@
       бухгалтер, marketolog - маркетолог 
     -->
 
+    <!-- MODAL ADD NEW FUND -->
+    <div
+      class="modal fade"
+      id="addNewFundModal"
+      tabindex="-1"
+      aria-labelledby="addNewFundModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="addNewFundModalLabel">
+              Добавляем новый ФОТ
+            </h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
+            bandID: {{organization.id}}
+            <br>
+            tempNewFund: {{ tempNewFund }}
+            
+            </div>
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              <!-- @click="setSharerHourAtDayDB()" -->
+              Добавить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- MODAL ADD SHARER TO SELECTED FUND LIST -->
     <div
       class="modal fade"
@@ -31,8 +82,9 @@
           </div>
           <!-- MODAL BODY -->
           <div class="modal-body">
-            {{ currentFundID }}
-            {{ tempSelectedFund }}
+            currentFundID: {{ currentFundID }}
+            <br>
+            Добавляем к этому массиву: {{ tempSelectedFund }}
           </div>
           <!-- MODAL FOTER -->
           <div class="modal-footer">
@@ -299,7 +351,13 @@
             <!--  -->
             <div>
               <!-- title -->
-              <div v-if="!computedOragnizationsInBand.length && organization.ownerID !== user.id" style="margin-top: 1rem">
+              <div
+                v-if="
+                  !computedOragnizationsInBand.length &&
+                  organization.ownerID !== user.id
+                "
+                style="margin-top: 1rem"
+              >
                 <p>В составе нет банд</p>
               </div>
               <div v-else style="margin-top: 1rem">
@@ -357,7 +415,13 @@
             <!-- Соучастники-пользователи -->
             <div>
               <!-- title -->
-              <div v-if="!computedUsersInBand.length && organization.ownerID !== user.id" style="margin-top: 1rem">
+              <div
+                v-if="
+                  !computedUsersInBand.length &&
+                  organization.ownerID !== user.id
+                "
+                style="margin-top: 1rem"
+              >
                 <p>В банде нет соучастников</p>
               </div>
               <div v-else style="margin-top: 1rem">
@@ -500,10 +564,15 @@
             <!-- data-bs-toggle="modal"
             data-bs-target="#newWarehouseItemModal" -->
             <button
+              v-if="organization.ownerID === user.id"
+              :data-bs-toggle="organization.ownerID === user.id ? `modal` : ''"
+              :data-bs-target="
+                organization.ownerID === user.id ? `#addNewFundModal` : ''
+              "
               style="border-radius: 16px; padding: 4px 10px"
               type="button"
               class="btn btn-primary btn-create-modal-open-767"
-              @click="checkAndAddFund()"
+              @click="checkAndAddFund(organization.ownerID)"
             >
               <span>Добавить</span>
             </button>
@@ -1018,6 +1087,34 @@ const tempSetWageRate = ref({
 });
 // currentFundList
 const currentFundID = ref();
+// new fund
+const tempNewFund = ref({
+  // id: auto increment
+  bandID: 0,
+  periodStart: "2024-07-16",
+  periodEnd: "2024-07-31",
+  wageRate: 0,
+  list: [
+    {
+      hours: [
+        {
+          date: "2023-02-01",
+          hours: "",
+        },
+        {
+          date: "2023-02-02",
+          hours: "",
+        },
+      ],
+      userID: 1,
+      stakeIndex: 1.1,
+    },
+  ],
+  status: {
+    date: "",
+    status: "working",
+  },
+});
 
 // COMPUTED
 const computedSalaryFund = computed(() => {
@@ -1265,6 +1362,14 @@ async function getAllUsers() {
 }
 
 onMounted(async () => {
+  // close and reser data #addNewFundModal
+  const addNewFundEl = document.getElementById("addNewFundModal");
+  if (addNewFundEl) {
+    addNewFundEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #addNewFundModal закрыта");
+      // console.log(tempSetSharerHour.value);
+    });
+  }
   // close modal and reset data #addSharerToFundModal
   const addSharerToFundEl = document.getElementById("addSharerToFundModal");
   if (addSharerToFundEl) {
@@ -1594,8 +1699,26 @@ const inviteUserToBand = () => {
 const inviteBandToBand = () => {
   alert("Приглашениее банды в банду... В разработке...");
 };
-const checkAndAddFund = () => {
-  alert("В разработке...");
+const checkAndAddFund = (ownerID) => {
+  // ownerID
+  if (ownerID === user.value.id) {
+  } else {
+    alert("Только основатель банды может добавлять ФОТ");
+  }
+
+  //   const addSharerToFund = (fundID, fundList, ownerID) => {
+  //   // Защитку так на всякий слуай, хотя м в рендере скрываем кнопку еще...
+  //   if (+ownerID === user.value.id) {
+  //     // alert("add sharer to fund... В разработке...");
+  //     currentFundID.value = fundID;
+  //     tempSelectedFund.value = fundList;
+  //     // console.log(funList);
+  //   } else {
+  //     alert("Только орагнизатор банды может добавить соучастника к ФОТ");
+  //   }
+  //   // console.log(ownerID);
+  //   // console.log(user.value.id);
+  // };
 };
 
 // REFRESH

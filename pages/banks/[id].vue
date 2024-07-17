@@ -234,6 +234,8 @@ const setTrnsSign = (type) => {
         </div>
         <div v-else>Нет историии транзакций</div>
       </div>
+
+      <br>
     </div>
   </Container>
 </template>

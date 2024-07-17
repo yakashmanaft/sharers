@@ -137,7 +137,7 @@
                     :value="{
                       name: el.name,
                       accessTo: '',
-                      accessFrom: '',
+                      accessFrom: today,
                     }"
                     v-model="editedUser.accessModules"
                   />
@@ -276,7 +276,7 @@
                     :value="{
                       name: item.name,
                       accessTo: '',
-                      accessFrom: '',
+                      accessFrom: today,
                     }"
                     v-model="user.accessModules"
                   />
@@ -624,6 +624,9 @@ import { v4 as uuidv4 } from "uuid";
 const sessionUser = useUserSession().user;
 const router = useRouter();
 
+// 
+const today = ref(new Date())
+
 const accessModulesArray = ref([
   {
     name: "banks",
@@ -830,6 +833,7 @@ async function checkAndAddUser(user) {
     let addedUser = null;
 
     if (user)
+
       addedUser = await $fetch("api/usersList/users", {
         method: "POST",
         body: {

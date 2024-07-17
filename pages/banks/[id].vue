@@ -106,7 +106,13 @@ const computedBalance = computed(() => {
       }
     }, 0);
 
-    return result;
+  let calcFormatted = new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+    // currencyDisplay: "code",
+  }).format(result);
+
+    return calcFormatted;
   } else {
     return 0;
   }
@@ -213,9 +219,10 @@ const setTrnsSign = (type) => {
 
             <!-- APPOINTMENT, APPOINTMENT TARGET -->
             <div>
-              <span>{{ transactionItem.appointment }}</span>
+              <span>{{ transactionItem.type }} - </span>
+              <span>{{ transactionItem.appointment }} - </span>
               <span>{{ transactionItem.appointmentTarget }}</span>
-              <span v-if="transactionItem.desc">{{transactionItem.desc}}</span>
+              <span v-if="transactionItem.desc"> - {{transactionItem.desc}}</span>
             </div>
 
             <!-- AUTHOR of trsn -->
@@ -270,7 +277,7 @@ const setTrnsSign = (type) => {
 
 .transaction-item_wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
 }
 
 @media screen and (max-width: 767px) {

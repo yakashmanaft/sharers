@@ -62,7 +62,7 @@
       <div v-if="computedStockFunds.length" class="items-container">
         <div
           class="item-wrapper"
-          @click="$router.push(`funds/${fund.id}`)"
+          @click="$router.push(`fundstock/${fund.id}`)"
           v-for="fund in computedStockFunds"
         >
           <p style="font-weight: bold">{{ fund.title }}</p>

@@ -654,12 +654,16 @@ const accessModulesArray = ref([
   //   translate: "Места"
   // },
   {
+    name: "funds",
+    translate: "Фонды",
+  },
+  {
     name: "banks",
     translate: "Банки",
   },
   {
-    name: "funds",
-    translate: "Фонды",
+    name: "stock funds",
+    translate: "Биржы",
   },
 ]);
 
@@ -978,8 +982,10 @@ async function editUser(editedUser) {
 // TRANSLATE
 const translateModuleName = (name) => {
   if (accessModulesArray.value) {
-    let accessModule = [...accessModulesArray.value].find(item => item.name === name)
-    return accessModule.translate
+    let accessModule = [...accessModulesArray.value].find(
+      (item) => item.name === name
+    );
+    return accessModule.translate;
   } else {
     return name;
   }

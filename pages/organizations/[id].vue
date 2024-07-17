@@ -521,7 +521,9 @@
         <!-- Фильтры просмотра ФОТ -->
         <div
           v-if="
-            currentTitle !== 'sharers' && currentTitle !== 'warehouse-items'
+            currentTitle !== 'sharers' &&
+            currentTitle !== 'warehouse-items' &&
+            currentTitle !== 'funds'
           "
           class="filter-fund_wrapper"
           style="display: flex; align-items: center; gap: 1rem"
@@ -953,6 +955,12 @@
       </div>
     </div>
 
+    <!-- ФОНДЫ организации -->
+    <div v-if="currentTitle === 'funds'">
+      <nuxt-link to="/fundbands/1">к Фондам</nuxt-link>
+      <div>Нет фондов...</div>
+    </div>
+
     <!-- ТМЦ организации -->
     <div v-if="currentTitle === 'warehouse-items'">
       <div v-if="items.length">
@@ -1037,6 +1045,10 @@ const titles = ref([
   {
     title: "Таблица ФОТ",
     name: "fund",
+  },
+  {
+    title: "Фонды",
+    name: "funds",
   },
   {
     title: "ТМЦ",

@@ -473,6 +473,10 @@ const titles = ref([
     title: "Банды",
     name: "organizations",
   },
+    {
+    title: "Фонды",
+    name: "funds",
+  },
   {
     title: "ТМЦ",
     name: "warehouse-items",
@@ -717,6 +721,12 @@ const createMyNewBand = () => {
           >.
         </p>
       </div>
+    </div>
+
+    <!-- ФОНДЫ соучастника или банды, к которым допущен соучастник -->
+    <div v-if="currentTitle === 'funds'">
+      <nuxt-link to="/fundsharers/1">Фонд</nuxt-link>
+      <div>Нет фондов</div>
     </div>
 
     <!-- ТМЦ соучастника-->

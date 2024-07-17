@@ -99,9 +99,10 @@
             <!--  -->
             <div class="mb-3">
               <label class="form-label">Модули</label>
-              <div>
-                <label
-                  :for="`edited-module-${idx}`"
+              <div class="access-module_container">
+                <!-- Подключены соучастнику -->
+                <div
+                  class="access-module_el"
                   v-for="(item, idx) in editedUser.accessModules"
                 >
                   <input
@@ -111,11 +112,14 @@
                     :value="item"
                     v-model="editedUser.accessModules"
                   />
-                  {{ item.name }}
-                </label>
+                  <label :for="`edited-module-${idx}`">
+                    {{ translateModuleName(item.name) }}
+                  </label>
+                </div>
 
-                <!--  -->
-                <label
+                <!-- Какие еще есть в сервисе и не подключены у соучастника -->
+                <div
+                  class="access-module_el"
                   v-for="(el, id) in accessModulesArray.filter((el) => {
                     let modulesNames = [];
                     editedUser.accessModules.forEach((item) =>
@@ -128,7 +132,6 @@
                       return el;
                     }
                   })"
-                  :for="`add-module-${id}`"
                 >
                   <input
                     type="checkbox"
@@ -141,10 +144,12 @@
                     }"
                     v-model="editedUser.accessModules"
                   />
-                  {{ el.name }}
-                </label>
+                  <label :for="`add-module-${id}`">
+                    {{ el.translate }}
+                  </label>
+                </div>
               </div>
-              {{ editedUser.accessModules }}
+              <!-- {{ editedUser.accessModules }} -->
             </div>
           </div>
           <div class="modal-footer">
@@ -264,9 +269,9 @@
             <!--  -->
             <div class="mb-3">
               <label class="form-label">Модули</label>
-              <div>
-                <label
-                  :for="`module-${idx}`"
+              <div class="access-module_container">
+                <div
+                  class="access-module_el"
                   v-for="(item, idx) in accessModulesArray"
                 >
                   <input
@@ -280,11 +285,11 @@
                     }"
                     v-model="user.accessModules"
                   />
-                  {{ item.name }}
-                </label>
+                  <label :for="`module-${idx}`">{{ item.translate }}</label>
+                </div>
               </div>
 
-              {{ user.accessModules }}
+              <!-- {{ user.accessModules }} -->
             </div>
             <!-- EMAIL -->
             <div class="mb-3">
@@ -496,14 +501,18 @@
                   @click="$router.push(`/partners/${user.id}`)"
                 >
                   <span style="font-weight: bold">{{ user.surname }}</span>
-                  {{ user.name }} {{ user.middleName }} 
-
-                  <!-- accessed modules fo users -->
-                  <div style="display: flex; flex-direction: column;">
-
-                  <div v-for="moduleObj in user.accessModules" style="font-size: 0.8rem;" v-if="sessionUser.role === 'SUPER_ADMIN'">{{ moduleObj }}</div>
-                  </div>
+                  {{ user.name }} {{ user.middleName }}
                 </p>
+                <!-- accessed modules fo users -->
+                <div style="display: flex; flex-direction: column">
+                  <div
+                    v-for="moduleObj in user.accessModules"
+                    style="font-size: 0.8rem"
+                    v-if="sessionUser.role === 'SUPER_ADMIN'"
+                  >
+                    {{ moduleObj }}
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -624,18 +633,33 @@ import { v4 as uuidv4 } from "uuid";
 const sessionUser = useUserSession().user;
 const router = useRouter();
 
-// 
-const today = ref(new Date())
+//
+const today = ref(new Date());
 
 const accessModulesArray = ref([
   {
-    name: "banks",
+    name: "projects",
+    translate: "Проекты",
   },
   {
     name: "warehouse",
+    translate: "Склад",
   },
   {
-    name: "projects",
+    name: "demands",
+    translate: "Заявки",
+  },
+  // {
+  //   name: "location",
+  //   translate: "Места"
+  // },
+  {
+    name: "banks",
+    translate: "Банки",
+  },
+  {
+    name: "funds",
+    translate: "Фонды",
   },
 ]);
 
@@ -833,7 +857,6 @@ async function checkAndAddUser(user) {
     let addedUser = null;
 
     if (user)
-
       addedUser = await $fetch("api/usersList/users", {
         method: "POST",
         body: {
@@ -951,6 +974,16 @@ async function editUser(editedUser) {
   // if (user) users.value = await getUsers();
   if (user) refresh();
 }
+
+// TRANSLATE
+const translateModuleName = (name) => {
+  if (accessModulesArray.value) {
+    let accessModule = [...accessModulesArray.value].find(item => item.name === name)
+    return accessModule.translate
+  } else {
+    return name;
+  }
+};
 
 // WATHERS
 
@@ -1147,6 +1180,33 @@ useHead({
 .item_icon:hover.icon_delete {
   color: var(--bs-danger);
 }
+
+/* ACCESS MODULE BTNs */
+.access-module_container {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 1rem;
+}
+.access-module_el label {
+  text-align: center;
+  width: 100%;
+  padding: 4px 16px;
+  background-color: var(--bs-primary-bg-subtle);
+}
+.access-module_el input[type="checkbox"]:checked + label {
+  background-color: var(--bs-primary);
+  color: var(--bs-body-bg);
+}
+.access-module_el label:hover {
+  cursor: pointer;
+}
+.access-module_el input[type="checkbox"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+
 @media screen and (max-width: 575px) {
   .item_icons {
     gap: 0.2rem;

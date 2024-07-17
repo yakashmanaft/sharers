@@ -16,20 +16,48 @@
         </div>
       </div>
 
-      <!-- USERS -->
-      <div
+      <!-- USERS AND DEMANDS-->
+      <div class="dashboard-item_group">
+
+        <div
+          style="height: 100%;"
+          v-if="users"
+          class="dashboard-item height-100 width-100"
+          @click="router.push('/partners')"
+        >
+          <h2 class="dashboard-item_header">Контакты</h2>
+        </div>
+
+
+        <div
+          v-if="demands"
+          style="width: 100%"
+          class="dashboard-item height-100 width-100"
+          @click="router.push('/demands')"
+        >
+          <h2 class="dashboard-item_header">Заявки</h2>
+          <!--  -->
+          <div class="dashboard-item_indicator" v-for="data in demandsInfo">
+            <p>{{ data.count }} {{ data.title }}</p>
+          </div>
+        </div>
+      </div>
+
+
+      <!-- ******** -->
+      <!-- <div
         v-if="users"
         class="dashboard-item"
         @click="router.push('/partners')"
       >
         <h2 class="dashboard-item_header">Соучастники</h2>
         <div class="dashboard-item_indicator">
-          <!-- ALL service users-->
+
           <p v-if="users">
             {{ users.length }} {{ transformEndingTheWord("соучастников") }}
           </p>
 
-          <!-- ORGANIZAATIONS -->
+
           <div
             style="
               border-top: 1px solid var(--bs-border-color);
@@ -37,30 +65,32 @@
               padding-top: 1rem;
             "
           >
-            <!-- ALL sevice organizations -->
+
             <p v-if="organizations">
               {{ organizations.length }} {{ transformEndingTheWord("банды") }}
             </p>
-            <!-- My organizations -->
+
             <p v-if="organizations">
               {{ computedMyOrganizations }} организовал
               {{ computedSharerOrganizations }} соучаствую
             </p>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <!-- DEMANDS -->
+      <!-- v-if="demands" -->
       <div
+        v-if="userAccesedLink('banks')"
         class="dashboard-item"
-        v-if="demands"
-        @click="router.push('/demands')"
+        @click="router.push('/banks')"
       >
-        <h2 class="dashboard-item_header">Заявки</h2>
+        <h2 class="dashboard-item_header">Банки</h2>
         <!--  -->
-        <div class="dashboard-item_indicator" v-for="data in demandsInfo">
+        <div>{{ banks?.length }}</div>
+        <!-- <div class="dashboard-item_indicator" v-for="data in demandsInfo">
           <p>{{ data.count }} {{ data.title }}</p>
-        </div>
+        </div> -->
       </div>
 
       <!-- WAREHOUSE -->
@@ -75,8 +105,8 @@
       </div>
 
       <!-- BANK -->
-      <div class="dashboard-item">
-        <h2 class="dashboard-item_header">Деньги</h2>
+      <div class="dashboard-item" @click="router.push('/wallet')">
+        <h2 class="dashboard-item_header">Кошелек</h2>
         <div class="dashboard-item_indicator">
           320 790,00 (+5% к обороту) За последний месяц
         </div>
@@ -150,6 +180,14 @@ onBeforeMount(async () => {
   }
 });
 
+// DB
+const {data: banks} = await useFetch("/api/banks/bank", {
+  lazy: false,
+  transform: (banks) => {
+    return banks.filter((bank) => bank.creatorID === sessionUser.value.id)
+  }
+})
+
 // COUNTS
 const currentProjectsCount = (projects) => {
   if (projects) {
@@ -217,6 +255,20 @@ const demandsCount = () => {
     });
   }
 };
+
+// HELPERS
+
+// display link to modules if has access
+const userAccesedLink = (moduleName) => {
+  let userModulesArray = [];
+  if (useAuthStore().user) {
+    useAuthStore().user.accessModules.forEach((item) =>
+      userModulesArray.push(item.name)
+    );
+
+    return userModulesArray.includes(moduleName);
+  }
+}
 
 const computedMyOrganizations = computed(() => {
   if (organizations.value) {
@@ -301,11 +353,22 @@ const transformEndingTheWord = (string) => {
 </script>
 
 <style scoped>
+.width-100 {
+  width: 100%;
+}
+.height-100 {
+  height: 100%;
+}
 /*  */
 .dashboard-container {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
+}
+.dashboard-item_group {
+  display: flex;
+  align-items: center;
+  gap: 1rem
 }
 .dashboard-item {
   transition: all 0.2s ease-in;

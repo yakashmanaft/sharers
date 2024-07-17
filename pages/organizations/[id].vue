@@ -316,7 +316,16 @@
     <!-- TOGGLE TITLE -->
     <!-- таблица ФОТ / Табель учета рабочего времени -->
     <div class="toggle-title">
-      <div v-for="(title, index) in titles" class="switch-title_el">
+      <div v-for="(title, index) in titles.filter(el => {
+        if(organization) {
+
+          if(el.guard && organization.ownerID === user.id) {
+            return el
+          } else if (!el.guard) {
+            return el
+          }
+        }
+      })" class="switch-title_el">
         <input
           type="radio"
           :id="`${index}_fund_hours`"
@@ -957,7 +966,26 @@
 
     <!-- ФОНДЫ организации -->
     <div v-if="currentTitle === 'funds'">
-      <nuxt-link to="/fundbands/1">к Фондам</nuxt-link>
+      <div>
+        <nuxt-link to="/fundbands/1">к Фондам</nuxt-link>
+        <br>
+      <ul>
+        фонды:
+        <li>
+          балансовая стоимость ТМЦ
+        </li>
+        <li>
+          банки соучастников, где банда в доле
+        </li>
+        <li>
+          банда афилирована к конкретному фонду другой банды по статусу
+        </li>
+        <li>
+          свои кошельки
+        </li>
+      </ul>
+      <br>
+      </div>
       <div>Нет фондов...</div>
     </div>
 
@@ -1037,18 +1065,22 @@ const titles = ref([
   {
     title: "Соучастники",
     name: "sharers",
+    guard: false,
   },
   {
     title: "Учет рабочего времени",
     name: "working-hours",
+    guard: true,
   },
   {
     title: "Таблица ФОТ",
     name: "fund",
+    guard: true,
   },
   {
     title: "Фонды",
     name: "funds",
+    guard: true,
   },
   {
     title: "ТМЦ",
@@ -1133,8 +1165,8 @@ const computedSalaryFund = computed(() => {
   if (salaryFundArray.value) {
     salaryFundArray.value.forEach((element) => {
       try {
-        const result = JSON.parse(element).list;
-        console.log(result);
+        // const result = element.list;
+        // console.log(result);
       } catch (err) {
         // 👇️ This runs
         console.log("Error: ", err.message);

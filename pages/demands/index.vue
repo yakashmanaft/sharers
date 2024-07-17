@@ -95,7 +95,10 @@ const demandFilterTypes = ref([
 const computedDemands = computed(() => {
   if (demands.value.length) {
     if (currentDemandFilterType.value === "all") {
-      return demands.value;
+      let filteredDemands = [...demands.value].filter((demand) => {
+        return demand ? demand.creatorID === useAuthStore().user.id || demand.responserID === useAuthStore().user.id : []
+      })
+      return filteredDemands;
     } else if (currentDemandFilterType.value === "author") {
       let filteredDemands = demands.value.filter(
         (demand) => demand.creatorID === useAuthStore().user.id

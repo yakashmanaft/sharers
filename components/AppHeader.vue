@@ -32,7 +32,7 @@ const featuresListAuth = ref([
   },
   {
     path: "/warehouse",
-    title: "Склад",
+    title: "ТМЦ",
     auth: true,
   },
   // {
@@ -40,11 +40,11 @@ const featuresListAuth = ref([
   //   title: "Бонды",
   //   auth: true,
   // },
-  {
-    path: "/about",
-    title: "О сервисе",
-    auth: true,
-  },
+  // {
+  //   path: "/about",
+  //   title: "О сервисе",
+  //   auth: true,
+  // },
 ]);
 
 const featuresListNoAuth = ref([
@@ -125,6 +125,10 @@ const translateRoutePath = (path: string) => {
     return "Настройки";
   } else if (path === "/dashboard") {
     return "Доска";
+  }
+  // WALLET
+  else if (path === "/wallet") {
+    return "Мой кошелек"
   }
   // PROJECTS
   else if (path === "/projects") {
@@ -302,8 +306,18 @@ watch(
                 >
               </li>
 
+              <!-- WALLET -->
+              <li @click="closeBurgerMenu">
+                <router-link to="/wallet">Кошелек</router-link>
+              </li>
+
               <li v-if="userAccesedLink('banks')" @click="closeBurgerMenu">
-                <router-link to="/banks">banks</router-link>
+                <router-link to="/banks">Банк</router-link>
+              </li>
+
+              <!-- ТМЦ -->
+              <li @click="closeBurgerMenu">
+                <router-link to="/about"></router-link>
               </li>
             </ul>
 

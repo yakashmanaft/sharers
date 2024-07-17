@@ -464,22 +464,27 @@ const titles = ref([
   {
     title: "Заявки",
     name: "demands",
+    guard: false,
   },
   {
     title: "Проекты",
     name: "projects",
+    guard: false,
   },
   {
     title: "Банды",
     name: "organizations",
+    guard: false,
   },
     {
     title: "Фонды",
     name: "funds",
+    guard: true,
   },
   {
     title: "ТМЦ",
     name: "warehouse-items",
+    guard: false,
   },
 ]);
 const currentTitle = ref("demands");
@@ -539,7 +544,13 @@ const createMyNewBand = () => {
     <!-- Заголовок - Переключатель -->
     <!-- TOGGLE TITLE -->
     <div class="toggle-title">
-      <div v-for="(title, index) in titles" class="switch-title_el">
+      <div v-for="(title, index) in titles.filter(el => {
+        if(el.guard && +route.params.id === sessionUser.id) {
+          return el
+        } else if (!el.guard) {
+          return el
+        }
+      })" class="switch-title_el">
         <input
           type="radio"
           :id="`${index}_fund_hours`"
@@ -725,7 +736,27 @@ const createMyNewBand = () => {
 
     <!-- ФОНДЫ соучастника или банды, к которым допущен соучастник -->
     <div v-if="currentTitle === 'funds'">
-      <nuxt-link to="/fundsharers/1">Фонд</nuxt-link>
+      <router-link to="/fundsharers/1">Фонд</router-link>
+      <br>
+      <ul>
+        фонды:
+        <li>
+          балансовая стоимость ТМЦ
+        </li>
+        <li>
+          банды, где соучастник - creator
+        </li>
+        <li>
+          афилирован к конкретному фонду банды по статусу
+        </li>
+        <li>
+          свои кошельки
+        </li>
+        <li>
+          где соучастчник в какой либо доле
+        </li>
+      </ul>
+      <br>
       <div>Нет фондов</div>
     </div>
 
@@ -851,7 +882,7 @@ const createMyNewBand = () => {
   border: unset !important;
 }
 
-@media screen and (max-width: 576px) {
+@media screen and (max-width: 575px) {
   .page-title {
     margin: 0 1rem;
     border: unset;
@@ -860,9 +891,13 @@ const createMyNewBand = () => {
     margin: 0 1rem;
   }
   .toggle-title {
-    margin: 1rem 1rem 0 1rem;
+    margin-top: 1rem;
+    /* margin: 1rem 1rem 0 1rem; */
     padding: unset!important;
     border: unset
+  }
+  .switch-title_el:first-child {
+    margin-left: 1rem;
   }
   .org_title {
     margin-left: 1rem;
@@ -873,12 +908,23 @@ const createMyNewBand = () => {
   }
 }
 
+@media screen and (min-width: 576) and (max-width: 767px){
+  .switch-title_el:first-child {
+    margin-left: unset;
+  }  
+  .toggle-title {
+    padding-left: unset!important;
+    /* padding-left: 0.5rem; */
+    padding-right: 0.5rem;
+  }
+}
+
 @media screen and (max-width: 767px) {
   .page-title {
     margin-top: 4rem;
   }
   .toggle-title {
-    padding-left: 0.5rem;
+    /* padding-left: 0.5rem; */
     padding-right: 0.5rem;
   }
   .org_container {

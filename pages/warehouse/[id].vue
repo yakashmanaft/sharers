@@ -62,6 +62,27 @@ const infoActionBtns = ref([
   },
 ]);
 const infoActionBtn = ref("available");
+
+// subtitles
+const subtitles = ref([
+  {
+    name: "description",
+    title: "Описание",
+    guard: false,
+  },
+  {
+    name: "available",
+    title: "Наличие",
+    guard: true,
+  },
+  {
+    name: "history",
+    title: "История",
+    guard: false,
+  },
+]);
+const currentSubtitle = ref("description");
+
 const showCaseByAvailable = ref(null);
 const showCaseByHistory = ref(null);
 
@@ -407,9 +428,9 @@ const hideOwnerCell = () => {
 };
 
 const setGridTemplate = () => {
-  if(switchedLocation.value.location !== "all" && window.screen.width < 767)
-  return `grid-template-columns: 30px 1fr 1fr;`
-}
+  if (switchedLocation.value.location !== "all" && window.screen.width < 767)
+    return `grid-template-columns: 30px 1fr 1fr;`;
+};
 
 // функции раскраски
 const locationMarkColorized = (location: string) => {
@@ -512,6 +533,18 @@ watch(infoActionBtn, (next, prev) => {
               >{{ item.qty }} <span>{{ item.measure }}</span></span
             >
           </p>
+          <!-- Местонахождени -->
+          <p>
+            Где:
+            <span
+              class="item-location_mark"
+              :class="locationMarkColorized(item.location)"
+              @click="routerLocationsFunc(item.locationID, item.location)"
+              ><label style="cursor: pointer">{{
+                translateLocation(item.locationID, item.location)
+              }}</label>
+            </span>
+          </p>
           <!-- Собственник -->
           <p>
             Собственник:
@@ -532,96 +565,79 @@ watch(infoActionBtn, (next, prev) => {
               >{{ translateResponsibles(item.responsible) }}</span
             >
           </p>
-          <!-- Местонахождени -->
-          <p>
-            Где:
-            <span
-              class="item-location_mark"
-              :class="locationMarkColorized(item.location)"
-              @click="routerLocationsFunc(item.locationID, item.location)"
-              ><label style="cursor: pointer">{{
-                translateLocation(item.locationID, item.location)
-              }}</label>
-            </span>
-          </p>
         </div>
+      </div>
 
-        <!-- ОПИСАНИЕ -->
+      <!-- Переключатели вкладок -->
+      <div class="toggle-subtitle">
+        <div
+          v-for="(subtitle, i) in subtitles.filter((el) => {
+            if (
+              el.guard &&
+              (item.type === 'office equipment' || item.type === 'tools')
+            ) {
+            } else {
+              return el;
+            }
+          })"
+          class="switch-subtitle_el"
+        >
+          <input
+            type="radio"
+            :id="i"
+            :value="subtitle.name"
+            v-model="currentSubtitle"
+          />
+          <label :for="i"
+            ><h2 style="margin: 0">{{ subtitle.title }}</h2></label
+          >
+        </div>
+      </div>
+
+      <!-- ОПИСАНИЕ -->
+      <div style="margin-top: 1rem" v-if="currentSubtitle === 'description'">
+        <!-- <h2 style="margin-top: 1rem">Описание</h2> -->
+
+        <!-- ПО ТИПУ ПРЕДМЕТА -->
         <div>
-          <h2 style="margin-top: 1rem">Описание</h2>
-
-          <!-- ПО ТИПУ ПРЕДМЕТА -->
-          <div>
-            <!-- Инструмент -->
-            <div
-              v-if="item.type === 'tools' || item.type === 'office equipment'"
-            >
-              <!-- <p>Тип: {{ item.type }}</p> -->
-              <ul>
-                <li>Тип: {{ translateItemType(item.type) }}</li>
-                <li>Серийник: {{ item.serial }}</li>
-                <li>Дата производства: {{ item.productionDate }}</li>
-                <li>Закупочная цена: {{ item.price }}</li>
-              </ul>
-            </div>
-            <!-- Материалы -->
-            <div v-if="item.type === 'stuff'">
-              <p>Тип: {{ translateItemType(item.type) }}</p>
-            </div>
-            <!-- Расходники -->
-            <div v-if="item.type === 'consumables'">
-              <p>Тип: {{ translateItemType(item.type) }}</p>
-              <!-- {{ item }} -->
-            </div>
-            <!-- Техника -->
-            <div v-if="item.type === 'technic'">
-              <p>Тип: {{ translateItemType(item.type) }}</p>
-              <ul>
-                <li>Какие данные по технике чекать имеет смысл?</li>
-              </ul>
-              <!-- {{ item }} -->
-            </div>
+          <!-- Инструмент -->
+          <div v-if="item.type === 'tools' || item.type === 'office equipment'">
+            <!-- <p>Тип: {{ item.type }}</p> -->
+            <ul>
+              <li>Тип: {{ translateItemType(item.type) }}</li>
+              <li>Серийник: {{ item.serial }}</li>
+              <li>Дата производства: {{ item.productionDate }}</li>
+              <li>Закупочная цена: {{ item.price }}</li>
+            </ul>
           </div>
-
+          <!-- Материалы -->
+          <div v-if="item.type === 'stuff'">
+            <p>Тип: {{ translateItemType(item.type) }}</p>
+          </div>
+          <!-- Расходники -->
+          <div v-if="item.type === 'consumables'">
+            <p>Тип: {{ translateItemType(item.type) }}</p>
+            <!-- {{ item }} -->
+          </div>
+          <!-- Техника -->
+          <div v-if="item.type === 'technic'">
+            <p>Тип: {{ translateItemType(item.type) }}</p>
+            <ul>
+              <li>Какие данные по технике чекать имеет смысл?</li>
+            </ul>
+            <!-- {{ item }} -->
+          </div>
           <!-- Текст -->
           <p>Это item:{{ item }}</p>
         </div>
       </div>
 
-      <!-- AVAILABLE AND HISTORY -->
-      <div>
-        <!-- infoActionBtns -->
-        <h2 class="infoActionBtns_wrapper">
-          <span
-            class="infoActionBtns_el"
-            v-for="(btn, index) in infoActionBtns.filter((btn) => {
-              if (btn.name === infoActionBtn && !switchedItem.length) {
-                return btn;
-              } else if (switchedItem.length) {
-                return btn;
-              } else if (btn.name === infoActionBtn) {
-                return btn;
-              }
-            })"
-            :key="index"
-          >
-            <input
-              type="radio"
-              :id="btn.name"
-              name="info-action-btns"
-              :value="btn.name"
-              v-model="infoActionBtn"
-            />
-            <label :for="btn.name">
-              {{ btn.title }}
-            </label>
-          </span>
-        </h2>
-
+      <div style="margin-top: 1rem;">
         <!-- ЛОКАЦИИ -->
-        <div v-if="itemLocations.length > 1">
+        <div
+          v-if="itemLocations.length > 1 && currentSubtitle !== 'description'"
+        >
           <!-- <h2>{{ item.title }} в других местах</h2> -->
-          <!-- set item to view -->
           <fieldset id="item-locations" class="switch-item_wrapper">
             <!-- ALL only for available items in location / project -->
             <div class="switch-item_el" v-if="infoActionBtn === 'available'">
@@ -670,158 +686,11 @@ watch(infoActionBtn, (next, prev) => {
               >
             </div>
           </fieldset>
-        </div>
-
-        <!-- AVAILABLE IN LOCATION -->
-        <div class="item-locations_block" v-if="infoActionBtn === 'available'">
-          <!-- <h3>Наличие</h3> -->
-          <!-- Предметы по разным параметрам, но на одной локации -->
-          <table class="table table-by-available" v-if="switchedItem.length">
-            <thead class="item-table_header">
-              <tr :style="setGridTemplate()">
-                <th scope="col"></th>
-                <!-- <th scope="col">Наименование</th> -->
-                <th v-if="switchedLocation.location === 'all'" scope="col">
-                  Где
-                </th>
-                <th scope="col">Кол-во</th>
-                <th scope="col" class="hide-991" :style="hideOwnerCell()">
-                  Собственник
-                </th>
-                <th scope="col" class="hide-max-767">Ответственный</th>
-              </tr>
-            </thead>
-            <tbody>
-              <div v-if="switchedItem">
-                <div v-if="!switchedItem.length">Ничего нет</div>
-              </div>
-
-              <!--  -->
-              <tr
-                :style="setGridTemplate()"
-                class="table-row_wrapper"
-                v-for="element in switchedItem"
-                :key="element.id"
-              >
-                <!-- 1 -->
-                <!-- btn expend -->
-                <td>
-                  <label>
-                    <input
-                      type="checkbox"
-                      id="expend-item"
-                      :class="`expended-item-${element.id}_block`"
-                    />
-                    <Icon
-                      class="expand-item_icon"
-                      @click="toggleExpendedItemBlock(element.id)"
-                      name="material-symbols-light:expand-more"
-                      size="28px"
-                    />
-                  </label>
-                </td>
-
-                <!-- 2 -->
-                <!-- IF ALL LOCATIONS -->
-                <td scope="col" v-if="switchedLocation.location === 'all'">
-                  <span
-                    class="link_hover"
-                    @click="
-                      routerLocationsFunc(element.locationID, element.location)
-                    "
-                    >{{
-                      translateLocation(element.locationID, element.location)
-                    }}</span
-                  >
-                </td>
-
-                <!-- 3 -->
-                <!-- QTY, MEASURE -->
-                <td class="item-qty" scope="col">
-                  <div class="location-mark">
-                    <span>{{ element.qty }} {{ element.measure }}</span>
-                  </div>
-                </td>
-
-                <!-- 4 -->
-                <!-- OWNER -->
-                <!-- v-if="switchedLocation.location !== 'all'" -->
-                <td class="span-2 hide-767" scope="col" :style="hideOwnerCell()">
-                  <span
-                    style="white-space: nowrap"
-                    class="link_hover"
-                    @click="routerUsersFunc(element.ownerID, element.ownerType)"
-                  >
-                    {{ translateOwner(element.ownerID, element.ownerType) }}
-                  </span>
-                </td>
-
-                <!-- 5 -->
-                <!-- RESPONSIBLE -->
-                <td class="span-2 hide-767 hide-max-767" scope="col">
-                  <span
-                    style="white-space: nowrap"
-                    class="link_hover"
-                    @click="$router.push(`/partners/${element.responsible}`)"
-                  >
-                    {{ translateResponsibles(element.responsible) }}
-                  </span>
-                </td>
-
-                <!-- 6 -->
-                <!-- Expended item block -->
-                <td
-                  class="span-5 expended-item"
-                  :id="`expended-item-${element.id}_block`"
-                >
-                  <div class="expended-item_content">
-                    <!-- show owner -->
-                    <div
-                      class="hide-max-575 expended-content_article"
-                      v-if="switchedLocation.location === 'all'"
-                    >
-                      <p>
-                        Собственник:
-                        <span
-                          @click="
-                            routerUsersFunc(element.ownerID, element.ownerType)
-                          "
-                          class="link_hover"
-                          >{{
-                            translateOwner(element.ownerID, element.ownerType)
-                          }}</span
-                        >
-                      </p>
-                    </div>
-                    <!-- show responsible -->
-                    <div class="hide-min-768 expended-content_article">
-                      <p>
-                        Ответственный:
-                        <span
-                          class="link_hover"
-                          @click="
-                            $router.push(`/partners/${element.responsible}`)
-                          "
-                          >{{
-                            translateResponsibles(element.responsible)
-                          }}</span
-                        >
-                      </p>
-                    </div>
-                    <!--  -->
-                    <div class="expended-content_article">
-                      <p>В разработке...</p>
-                      <p>{{ currentExpendedItemBlock }}</p>
-                    </div>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+          <!-- set item to view -->
         </div>
 
         <!-- hISTOrY TRANSACTIONS -->
-        <div class="item-history_block" v-if="infoActionBtn === 'history'">
+        <div class="item-history_block" v-if="currentSubtitle === 'history'">
           <!-- <h3>История</h3> -->
           <table class="table table-by-history">
             <!-- head of table -->
@@ -985,18 +854,193 @@ watch(infoActionBtn, (next, prev) => {
             </tbody>
           </table>
         </div>
+
+        <!-- AVAILABLE IN LOCATION -->
+        <div
+          class="item-locations_block"
+          v-if="currentSubtitle === 'available'"
+        >
+          <!-- <h3>Наличие</h3> -->
+          <!-- Предметы по разным параметрам, но на одной локации -->
+          <table class="table table-by-available" v-if="switchedItem.length">
+            <thead class="item-table_header">
+              <tr :style="setGridTemplate()">
+                <th scope="col"></th>
+                <!-- <th scope="col">Наименование</th> -->
+                <th v-if="switchedLocation.location === 'all'" scope="col">
+                  Где
+                </th>
+                <th scope="col">Кол-во</th>
+                <th scope="col" class="hide-991" :style="hideOwnerCell()">
+                  Собственник
+                </th>
+                <th scope="col" class="hide-max-767">Ответственный</th>
+              </tr>
+            </thead>
+            <tbody>
+              <div v-if="switchedItem">
+                <div v-if="!switchedItem.length">Ничего нет</div>
+              </div>
+
+              <!--  -->
+              <tr
+                :style="setGridTemplate()"
+                class="table-row_wrapper"
+                v-for="element in switchedItem"
+                :key="element.id"
+              >
+                <!-- 1 -->
+                <!-- btn expend -->
+                <td>
+                  <label>
+                    <input
+                      type="checkbox"
+                      id="expend-item"
+                      :class="`expended-item-${element.id}_block`"
+                    />
+                    <Icon
+                      class="expand-item_icon"
+                      @click="toggleExpendedItemBlock(element.id)"
+                      name="material-symbols-light:expand-more"
+                      size="28px"
+                    />
+                  </label>
+                </td>
+
+                <!-- 2 -->
+                <!-- IF ALL LOCATIONS -->
+                <td scope="col" v-if="switchedLocation.location === 'all'">
+                  <span
+                    class="link_hover"
+                    @click="
+                      routerLocationsFunc(element.locationID, element.location)
+                    "
+                    >{{
+                      translateLocation(element.locationID, element.location)
+                    }}</span
+                  >
+                </td>
+
+                <!-- 3 -->
+                <!-- QTY, MEASURE -->
+                <td class="item-qty" scope="col">
+                  <div class="location-mark">
+                    <span>{{ element.qty }} {{ element.measure }}</span>
+                  </div>
+                </td>
+
+                <!-- 4 -->
+                <!-- OWNER -->
+                <!-- v-if="switchedLocation.location !== 'all'" -->
+                <td
+                  class="span-2 hide-767"
+                  scope="col"
+                  :style="hideOwnerCell()"
+                >
+                  <span
+                    style="white-space: nowrap"
+                    class="link_hover"
+                    @click="routerUsersFunc(element.ownerID, element.ownerType)"
+                  >
+                    {{ translateOwner(element.ownerID, element.ownerType) }}
+                  </span>
+                </td>
+
+                <!-- 5 -->
+                <!-- RESPONSIBLE -->
+                <td class="span-2 hide-767 hide-max-767" scope="col">
+                  <span
+                    style="white-space: nowrap"
+                    class="link_hover"
+                    @click="$router.push(`/partners/${element.responsible}`)"
+                  >
+                    {{ translateResponsibles(element.responsible) }}
+                  </span>
+                </td>
+
+                <!-- 6 -->
+                <!-- Expended item block -->
+                <td
+                  class="span-5 expended-item"
+                  :id="`expended-item-${element.id}_block`"
+                >
+                  <div class="expended-item_content">
+                    <!-- show owner -->
+                    <div
+                      class="hide-max-575 expended-content_article"
+                      v-if="switchedLocation.location === 'all'"
+                    >
+                      <p>
+                        Собственник:
+                        <span
+                          @click="
+                            routerUsersFunc(element.ownerID, element.ownerType)
+                          "
+                          class="link_hover"
+                          >{{
+                            translateOwner(element.ownerID, element.ownerType)
+                          }}</span
+                        >
+                      </p>
+                    </div>
+                    <!-- show responsible -->
+                    <div class="hide-min-768 expended-content_article">
+                      <p>
+                        Ответственный:
+                        <span
+                          class="link_hover"
+                          @click="
+                            $router.push(`/partners/${element.responsible}`)
+                          "
+                          >{{
+                            translateResponsibles(element.responsible)
+                          }}</span
+                        >
+                      </p>
+                    </div>
+                    <!--  -->
+                    <div class="expended-content_article">
+                      <p>В разработке...</p>
+                      <p>{{ currentExpendedItemBlock }}</p>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
+    <br />
   </Container>
 </template>
 
 <style scoped>
+.toggle-subtitle {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.switch-subtitle_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.switch-subtitle_el label h2 {
+  color: var(--bs-tertiary-color);
+}
+.switch-subtitle_el label h2:hover {
+  cursor: pointer;
+}
+.switch-subtitle_el input[type="radio"]:checked + label h2 {
+  color: unset;
+}
+
 .switch-item_wrapper {
   padding: 1rem;
   width: 100%;
@@ -1123,7 +1167,7 @@ watch(infoActionBtn, (next, prev) => {
   justify-self: flex-end;
 }
 .table-by-available .item-table_header tr th:nth-child(3),
-.table-by-available .table-row_wrapper td:nth-child(3){
+.table-by-available .table-row_wrapper td:nth-child(3) {
   justify-self: flex-end;
 }
 

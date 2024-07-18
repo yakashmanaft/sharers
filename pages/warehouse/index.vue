@@ -135,6 +135,7 @@ const editedItem = ref({
   qty: null,
 });
 const { user } = useUserSession();
+
 onMounted(async () => {
   // makes refetching
   await refresh();
@@ -224,17 +225,59 @@ const {
     //   title: item.title,
     // })
     // return items.sort((x, y) => x.title.localeCompare(y.title));
-    return items.sort((x, y) => {
-      if (x.title < y.title) {
-        return -1;
-      }
+    return items
+      .filter((item) => {
+        // user is responsible of item
+        if (user.value.id === item.responsible) {
+          return item;
+        }
+        // user is owner of item
+        if (user.value.id === item.ownerID && item.ownerType === "user") {
+          return item;
+        }
+        // user in the band
+        else if (item.ownerType === "company") {
+          let sessionUserLeaderBand = [...organizations.value].find(
+            (org) => org.ownerID === user.value.id
+          );
+          let sessionUserSharerBand;
+          [...organizations.value].find(
+            (org) => {
+              org.sharers.forEach(sharer => {
+                if(sharer.userType === 'user' && sharer.userID === user.value.id) {
+                  sessionUserSharerBand = org
+                }
+              })
+            }
+          );
+          // user is a leader in the band
+          if (
+            sessionUserLeaderBand &&
+            item.ownerID === sessionUserLeaderBand.id
+          ) {
+            return item;
+          }
+          // user is a sharer in the band
+          else if (sessionUserSharerBand && item.ownerID === sessionUserSharerBand.id) {
+            return item;
+          }
+        }
+        // else
+        else {
+          return;
+        }
+      })
+      .sort((x, y) => {
+        if (x.title < y.title) {
+          return -1;
+        }
 
-      if (x.title > y.title) {
-        return 1;
-      }
+        if (x.title > y.title) {
+          return 1;
+        }
 
-      return x.locationID - y.locationID;
-    });
+        return x.locationID - y.locationID;
+      });
   },
 });
 const { data: projects } = useLazyAsyncData("projects", () =>
@@ -247,7 +290,7 @@ const { data: organizations } = useLazyAsyncData("organizations", () =>
   $fetch("/api/organizations/organizations")
 );
 
-// 
+//
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
 
@@ -2015,7 +2058,7 @@ watch(tempCreateItemOwner, () => {
 
     <!-- data is loading -->
     <div v-if="pending">
-      <p>Loading...</p>
+      <p style="margin-top: 1rem">Loading...</p>
     </div>
 
     <!-- data is loaded -->

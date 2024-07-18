@@ -18,16 +18,14 @@
 
       <!-- USERS AND DEMANDS-->
       <div class="dashboard-item_group">
-
         <div
-          style="height: 100%;"
+          style="height: 100%"
           v-if="users"
           class="dashboard-item height-100 width-100"
           @click="router.push('/partners')"
         >
           <h2 class="dashboard-item_header">Контакты</h2>
         </div>
-
 
         <div
           v-if="demands"
@@ -42,7 +40,6 @@
           </div>
         </div>
       </div>
-
 
       <!-- ******** -->
       <!-- <div
@@ -87,10 +84,10 @@
       >
         <h2 class="dashboard-item_header">Банки</h2>
         <!--  -->
-        <div>{{ banks?.length }}</div>
-        <!-- <div class="dashboard-item_indicator" v-for="data in demandsInfo">
-          <p>{{ data.count }} {{ data.title }}</p>
-        </div> -->
+        <!-- <div>{{ banks?.length }}</div> -->
+        <div class="dashboard-item_indicator">
+          <p>{{ banksCount()}}</p>
+        </div>
       </div>
 
       <!-- WAREHOUSE -->
@@ -152,41 +149,60 @@ useHead({
 });
 
 // BODY?
-const users = ref(null);
-const organizations = ref(null);
-const projects = ref(null);
-const demands = ref(null);
+// const users = ref(null);
+// const organizations = ref(null);
+// const projects = ref(null);
+// const demands = ref(null);
 const demandsInfo = ref([]);
+// const banksInfo = ref([]);
 
 onBeforeMount(async () => {
-  users.value = await getAllUsers();
-  organizations.value = await getOrganizations();
-  projects.value = await getProjects();
-  demands.value = await getDemands();
+  // users.value = await getAllUsers();
+  // organizations.value = await getOrganizations();
+  // projects.value = await getProjects();
+  // demands.value = await getDemands();
   demandsCount();
-
+  // banksCount();
   // BD
-  async function getAllUsers() {
-    return await $fetch("/api/usersList/users");
-  }
-  async function getOrganizations() {
-    return await $fetch("/api/organizations/organizations");
-  }
-  async function getProjects() {
-    return await $fetch("/api/projects/projects");
-  }
-  async function getDemands() {
-    return await $fetch("/api/demands/demand");
-  }
+  // async function getAllUsers() {
+  //   return await $fetch("/api/usersList/users");
+  // }
+  // async function getOrganizations() {
+  //   return await $fetch("/api/organizations/organizations");
+  // }
+  // async function getProjects() {
+  //   return await $fetch("/api/projects/projects");
+  // }
+  // async function getDemands() {
+  //   return await $fetch("/api/demands/demand");
+  // }
 });
 
 // DB
-const {data: banks} = await useFetch("/api/banks/bank", {
+const { data: users } = await useFetch("/api/usersList/users", {
   lazy: false,
-  transform: (banks) => {
-    return banks.filter((bank) => bank.creatorID === sessionUser.value.id)
+});
+const { data: projects } = await useFetch("/api/projects/projects", {
+  laze: false,
+});
+const { data: demands } = await useFetch("/api/demands/demand", {
+  laze: false,
+  transform: (demands) => {
+    return demands;
+  },
+});
+const { data: organizations } = await useFetch(
+  "/api/organizations/organizations",
+  {
+    laze: false,
   }
-})
+);
+const { data: banks } = await useFetch("/api/banks/bank", {
+  lazy: false,
+  // transform: (banks) => {
+  //   return banks.filter((bank) => bank.creatorID === sessionUser.value.id);
+  // },
+});
 
 // COUNTS
 const currentProjectsCount = (projects) => {
@@ -229,9 +245,18 @@ const demandsCount = () => {
       stringActual = "актуальных";
     }
 
+    // Всего заявок
+    let countAll = [];
+    [...demands.value].filter((demand) => {
+      if (demand.responserID === sessionUser.value.id) {
+        countAll.push(demand);
+      } else if (demand.creatorID === sessionUser.value.id) {
+        countAll.push(demand);
+      }
+    });
     demandsInfo.value.push({
       title: stringActual,
-      count: demands.value.length,
+      count: countAll.length,
     });
 
     // User исполнитель по заявке
@@ -255,6 +280,11 @@ const demandsCount = () => {
     });
   }
 };
+const banksCount = () => {
+  if(banks.value && sessionUser.value) {
+    return 'Показывать бы такто средства'
+  }
+};
 
 // HELPERS
 
@@ -268,7 +298,7 @@ const userAccesedLink = (moduleName) => {
 
     return userModulesArray.includes(moduleName);
   }
-}
+};
 
 const computedMyOrganizations = computed(() => {
   if (organizations.value) {
@@ -368,7 +398,7 @@ const transformEndingTheWord = (string) => {
 .dashboard-item_group {
   display: flex;
   align-items: center;
-  gap: 1rem
+  gap: 1rem;
 }
 .dashboard-item {
   transition: all 0.2s ease-in;

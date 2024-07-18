@@ -288,7 +288,7 @@ const translateDate = (date) => {
   // var year = date.getFullYear();
   // return day + "." + month + "." + year;
   // Нихуя не работает.... как не хочетс библиотеки устанавливать...
-  return date;
+  return date.substring(0,10);
 };
 
 //
@@ -715,14 +715,14 @@ watch(infoActionBtn, (next, prev) => {
                 class="table-row_wrapper"
               >
                 <!-- 1 -->
-                <td scope="col">
+                <td scope="col" class="transaction_date">
                   <span>{{ translateDate(transaction.created_at) }}</span>
                 </td>
 
                 <!-- 2 -->
                 <!-- Варианты описания транзакции -->
                 <td scope="col">
-                  <!-- CREATED -->
+                  <!-- CREATED / ДОБАВЛЕН-->
                   <p
                     class="transaction_paragraph"
                     v-if="transaction.transactionType === 'created'"
@@ -733,7 +733,7 @@ watch(infoActionBtn, (next, prev) => {
                       >Добавлен</span
                     >
                   </p>
-                  <!-- ADD -->
+                  <!-- ADD / ПРИХОД-->
                   <p
                     class="transaction_paragraph"
                     v-if="transaction.transactionType === 'add'"
@@ -744,7 +744,7 @@ watch(infoActionBtn, (next, prev) => {
                       >Приход</span
                     >
                   </p>
-                  <!-- SUB -->
+                  <!-- SUB / РАСХОД-->
                   <p
                     class="transaction_paragraph"
                     v-if="transaction.transactionType === 'sub'"
@@ -764,10 +764,10 @@ watch(infoActionBtn, (next, prev) => {
                   </p>
                   <!-- MOVE -->
                   <div
-                    class="transaction_paragraph"
+                    class="transaction_paragraph paragraph-move_wrapper"
                     v-if="transaction.transactionType === 'move'"
                   >
-                    <div>
+                    <div style="white-space: nowrap">
                       {{
                         addSignToTransaction(
                           transaction.locationFromID,
@@ -781,7 +781,7 @@ watch(infoActionBtn, (next, prev) => {
                     <!--  -->
                     <div class="transaction_path">
                       <!-- transaction location from -->
-                      <div
+                      <span
                         :class="
                           historyMarkColorized(
                             transaction.transactionType,
@@ -802,45 +802,42 @@ watch(infoActionBtn, (next, prev) => {
                             transaction.locationFrom
                           )
                         }}
-                      </div>
+                      </span>
 
+                      
+                      <!--  -->
+                      <span style="white-space: nowrap;"
+                        >-></span
+                      >
                       <!-- transaction loction to -->
-                      <div>
-                        <!--  -->
-                        <span style="white-space: nowrap; padding-bottom: 2px"
-                          >-></span
-                        >
-                        <!--  -->
-                        <span
-                          style="margin-left: 0.5rem"
-                          :class="
-                            historyMarkColorized(
-                              transaction.transactionType,
-                              transaction.locationTo
-                            )
-                          "
-                          class="link_hover"
-                          @click="
-                            routerLocationsFunc(
-                              transaction.locationToID,
-                              transaction.locationTo
-                            )
-                          "
-                          >{{
-                            translateLocation(
-                              transaction.locationToID,
-                              transaction.locationTo
-                            )
-                          }}</span
-                        >
-                      </div>
+                      <span
+                        :class="
+                          historyMarkColorized(
+                            transaction.transactionType,
+                            transaction.locationTo
+                          )
+                        "
+                        class="link_hover"
+                        @click="
+                          routerLocationsFunc(
+                            transaction.locationToID,
+                            transaction.locationTo
+                          )
+                        "
+                        >{{
+                          translateLocation(
+                            transaction.locationToID,
+                            transaction.locationTo
+                          )
+                        }}</span
+                      >
                     </div>
                   </div>
                 </td>
 
                 <!-- 3 -->
                 <!-- Автор транзакции -->
-                <td scope="col">
+                <td scope="col" class="transaction_athor_wrapper">
                   <span class="hide-575" style="margin-right: 0.5rem"
                     >Автор:</span
                   >
@@ -1243,6 +1240,9 @@ label #expend-item:checked + .expand-item_icon {
   gap: 0.5rem;
   align-items: center;
 }
+.transaction_athor_wrapper {
+  white-space: nowrap;
+}
 
 /* ********* itemLocations marks colorized ********* */
 /* MARK_PROJECT */
@@ -1444,6 +1444,11 @@ label #expend-item:checked + .expand-item_icon {
 }
 
 @media screen and (min-width: 576px) and (max-width: 767px) {
+  .item-table_header tr,
+  .table-row_wrapper {
+    grid-template-columns: 100px 1fr 100px!important;
+    gap: unset!important;
+  }
   .table-by-history .item-table_header tr,
   .table-by-history .table-row_wrapper {
     grid-template-columns: 150px 1fr 150px;
@@ -1476,6 +1481,17 @@ label #expend-item:checked + .expand-item_icon {
   .transaction_paragraph {
     flex-direction: column;
     align-items: flex-start;
+  }
+  .transaction_path {
+    font-size: 0.8rem
+  }
+  .transaction_athor_wrapper {
+    font-size: 0.8rem;
+    width: max-content;
+  }
+  .transaction_date {
+    font-size: 0.8rem;
+    width: max-content;
   }
   .mark_history_created,
   .mark_history_add,
@@ -1665,9 +1681,13 @@ label #expend-item:checked + .expand-item_icon {
 
 @media screen and (max-width: 991px) {
   .transaction_path {
-    flex-direction: column;
-    align-items: flex-start;
+    margin-top: 0.5rem;
+    /* flex-direction: column; */
+    /* align-items: flex-start; */
     /* gap: 0.1rem; */
+  }
+    .paragraph-move_wrapper {
+    display: block;
   }
 }
 </style>

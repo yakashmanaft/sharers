@@ -124,8 +124,11 @@ const translateCurator = (curatorID: number, curatorType: string) => {
       return `${curator?.surname} ${curator?.name[0]}. ${curator?.middleName[0]}`;
 
     } else if (curatorType === 'company') {
-      let curator = [...organizations.value].find(company => company.id === curatorID)
-      return `${curator?.title}`
+      if(organizations.value) {
+
+        let curator = [...organizations.value].find(company => company.id === curatorID)
+        return `${curator?.title}`
+      }
     }
   }
 };

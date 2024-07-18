@@ -140,9 +140,12 @@ onMounted(async () => {
   // makes refetching
   await refresh();
 
-  items.value = items.value.filter(
-    (item: any) => item.location !== "archive" && item.location !== "deleted"
-  );
+  if(items.value) {
+
+    items.value = items.value.filter(
+      (item: any) => item.location !== "archive" && item.location !== "deleted"
+    );
+  }
   refreshProjects();
   refreshLocations();
   refreshOrganizations();
@@ -235,11 +238,13 @@ const {
         if (user.value.id === item.ownerID && item.ownerType === "user") {
           return item;
         }
-        // user in the band
+        // user && band
         else if (item.ownerType === "company") {
+          // user is a the leader of the band
           let sessionUserLeaderBand = [...organizations.value].find(
             (org) => org.ownerID === user.value.id
           );
+          // user is a sharer at the band
           let sessionUserSharerBand;
           [...organizations.value].find(
             (org) => {
@@ -250,15 +255,34 @@ const {
               })
             }
           );
-          // user is a leader in the band
+          // user in the band which is a part of aliance
+          let sessionUserSharerBandAliance;
+          if(sessionUserSharerBand) {
+
+            [...organizations.value].find(
+              (org) => {
+                org.sharers.forEach(sharer => {
+                  if(sharer.userType === 'company' && sharer.userID === sessionUserSharerBand.id) {
+                    sessionUserSharerBandAliance = org
+                  }
+                })
+              }
+            )
+          }
+
+          // return item where user is a sharer in the band
           if (
             sessionUserLeaderBand &&
             item.ownerID === sessionUserLeaderBand.id
           ) {
             return item;
           }
-          // user is a sharer in the band
+          // return item where user is a sharer in the band
           else if (sessionUserSharerBand && item.ownerID === sessionUserSharerBand.id) {
+            return item;
+          }
+          // user in the band which a part of aliance
+          else if (sessionUserSharerBandAliance && item.ownerID === sessionUserSharerBandAliance.id) {
             return item;
           }
         }

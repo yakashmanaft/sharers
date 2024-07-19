@@ -140,8 +140,7 @@ onMounted(async () => {
   // makes refetching
   await refresh();
 
-  if(items.value) {
-
+  if (items.value) {
     items.value = items.value.filter(
       (item: any) => item.location !== "archive" && item.location !== "deleted"
     );
@@ -238,6 +237,29 @@ const {
         if (user.value.id === item.ownerID && item.ownerType === "user") {
           return item;
         }
+        // user in the same band where owner of an item
+        if (user.value.id !== item.ownerID && item.ownerType === "user") {
+          let sameBandSharerUser;
+          [...organizations.value].find((org) => {
+            org.sharers.forEach((sharer) => {
+              if (
+                sharer.userType === "user" &&
+                sharer.userID === user.value.id
+              ) {
+                org.sharers.forEach((sharerUser) => {
+                  if (sharerUser.userID === item.ownerID) {
+                    sameBandSharerUser = item.ownerID;
+                  }
+                });
+              }
+            });
+          });
+          if(sameBandSharerUser && item.ownerID === sameBandSharerUser) {
+            return item
+          }
+        }
+        // user in the same aliance which has a band where owner of an item is
+        
         // user && band
         else if (item.ownerType === "company") {
           // user is a the leader of the band
@@ -246,28 +268,29 @@ const {
           );
           // user is a sharer at the band
           let sessionUserSharerBand;
-          [...organizations.value].find(
-            (org) => {
-              org.sharers.forEach(sharer => {
-                if(sharer.userType === 'user' && sharer.userID === user.value.id) {
-                  sessionUserSharerBand = org
-                }
-              })
-            }
-          );
+          [...organizations.value].find((org) => {
+            org.sharers.forEach((sharer) => {
+              if (
+                sharer.userType === "user" &&
+                sharer.userID === user.value.id
+              ) {
+                sessionUserSharerBand = org;
+              }
+            });
+          });
           // user in the band which is a part of aliance
           let sessionUserSharerBandAliance;
-          if(sessionUserSharerBand) {
-
-            [...organizations.value].find(
-              (org) => {
-                org.sharers.forEach(sharer => {
-                  if(sharer.userType === 'company' && sharer.userID === sessionUserSharerBand.id) {
-                    sessionUserSharerBandAliance = org
-                  }
-                })
-              }
-            )
+          if (sessionUserSharerBand) {
+            [...organizations.value].find((org) => {
+              org.sharers.forEach((sharer) => {
+                if (
+                  sharer.userType === "company" &&
+                  sharer.userID === sessionUserSharerBand.id
+                ) {
+                  sessionUserSharerBandAliance = org;
+                }
+              });
+            });
           }
 
           // return item where user is a sharer in the band
@@ -278,11 +301,17 @@ const {
             return item;
           }
           // return item where user is a sharer in the band
-          else if (sessionUserSharerBand && item.ownerID === sessionUserSharerBand.id) {
+          else if (
+            sessionUserSharerBand &&
+            item.ownerID === sessionUserSharerBand.id
+          ) {
             return item;
           }
           // user in the band which a part of aliance
-          else if (sessionUserSharerBandAliance && item.ownerID === sessionUserSharerBandAliance.id) {
+          else if (
+            sessionUserSharerBandAliance &&
+            item.ownerID === sessionUserSharerBandAliance.id
+          ) {
             return item;
           }
         }

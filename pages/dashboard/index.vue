@@ -18,7 +18,21 @@
 
       <!-- USERS AND DEMANDS-->
       <div class="dashboard-item_group">
+
         <div
+            v-if="demands"
+            style="width: 100%"
+            class="dashboard-item height-100 width-100"
+            @click="router.push('/demands')"
+          >
+            <h2 class="dashboard-item_header">Заявки</h2>
+            <!--  -->
+            <div class="dashboard-item_indicator" v-for="data in demandsInfo">
+              <p>{{ data.count }} {{ data.title }}</p>
+            </div>
+          </div>
+
+          <div
           style="height: 100%"
           v-if="users"
           class="dashboard-item height-100 width-100"
@@ -26,21 +40,24 @@
         >
           <h2 class="dashboard-item_header">Контакты</h2>
         </div>
-
-        <div
-          v-if="demands"
-          style="width: 100%"
-          class="dashboard-item height-100 width-100"
-          @click="router.push('/demands')"
-        >
-          <h2 class="dashboard-item_header">Заявки</h2>
-          <!--  -->
-          <div class="dashboard-item_indicator" v-for="data in demandsInfo">
-            <p>{{ data.count }} {{ data.title }}</p>
-          </div>
-        </div>
       </div>
 
+      <div class="dashboard-item_group" v-if="computedMyBands">
+
+        <div
+          v-for="myBand in computedMyBands"
+          style="width: 100%"
+          class="dashboard-item height-100 width-100"
+          @click="router.push(`/organizations/${myBand.id}`)"
+        >
+          <h2 class="dashboard-item_header">{{ myBand.title }}</h2>
+          <!--  -->
+          <!-- <div class="dashboard-item_indicator" v-for="data in demandsInfo">
+            <p>{{ data.count }} {{ data.title }}</p>
+          </div> -->
+          <!-- {{ myBand }}s -->
+        </div>
+      </div>
       <!-- ******** -->
       <!-- <div
         v-if="users"
@@ -68,7 +85,7 @@
             </p>
 
             <p v-if="organizations">
-              {{ computedMyOrganizations }} организовал
+              {{ computedMyBands }} организовал
               {{ computedSharerOrganizations }} соучаствую
             </p>
           </div>
@@ -300,12 +317,12 @@ const userAccesedLink = (moduleName) => {
   }
 };
 
-const computedMyOrganizations = computed(() => {
+const computedMyBands = computed(() => {
   if (organizations.value) {
     let array = [...organizations.value].filter(
       (organization) => organization.ownerID === sessionUser.value.id
     );
-    return array.length;
+    return array;
   }
 });
 
@@ -433,6 +450,7 @@ const transformEndingTheWord = (string) => {
   }
   .dashboard-item_header {
     font-size: 1rem;
+    margin: 0;
   }
 }
 @media screen and (min-width: 768px) and (max-width: 991px) {

@@ -42,7 +42,7 @@
         </div>
       </div>
 
-      <div class="dashboard-item_group" v-if="computedMyBands">
+      <div class="dashboard-item_group" v-if="computedMyBands.length">
 
         <div
           v-for="myBand in computedMyBands"
@@ -55,7 +55,7 @@
           <!-- <div class="dashboard-item_indicator" v-for="data in demandsInfo">
             <p>{{ data.count }} {{ data.title }}</p>
           </div> -->
-          <!-- {{ myBand }}s -->
+          <span>Банда {{ myBand.sharers.length }} чел</span>
         </div>
       </div>
       <!-- ******** -->
@@ -323,6 +323,8 @@ const computedMyBands = computed(() => {
       (organization) => organization.ownerID === sessionUser.value.id
     );
     return array;
+  } else {
+    return 
   }
 });
 

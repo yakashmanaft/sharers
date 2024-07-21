@@ -66,7 +66,7 @@ const searchInput = ref("");
 const warehouseCategories = ref([
   {
     type: "all",
-    name: "Все",
+    name: "Все типы",
   },
   {
     type: "tools",
@@ -163,7 +163,7 @@ onMounted(async () => {
       };
       // Сбрасывает временную переменную количества к действию
       tempQty.value = 0;
-      tempLocation.value = { title: "Все", type: "all", id: null };
+      tempLocation.value = { title: "Все места", type: "all", id: null };
       // tempCreateItemLocation.value = { type: null, id: null };
       // console.log("Закрыть модалку редактирования ТМЦ");
       // console.log(currentItem.value);
@@ -895,7 +895,7 @@ const computedItems = computed(() =>
 
 const tempQty = ref(0);
 const tempLocation = ref({
-  title: "Все",
+  title: "Все места",
   type: "all",
   id: null,
 });
@@ -919,7 +919,7 @@ const submitEditCurrentItem = async () => {
 
   // Сбрасывает временную переменную количества и местонахождения
   tempQty.value = 0;
-  tempLocation.value = { title: "Все", type: "all", id: null };
+  tempLocation.value = { title: "Все меса", type: "all", id: null };
 };
 
 async function updateItem(editedItem) {
@@ -1467,7 +1467,7 @@ watch(tempCreateItemOwner, () => {
                     "
                   >
                     <span
-                      >Все {{ currentItem.qty }} {{ currentItem.measure }}</span
+                      >Все{{ currentItem.qty }} {{ currentItem.measure }}</span
                     >
                   </div>
                 </div>
@@ -1981,15 +1981,20 @@ watch(tempCreateItemOwner, () => {
 
     <!-- FILTERS RADIO BTN -->
     <div class="switch-type_container">
-      <div style="max-width: 100%">
+      <div>
+
+        <!--  -->
+        <div style="display: flex; align-items: center;">
+
         <!-- set location & project -->
         <select
+        style="width: 15rem;"
           class="form-select form-select-sm filter-location_select"
           aria-label=".form-select-sm example"
           v-model="currentCategoryByLocationObj"
         >
           <!-- all locations & projects -->
-          <option :value="{ title: 'all', type: 'all', id: null }">Все</option>
+          <option :value="{ title: 'all', type: 'all', id: null }">Все места</option>
 
           <!-- All locations -->
           <optgroup label="All locations">
@@ -2056,6 +2061,8 @@ watch(tempCreateItemOwner, () => {
             </option>
           </optgroup>
         </select>
+        </div>
+
 
         <!-- set category type -->
         <div class="set-categoty-type_wrapper">
@@ -2074,31 +2081,53 @@ watch(tempCreateItemOwner, () => {
             <label :for="index">{{ category.name }}</label>
           </div>
         </div>
-      </div>
 
-      <div class="search-and-filter_container">
-        <!-- SEARCH -->
-        <div class="search-container">
-          <input
-            type="text"
-            class="form-control search_input"
-            placeholder="Поиск"
-            v-model="searchInput"
-          />
-          <Icon
-            name="ic:baseline-search"
-            size="24px"
-            color="var(--bs-body-color)"
-          />
-        </div>
-
-        <!-- FILTER BY ARCHIVE & DELETED -->
-        <div class="filter-archive_container">
-          <span @click="showItemsInArchive">Архив </span>
-          <span>|</span>
-          <span @click="showItemsInDeleted">Списание</span>
+        <!-- my, myBand -->
+        <div style="margin-top: 1rem; margin-left: 0.5rem;">
+          <ul style="list-style: none; padding: 0; display: flex; gap: 2rem;">
+            <li>
+              <input id="radio-item_my" type="checkbox">
+              <label style="margin-left: 0.5rem;" for="radio-item_my">Мои</label>
+            </li>
+            <li>
+              <input id="radio-item_myBand1" type="checkbox">
+              <label style="margin-left: 0.5rem;" for="radio-item_myBand1">Камини</label>
+            </li>
+          </ul>
         </div>
       </div>
+
+
+        <div class="search-and-filter_container">
+          <!-- SEARCH -->
+          <div class="search-wrapper">
+            <!-- <div class="search_input"> -->
+  
+              <input
+                id="search-input_icon"
+                type="text"
+                class="form-control"
+                placeholder="Поиск"
+                v-model="searchInput"
+              />
+              <label for="search-input_icon">
+                
+                <Icon
+                  name="ic:baseline-search"
+                  size="24px"
+                  color="var(--bs-body-color)"
+                />
+              </label>
+            <!-- </div> -->
+          </div>
+  
+          <!-- FILTER BY ARCHIVE & DELETED -->
+          <div class="filter-archive_container">
+            <span @click="showItemsInArchive">Архив </span>
+            <span>|</span>
+            <span @click="showItemsInDeleted">Списание</span>
+          </div>
+        </div>
     </div>
 
     <!-- ********************** DATA ******************************* -->
@@ -2320,10 +2349,11 @@ td {
   border: none;
 }
 .search-and-filter_container {
+  /* position: fixed!important; */
   align-self: flex-start;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+
   justify-content: space-between !important;
 }
 
@@ -2348,6 +2378,7 @@ td {
 }
 
 .switch-type_el label {
+  white-space: nowrap;
   cursor: pointer;
   display: inline-block;
   padding: 4px 10px;
@@ -2418,20 +2449,20 @@ label #expend-item:checked + .expand-item_icon {
   display: none;
 }
 
-.search-container {
-  position: relative;
-  align-self: flex-start;
+.search-wrapper {
+  /* position: relative;
+  align-self: flex-start; */
 }
 
-.search-container input:focus + .search-container {
-  width: 100%;
+.search-wrapper input:focus + .search-wrapper {
+  /* width: 100%; */
 }
 
-.search-container .icon {
-  position: absolute;
-  top: 50%;
+.search-wrapper .icon {
+  /* position: absolute; */
+  /* top: 50%;
   right: 4px;
-  transform: translateY(-50%);
+  transform: translateY(-50%); */
 }
 
 .form-control,
@@ -2465,6 +2496,11 @@ label #expend-item:checked + .expand-item_icon {
   gap: 1rem;
   margin-top: 1rem;
 }
+.search-wrapper {
+    display: flex;
+    /* position: relative; */
+    align-items: center;
+  }
 
 @media screen and (max-width: 575px) {
   .set-categoty-type_wrapper {
@@ -2480,9 +2516,9 @@ label #expend-item:checked + .expand-item_icon {
     position: absolute;
     right: 0.5rem;
   }
-  .search-and-filter_container .search_input {
+  /* .search-and-filter_container .search_input {
     max-width: 120px;
-  }
+  } */
   .expended-item_opened {
     margin: unset;
   }
@@ -2533,7 +2569,8 @@ label #expend-item:checked + .expand-item_icon {
     align-items: flex-start;
   }
   .search-and-filter_container {
-    position: absolute;
+    /* position: absolute; */
+    position: fixed;
     right: 0.5rem;
   }
   .filter-location_select {
@@ -2650,11 +2687,20 @@ label #expend-item:checked + .expand-item_icon {
   }
   .expended-item_container {
     justify-content: space-between;
+    /* background-color: blue; */
   }
   .expended-item_btns {
+    width: 100%; 
+    /* background-color: green; */
+    flex-direction: row!important;
     display: flex;
     flex-direction: column;
+    justify-content: flex-start;
     gap: 1rem;
+  }
+  .expended-item_btns .dropdown-item{
+    width: max-content;
+    /* background-color: red; */
   }
   .expended-item_btns button {
     color: var(--bs-primary);
@@ -2688,6 +2734,67 @@ label #expend-item:checked + .expand-item_icon {
     /* padding: 4px 10px; */
     /* background-color: var(--bs-danger-bg-subtle); */
   }
+  /* #search-input_icon[type="text"]:focus .search_input{
+    display: block!important;
+  } */
+/* #search-input_icon {
+    color: red;
+  } */
+  /* #search-input_icon {
+    
+  } */
+   .search-wrapper {
+    width: 100%;
+   }
+  .search_input {
+    width: 100%;
+    display: flex;
+    align-items: center;
+  }
+  #search-input_icon {
+    opacity: 0;
+    width: 0;
+    /* transition: all 0.3s ease-in-out;  */
+  }
+  #search-input_icon + label {
+    background-color: var(--bs-body-bg);
+    padding: 1rem;
+    z-index: 1;
+    border-radius: 100%;
+    border: 1px solid var(--bs-border-color);
+    margin-top: -1rem;
+    margin-right: 1rem;
+    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+    
+  }
+  #search-input_icon + label:hover {
+    cursor: pointer;
+  }
+  #search-input_icon:focus {
+    z-index: 3;
+    /* border: 1px solid red; */
+    /* width: 300px; */
+    position: fixed;
+    left: 0;  
+    top: 3rem;
+    width: 100%;
+    opacity: 1;
+    padding: 2rem;
+    border: unset;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: unset;
+    /* background-color: red; */
+    outline-width: 0!important;
+    outline: none!important;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+  }
+  /* #search-input_icon:focus + label { */
+    /* display: absolute;
+    background-color: blue;
+    display: none; */
+  /* } */
 }
 
 @media screen and (min-width: 768px) and (max-width: 991px) {
@@ -2700,6 +2807,11 @@ label #expend-item:checked + .expand-item_icon {
   .item-table_header tr,
   .table-row_wrapper {
     grid-template-columns: 50px 1fr 100px 1fr;
+  }
+  .search-and-filter_container {
+    position: fixed;
+    right: 0;
+    margin-right: 1rem;
   }
   /* .expended-item_content {
     margin-top: 1rem;

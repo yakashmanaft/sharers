@@ -316,16 +316,18 @@
     <!-- TOGGLE TITLE -->
     <!-- таблица ФОТ / Табель учета рабочего времени -->
     <div class="toggle-title">
-      <div v-for="(title, index) in titles.filter(el => {
-        if(organization) {
-
-          if(el.guard && organization.ownerID === user.id) {
-            return el
-          } else if (!el.guard) {
-            return el
+      <div
+        v-for="(title, index) in titles.filter((el) => {
+          if (organization) {
+            if (el.guard && organization.ownerID === user.id) {
+              return el;
+            } else if (!el.guard) {
+              return el;
+            }
           }
-        }
-      })" class="switch-title_el">
+        })"
+        class="switch-title_el"
+      >
         <input
           type="radio"
           :id="`${index}_fund_hours`"
@@ -968,23 +970,15 @@
     <div v-if="currentTitle === 'funds'">
       <div>
         <nuxt-link to="/fundbands/1">к Фондам</nuxt-link>
-        <br>
-      <ul>
-        фонды:
-        <li>
-          балансовая стоимость ТМЦ
-        </li>
-        <li>
-          банки соучастников, где банда в доле
-        </li>
-        <li>
-          банда афилирована к конкретному фонду другой банды по статусу
-        </li>
-        <li>
-          свои кошельки
-        </li>
-      </ul>
-      <br>
+        <br />
+        <ul>
+          фонды:
+          <li>балансовая стоимость ТМЦ</li>
+          <li>банки соучастников, где банда в доле</li>
+          <li>банда афилирована к конкретному фонду другой банды по статусу</li>
+          <li>свои кошельки</li>
+        </ul>
+        <br />
       </div>
       <div>Нет фондов...</div>
     </div>
@@ -1068,12 +1062,17 @@ const titles = ref([
     guard: false,
   },
   {
-    title: "Учет рабочего времени",
+    title: "Учет времени",
     name: "working-hours",
     guard: true,
   },
   {
-    title: "Таблица ФОТ",
+    title: "Выполнение",
+    name: "process-fund",
+    guard: true,
+  },
+  {
+    title: "ФОТ",
     name: "fund",
     guard: true,
   },

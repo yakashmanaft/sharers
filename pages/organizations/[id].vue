@@ -636,6 +636,7 @@
                       >{{ fund.wageRate }} руб./час</span
                     >
                   </p>
+                  <span>{{ calcDynamicWageRate(fund.list, fund.listProduction) }}</span>
                 </div>
 
                 <!-- Статус -->
@@ -807,7 +808,7 @@
                       <th style="padding: unset; padding: 1rem 0" scope="col">
                         п/п
                       </th>
-                      <th scope="col" style="pdding: unset">
+                      <th scope="col" style="padding: unset">
                         <div
                           style="
                             display: flex;
@@ -844,8 +845,8 @@
                       <th scope="col">Час</th>
                       <th scope="col">КТУ</th>
                       <th scope="col">Час * КТУ</th>
-                      <th scope="col">ЗП (Выработка)</th>
-                      <th scope="col">ЗП (К получению)</th>
+                      <th scope="col">ЗП (static wr)</th>
+                      <th scope="col">ЗП (dynamic wr)</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -927,10 +928,9 @@
                       </td>
                       <!-- ЗП (к получению) -->
                       <td
-                        @click="setRecievedSalary()"
                         class="recieved-data-to-change"
                       >
-                        <span>999 999 999,00</span>
+                        <span>{{setRecievedSalary(fund.list, fund.listProduction, el.hours, el.stakeIndex, el.userID)}}</span>
                       </td>
                     </tr>
 
@@ -942,15 +942,47 @@
                         {{ sumTotalShareHours(fund.list) }}
                       </td>
                       <td></td>
-                      <td></td>
+                      <td>{{sumStakeIndexHour(fund.list)}}</td>
                       <td style="font-weight: bold">
                         {{ sumAllProductionSalary(fund.wageRate, fund.list) }}
                       </td>
-                      <td></td>
+                      <td style="font-weight: bold">{{calDynamicTotalSalaryFund(fund.list, fund.listProduction)}}</td>
                     </tr>
                   </tbody>
                 </table>
               </div>
+
+              <!-- УЧЕТ ПРОИЗВОДСТВА -->
+               <div v-if="fund.listProduction" class="table_production">
+                 <table class="table" v-if="currentTitle === 'band_production'">
+                   <thead class="production-header_wrapper">
+                    <tr>
+                      <th>Дата</th>
+                      <th>Работы</th>
+                      <th>Объем</th>
+                    </tr>
+                   </thead>
+                   <tbody>
+                    <tr classs="production-body_wrapper" v-for="(item, index) in fund.listProduction">
+                      <!-- data -->
+                      <td style="white-space: nowrap;">{{ item.date }}</td>
+                      <td>
+                        <p style="margin: 0;">{{ item.title }}</p>
+                        <p style="margin: 0; font-size: 0.8rem;">{{ item.desc }}</p>
+                      </td>
+                      <td>
+                        <p style="margin: 0;">{{ item.qty }}</p>
+                        <p style="margin: 0; font-size: 0.8rem;">x{{ item.price }} = {{ item.price *  item.qty}}</p>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td></td>
+                      <td></td>
+                      <td style="font-weight: bold;">{{ countProductionSalary(fund.listProduction) }}</td>
+                    </tr>
+                   </tbody>
+                 </table>
+               </div>
             </div>
             <!-- <p>{{ fund.list }}</p> -->
           </div>
@@ -965,6 +997,14 @@
         Ни одной таблицы ФОТ...
       </div>
     </div>
+
+    <!-- BAND PRODUCTION
+    <div v-if="currentTitle === 'band_production'">
+      <div v-for="fundsalaryFundArray">
+
+      </div>
+      {{salaryFundArray}}
+    </div> -->
 
     <!-- ФОНДЫ организации -->
     <div v-if="currentTitle === 'funds'">
@@ -1068,7 +1108,7 @@ const titles = ref([
   },
   {
     title: "Выполнение",
-    name: "process-fund",
+    name: "band_production",
     guard: true,
   },
   {
@@ -1151,6 +1191,15 @@ const tempNewFund = ref({
       userID: 1,
       stakeIndex: 1.1,
     },
+  ],
+  listProduction: [
+    {
+      qty: 0,
+      date: new Date(),
+      title: '',
+      desc: '',
+      price: 0
+    }
   ],
   status: {
     date: "",
@@ -1492,6 +1541,14 @@ const countedDays = (start, end) => {
   }
 };
 
+const countProductionSalary = (listProduction) => {
+  if(listProduction.length) {
+    return listProduction.reduce((acc, current) => {
+      return acc += current.qty * current.price
+    }, 0)
+  }
+}
+
 const setWorkHourInDay = (dayDate, sharerHours) => {
   let hour = "-";
 
@@ -1623,6 +1680,96 @@ const sumAllProductionSalary = (wageRate, fundList) => {
   }).format(calc);
   return calcFormatted;
 };
+// Сумма кту часов
+const sumStakeIndexHour = (fundList) => {
+
+  let num = 0;
+
+  if(fundList.length) {
+
+    fundList.forEach((item) => {
+      let sumHours = 0;
+        if (item.hours.length) {
+          item.hours.forEach((item) => {
+            sumHours += +item.hours;
+          });
+        }
+    
+        num += sumHours * item.stakeIndex
+    })
+
+
+    return num.toFixed(2)
+  }
+
+//   const sumTotalShareHours = (fundList) => {
+
+//   if (fundList.length) {
+//     fundList.forEach((item) => {
+//       if (item.hours.length) {
+//         item.hours.forEach((item) => {
+//           num += +item.hours;
+//         });
+//       }
+//     });
+//   }
+
+//   return num;
+// };
+}
+
+// Расчет wage rate исходя из обьема production
+const calcDynamicWageRate = (fundList, listProduction) => {
+  if(fundList.length && listProduction) {
+
+    // let stakeIndexHours = sumStakeIndexHour(fundList)
+    let num = 0;
+    let salary = 0
+
+    if(fundList.length && listProduction.length) {
+
+      fundList.forEach((item) => {
+        let sumHours = 0;
+          if (item.hours.length) {
+            item.hours.forEach((item) => {
+              sumHours += +item.hours;
+            });
+          }
+      
+          num += sumHours * item.stakeIndex
+      })
+
+      
+      // let productionSalary = countProductionSalary(productionList)
+      salary = listProduction.reduce((acc, current) => {
+        return acc += current.qty * current.price
+      }, 0)
+      
+      // return num, salary
+    }
+    
+    return +(salary / num).toFixed(2)
+  }  
+}
+// Расче total sum salaary by weight production
+const calDynamicTotalSalaryFund = (fundList, productionList) => {
+  let result = 0
+  let wageRate = calcDynamicWageRate(fundList, productionList)
+  // let stakeIndexHour = sumStakeIndexHour(fundList)
+  let stakeIndexHour;
+  fundList.forEach(item => {
+    let hours = item.hours.reduce((acc, current) => {
+      return acc += +current.hours
+    }, 0)
+
+    // stakeIndexHour += item.stakeIndex   * hours
+    // console.log(+hours)
+    // console.log(+item.stakeIndex)
+    result += hours * item.stakeIndex * wageRate
+  })
+
+  return result.toFixed(2)
+}
 
 // TRANSLATERS
 const translateFundPeriod = (periodStart, periodEnd) => {
@@ -1807,8 +1954,27 @@ const setWageRateDB = async () => {
 };
 
 // SET SALARY
-const setRecievedSalary = () => {
-  alert("Установка значения ЗП... в разработке");
+const setRecievedSalary = (fundList, productionList, hours, stakeIndex, userID) => {
+  let totalSalary = 0;
+  let wageRate = 0;
+  let stakeHoursIndex = 0;
+
+  if(fundList && productionList) {
+    wageRate = calcDynamicWageRate(fundList, productionList)
+    // el.hours,
+    // el.stakeIndex,
+    // el.userID
+    stakeHoursIndex = calcHourMultiplyStakeIndex(fundList, hours, stakeIndex, userID)
+  } 
+  totalSalary = +wageRate * +stakeHoursIndex
+
+  if( totalSalary) {
+
+    return totalSalary.toFixed(2)
+  } else {
+    return '-'
+  }
+
 };
 
 // SET HOURS

@@ -576,7 +576,7 @@
             <!-- data-bs-toggle="modal"
             data-bs-target="#newWarehouseItemModal" -->
             <button
-              v-if="organization.ownerID === user.id"
+              v-if="organization.ownerID === user.id && currentTitle === 'fund'"
               :data-bs-toggle="organization.ownerID === user.id ? `modal` : ''"
               :data-bs-target="
                 organization.ownerID === user.id ? `#addNewFundModal` : ''
@@ -636,7 +636,9 @@
                       >{{ fund.wageRate }} руб./час</span
                     >
                   </p>
-                  <span>{{ calcDynamicWageRate(fund.list, fund.listProduction) }}</span>
+                  <span>{{
+                    calcDynamicWageRate(fund.list, fund.listProduction)
+                  }}</span>
                 </div>
 
                 <!-- Статус -->
@@ -821,7 +823,11 @@
                           </p>
                           <div
                             @click="
-                              addSharerToFund(fund.list, organization.ownerID)
+                              addSharerToFund(
+                                fund.id,
+                                fund.list,
+                                organization.ownerID
+                              )
                             "
                             class="working-hours_add-sharer_btn"
                             v-if="organization.ownerID === user.id"
@@ -927,10 +933,16 @@
                         <span v-else>-</span>
                       </td>
                       <!-- ЗП (к получению) -->
-                      <td
-                        class="recieved-data-to-change"
-                      >
-                        <span>{{setRecievedSalary(fund.list, fund.listProduction, el.hours, el.stakeIndex, el.userID)}}</span>
+                      <td class="recieved-data-to-change">
+                        <span>{{
+                          setRecievedSalary(
+                            fund.list,
+                            fund.listProduction,
+                            el.hours,
+                            el.stakeIndex,
+                            el.userID
+                          )
+                        }}</span>
                       </td>
                     </tr>
 
@@ -942,47 +954,154 @@
                         {{ sumTotalShareHours(fund.list) }}
                       </td>
                       <td></td>
-                      <td>{{sumStakeIndexHour(fund.list)}}</td>
+                      <td>{{ sumStakeIndexHour(fund.list) }}</td>
                       <td style="font-weight: bold">
                         {{ sumAllProductionSalary(fund.wageRate, fund.list) }}
                       </td>
-                      <td style="font-weight: bold">{{calDynamicTotalSalaryFund(fund.list, fund.listProduction)}}</td>
+                      <td style="font-weight: bold">
+                        {{
+                          calDynamicTotalSalaryFund(
+                            fund.list,
+                            fund.listProduction
+                          )
+                        }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
 
               <!-- УЧЕТ ПРОИЗВОДСТВА -->
-               <div v-if="fund.listProduction" class="table_production">
-                 <table class="table" v-if="currentTitle === 'band_production'">
-                   <thead class="production-header_wrapper">
+              <div v-if="fund.listProduction" class="table_production">
+                <!-- BTN TO ADD PRODUCTION
+                <button
+                  v-if="
+                    organization.ownerID === user.id &&
+                    currentTitle === 'band_production'
+                  "
+                  style="border-radius: 16px; padding: 4px 10px; z-index: 2"
+                  type="button"
+                  class="btn btn-primary btn-create-modal-open-767"
+                >
+                  Добавить выполнение
+                </button> -->
+
+                <table class="table" v-if="currentTitle === 'band_production'">
+                  <thead class="production-header_wrapper">
                     <tr>
-                      <th>Дата</th>
-                      <th>Работы</th>
-                      <th>Объем</th>
+                      <th style="display: flex; align-items: center">
+                        <p style="margin: 0">Дата</p>
+                      </th>
+                      <th scope="col">
+                        <div
+                          style="
+                            display: flex;
+                            align-items: center;
+                            justify-content: flex-start;
+                          "
+                        >
+                          <p style="margin: 0"><span>Выполнение</span></p>
+                          <div
+                            class="add_production_btn"
+                            @click="addProduction()"
+                          >
+                            <Icon
+                              name="material-symbols:add-rounded"
+                              size="32px"
+                              color="var(--bs-primary)"
+                            />
+                          </div>
+                        </div>
+                      </th>
+                      <th style="display: flex; align-items: center; justify-content: flex-end;">
+                        <p style="margin: 0">Объем</p>
+                      </th>
                     </tr>
-                   </thead>
-                   <tbody>
-                    <tr classs="production-body_wrapper" v-for="(item, index) in fund.listProduction">
+                  </thead>
+                  <tbody class="production-body_wrapper">
+                    <!-- <tr> -->
+                    <!-- <td style="border: unset"> -->
+                    <!-- :data-bs-toggle="
+                            organization.ownerID === user.id ? `modal` : ''
+                          "
+                          :data-bs-target="
+                            organization.ownerID === user.id
+                              ? `#addNewFundModal`
+                              : ''
+                          " -->
+                    <!-- <button
+                          v-if="organization.ownerID === user.id"
+                          style="
+                            border-radius: 16px;
+                            padding: 4px 10px;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            z-index: 2;
+                          "
+                          type="button"
+                          class="btn btn-primary btn-create-modal-open-767"
+                        > -->
+                    <!-- @click="checkAndAddFund(organization.ownerID)" -->
+                    <!-- <span>Добавить выполнение</span> -->
+                    <!-- </button> -->
+                    <!-- </td> -->
+                    <!-- <td></td>
+                      <td></td> -->
+                    <!-- </tr> -->
+                    <tr
+                      v-for="(item, index) in fund.listProduction.sort(
+                        (a, b) => {
+                          let adate = new Date(a.date);
+                          let bdate = new Date(b.date);
+                          return bdate - adate;
+                        }
+                      )"
+                    >
                       <!-- data -->
-                      <td style="white-space: nowrap;">{{ item.date }}</td>
-                      <td>
-                        <p style="margin: 0;">{{ item.title }}</p>
-                        <p style="margin: 0; font-size: 0.8rem;">{{ item.desc }}</p>
+                      <td style="white-space: nowrap; display: flex;align-items: center;">
+                        <p style="margin: 0;">{{ item.date }}</p>
                       </td>
                       <td>
-                        <p style="margin: 0;">{{ item.qty }}</p>
-                        <p style="margin: 0; font-size: 0.8rem;">x{{ item.price }} = {{ item.price *  item.qty}}</p>
+                        <p style="margin: 0">
+                          <span>{{ item.title }}</span
+                          ><span
+                            style="
+                              font-size: 0.8rem;
+                              margin-left: 0.5rem;
+                              color: var(--bs-success);
+                              background-color: var(--bs-success-bg-subtle);
+                            "
+                            >{{ translateProject(item.projectID) }}</span
+                          >
+                        </p>
+                        <p style="margin: 0; font-size: 0.8rem">
+                          {{ item.desc }}
+                        </p>
+                      </td>
+                      <td style="text-align: end">
+                        <p style="margin: 0">{{ item.qty }}</p>
+                        <p style="margin: 0; font-size: 0.8rem">
+                          x{{ item.price }} = {{ item.price * item.qty }}
+                        </p>
                       </td>
                     </tr>
                     <tr>
-                      <td></td>
-                      <td></td>
-                      <td style="font-weight: bold;">{{ countProductionSalary(fund.listProduction) }}</td>
+                      <td style="border: unset"></td>
+                      <td style="border: unset"></td>
+                      <td
+                        style="
+                          font-weight: bold;
+                          border: unset;
+                          text-align: end;
+                        "
+                      >
+                        {{ countProductionSalary(fund.listProduction) }}
+                      </td>
                     </tr>
-                   </tbody>
-                 </table>
-               </div>
+                  </tbody>
+                </table>
+              </div>
             </div>
             <!-- <p>{{ fund.list }}</p> -->
           </div>
@@ -1196,10 +1315,11 @@ const tempNewFund = ref({
     {
       qty: 0,
       date: new Date(),
-      title: '',
-      desc: '',
-      price: 0
-    }
+      title: "",
+      desc: "",
+      projectID: 0,
+      price: 0,
+    },
   ],
   status: {
     date: "",
@@ -1448,6 +1568,10 @@ async function getOrganizations() {
   return await $fetch("/api/organizations/organizations");
 }
 
+const { data: projects } = await useFetch("/api/projects/projects", {
+  lze: false,
+});
+
 async function getAllUsers() {
   return await $fetch("/api/usersList/users");
 }
@@ -1542,12 +1666,12 @@ const countedDays = (start, end) => {
 };
 
 const countProductionSalary = (listProduction) => {
-  if(listProduction.length) {
+  if (listProduction.length) {
     return listProduction.reduce((acc, current) => {
-      return acc += current.qty * current.price
-    }, 0)
+      return (acc += current.qty * current.price);
+    }, 0);
   }
-}
+};
 
 const setWorkHourInDay = (dayDate, sharerHours) => {
   let hour = "-";
@@ -1682,94 +1806,88 @@ const sumAllProductionSalary = (wageRate, fundList) => {
 };
 // Сумма кту часов
 const sumStakeIndexHour = (fundList) => {
-
   let num = 0;
 
-  if(fundList.length) {
-
+  if (fundList.length) {
     fundList.forEach((item) => {
       let sumHours = 0;
+      if (item.hours.length) {
+        item.hours.forEach((item) => {
+          sumHours += +item.hours;
+        });
+      }
+
+      num += sumHours * item.stakeIndex;
+    });
+
+    return num.toFixed(2);
+  }
+
+  //   const sumTotalShareHours = (fundList) => {
+
+  //   if (fundList.length) {
+  //     fundList.forEach((item) => {
+  //       if (item.hours.length) {
+  //         item.hours.forEach((item) => {
+  //           num += +item.hours;
+  //         });
+  //       }
+  //     });
+  //   }
+
+  //   return num;
+  // };
+};
+
+// Расчет wage rate исходя из обьема production
+const calcDynamicWageRate = (fundList, listProduction) => {
+  if (fundList.length && listProduction) {
+    // let stakeIndexHours = sumStakeIndexHour(fundList)
+    let num = 0;
+    let salary = 0;
+
+    if (fundList.length && listProduction.length) {
+      fundList.forEach((item) => {
+        let sumHours = 0;
         if (item.hours.length) {
           item.hours.forEach((item) => {
             sumHours += +item.hours;
           });
         }
-    
-        num += sumHours * item.stakeIndex
-    })
 
+        num += sumHours * item.stakeIndex;
+      });
 
-    return num.toFixed(2)
-  }
-
-//   const sumTotalShareHours = (fundList) => {
-
-//   if (fundList.length) {
-//     fundList.forEach((item) => {
-//       if (item.hours.length) {
-//         item.hours.forEach((item) => {
-//           num += +item.hours;
-//         });
-//       }
-//     });
-//   }
-
-//   return num;
-// };
-}
-
-// Расчет wage rate исходя из обьема production
-const calcDynamicWageRate = (fundList, listProduction) => {
-  if(fundList.length && listProduction) {
-
-    // let stakeIndexHours = sumStakeIndexHour(fundList)
-    let num = 0;
-    let salary = 0
-
-    if(fundList.length && listProduction.length) {
-
-      fundList.forEach((item) => {
-        let sumHours = 0;
-          if (item.hours.length) {
-            item.hours.forEach((item) => {
-              sumHours += +item.hours;
-            });
-          }
-      
-          num += sumHours * item.stakeIndex
-      })
-
-      
       // let productionSalary = countProductionSalary(productionList)
       salary = listProduction.reduce((acc, current) => {
-        return acc += current.qty * current.price
-      }, 0)
-      
+        return (acc += current.qty * current.price);
+      }, 0);
+
       // return num, salary
     }
-    
-    return +(salary / num).toFixed(2)
-  }  
-}
+
+    return +(salary / num).toFixed(2);
+  }
+};
 // Расче total sum salaary by weight production
 const calDynamicTotalSalaryFund = (fundList, productionList) => {
-  let result = 0
-  let wageRate = calcDynamicWageRate(fundList, productionList)
+  let result = 0;
+  let wageRate = calcDynamicWageRate(fundList, productionList);
   // let stakeIndexHour = sumStakeIndexHour(fundList)
   let stakeIndexHour;
-  fundList.forEach(item => {
+  fundList.forEach((item) => {
     let hours = item.hours.reduce((acc, current) => {
-      return acc += +current.hours
-    }, 0)
+      return (acc += +current.hours);
+    }, 0);
 
     // stakeIndexHour += item.stakeIndex   * hours
     // console.log(+hours)
     // console.log(+item.stakeIndex)
-    result += hours * item.stakeIndex * wageRate
-  })
+    result += hours * item.stakeIndex * wageRate;
+  });
 
-  return result.toFixed(2)
-}
+  return result.toFixed(2);
+};
 
 // TRANSLATERS
 const translateFundPeriod = (periodStart, periodEnd) => {
@@ -1796,6 +1914,12 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     } else {
       return `${monthTextUpper}`;
     }
+  }
+};
+const translateProject = (projectID) => {
+  if (projects.value.length) {
+    let project = projects.value.find((item) => item.id === +projectID);
+    return project.title;
   }
 };
 // const translateFundListUser = (userID) => {
@@ -1913,6 +2037,9 @@ const checkAndAddFund = (ownerID) => {
   //   // console.log(user.value.id);
   // };
 };
+const addProduction = () => {
+  alert("В разработке...");
+};
 
 // REFRESH
 const refreshSalaryFundArray = async () => {
@@ -1954,27 +2081,36 @@ const setWageRateDB = async () => {
 };
 
 // SET SALARY
-const setRecievedSalary = (fundList, productionList, hours, stakeIndex, userID) => {
+const setRecievedSalary = (
+  fundList,
+  productionList,
+  hours,
+  stakeIndex,
+  userID
+) => {
   let totalSalary = 0;
   let wageRate = 0;
   let stakeHoursIndex = 0;
 
-  if(fundList && productionList) {
-    wageRate = calcDynamicWageRate(fundList, productionList)
+  if (fundList && productionList) {
+    wageRate = calcDynamicWageRate(fundList, productionList);
     // el.hours,
     // el.stakeIndex,
     // el.userID
-    stakeHoursIndex = calcHourMultiplyStakeIndex(fundList, hours, stakeIndex, userID)
-  } 
-  totalSalary = +wageRate * +stakeHoursIndex
-
-  if( totalSalary) {
-
-    return totalSalary.toFixed(2)
-  } else {
-    return '-'
+    stakeHoursIndex = calcHourMultiplyStakeIndex(
+      fundList,
+      hours,
+      stakeIndex,
+      userID
+    );
   }
+  totalSalary = +wageRate * +stakeHoursIndex;
 
+  if (totalSalary) {
+    return totalSalary.toFixed(2);
+  } else {
+    return "-";
+  }
 };
 
 // SET HOURS
@@ -2494,6 +2630,9 @@ watch(periodList, () => {
 .working-hours_add-sharer_btn {
   margin: 0 1rem;
 }
+.add_production_btn:hover {
+  cursor: pointer;
+}
 .working-hours_add-sharer_btn:hover {
   cursor: pointer;
 }
@@ -2551,6 +2690,34 @@ watch(periodList, () => {
 .table-row_wrapper:hover .recieved-data-to-change:hover {
   background-color: var(--bs-primary-bg-subtle) !important;
   color: var(--bs-primary);
+}
+
+.production-header_wrapper tr,
+.production-body_wrapper tr {
+  display: grid !important;
+  grid-template-columns: 100px 1fr 1fr;
+  /* gap: 1rem; */
+  /* position: relative; */
+}
+.production-body_wrapper tr {
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.production-body_wrapper tr:hover td {
+  cursor: pointer;
+  background-color: var(--bs-border-color) !important;
+}
+.production-header_wrapper {
+  border-bottom: 1px solid var(--bs-primary);
+}
+
+.production-header_wrapper tr th {
+  border: unset;
+}
+.production-body_wrapper tr:last-child {
+  border: unset;
+}
+.production-body_wrapper tr td {
+  border: unset;
 }
 
 @media screen and (max-width: 575px) {

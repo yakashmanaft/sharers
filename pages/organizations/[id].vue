@@ -319,7 +319,7 @@
       <div
         v-for="(title, index) in titles.filter((el) => {
           if (organization) {
-            if (el.guard && organization.ownerID === user.id) {
+            if (el.guard && (organization.ownerID === user.id || sessionUserIsInTheBand())) {
               return el;
             } else if (!el.guard) {
               return el;
@@ -1081,6 +1081,7 @@
                             style="
                               font-size: 0.8rem;
                               margin-left: 0.5rem;
+                              padding: 0.1rem 0.3rem;
                               color: var(--bs-success);
                               background-color: var(--bs-success-bg-subtle);
                             "
@@ -1127,6 +1128,19 @@
                   </tbody>
                 </table>
               </div>
+              <div
+                v-if="currentTitle === 'band_production' && !fund.listProduction"
+              >
+                <p style="margin: 0">
+                  Здесь нет выполненных задач.
+                  <span
+                    class="link"
+                    style="color: var(--bs-primary)"
+                    @click="addProduction()"
+                    >Добавить</span
+                  >
+                </p>
+              </div>
             </div>
             <!-- <p>{{ fund.list }}</p> -->
           </div>
@@ -1141,14 +1155,6 @@
         Ни одной таблицы ФОТ...
       </div>
     </div>
-
-    <!-- BAND PRODUCTION
-    <div v-if="currentTitle === 'band_production'">
-      <div v-for="fundsalaryFundArray">
-
-      </div>
-      {{salaryFundArray}}
-    </div> -->
 
     <!-- ФОНДЫ организации -->
     <div v-if="currentTitle === 'funds'">
@@ -1246,6 +1252,11 @@ const titles = ref([
     guard: false,
   },
   {
+    title: "ФОТ",
+    name: "fund",
+    guard: true,
+  },
+  {
     title: "Учет времени",
     name: "working-hours",
     guard: true,
@@ -1253,11 +1264,6 @@ const titles = ref([
   {
     title: "Выполнение",
     name: "band_production",
-    guard: true,
-  },
-  {
-    title: "ФОТ",
-    name: "fund",
     guard: true,
   },
   {
@@ -1396,9 +1402,13 @@ const computedPeriodList = computed(() => {
     );
     periodList.value = [...monthPeriod];
 
-    return periodList.value.filter(
-      (period) => period.periodEnd.slice(0, 4) === currentYear.value
-    );
+    return periodList.value
+      .filter((period) => period.periodEnd.slice(0, 4) === currentYear.value)
+      .sort((a, b) => {
+        let adate = new Date(a.periodStart);
+        let bdate = new Date(b.periodStart);
+        return adate - bdate;
+      });
   }
 });
 
@@ -1466,32 +1476,20 @@ const computedOragnizationsInBand = computed(() => {
   }
 });
 
-// SHARERS LIST
-// const toggleSharersList = () => {
-//   sharersListIsOpened.value = !sharersListIsOpened.value;
-// };
-// const {
-//   pending,
-//   error,
-//   refresh,
-//   data: items,
-//   status,
-// } = await useFetch("/api/warehouse/item", {
-//   lazy: false,
-//   transform: (items: any) => {
-//     return items.sort((x, y) => {
-//       if (x.title < y.title) {
-//         return -1;
-//       }
+// check session user in current band
+const sessionUserIsInTheBand = () => {
+  if(computedUsersInBand.value) {
+    let userInBand = [...computedUsersInBand.value].find(el => el.id === user.value.id)
+    // console.log(userInBand)
 
-//       if (x.title > y.title) {
-//         return 1;
-//       }
+    if(userInBand) {
+      return true
+    } else {
 
-//       return x.locationID - y.locationID;
-//     });
-//   },
-// });
+      return false
+    }
+  }
+}
 
 // ========================= SORT =========================
 
@@ -1703,8 +1701,8 @@ const countProductionSalary = (listProduction) => {
         // currencyDisplay: "code",
       }).format(result);
 
-      return transformedResult
-    } 
+      return transformedResult;
+    }
   }
 };
 
@@ -1956,21 +1954,14 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     }
   }
 };
+// 
 const translateProject = (projectID) => {
   if (projects.value.length) {
     let project = projects.value.find((item) => item.id === +projectID);
     return project.title;
   }
 };
-// const translateFundListUser = (userID) => {
-//   if (computedUsersInBand.value.length && userID) {
-//     let usersArr = [...computedUsersInBand.value].filter(
-//       (user) => user.id === +userID
-//     );
-
-//     return `${usersArr[0].surname} ${usersArr[0].name[0]}. ${usersArr[0].middleName[0]}.`;
-//   }
-// };
+// 
 const translateDayOfWeek = (dayNumber) => {
   if (dayNumber === 0) {
     return "Вс";

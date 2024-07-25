@@ -18,21 +18,20 @@
 
       <!-- USERS AND DEMANDS-->
       <div class="dashboard-item_group">
+        <div
+          v-if="demands"
+          style="width: 100%"
+          class="dashboard-item height-100 width-100"
+          @click="router.push('/demands')"
+        >
+          <h2 class="dashboard-item_header">Заявки</h2>
+          <!--  -->
+          <div class="dashboard-item_indicator" v-for="data in demandsInfo">
+            <p>{{ data.count }} {{ data.title }}</p>
+          </div>
+        </div>
 
         <div
-            v-if="demands"
-            style="width: 100%"
-            class="dashboard-item height-100 width-100"
-            @click="router.push('/demands')"
-          >
-            <h2 class="dashboard-item_header">Заявки</h2>
-            <!--  -->
-            <div class="dashboard-item_indicator" v-for="data in demandsInfo">
-              <p>{{ data.count }} {{ data.title }}</p>
-            </div>
-          </div>
-
-          <div
           style="height: 100%"
           v-if="users"
           class="dashboard-item height-100 width-100"
@@ -43,18 +42,21 @@
       </div>
 
       <div class="dashboard-item_group" v-if="computedMyBands.length">
-
         <div
           v-for="myBand in computedMyBands"
-          style="width: 100%"
+          style="width: 100%; position: relative"
           class="dashboard-item height-100 width-100"
           @click="router.push(`/organizations/${myBand.id}`)"
         >
           <h2 class="dashboard-item_header">{{ myBand.title }}</h2>
-          <!--  -->
-          <!-- <div class="dashboard-item_indicator" v-for="data in demandsInfo">
-            <p>{{ data.count }} {{ data.title }}</p>
-          </div> -->
+          <!-- ICON owner-->
+          <Icon
+            v-if="myBand.ownerID === sessionUser.id"
+            style="position: absolute; top: 0.5rem; right: 0.5rem"
+            name="mdi:crown"
+            size="24px"
+            color="var(--bs-warning)"
+          />
           <span>Банда {{ myBand.sharers.length }} чел</span>
         </div>
       </div>
@@ -103,7 +105,7 @@
         <!--  -->
         <!-- <div>{{ banks?.length }}</div> -->
         <div class="dashboard-item_indicator">
-          <p>{{ banksCount()}}</p>
+          <p>{{ banksCount() }}</p>
         </div>
       </div>
 
@@ -298,8 +300,8 @@ const demandsCount = () => {
   }
 };
 const banksCount = () => {
-  if(banks.value && sessionUser.value) {
-    return 'Показывать бы такто средства'
+  if (banks.value && sessionUser.value) {
+    return "Показывать бы такто средства";
   }
 };
 
@@ -319,12 +321,21 @@ const userAccesedLink = (moduleName) => {
 
 const computedMyBands = computed(() => {
   if (organizations.value) {
-    let array = [...organizations.value].filter(
-      (organization) => organization.ownerID === sessionUser.value.id
-    );
+    let array = [];
+    organizations.value.forEach((organization) => {
+      if (organization.ownerID === sessionUser.value.id) {
+        array.push(organization);
+      } else if (organization.sharers.length !== 0) {
+        organization.sharers.forEach((sharer) => {
+          if (sharer.userID === sessionUser.value.id) {
+            array.push(organization);
+          }
+        });
+      }
+    });
     return array;
   } else {
-    return 
+    return;
   }
 });
 
@@ -455,6 +466,9 @@ const transformEndingTheWord = (string) => {
     margin: 0;
   }
 }
-@media screen and (min-width: 768px) and (max-width: 991px) {
+@media screen and (max-width: 1199px) {
+  .dashboard-container {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 </style>

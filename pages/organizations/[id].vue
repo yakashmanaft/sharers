@@ -919,7 +919,7 @@
                         </span>
                         <span v-else>-</span>
                       </td>
-                      <!-- ЗП (выработка) -->
+                      <!-- ЗП (static wr)-->
                       <td>
                         <span v-if="el.stakeIndex !== ''">
                           {{
@@ -932,7 +932,7 @@
                         </span>
                         <span v-else>-</span>
                       </td>
-                      <!-- ЗП (к получению) -->
+                      <!-- ЗП (dynamic wr) -->
                       <td class="recieved-data-to-change">
                         <span>{{
                           setRecievedSalary(
@@ -954,7 +954,7 @@
                         {{ sumTotalShareHours(fund.list) }}
                       </td>
                       <td></td>
-                      <td>{{ sumStakeIndexHour(fund.list) }}</td>
+                      <td style="font-weight: bold">{{ sumStakeIndexHour(fund.list) }}</td>
                       <td style="font-weight: bold">
                         {{ sumAllProductionSalary(fund.wageRate, fund.list) }}
                       </td>
@@ -966,6 +966,15 @@
                           )
                         }}
                       </td>
+                    </tr>
+                    <tr class="table-row_wrapper">
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td></td>
+                      <td>Остаток:</td>
+                      <td>{{ countTrifleByWageRate(fund.listProduction, fund.wageRate, fund.list) }}</td>
+                      <td>{{ countTrifleByBandProduction(fund.listProduction, fund.list) }}</td>
                     </tr>
                   </tbody>
                 </table>
@@ -1705,6 +1714,83 @@ const countProductionSalary = (listProduction) => {
     }
   }
 };
+// Считаем остаток: сумма выполнения - сумма выработки 
+const countTrifleByBandProduction = (productionList:any, fundList: any) => {
+  if(productionList.length && fundList.length) {
+    // band production
+    let bandProduction = productionList.reduce((acc, current) => {
+      return (acc += current.qty * current.price)
+    }, 0)
+
+    // by hourly
+    let bandHourly = 0
+    let wageRate = calcDynamicWageRate(fundList, productionList);
+    fundList.forEach((item) => {
+    let hours = item.hours.reduce((acc, current) => {
+      return (acc += +current.hours);
+    }, 0);
+
+      if(wageRate) {
+
+        bandHourly += hours * item.stakeIndex * wageRate;
+      }
+      
+    });
+
+    let result = bandProduction - bandHourly
+    let transformResult = new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+  }).format(result);
+    
+    return transformResult
+  }
+}
+// Считаем остаток: сумма выработки - сумма почасовой
+const countTrifleByWageRate = (productionList:any, wageRate:any, fundList: any) => {
+  if(productionList.length && wageRate) {
+    // band production
+    let bandProduction = productionList.reduce((acc, current) => {
+      return (acc += current.qty * current.price)
+    }, 0)
+
+    // by wagehourly
+    let productionSalaryArray = [];
+
+    fundList.forEach((item) => {
+      // console.log(item);
+
+      let sumHoursArray = [];
+
+      item.hours.forEach((el) => {
+        sumHoursArray.push(+el.hours);
+      });
+
+      let sum = sumHoursArray.reduce(
+        (acc, current) => (acc += current * item.stakeIndex * wageRate),
+        0
+      );
+
+      productionSalaryArray.push(sum);
+    });
+    let calc = productionSalaryArray.reduce((acc, current) => (acc += current), 0)
+
+    let result = bandProduction - calc
+    let resultFormatted = new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+    // currencyDisplay: "code",
+  }).format(result);
+
+    return resultFormatted
+  } else {
+    return new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+    // currencyDisplay: "code",
+  }).format(0);
+  }
+}
 
 const setWorkHourInDay = (dayDate, sharerHours) => {
   let hour = "-";
@@ -1907,7 +1993,7 @@ const calDynamicTotalSalaryFund = (fundList, productionList) => {
   let result = 0;
   let wageRate = calcDynamicWageRate(fundList, productionList);
   // let stakeIndexHour = sumStakeIndexHour(fundList)
-  let stakeIndexHour;
+  // let stakeIndexHour;
   fundList.forEach((item) => {
     let hours = item.hours.reduce((acc, current) => {
       return (acc += +current.hours);

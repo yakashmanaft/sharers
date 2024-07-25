@@ -1013,7 +1013,13 @@
                           </div>
                         </div>
                       </th>
-                      <th style="display: flex; align-items: center; justify-content: flex-end;">
+                      <th
+                        style="
+                          display: flex;
+                          align-items: center;
+                          justify-content: flex-end;
+                        "
+                      >
                         <p style="margin: 0">Объем</p>
                       </th>
                     </tr>
@@ -1059,8 +1065,14 @@
                       )"
                     >
                       <!-- data -->
-                      <td style="white-space: nowrap; display: flex;align-items: center;">
-                        <p style="margin: 0;">{{ item.date }}</p>
+                      <td
+                        style="
+                          white-space: nowrap;
+                          display: flex;
+                          align-items: center;
+                        "
+                      >
+                        <p style="margin: 0">{{ item.date }}</p>
                       </td>
                       <td>
                         <p style="margin: 0">
@@ -1075,14 +1087,27 @@
                             >{{ translateProject(item.projectID) }}</span
                           >
                         </p>
-                        <p style="margin: 0; font-size: 0.8rem">
+                        <p
+                          style="
+                            margin: 0;
+                            font-size: 0.8rem;
+                            color: var(--bs-tertiary-color);
+                          "
+                        >
                           {{ item.desc }}
                         </p>
                       </td>
                       <td style="text-align: end">
                         <p style="margin: 0">{{ item.qty }}</p>
-                        <p style="margin: 0; font-size: 0.8rem">
-                          x{{ item.price }} = {{ item.price * item.qty }}
+                        <p
+                          style="
+                            margin: 0;
+                            font-size: 0.8rem;
+                            color: var(--bs-tertiary-color);
+                          "
+                        >
+                          x{{ transformProductionPrice(item.price) }} =
+                          {{ transformProductionPrice(item.price * item.qty) }}
                         </p>
                       </td>
                     </tr>
@@ -1667,9 +1692,19 @@ const countedDays = (start, end) => {
 
 const countProductionSalary = (listProduction) => {
   if (listProduction.length) {
-    return listProduction.reduce((acc, current) => {
+    let result = listProduction.reduce((acc, current) => {
       return (acc += current.qty * current.price);
     }, 0);
+
+    if (result) {
+      let transformedResult = new Intl.NumberFormat("ru-RU", {
+        style: "currency",
+        currency: "RUB",
+        // currencyDisplay: "code",
+      }).format(result);
+
+      return transformedResult
+    } 
   }
 };
 
@@ -1886,7 +1921,12 @@ const calDynamicTotalSalaryFund = (fundList, productionList) => {
     result += hours * item.stakeIndex * wageRate;
   });
 
-  return result.toFixed(2);
+  let transformResult = new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+  }).format(result);
+
+  return transformResult;
 };
 
 // TRANSLATERS
@@ -1989,6 +2029,15 @@ const transformFundStatusDate = (statusDate) => {
     return;
   } else {
     return statusDate;
+  }
+};
+const transformProductionPrice = (price) => {
+  if (price) {
+    let transformedPrice = new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+    }).format(price);
+    return transformedPrice;
   }
 };
 
@@ -2106,8 +2155,13 @@ const setRecievedSalary = (
   }
   totalSalary = +wageRate * +stakeHoursIndex;
 
+  let totalSalaryTransform = new Intl.NumberFormat("ru-RU", {
+    style: "currency",
+    currency: "RUB",
+  }).format(totalSalary);
+
   if (totalSalary) {
-    return totalSalary.toFixed(2);
+    return totalSalaryTransform;
   } else {
     return "-";
   }
@@ -2687,10 +2741,10 @@ watch(periodList, () => {
   cursor: pointer;
 }
 
-.table-row_wrapper:hover .recieved-data-to-change:hover {
+/* .table-row_wrapper:hover .recieved-data-to-change:hover {
   background-color: var(--bs-primary-bg-subtle) !important;
   color: var(--bs-primary);
-}
+} */
 
 .production-header_wrapper tr,
 .production-body_wrapper tr {

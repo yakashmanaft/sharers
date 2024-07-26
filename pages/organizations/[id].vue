@@ -1678,7 +1678,7 @@ const countProductionSalary = (listProduction) => {
 };
 // Считаем остаток: сумма выполнения - сумма выработки 
 const countTrifleByBandProduction = (productionList:any, fundList: any) => {
-  if(productionList.length && fundList.length) {
+  if(productionList && fundList.length) {
     // band production
     let bandProduction = productionList.reduce((acc, current) => {
       return (acc += current.qty * current.price)
@@ -1710,7 +1710,7 @@ const countTrifleByBandProduction = (productionList:any, fundList: any) => {
 }
 // Считаем остаток: сумма выработки - сумма почасовой
 const countTrifleByWageRate = (productionList:any, wageRate:any, fundList: any) => {
-  if(productionList.length && wageRate) {
+  if(productionList && wageRate) {
     // band production
     let bandProduction = productionList.reduce((acc, current) => {
       return (acc += current.qty * current.price)

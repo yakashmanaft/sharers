@@ -6,7 +6,7 @@ import { Container } from "@/shared/container";
 // Соучастники 2022-11-05
 // ЮД 2022-09-12
 // ЮС 2021-05-13
-// AC 2020-11-16 
+// AC 2020-11-16
 
 const route = useRoute();
 
@@ -112,11 +112,11 @@ const computedBalance = computed(() => {
       }
     }, 0);
 
-  let calcFormatted = new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "RUB",
-    // currencyDisplay: "code",
-  }).format(result);
+    let calcFormatted = new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+      // currencyDisplay: "code",
+    }).format(result);
 
     return calcFormatted;
   } else {
@@ -137,6 +137,12 @@ const setTrnsSign = (type) => {
       return "-";
     }
   }
+};
+const transformTransactionDate = (date) => {
+  // return date.toISOString().slice(0, 10)
+  let newDate = new Date(date);
+  console.log(newDate.toLocaleDateString());
+  return newDate.toLocaleDateString();
 };
 </script>
 
@@ -213,7 +219,9 @@ const setTrnsSign = (type) => {
           >
             <!-- DATE of trsn -->
             <div>
-              <span>{{ transactionItem.created_at }}</span>
+              <span>{{
+                transformTransactionDate(transactionItem.created_at)
+              }}</span>
             </div>
 
             <!-- TYPE, QTY, CURRENCY -->
@@ -228,7 +236,9 @@ const setTrnsSign = (type) => {
               <span>{{ transactionItem.type }} - </span>
               <span>{{ transactionItem.appointment }} - </span>
               <span>{{ transactionItem.appointmentTarget }}</span>
-              <span v-if="transactionItem.desc"> - {{transactionItem.desc}}</span>
+              <span v-if="transactionItem.desc">
+                - {{ transactionItem.desc }}</span
+              >
             </div>
 
             <!-- AUTHOR of trsn -->
@@ -248,7 +258,7 @@ const setTrnsSign = (type) => {
         <div v-else>Нет историии транзакций</div>
       </div>
 
-      <br>
+      <br />
     </div>
   </Container>
 </template>
@@ -284,6 +294,7 @@ const setTrnsSign = (type) => {
 .transaction-item_wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
+  margin-top: 1rem;
 }
 
 @media screen and (max-width: 767px) {

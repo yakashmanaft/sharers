@@ -982,18 +982,6 @@
 
               <!-- УЧЕТ ПРОИЗВОДСТВА -->
               <div v-if="fund.listProduction" class="table_production">
-                <!-- BTN TO ADD PRODUCTION
-                <button
-                  v-if="
-                    organization.ownerID === user.id &&
-                    currentTitle === 'band_production'
-                  "
-                  style="border-radius: 16px; padding: 4px 10px; z-index: 2"
-                  type="button"
-                  class="btn btn-primary btn-create-modal-open-767"
-                >
-                  Добавить выполнение
-                </button> -->
 
                 <table class="table" v-if="currentTitle === 'band_production'">
                   <thead class="production-header_wrapper">
@@ -1001,7 +989,7 @@
                       <th style="display: flex; align-items: center">
                         <p style="margin: 0">Дата</p>
                       </th>
-                      <th scope="col">
+                      <th scope="col" style="display: flex;">
                         <div
                           style="
                             display: flex;
@@ -1029,41 +1017,15 @@
                           justify-content: flex-end;
                         "
                       >
+                      <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
+
                         <p style="margin: 0">Объем</p>
+                        <p style="margin: 0;">{{ countProductionSalary(fund.listProduction) }}</p>
+                      </div>
                       </th>
                     </tr>
                   </thead>
                   <tbody class="production-body_wrapper">
-                    <!-- <tr> -->
-                    <!-- <td style="border: unset"> -->
-                    <!-- :data-bs-toggle="
-                            organization.ownerID === user.id ? `modal` : ''
-                          "
-                          :data-bs-target="
-                            organization.ownerID === user.id
-                              ? `#addNewFundModal`
-                              : ''
-                          " -->
-                    <!-- <button
-                          v-if="organization.ownerID === user.id"
-                          style="
-                            border-radius: 16px;
-                            padding: 4px 10px;
-                            position: absolute;
-                            top: 0;
-                            left: 0;
-                            z-index: 2;
-                          "
-                          type="button"
-                          class="btn btn-primary btn-create-modal-open-767"
-                        > -->
-                    <!-- @click="checkAndAddFund(organization.ownerID)" -->
-                    <!-- <span>Добавить выполнение</span> -->
-                    <!-- </button> -->
-                    <!-- </td> -->
-                    <!-- <td></td>
-                      <td></td> -->
-                    <!-- </tr> -->
                     <tr
                       v-for="(item, index) in fund.listProduction.sort(
                         (a, b) => {
@@ -1121,7 +1083,7 @@
                         </p>
                       </td>
                     </tr>
-                    <tr>
+                    <!-- <tr>
                       <td style="border: unset"></td>
                       <td style="border: unset"></td>
                       <td
@@ -1133,7 +1095,7 @@
                       >
                         {{ countProductionSalary(fund.listProduction) }}
                       </td>
-                    </tr>
+                    </tr> -->
                   </tbody>
                 </table>
               </div>

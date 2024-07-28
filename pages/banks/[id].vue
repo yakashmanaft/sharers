@@ -144,6 +144,35 @@ const transformTransactionDate = (date) => {
   console.log(newDate.toLocaleDateString());
   return newDate.toLocaleDateString();
 };
+// CALC
+const calcWalletBanksBalance = (walletID) => {
+  if(transactions.value.length) {
+    let result = transactions.value.reduce((acc, current) => {
+      if(current.walletBankID === walletID) {
+        if(current.type === 'income') {
+          acc += current.price * current.qty
+        } else if (current.type === 'expense') {
+          acc -= current.price * current.qty
+        } else if (current.type === 'invest') {
+          acc -= current.price * current.qty
+        }
+      } else {
+
+        acc += 0
+      }
+      return acc
+    }, 0)
+
+    let calcFormatted = new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+      // currencyDisplay: "code",
+    }).format(result);
+    return calcFormatted
+  } else {
+    return
+  }
+}
 </script>
 
 <template>
@@ -168,15 +197,20 @@ const transformTransactionDate = (date) => {
     </div>
 
     <!-- ======================== balance ========================= -->
+    <div class="balance_container">
+      <!-- total -->
+      <div class="balance-item_wrapper">
+        <h3>Свободные средства</h3>
+        <h4>{{ computedBalance }}</h4>
+      </div>
 
-    <!-- total -->
-    <div style="margin-top: 2rem">
-      <h2>{{ computedBalance }}</h2>
+      <!-- banks acccounts / wallets in the bank-->
+      <div class="balance-item_wrapper" v-for="(wallet, idx) in computedBank.walletBank">
+        <h3>{{ wallet.name }}</h3>
+        <h4>{{ calcWalletBanksBalance(wallet.id) }}</h4>
+      </div>
     </div>
-    <!-- wallet banks -->
-    <div v-for="(wallet, idx) in computedBank.walletBank">
-      {{ wallet }}
-    </div>
+
 
     <!-- current banks ledger -->
     <div style="margin-top: 1rem">
@@ -295,6 +329,20 @@ const transformTransactionDate = (date) => {
   display: grid;
   grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
   margin-top: 1rem;
+}
+.balance_container {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+.balance_container .balance-item_wrapper {
+  background-color: var(--bs-secondary-bg)
+}
+.balance_container .balance-item_wrapper:first-child {
+  background-color: var(--bs-success-bg-subtle)
+}
+.balance_container .balance-item_wrapper h3,
+.balance_container .balance-item_wrapper h4 {
+  margin: 0;
 }
 
 @media screen and (max-width: 767px) {

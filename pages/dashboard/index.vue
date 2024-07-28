@@ -57,7 +57,7 @@
             size="24px"
             color="var(--bs-warning)"
           />
-          <span>Банда {{ myBand.sharers.length }} чел</span>
+          <span>{{ myBand.sharers.length }} чел</span>
         </div>
       </div>
       <!-- ******** -->

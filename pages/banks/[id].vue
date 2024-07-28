@@ -32,6 +32,7 @@ useHead({
   ],
 });
 
+const { user } = useUserSession();
 // const listItemType = ref([])
 
 // Инструмент
@@ -46,6 +47,32 @@ useHead({
 // Материалы
 // stuff
 
+// toggle title data
+const currentTitle = ref('partners')
+const titles = ref([
+  {
+    title: 'Партнеры',
+    name: 'partners',
+    guard: false
+  },
+  {
+    title: 'Операции',
+    name: 'transaction',
+    guard: true
+  },
+  {
+    title: 'Кредиты',
+    name: 'credit',
+    guard: true
+  },
+  {
+    title: 'Инвестиции',
+    name: 'invested',
+    guard: true
+  },
+])
+
+
 const trns_toggle_type = ref("all");
 const trns_toggle_type_array = ref([
   {
@@ -58,11 +85,11 @@ const trns_toggle_type_array = ref([
     name: "expense",
     translate: "Расход",
   },
-  {
-    id: 3,
-    name: "invest",
-    translate: "Инвестиции",
-  },
+  // {
+  //   id: 3,
+  //   name: "invest",
+  //   translate: "Инвестиции",
+  // },
 ]);
 
 const computedBank = computed(() => banks.value[0]);
@@ -85,10 +112,17 @@ const computedBank_ledger = computed(() =>
     if (trns_toggle_type.value === "all") {
       return item;
     }
+    if(trns_toggle_type.value === "expense") {
+      if(item.type === 'expense' || item.type === 'invest') {
+
+        return item
+      }
+    }
     if (item.type === trns_toggle_type.value) {
       return item.type === trns_toggle_type.value;
     }
   })
+
 );
 
 const { data: transactions } = await useFetch("/api/funds/partnerLedger", {
@@ -103,13 +137,20 @@ const computedBalance = computed(() => {
     let result = 0;
 
     result = [...transactions.value].reduce((acc, current) => {
-      if (current.type === "income") {
-        return (acc += current.price * current.qty);
-      } else if (current.type === "invest") {
-        return (acc -= current.price * current.qty);
+      if(current.bankID === +route.params.id) {
+        if(current.type === "income") {
+          return (acc += current.price * current.qty);  
+        } else if (current.type === 'expense') {
+          acc -= current.price * current.qty
+        } else if (current.type === 'invest') {
+          acc -= current.price * current.qty
+        } else {
+          acc += 0
+        }
       } else {
-        return (acc -= current.price * current.qty);
+        acc += 0  
       }
+      return acc
     }, 0);
 
     let calcFormatted = new Intl.NumberFormat("ru-RU", {
@@ -123,6 +164,30 @@ const computedBalance = computed(() => {
     return 0;
   }
 });
+
+const computedCredits = computed(() => {
+  if(transactions.value) {
+    let array = [];
+    transactions.value.filter(el => {
+      if(el.appointment === 'Ссуда') {
+        array.push(el)
+      } else if (el.appointment === 'Выдача кредита') {
+        array.push(el)
+      }
+    })
+
+    return array
+  } else {
+
+    return []
+  }
+})
+const computedInvested = computed(() => {
+  if(transactions.value) {
+    return transactions.value.filter(el => el.type === 'invest' && el.appointment !== 'Выдача кредита')
+  }
+  return []
+})
 
 // TRANSFORM
 const setTrnsSign = (type) => {
@@ -141,9 +206,18 @@ const setTrnsSign = (type) => {
 const transformTransactionDate = (date) => {
   // return date.toISOString().slice(0, 10)
   let newDate = new Date(date);
-  console.log(newDate.toLocaleDateString());
+  // console.log(newDate.toLocaleDateString());
   return newDate.toLocaleDateString();
 };
+const transformToRUB = (number) => {
+  let calcFormatted = new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+      // currencyDisplay: "code",
+    }).format(number);
+  return calcFormatted
+}
+
 // CALC
 const calcWalletBanksBalance = (walletID) => {
   if(transactions.value.length) {
@@ -155,6 +229,8 @@ const calcWalletBanksBalance = (walletID) => {
           acc -= current.price * current.qty
         } else if (current.type === 'invest') {
           acc -= current.price * current.qty
+        } else {
+          acc += 0
         }
       } else {
 
@@ -170,31 +246,76 @@ const calcWalletBanksBalance = (walletID) => {
     }).format(result);
     return calcFormatted
   } else {
-    return
+    return 0
   }
 }
+const calcReturnedInvestings = (appointmentTarget) => {
+  if(transactions.value.length) {
+    let result;
+
+   let array = [...transactions.value].filter(item => {
+      if(item.appointmentTarget === appointmentTarget && item.appointment === 'Возврат') {
+        return item
+      } 
+    })
+
+    if(array.length) {
+
+      result = array.reduce((acc, current) => {
+        return (acc += current.price * current.qty)
+      }, 0)
+    } else {
+      result = 0
+    }
+    let calcFormatted = new Intl.NumberFormat("ru-RU", {
+      style: "currency",
+      currency: "RUB",
+      // currencyDisplay: "code",
+    }).format(result);
+    return calcFormatted
+    // return result
+  } else {
+    return 0
+  }
+}
+
+// CHECK DATA
+const sessionUserIsPartner = () => {
+  if(computedBank.value.users) {
+    let sharerIsaPatnerOfBank = [...computedBank.value.users].find(el => {
+      if(el.partnerType === 'user') {
+        if(+el.partnerID === user.value.id) {
+          return el
+        }
+      }
+    })
+    return sharerIsaPatnerOfBank ? true : false
+  }
+}
+
+// =================== =========================
+// CREATE FUNCTIONS
+const createCreditItem = () => {
+  alert('Создание кредита в разработке...')
+}
+const createInvestItem = () => {
+  alert('Создание инвестиции в разработке...')
+}
+
 </script>
 
 <template>
   <Container style="margin-top: 5rem">
     <h1 class="show-max-767">Банк {{ computedBank.title }}</h1>
 
-    <div>
+    <!-- <div>
       {{ computedBank }}
-    </div>
+    </div> -->
 
     <!-- Дата создания -->
-    <div style="margin-top: 1rem">
+    <!-- <div style="margin-top: 1rem">
       <p>Дата создания: {{ computedBank.created_at }}</p>
-    </div>
-
-    <!-- Партнеры фонда -->
-    <div style="margin-top: 1rem">
-      <h2>Партнеры</h2>
-      <div v-for="partner in computedBank.users">
-        {{ partner }}
-      </div>
-    </div>
+    </div> -->
 
     <!-- ======================== balance ========================= -->
     <div class="balance_container">
@@ -211,10 +332,27 @@ const calcWalletBanksBalance = (walletID) => {
       </div>
     </div>
 
+    <!-- Переключатель заголовков -->
+    <div class="toggle-title">
+      <div v-for="(title, index) in titles.filter((el) => {
+        if(computedBank) {
+          if(el.guard && (computedBank.creatorID === user.id || sessionUserIsPartner())) {
+            return el
+          } else if (!el.guard) {
+            return el
+          }
+        }
+      })" class="switch-title_el">
+        <input type="radio" :id="`${index}_bank_wallet`" :value="title.name" v-model="currentTitle">
+        <label :for="`${index}_bank_wallet`"><h2>{{ title.title }}</h2></label>
+      </div>
+    </div>
 
-    <!-- current banks ledger -->
-    <div style="margin-top: 1rem">
-      <h2>Операции</h2>
+    <!-- ===================   ======================= -->
+
+    <!-- Операции -->
+    <div v-if="currentTitle === 'transaction'">
+      <!-- <h2>Операции</h2> -->
 
       <!-- Фильтры по транзакциям -->
       <div class="filter-toggle-type_container">
@@ -294,10 +432,166 @@ const calcWalletBanksBalance = (walletID) => {
 
       <br />
     </div>
+
+    <!-- Партнеры -->
+    <div v-if="currentTitle === 'partners'">
+      <!-- <h2>Партнеры</h2> -->
+      <div v-for="partner in computedBank.users">
+        {{ partner }}
+      </div>
+    </div>
+
+    <!-- Кредиты -->
+    <div v-if="currentTitle === 'credit'">
+
+      <div v-if="computedCredits">
+
+        <!--  -->
+        <div class="transaction-item_wrapper" v-for="transactionItem in computedCredits">
+
+          <!-- DATE of trsn -->
+          <div>
+            <span>{{
+              transformTransactionDate(transactionItem.created_at)
+            }}</span>
+          </div>
+
+          <!-- TYPE, QTY, CURRENCY -->
+          <div>
+            <div>
+              <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
+              <span>Тело кредита: {{ transformToRUB(transactionItem.price * transactionItem.qty) }}</span>
+              <!-- calcReturnedInvestings -->
+            </div>
+            <div>
+              <span>Процент:ххх</span>
+            </div>
+            <div>
+              <span>Вернулось: {{ calcReturnedInvestings(transactionItem.appointmentTarget) }}</span>
+            </div>
+          </div>
+
+
+          <!-- APPOINTMENT, APPOINTMENT TARGET -->
+          <div>
+            <span>{{ transactionItem.type }} - </span>
+            <span>{{ transactionItem.appointment }} - </span>
+            <span>{{ transactionItem.appointmentTarget }}</span>
+            <span v-if="transactionItem.desc">
+              - {{ transactionItem.desc }}</span
+            >
+            <!--  -->
+            <div v-if="transactionItem.appointment === 'Выдача кредита' || transactionItem.appointment === 'Ссуда'">
+              <div v-if="transactions">
+                <div v-for="item in transactions.filter(el => {
+                  if(el.type === 'income' && el.appointment === 'Возврат' && transactionItem.appointmentTarget === el.appointmentTarget) {
+                    return el
+                  }
+                }).reverse()">
+                  <p>{{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointment }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ transactionItem.walletBankID }}</p>
+                </div>
+              </div>
+            </div> 
+          </div>
+
+          <!-- AUTHOR of trsn -->
+          <div>
+            <span
+              >{{ transactionItem.authorType }} -
+              {{ transactionItem.authorID }}</span
+            >
+          </div>
+
+          <!-- WALLET of BANK -->
+          <div>
+            <span>walletID: {{ transactionItem.walletBankID }}</span>
+          </div>
+        </div>
+      </div>
+      <div v-else>
+        Нет кредитов. <span class="link" @click="createCreditItem()">Начать</span>
+      </div>
+    </div>
+    <!-- Инвестиции -->
+    <div v-if="currentTitle === 'invested'">
+      
+      <div v-if="computedInvested">
+
+        <!--  -->
+        <div class="transaction-item_wrapper" v-for="transactionItem in computedInvested">
+          <!-- DATE of trsn -->
+          <div>
+            <span>{{
+              transformTransactionDate(transactionItem.created_at)
+            }}</span>
+          </div>
+
+          <!-- TYPE, QTY, CURRENCY -->
+          <div>
+            <div>
+              <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
+              <span>Тело инвестиции: {{ transformToRUB(transactionItem.price * transactionItem.qty) }}</span>
+              <!-- <span>{{ transactionItem.currency }}</span> -->
+            </div>
+            <!-- <div>
+              <span>Процент:ххх</span>
+            </div> -->
+            <div>
+              <span>Вернулось:{{ calcReturnedInvestings(transactionItem.appointmentTarget) }}</span>
+            </div>
+          </div>
+
+          <!-- APPOINTMENT, APPOINTMENT TARGET -->
+          <div>
+            <span>{{ transactionItem.type }} - </span>
+            <span>{{ transactionItem.appointment }} - </span>
+            <span>{{ transactionItem.appointmentTarget }}</span>
+            <span v-if="transactionItem.desc">
+              - {{ transactionItem.desc }}</span
+            >
+            <!--  -->
+            <div>
+              <div v-if="transactions">
+                <div v-for="item in transactions.filter((el) => {
+                  if(el.type === 'income' && el.appointment === 'Возврат' && transactionItem.appointmentTarget === el.appointmentTarget) {
+                    return el
+                  }
+                }).reverse()">
+                  <p>{{ item.appointment }} - {{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ transactionItem.walletBankID }}</p>
+                </div>
+              </div>  
+            </div>
+          </div>
+
+          <!-- AUTHOR of trsn -->
+          <div>
+            <span
+              >{{ transactionItem.authorType }} -
+              {{ transactionItem.authorID }}</span
+            >
+          </div>
+
+          <!-- WALLET of BANK -->
+          <div>
+            <span>walletID: {{ transactionItem.walletBankID }}</span>
+          </div>  
+        </div>
+      </div>
+      <div v-else>
+        Нет инвестиций. <span class="link" @click="createInvestItem()">Начать</span>
+      </div>
+    </div>
   </Container>
 </template>
 
 <style scoped>
+.link {
+  color: var(--bs-primary);
+}
+.link:hover {
+  cursor: pointer;
+  color: var(--bs-primary);
+}
 .filter-toggle-type_container {
   margin-top: 1rem;
   display: flex;
@@ -305,7 +599,7 @@ const calcWalletBanksBalance = (walletID) => {
   gap: 1rem;
 }
 .transaction-list_container {
-  margin-top: 1rem;
+  margin-top: 2rem;
 }
 .filter-toggle-type_el input[type="radio"] {
   opacity: 0;
@@ -331,18 +625,59 @@ const calcWalletBanksBalance = (walletID) => {
   margin-top: 1rem;
 }
 .balance_container {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
 }
 .balance_container .balance-item_wrapper {
-  background-color: var(--bs-secondary-bg)
+  background-color: var(--bs-secondary-bg);
+  padding: 1rem;
 }
 .balance_container .balance-item_wrapper:first-child {
-  background-color: var(--bs-success-bg-subtle)
+  background-color: var(--bs-success-bg-subtle);
+  color: var(--bs-success);
 }
 .balance_container .balance-item_wrapper h3,
 .balance_container .balance-item_wrapper h4 {
   margin: 0;
+}
+.balance_container .balance-item_wrapper h3 {
+  font-size: 1rem;
+  color: var(--bs-tertiary-color);
+  font-weight: unset;
+}
+
+/* TOGGLle TITLE */
+.toggle-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow-x: scroll;
+  scrollbar-width: none;
+  /* border-bottom: 1px solid var(--bs-tertiary-color); */
+  padding-bottom: 1rem;
+  margin-top: 2rem;
+}
+.toggle-title::-webkit-scrollbar {
+  display: none;
+}
+
+.switch-title_el input[type="radio"] {
+  opacity: 0;
+  position: fixed;
+  width: 0;
+}
+.switch-title_el label h2 {
+  color: var(--bs-tertiary-color);
+  white-space: nowrap;
+}
+.switch-title_el label h2:hover {
+  cursor: pointer;
+}
+
+.switch-title_el input[type="radio"]:checked + label h2 {
+  color: unset;
 }
 
 @media screen and (max-width: 767px) {

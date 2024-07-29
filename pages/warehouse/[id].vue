@@ -118,7 +118,9 @@ onMounted(async () => {
 
   itemLocations.value = items.value.filter((element) => {
     if (
-      element.type === "stuff" &&
+      (element.type === "stuff" || element.type === "consumables") &&
+      // element.type === "stuff" &&
+      // element.type === "consumables" &&
       element.title === item.value.title &&
       element.location !== "deleted" &&
       element.location !== "archive"
@@ -175,7 +177,7 @@ onMounted(async () => {
   }
 
   // showCase();
-  if (!switchedItem.value.length) {
+  if (!switchedItem.value) {
     infoActionBtn.value = "history";
   }
 });
@@ -276,6 +278,8 @@ const translateItemType = (type) => {
     return "Техника";
   } else if (type === "office equipment") {
     return "Оргтехника";
+  }else if (type === "equipment") {
+    return "Экипировка"
   } else {
     return type;
   }
@@ -1005,6 +1009,7 @@ watch(infoActionBtn, (next, prev) => {
               </tr>
             </tbody>
           </table>
+          {{itemLocations}}
         </div>
       </div>
     </div>

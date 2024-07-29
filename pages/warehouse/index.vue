@@ -88,6 +88,10 @@ const warehouseCategories = ref([
     type: "office equipment",
     name: "Оргтехника",
   },
+  {
+    type: "equipment",
+    name: "Экипировка"
+  }
 ]);
 //
 const categoriesCopy = (array) => {
@@ -2091,7 +2095,11 @@ watch(tempCreateItemOwner, () => {
             </li>
             <li>
               <input id="radio-item_myBand1" type="checkbox">
-              <label style="margin-left: 0.5rem;" for="radio-item_myBand1">Камини</label>
+              <label style="margin-left: 0.5rem;" for="radio-item_myBand1">Моя банда 1</label>
+            </li>
+            <li>
+              <input id="radio-item_sharersBand1" type="checkbox">
+              <label style="margin-left: 0.5rem;" for="radio-item_myBand1">Я в банде 1</label>
             </li>
           </ul>
         </div>

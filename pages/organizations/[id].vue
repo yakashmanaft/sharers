@@ -83,6 +83,10 @@
           <div class="modal-body">
             currentFundID: {{ currentFundID }}
             <br />
+            Общий список
+            {{ computedUsersInBand }}
+            {{ computedTempListOfSharers }}
+            <br />
             Добавляем к этому массиву: {{ tempSelectedFund }}
           </div>
           <!-- MODAL FOTER -->
@@ -319,7 +323,10 @@
       <div
         v-for="(title, index) in titles.filter((el) => {
           if (organization) {
-            if (el.guard && (organization.ownerID === user.id || sessionUserIsInTheBand())) {
+            if (
+              el.guard &&
+              (organization.ownerID === user.id || sessionUserIsInTheBand())
+            ) {
               return el;
             } else if (!el.guard) {
               return el;
@@ -954,7 +961,9 @@
                         {{ sumTotalShareHours(fund.list) }}
                       </td>
                       <td></td>
-                      <td style="font-weight: bold">{{ sumStakeIndexHour(fund.list) }}</td>
+                      <td style="font-weight: bold">
+                        {{ sumStakeIndexHour(fund.list) }}
+                      </td>
                       <td style="font-weight: bold">
                         {{ sumAllProductionSalary(fund.wageRate, fund.list) }}
                       </td>
@@ -973,8 +982,23 @@
                       <td></td>
                       <td></td>
                       <td>Остаток:</td>
-                      <td>{{ countTrifleByWageRate(fund.listProduction, fund.wageRate, fund.list) }}</td>
-                      <td>{{ countTrifleByBandProduction(fund.listProduction, fund.list) }}</td>
+                      <td>
+                        {{
+                          countTrifleByWageRate(
+                            fund.listProduction,
+                            fund.wageRate,
+                            fund.list
+                          )
+                        }}
+                      </td>
+                      <td>
+                        {{
+                          countTrifleByBandProduction(
+                            fund.listProduction,
+                            fund.list
+                          )
+                        }}
+                      </td>
                     </tr>
                   </tbody>
                 </table>
@@ -982,14 +1006,13 @@
 
               <!-- УЧЕТ ПРОИЗВОДСТВА -->
               <div v-if="fund.listProduction" class="table_production">
-
                 <table class="table" v-if="currentTitle === 'band_production'">
                   <thead class="production-header_wrapper">
                     <tr>
                       <th style="display: flex; align-items: center">
                         <p style="margin: 0">Дата</p>
                       </th>
-                      <th scope="col" style="display: flex;">
+                      <th scope="col" style="display: flex">
                         <div
                           style="
                             display: flex;
@@ -1017,11 +1040,19 @@
                           justify-content: flex-end;
                         "
                       >
-                      <div style="display: flex; flex-direction: column; align-items: flex-end; justify-content: center;">
-
-                        <p style="margin: 0">Объем</p>
-                        <p style="margin: 0;">{{ countProductionSalary(fund.listProduction) }}</p>
-                      </div>
+                        <div
+                          style="
+                            display: flex;
+                            flex-direction: column;
+                            align-items: flex-end;
+                            justify-content: center;
+                          "
+                        >
+                          <p style="margin: 0">Объем</p>
+                          <p style="margin: 0">
+                            {{ countProductionSalary(fund.listProduction) }}
+                          </p>
+                        </div>
                       </th>
                     </tr>
                   </thead>
@@ -1100,7 +1131,9 @@
                 </table>
               </div>
               <div
-                v-if="currentTitle === 'band_production' && !fund.listProduction"
+                v-if="
+                  currentTitle === 'band_production' && !fund.listProduction
+                "
               >
                 <p style="margin: 0">
                   Здесь нет выполненных задач.
@@ -1124,6 +1157,17 @@
         "
       >
         Ни одной таблицы ФОТ...
+        <span
+          v-if="organization.ownerID === user.id"
+          style="color: var(--bs-primary)"
+          class="link"
+          @click="checkAndAddFund(organization.ownerID)"
+          :data-bs-toggle="organization.ownerID === user.id ? `modal` : ''"
+          :data-bs-target="
+            organization.ownerID === user.id ? `#addNewFundModal` : ''
+          "
+          >Добавить</span
+        >
       </div>
     </div>
 
@@ -1272,6 +1316,20 @@ const items = ref([]);
 
 // add sharer to selected fund list
 const tempSelectedFund = ref([]);
+const computedTempListOfSharers = computed(() => {
+  let result = [];
+  // if (computedOragnizationsInBand.value) {
+  //   // [...computedOragnizationsInBand.value].forEach(company =>
+  //   //   result = [...company.sharers]
+  //   // )
+  //   // result = [...computedOragnizationsInBand.value]
+  // } else if (computedUsersInBand.value) {
+  //   [...computedUsersInBand.value].forEach((sharer) =>
+  //     result.push({ sharerID: sharer.id })
+  //   );
+  // }
+  return result;
+});
 // set hours obj
 const tempSetSharerHour = ref({
   userID: null,
@@ -1449,18 +1507,19 @@ const computedOragnizationsInBand = computed(() => {
 
 // check session user in current band
 const sessionUserIsInTheBand = () => {
-  if(computedUsersInBand.value) {
-    let userInBand = [...computedUsersInBand.value].find(el => el.id === user.value.id)
+  if (computedUsersInBand.value) {
+    let userInBand = [...computedUsersInBand.value].find(
+      (el) => el.id === user.value.id
+    );
     // console.log(userInBand)
 
-    if(userInBand) {
-      return true
+    if (userInBand) {
+      return true;
     } else {
-
-      return false
+      return false;
     }
   }
-}
+};
 
 // ========================= SORT =========================
 
@@ -1676,45 +1735,47 @@ const countProductionSalary = (listProduction) => {
     }
   }
 };
-// Считаем остаток: сумма выполнения - сумма выработки 
-const countTrifleByBandProduction = (productionList:any, fundList: any) => {
-  if(productionList && fundList.length) {
+// Считаем остаток: сумма выполнения - сумма выработки
+const countTrifleByBandProduction = (productionList: any, fundList: any) => {
+  if (productionList && fundList.length) {
     // band production
     let bandProduction = productionList.reduce((acc, current) => {
-      return (acc += current.qty * current.price)
-    }, 0)
-
-    // by hourly
-    let bandHourly = 0
-    let wageRate = calcDynamicWageRate(fundList, productionList);
-    fundList.forEach((item) => {
-    let hours = item.hours.reduce((acc, current) => {
-      return (acc += +current.hours);
+      return (acc += current.qty * current.price);
     }, 0);
 
-      if(wageRate) {
+    // by hourly
+    let bandHourly = 0;
+    let wageRate = calcDynamicWageRate(fundList, productionList);
+    fundList.forEach((item) => {
+      let hours = item.hours.reduce((acc, current) => {
+        return (acc += +current.hours);
+      }, 0);
 
+      if (wageRate) {
         bandHourly += hours * item.stakeIndex * wageRate;
       }
-      
     });
 
-    let result = bandProduction - bandHourly
+    let result = bandProduction - bandHourly;
     let transformResult = new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "RUB",
-  }).format(result);
-    
-    return transformResult
+      style: "currency",
+      currency: "RUB",
+    }).format(result);
+
+    return transformResult;
   }
-}
+};
 // Считаем остаток: сумма выработки - сумма почасовой
-const countTrifleByWageRate = (productionList:any, wageRate:any, fundList: any) => {
-  if(productionList && wageRate) {
+const countTrifleByWageRate = (
+  productionList: any,
+  wageRate: any,
+  fundList: any
+) => {
+  if (productionList && wageRate) {
     // band production
     let bandProduction = productionList.reduce((acc, current) => {
-      return (acc += current.qty * current.price)
-    }, 0)
+      return (acc += current.qty * current.price);
+    }, 0);
 
     // by wagehourly
     let productionSalaryArray = [];
@@ -1735,24 +1796,27 @@ const countTrifleByWageRate = (productionList:any, wageRate:any, fundList: any) 
 
       productionSalaryArray.push(sum);
     });
-    let calc = productionSalaryArray.reduce((acc, current) => (acc += current), 0)
+    let calc = productionSalaryArray.reduce(
+      (acc, current) => (acc += current),
+      0
+    );
 
-    let result = bandProduction - calc
+    let result = bandProduction - calc;
     let resultFormatted = new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "RUB",
-    // currencyDisplay: "code",
-  }).format(result);
+      style: "currency",
+      currency: "RUB",
+      // currencyDisplay: "code",
+    }).format(result);
 
-    return resultFormatted
+    return resultFormatted;
   } else {
     return new Intl.NumberFormat("ru-RU", {
-    style: "currency",
-    currency: "RUB",
-    // currencyDisplay: "code",
-  }).format(0);
+      style: "currency",
+      currency: "RUB",
+      // currencyDisplay: "code",
+    }).format(0);
   }
-}
+};
 
 const setWorkHourInDay = (dayDate, sharerHours) => {
   let hour = "-";
@@ -2002,14 +2066,14 @@ const translateFundPeriod = (periodStart, periodEnd) => {
     }
   }
 };
-// 
+//
 const translateProject = (projectID) => {
   if (projects.value.length) {
     let project = projects.value.find((item) => item.id === +projectID);
     return project.title;
   }
 };
-// 
+//
 const translateDayOfWeek = (dayNumber) => {
   if (dayNumber === 0) {
     return "Вс";

@@ -325,9 +325,9 @@ const computedMyBands = computed(() => {
     organizations.value.forEach((organization) => {
       if (organization.ownerID === sessionUser.value.id) {
         array.push(organization);
-      } else if (organization.sharers.length !== 0) {
+      } else if (organization.sharers.length !== 0 && organization.ownerID !== sessionUser.value.id) {
         organization.sharers.forEach((sharer) => {
-          if (sharer.userID === sessionUser.value.id) {
+          if (sharer.userType === 'user' && sharer.userID === sessionUser.value.id) {
             array.push(organization);
           }
         });

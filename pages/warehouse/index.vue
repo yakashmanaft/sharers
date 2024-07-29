@@ -2099,7 +2099,7 @@ watch(tempCreateItemOwner, () => {
             </li>
             <li>
               <input id="radio-item_sharersBand1" type="checkbox">
-              <label style="margin-left: 0.5rem;" for="radio-item_myBand1">Я в банде 1</label>
+              <label style="margin-left: 0.5rem;" for="radio-item_sharersBand1">Я в банде 1</label>
             </li>
           </ul>
         </div>

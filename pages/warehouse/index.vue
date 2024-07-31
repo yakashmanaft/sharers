@@ -2,6 +2,7 @@
 import { Container } from "@/shared/container";
 import { H3Error } from "h3";
 import { v4 as uuidv4 } from "uuid";
+import html2pdf from "html2pdf.js";
 
 useHead({
   title: "Склад",
@@ -90,8 +91,8 @@ const warehouseCategories = ref([
   },
   {
     type: "equipment",
-    name: "Экипировка"
-  }
+    name: "Экипировка",
+  },
 ]);
 //
 const categoriesCopy = (array) => {
@@ -258,12 +259,12 @@ const {
               }
             });
           });
-          if(sameBandSharerUser && item.ownerID === sameBandSharerUser) {
-            return item
+          if (sameBandSharerUser && item.ownerID === sameBandSharerUser) {
+            return item;
           }
         }
         // user in the same aliance which has a band where owner of an item is
-        
+
         // user && band
         else if (item.ownerType === "company") {
           // user is a the leader of the band
@@ -1236,6 +1237,21 @@ const checkAndCreate = async (item) => {
   }
 };
 
+// CONVERT TO PDF
+const convertListToPDF = () => {
+  const element = document.getElementById("element-to-print");
+  const options = {
+    margin: 1,
+    filename: "my-document.pdf",
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
+  };
+  html2pdf(element, options);
+  // html2pdf().set(options).from(element).save();
+  // alert("В разработке...");
+};
+
 // ******** WATCHERS ********
 
 // Следим за изменением фильтров и обновляем данные
@@ -1981,94 +1997,94 @@ watch(tempCreateItemOwner, () => {
       </div>
     </div>
 
+    <!--  -->
     <!-- ********************* ФИЛЬТРЫ ********************** -->
 
     <!-- FILTERS RADIO BTN -->
     <div class="switch-type_container">
       <div>
-
         <!--  -->
-        <div style="display: flex; align-items: center;">
+        <div style="display: flex; align-items: center">
+          <!-- set location & project -->
+          <select
+            style="width: 15rem"
+            class="form-select form-select-sm filter-location_select"
+            aria-label=".form-select-sm example"
+            v-model="currentCategoryByLocationObj"
+          >
+            <!-- all locations & projects -->
+            <option :value="{ title: 'all', type: 'all', id: null }">
+              Все места
+            </option>
 
-        <!-- set location & project -->
-        <select
-        style="width: 15rem;"
-          class="form-select form-select-sm filter-location_select"
-          aria-label=".form-select-sm example"
-          v-model="currentCategoryByLocationObj"
-        >
-          <!-- all locations & projects -->
-          <option :value="{ title: 'all', type: 'all', id: null }">Все места</option>
+            <!-- All locations -->
+            <optgroup label="All locations">
+              <option :value="{ title: 'location', type: 'sklad', id: null }">
+                Все склады
+              </option>
+              <option :value="{ title: 'location', type: 'repair', id: null }">
+                Все repair
+              </option>
+              <option :value="{ title: 'location', type: 'office', id: null }">
+                Все офисы
+              </option>
+              <option :value="{ title: 'project', type: 'all', id: null }">
+                Все проекты
+              </option>
+            </optgroup>
 
-          <!-- All locations -->
-          <optgroup label="All locations">
-            <option :value="{ title: 'location', type: 'sklad', id: null }">
-              Все склады
-            </option>
-            <option :value="{ title: 'location', type: 'repair', id: null }">
-              Все repair
-            </option>
-            <option :value="{ title: 'location', type: 'office', id: null }">
-              Все офисы
-            </option>
-            <option :value="{ title: 'project', type: 'all', id: null }">
-              Все проекты
-            </option>
-          </optgroup>
+            <!-- Locations -->
+            <optgroup label="Locations">
+              <option
+                :value="{
+                  title: 'location',
+                  type: location.type,
+                  id: location.id,
+                }"
+                v-for="(location, i) in locations"
+              >
+                <!-- {{ location.type }} |  -->
+                {{ location.title }}
+                <!-- | {{ location.address }} -->
+              </option>
+            </optgroup>
 
-          <!-- Locations -->
-          <optgroup label="Locations">
-            <option
-              :value="{
-                title: 'location',
-                type: location.type,
-                id: location.id,
-              }"
-              v-for="(location, i) in locations"
-            >
-              <!-- {{ location.type }} |  -->
-              {{ location.title }}
-              <!-- | {{ location.address }} -->
-            </option>
-          </optgroup>
+            <!-- projects -->
+            <optgroup label="Проекты">
+              <option
+                :value="{ title: 'project', id: project.id }"
+                v-for="(project, i) in projects"
+              >
+                {{ project.title }}
+                <!-- | {{ project.address }} -->
+              </option>
+            </optgroup>
 
-          <!-- projects -->
-          <optgroup label="Проекты">
-            <option
-              :value="{ title: 'project', id: project.id }"
-              v-for="(project, i) in projects"
-            >
-              {{ project.title }}
-              <!-- | {{ project.address }} -->
-            </option>
-          </optgroup>
-
-          <!-- Archive & deleted -->
-          <optgroup label="Прочее">
-            <option
-              :value="{
-                title: 'location',
-                type: 'archive',
-                id: null,
-              }"
-            >
-              Архив
-            </option>
-            <option
-              :value="{
-                title: 'location',
-                type: 'deleted',
-                id: null,
-              }"
-            >
-              Списание
-            </option>
-          </optgroup>
-        </select>
+            <!-- Archive & deleted -->
+            <optgroup label="Прочее">
+              <option
+                :value="{
+                  title: 'location',
+                  type: 'archive',
+                  id: null,
+                }"
+              >
+                Архив
+              </option>
+              <option
+                :value="{
+                  title: 'location',
+                  type: 'deleted',
+                  id: null,
+                }"
+              >
+                Списание
+              </option>
+            </optgroup>
+          </select>
         </div>
 
-
-        <!-- set category type -->
+        <!-- set category type of items-->
         <div class="set-categoty-type_wrapper">
           <!-- SWITCH BTNs -->
           <div
@@ -2087,55 +2103,57 @@ watch(tempCreateItemOwner, () => {
         </div>
 
         <!-- my, myBand -->
-        <div style="margin-top: 1rem; margin-left: 0.5rem;">
-          <ul style="list-style: none; padding: 0; display: flex; gap: 2rem;">
+        <div style="margin-top: 1rem; margin-left: 0.5rem">
+          <ul style="list-style: none; padding: 0; display: flex; gap: 2rem">
             <li>
-              <input id="radio-item_my" type="checkbox">
-              <label style="margin-left: 0.5rem;" for="radio-item_my">Мои</label>
+              <input id="radio-item_my" type="checkbox" />
+              <label style="margin-left: 0.5rem" for="radio-item_my">Мои</label>
             </li>
             <li>
-              <input id="radio-item_myBand1" type="checkbox">
-              <label style="margin-left: 0.5rem;" for="radio-item_myBand1">Моя банда 1</label>
+              <input id="radio-item_myBand1" type="checkbox" />
+              <label style="margin-left: 0.5rem" for="radio-item_myBand1"
+                >Моя банда 1</label
+              >
             </li>
             <li>
-              <input id="radio-item_sharersBand1" type="checkbox">
-              <label style="margin-left: 0.5rem;" for="radio-item_sharersBand1">Я в банде 1</label>
+              <input id="radio-item_sharersBand1" type="checkbox" />
+              <label style="margin-left: 0.5rem" for="radio-item_sharersBand1"
+                >Я в банде 1</label
+              >
             </li>
           </ul>
         </div>
       </div>
 
+      <div class="search-and-filter_container">
+        <!-- SEARCH -->
+        <div class="search-wrapper">
+          <!-- <div class="search_input"> -->
 
-        <div class="search-and-filter_container">
-          <!-- SEARCH -->
-          <div class="search-wrapper">
-            <!-- <div class="search_input"> -->
-  
-              <input
-                id="search-input_icon"
-                type="text"
-                class="form-control"
-                placeholder="Поиск"
-                v-model="searchInput"
-              />
-              <label for="search-input_icon">
-                
-                <Icon
-                  name="ic:baseline-search"
-                  size="24px"
-                  color="var(--bs-body-color)"
-                />
-              </label>
-            <!-- </div> -->
-          </div>
-  
-          <!-- FILTER BY ARCHIVE & DELETED -->
-          <div class="filter-archive_container">
-            <span @click="showItemsInArchive">Архив </span>
-            <span>|</span>
-            <span @click="showItemsInDeleted">Списание</span>
-          </div>
+          <input
+            id="search-input_icon"
+            type="text"
+            class="form-control"
+            placeholder="Поиск"
+            v-model="searchInput"
+          />
+          <label for="search-input_icon">
+            <Icon
+              name="ic:baseline-search"
+              size="24px"
+              color="var(--bs-body-color)"
+            />
+          </label>
+          <!-- </div> -->
         </div>
+
+        <!-- FILTER BY ARCHIVE & DELETED -->
+        <div class="filter-archive_container">
+          <span @click="showItemsInArchive">Архив </span>
+          <span>|</span>
+          <span @click="showItemsInDeleted">Списание</span>
+        </div>
+      </div>
     </div>
 
     <!-- ********************** DATA ******************************* -->
@@ -2156,7 +2174,19 @@ watch(tempCreateItemOwner, () => {
       <table class="table">
         <thead class="item-table_header">
           <tr>
-            <th scope="col"></th>
+            <th scope="col">
+              <div
+                class="convert_btn"
+                style="display: flex; justify-content: center"
+                @click="convertListToPDF()"
+              >
+                <Icon
+                  name="ic:sharp-picture-as-pdf"
+                  size="24px"
+                  color="var(--bs-body-color)"
+                />
+              </div>
+            </th>
             <th scope="col">Наименование</th>
             <th scope="col">Кол-во</th>
             <th scope="col">Местонахождение</th>
@@ -2165,7 +2195,7 @@ watch(tempCreateItemOwner, () => {
           </tr>
         </thead>
 
-        <tbody>
+        <tbody id="element-to-print">
           <div v-if="computedItems">
             <div v-if="!searchInput && !computedItems.length">Ничего нет</div>
             <div v-if="searchInput && !computedItems.length">
@@ -2213,9 +2243,10 @@ watch(tempCreateItemOwner, () => {
             </td>
 
             <!-- 4 -->
+            <!-- loaction -->
             <td class="span-5 hide-767" scope="col">
               <span
-                class="link link-location"
+                class="link-location"
                 :class="`${locationLinkColorized(item.location)}`"
                 @click="creatLocationLink(item)"
               >
@@ -2319,11 +2350,13 @@ td {
   margin: 2px;
 }
 .link-location {
-  padding: 4px 10px;
-  border-radius: 16px;
+  padding: 0.1rem 0.3rem;
+  /* border-radius: 16px; */
+  font-size: 0.8rem;
 }
 .link:hover {
   cursor: pointer;
+  color: var(--bs-primary);
 }
 .link_project {
   color: var(--bs-success);
@@ -2365,6 +2398,14 @@ td {
   justify-content: space-between !important;
 }
 
+/* convert to PDF */
+.convert_btn:hover {
+  cursor: pointer;
+}
+.convert_btn:hover svg {
+  color: var(--bs-primary) !important;
+}
+
 /* switch category type */
 .switch-type_container {
   display: flex;
@@ -2391,15 +2432,18 @@ td {
   display: inline-block;
   padding: 4px 10px;
   border-radius: 16px;
+  /* border: 1px solid var(--bs-border-color); */
 }
 .switch-type_el label:hover {
   background-color: #b1e3c1;
+  /* border: 1px solid var(--bs-border-color); */
   color: white;
   transition: all 0.15s ease-in;
 }
 .switch-type_el input[type="radio"]:checked + label {
-  background-color: #b1e3c1;
-  color: white;
+  /* background-color: #b1e3c1; */
+  background-color: var(--bs-border-color);
+  /* color: white; */
 }
 .item-table_header tr,
 .table-row_wrapper {
@@ -2409,10 +2453,18 @@ td {
   grid-template-columns: 50px 1fr 100px 1fr 200px 200px;
 }
 .table-row_wrapper td {
+  height: 100%;
   border: none;
+  margin: 0 !important;
 }
 .table-row_wrapper {
   border-bottom: 1px solid var(--bs-border-color);
+}
+.table-row_wrapper:hover {
+  cursor: pointer;
+}
+.table-row_wrapper:hover td {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 .expand-item_icon {
   cursor: pointer;
@@ -2505,10 +2557,10 @@ label #expend-item:checked + .expand-item_icon {
   margin-top: 1rem;
 }
 .search-wrapper {
-    display: flex;
-    /* position: relative; */
-    align-items: center;
-  }
+  display: flex;
+  /* position: relative; */
+  align-items: center;
+}
 
 @media screen and (max-width: 575px) {
   .set-categoty-type_wrapper {
@@ -2698,15 +2750,15 @@ label #expend-item:checked + .expand-item_icon {
     /* background-color: blue; */
   }
   .expended-item_btns {
-    width: 100%; 
+    width: 100%;
     /* background-color: green; */
-    flex-direction: row!important;
+    flex-direction: row !important;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     gap: 1rem;
   }
-  .expended-item_btns .dropdown-item{
+  .expended-item_btns .dropdown-item {
     width: max-content;
     /* background-color: red; */
   }
@@ -2745,15 +2797,15 @@ label #expend-item:checked + .expand-item_icon {
   /* #search-input_icon[type="text"]:focus .search_input{
     display: block!important;
   } */
-/* #search-input_icon {
+  /* #search-input_icon {
     color: red;
   } */
   /* #search-input_icon {
     
   } */
-   .search-wrapper {
+  .search-wrapper {
     width: 100%;
-   }
+  }
   .search_input {
     width: 100%;
     display: flex;
@@ -2773,7 +2825,6 @@ label #expend-item:checked + .expand-item_icon {
     margin-top: -1rem;
     margin-right: 1rem;
     box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
-    
   }
   #search-input_icon + label:hover {
     cursor: pointer;
@@ -2783,7 +2834,7 @@ label #expend-item:checked + .expand-item_icon {
     /* border: 1px solid red; */
     /* width: 300px; */
     position: fixed;
-    left: 0;  
+    left: 0;
     top: 3rem;
     width: 100%;
     opacity: 1;
@@ -2792,14 +2843,14 @@ label #expend-item:checked + .expand-item_icon {
     border-bottom: 1px solid rgba(0, 0, 0, 0.2);
     border-radius: unset;
     /* background-color: red; */
-    outline-width: 0!important;
-    outline: none!important;
+    outline-width: 0 !important;
+    outline: none !important;
     box-shadow: none;
     -moz-box-shadow: none;
     -webkit-box-shadow: none;
   }
   /* #search-input_icon:focus + label { */
-    /* display: absolute;
+  /* display: absolute;
     background-color: blue;
     display: none; */
   /* } */

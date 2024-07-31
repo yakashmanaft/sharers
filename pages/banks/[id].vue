@@ -321,7 +321,7 @@ const createInvestItem = () => {
     <div class="balance_container">
       <!-- total -->
       <div class="balance-item_wrapper">
-        <h3>Свободные средства</h3>
+        <h3 style="color: var(--bs-success);">Свободные средства</h3>
         <h4>{{ computedBalance }}</h4>
       </div>
 

@@ -41,23 +41,26 @@
         </div>
       </div>
 
-      <div class="dashboard-item_group" v-if="computedMyBands.length">
+      <div
+        class="dashboard-item_group computed-bands_container"
+        v-if="computedMyBands.length"
+      >
         <div
           v-for="myBand in computedMyBands"
           style="width: 100%; position: relative"
-          class="dashboard-item height-100 width-100"
+          class="dashboard-item height-100 width-100 computed-bands_wrapper"
           @click="router.push(`/organizations/${myBand.id}`)"
         >
           <h2 class="dashboard-item_header">{{ myBand.title }}</h2>
           <!-- ICON owner-->
           <Icon
             v-if="myBand.ownerID === sessionUser.id"
-            style="position: absolute; top: 0.5rem; right: 0.5rem"
+            style="position: absolute; bottom: 1rem; right: 0.5rem"
             name="mdi:crown"
             size="24px"
             color="var(--bs-warning)"
           />
-          <span>{{ myBand.sharers.length }} чел</span>
+          <span style="white-space: nowrap;">{{ myBand.sharers.length }} чел</span>
         </div>
       </div>
       <!-- ******** -->
@@ -325,9 +328,15 @@ const computedMyBands = computed(() => {
     organizations.value.forEach((organization) => {
       if (organization.ownerID === sessionUser.value.id) {
         array.push(organization);
-      } else if (organization.sharers.length !== 0 && organization.ownerID !== sessionUser.value.id) {
+      } else if (
+        organization.sharers.length !== 0 &&
+        organization.ownerID !== sessionUser.value.id
+      ) {
         organization.sharers.forEach((sharer) => {
-          if (sharer.userType === 'user' && sharer.userID === sessionUser.value.id) {
+          if (
+            sharer.userType === "user" &&
+            sharer.userID === sessionUser.value.id
+          ) {
             array.push(organization);
           }
         });
@@ -444,6 +453,17 @@ const transformEndingTheWord = (string) => {
 .dashboard-item_indicator p {
   margin: 0;
 }
+.computed-bands_container {
+  /* flex-wrap: wrap; */
+  overflow: scroll;
+  scrollbar-width: none;
+}
+.computed-bands_container::-webkit-scrollbar {
+  display: none;
+}
+.computed-bands_wrapper {
+  /* width: 100px!important; */
+}
 
 /*  */
 @media screen and (max-width: 575px) {
@@ -464,6 +484,7 @@ const transformEndingTheWord = (string) => {
   .dashboard-item_header {
     font-size: 1rem;
     margin: 0;
+    white-space: nowrap;
   }
 }
 @media screen and (max-width: 1199px) {

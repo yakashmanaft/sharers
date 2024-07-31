@@ -27,7 +27,10 @@ export default defineNuxtConfig({
   //   }, 
   // ],
   runtimeConfig: {
-    sessionPassword: 'a69ada35922e90fd13b2953afc169bdda4243cfe61afbc0a550f9525a2f2c83d'
+    // sessionPassword: 'a69ada35922e90fd13b2953afc169bdda4243cfe61afbc0a550f9525a2f2c83d'
+    public: {
+      NUXT_SESSION_PASSWORD: process.env.NUXT_SESSION_PASSWORD
+    }
   }
 })
 

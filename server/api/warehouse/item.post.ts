@@ -21,7 +21,8 @@ export default defineEventHandler(async (event) => {
           productionDate: body.productionDate,
           ownerID: body.ownerID,
           ownerType: body.ownerType,
-          responsible: body.responsible
+          responsible: body.responsible,
+          showToAll: body.showToAll
         },
       }).then((response) => {
         item = response

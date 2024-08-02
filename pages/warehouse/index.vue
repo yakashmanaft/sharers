@@ -42,6 +42,7 @@ const item = ref({
   // if type === 'tools'
   serial: null,
   productionDate: null,
+  showToAll: true,
 });
 
 const tempCreateItemLocation = ref({
@@ -203,6 +204,7 @@ onMounted(async () => {
       item.value.responsible = null;
       item.value.serial = null;
       item.value.productionDate = null;
+      item.value.showToAll = true;
 
       tempCreateItemLocation.value = { type: null, id: null };
       tempCreateItemOwner.value = { type: null, id: null };
@@ -234,96 +236,250 @@ const {
     // return items.sort((x, y) => x.title.localeCompare(y.title));
     return items
       .filter((item) => {
-        // user is responsible of item
-        if (user.value.id === item.responsible) {
-          return item;
-        }
-        // user is owner of item
-        if (user.value.id === item.ownerID && item.ownerType === "user") {
-          return item;
-        }
-        // user in the same band where owner of an item
-        if (user.value.id !== item.ownerID && item.ownerType === "user") {
-          let sameBandSharerUser;
-          [...organizations.value].find((org) => {
-            org.sharers.forEach((sharer) => {
-              if (
-                sharer.userType === "user" &&
-                sharer.userID === user.value.id
+        // USER
+        if (item.ownerType === "user") {
+          // if user is a owner of item
+          if (user.value.id === item.ownerID) {
+            return item;
+          } else if (user.value.id === item.responsible) {
+            return item;
+          }
+          // ищем пользовательские предметы из банды или альянса
+          else {
+            // if user is a sharer in band which is an owner of item
+            let sessionUserIsASharerOfBands = [...organizations.value].filter(
+              (org) => {
+                let userInBands = org.sharers.filter(
+                  (sharer) => sharer.userID === user.value.id
+                );
+
+                if (userInBands.length) {
+                  return org;
+                }
+              }
+            );
+            if (sessionUserIsASharerOfBands.length) {
+              // console.log(sessionUserIsASharerOfBands);
+              for (
+                let i = 0;
+                i <= sessionUserIsASharerOfBands.length - 1;
+                i++
               ) {
-                org.sharers.forEach((sharerUser) => {
-                  if (sharerUser.userID === item.ownerID) {
-                    sameBandSharerUser = item.ownerID;
+                // показываем предметы альянса, в которых состоит банда, соучастником которой является сессионый пользователь
+                let bandsArray = [...organizations.value].filter((org) => {
+                  if (org.sharers.length) {
+                    org.sharers.filter(
+                      (sharer) =>
+                        sharer.userID === sessionUserIsASharerOfBands[i].id &&
+                        sharer.userType === "company"
+                    );
+
+                    return org;
                   }
                 });
+
+                if (bandsArray.length) {
+                  for (let i = 0; i <= bandsArray.length - 1; i++) {
+                    // if (
+                    //   item.ownerID === bandsArray[i].id &&
+                    //   item.ownerType === "company"
+                    // ) {
+                    //   return item;
+                    // }
+                    if (
+                      item.ownerID !== bandsArray[i].id &&
+                      item.ownerType === "user" &&
+                      item.showToAll
+                    ) {
+                      return item;
+                    }
+                  }
+                }
               }
-            });
-          });
-          if (sameBandSharerUser && item.ownerID === sameBandSharerUser) {
-            return item;
+            }
           }
         }
-        // user in the same aliance which has a band where owner of an item is
 
-        // user && band
+        // COMPANY
         else if (item.ownerType === "company") {
-          // user is a the leader of the band
-          let sessionUserLeaderBand = [...organizations.value].find(
-            (org) => org.ownerID === user.value.id
+          // if user is a leader of a band which is an owner of item
+          let sessionUserIsALeaderOfBands = [...organizations.value].filter(
+            (org) => {
+              return org.ownerID === user.value.id;
+            }
           );
-          // user is a sharer at the band
-          let sessionUserSharerBand;
-          [...organizations.value].find((org) => {
-            org.sharers.forEach((sharer) => {
-              if (
-                sharer.userType === "user" &&
-                sharer.userID === user.value.id
-              ) {
-                sessionUserSharerBand = org;
+          if (sessionUserIsALeaderOfBands.length) {
+            for (let i = 0; i <= sessionUserIsALeaderOfBands.length - 1; i++) {
+              if (item.ownerID === sessionUserIsALeaderOfBands[i].id) {
+                return item;
               }
-            });
-          });
-          // user in the band which is a part of aliance
-          let sessionUserSharerBandAliance;
-          if (sessionUserSharerBand) {
-            [...organizations.value].find((org) => {
-              org.sharers.forEach((sharer) => {
-                if (
-                  sharer.userType === "company" &&
-                  sharer.userID === sessionUserSharerBand.id
-                ) {
-                  sessionUserSharerBandAliance = org;
+            }
+          }
+
+          // if user is a sharer in band which is an owner of item
+          let sessionUserIsASharerOfBands = [...organizations.value].filter(
+            (org) => {
+              let userInBands = org.sharers.filter(
+                (sharer) => sharer.userID === user.value.id
+              );
+
+              if (userInBands.length) {
+                return org;
+              }
+            }
+          );
+          if (sessionUserIsASharerOfBands.length) {
+            // console.log(sessionUserIsASharerOfBands);
+            for (let i = 0; i <= sessionUserIsASharerOfBands.length - 1; i++) {
+              // показываем предметы альянса, в которых состоит банда соучастником которой является сессионый пользователь
+              let bandsArray = [...organizations.value].filter((org) => {
+                if (org.sharers.length) {
+                  org.sharers.filter(
+                    (sharer) =>
+                      sharer.userID === sessionUserIsASharerOfBands[i].id &&
+                      sharer.userType === "company"
+                  );
+
+                  return org;
                 }
               });
-            });
+
+              if (bandsArray.length) {
+                for (let i = 0; i <= bandsArray.length - 1; i++) {
+                  if (
+                    item.ownerID === bandsArray[i].id &&
+                    item.ownerType === "company" &&
+                    item.showToAll
+                  ) {
+                    return item;
+                  }
+                  // if (
+                  //   item.ownerID !== bandsArray[i].id &&
+                  //   item.ownerType === "user"
+                  // ) {
+                  //   console.log(123);
+                  //   return item;
+                  // }
+                }
+              }
+            }
           }
 
-          // return item where user is a sharer in the band
-          if (
-            sessionUserLeaderBand &&
-            item.ownerID === sessionUserLeaderBand.id
-          ) {
-            return item;
-          }
-          // return item where user is a sharer in the band
-          else if (
-            sessionUserSharerBand &&
-            item.ownerID === sessionUserSharerBand.id
-          ) {
-            return item;
-          }
-          // user in the band which a part of aliance
-          else if (
-            sessionUserSharerBandAliance &&
-            item.ownerID === sessionUserSharerBandAliance.id
-          ) {
+          //
+          if (user.value.id === item.responsible) {
             return item;
           }
         }
-        // else
+
+        //
         else {
           return;
         }
+
+        // user is responsible of item
+        // if (user.value.id === item.responsible) {
+        //   return item;
+        // }
+        // user is owner of item
+        // user in the same band where owner of an item
+        // if (user.value.id !== item.ownerID && item.ownerType === "user") {
+        //   // same band
+        //   let sameBandSharerUser;
+        //   // same aliance
+        //   let sameAlianceBandSharerUser;
+        //   [...organizations.value].find((org) => {
+        //     org.sharers.forEach((sharer) => {
+        //       // same band
+        //       if (
+        //         sharer.userType === "user" &&
+        //         sharer.userID === user.value.id
+        //       ) {
+        //         org.sharers.forEach((sharerUser) => {
+        //           if (sharerUser.userID === item.ownerID) {
+        //             sameBandSharerUser = item.ownerID;
+        //           }
+        //         });
+        //       }
+
+        //       // same aliance
+        //       else if (sharer.userType === "company") {
+        //         // console.log(sharer)
+        //       }
+        //     });
+        //   });
+        //   if (sameBandSharerUser && item.ownerID === sameBandSharerUser) {
+        //     return item;
+        //   }
+        //   // band in the aliance
+        // }
+        // user in the same aliance which has a band where owner of an item is
+
+        // user && band
+        // else if (item.ownerType === "company") {
+        // // user is a the leader of the band
+        // let sessionUserIsALeaderBand = [...organizations.value].filter(
+        //   (org) => org.ownerID === user.value.id
+        // );
+        // console.log(sessionUserIsALeaderBand);
+
+        // user is a sharer at the band
+        // let sessionUserSharerBand;
+        // [...organizations.value].filter((org) => {
+        //   org.sharers.forEach((sharer) => {
+        //     if (
+        //       sharer.userType === "user" &&
+        //       sharer.userID === user.value.id
+        //     ) {
+        //       sessionUserSharerBand = org;
+        //     }
+        //   });
+        // });
+
+        // user in the band which is a part of aliance
+        // let sessionUserSharerBandAliance;
+        // if (sessionUserSharerBand) {
+        //   [...organizations.value].find((org) => {
+        //     org.sharers.forEach((sharer) => {
+        //       if (
+        //         sharer.userType === "company" &&
+        //         sharer.userID === sessionUserSharerBand.id
+        //       ) {
+        //         sessionUserSharerBandAliance = org;
+        //         // console.log(sessionUserSharerBandAliance)
+        //       }
+        //     });
+        //   });
+        // }
+
+        // return item where user is a leader in the band
+        // if (sessionUserIsALeaderBand) {
+        //   sessionUserIsALeaderBand.forEach((band) => {
+        //     console.log(band);
+        //     // if (band.id === item.ownerID && item.ownerType === 'company') {
+        //     //   return item;
+        //     // }
+        //     return item
+        //   });
+        // }
+        // return item where user is a sharer in the band
+        // else if (
+        //   sessionUserSharerBand &&
+        //   item.ownerID === sessionUserSharerBand.id
+        // ) {
+        //   return item;
+        // }
+        // // user in the band which a part of aliance
+        // else if (
+        //   sessionUserSharerBandAliance &&
+        //   item.ownerID === sessionUserSharerBandAliance.id
+        // ) {
+        //   return item;
+        // }
+        // }
+        // else
+        // else {
+        //   return;
+        // }
       })
       .sort((x, y) => {
         if (x.title < y.title) {
@@ -543,6 +699,7 @@ async function addWarehouseItem(item) {
         ownerID: item.ownerID,
         ownerType: item.ownerType,
         responsible: item.responsible,
+        showToAll: item.showToAll,
       },
     });
 
@@ -1239,18 +1396,28 @@ const checkAndCreate = async (item) => {
 
 // CONVERT TO PDF
 const convertListToPDF = () => {
-  const element = document.getElementById("element-to-print");
-  const options = {
-    margin: 1,
-    filename: "my-document.pdf",
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
-  };
-  html2pdf(element, options);
-  // html2pdf().set(options).from(element).save();
-  // alert("В разработке...");
+  if(computedItems.length) {
+
+    const element = document.getElementById("element-to-print");
+    const options = {
+      margin: 0.3,
+      filename: "my-document.pdf",
+      image: { type: "jpeg", quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: "in", format: "letter", orientation: "landscape" },
+    };
+    html2pdf(element, options);
+    // html2pdf().set(options).from(element).save();
+  } else {
+    alert("Список пустой... распечатывать нечего..");
+
+  }
 };
+
+// HIDE
+const toggleShowToAll = () => {
+  alert('Скрытие в разработке')
+}
 
 // ******** WATCHERS ********
 
@@ -1958,6 +2125,14 @@ watch(tempCreateItemOwner, () => {
               </select>
             </div>
 
+            <!-- SHOW TO ALL TOGGLE -->
+            <div style="display: flex; align-items: center">
+              <input id="showToAll" type="checkbox" v-model="item.showToAll" />
+              <label for="showToAll" class="form-label"
+                >Премет виден участникам банды</label
+              >
+            </div>
+
             <!-- RESPONSIBLE -->
             <!-- <div class="mb-3">
               <label for="itemResponsible" class="form-label"
@@ -2107,7 +2282,9 @@ watch(tempCreateItemOwner, () => {
           <ul style="list-style: none; padding: 0; display: flex; gap: 2rem">
             <li>
               <input id="radio-item_my" type="checkbox" />
-              <label style="margin-left: 0.5rem" for="radio-item_my">Мои</label>
+              <label style="margin-left: 0.5rem" for="radio-item_my"
+                >Личные</label
+              >
             </li>
             <li>
               <input id="radio-item_myBand1" type="checkbox" />
@@ -2229,6 +2406,13 @@ watch(tempCreateItemOwner, () => {
               <span>{{ index + 1 }}. </span>
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
                 {{ item.title }}
+              </span>
+              <span v-if="!item.showToAll" style="margin-left: 0.5rem;" @click="toggleShowToAll()">
+                <Icon
+                  name="ic:twotone-disabled-visible"
+                  size="16px"
+                  color="var(--bs-danger)"
+                />
               </span>
             </td>
 

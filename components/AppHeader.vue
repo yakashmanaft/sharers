@@ -391,6 +391,11 @@ watch(
                             <span>Настройки аккаунта</span>
                           </router-link>
                         </div>
+                        <div>
+                          <router-link to="/help" @click="closeBurgerMenu">
+                            <span>Помощь</span>
+                          </router-link>
+                        </div>
                       </div>
                       <!--  -->
                       <div class="user_logout">

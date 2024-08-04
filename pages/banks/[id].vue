@@ -1,12 +1,23 @@
 <script setup>
 import { Container } from "@/shared/container";
 
+// BANKS
 // Unidrum 2023-03-30
 // ИС 2022-11-21
 // Соучастники 2022-11-05
 // ЮД 2022-09-12
 // ЮС 2021-05-13
 // AC 2020-11-16
+
+
+// SHARER TARGETS
+// Взнос - bank / company / user id
+// Ссуда (займ банка) - bank id
+// Закуп - bank id
+// Возврат - bank / user / company id
+// Выдача кредита - bank / user / company id
+// Вывод средств - bank id
+
 
 const route = useRoute();
 
@@ -293,6 +304,19 @@ const sessionUserIsPartner = () => {
   }
 }
 
+// TRANSLATERS FUNCs 
+const translateWalletBank = (walletBankID) => {
+  if(walletBankID) {
+    let bank = computedBank.value.walletBank.find(current => current.id === walletBankID)
+    return bank.name
+  }
+}
+const translateSharerTarget = (sharerTargetType, sharerTargetID) => {
+  if(sharerTargetType && sharerTargetID) {
+    return `${sharerTargetType} - ${sharerTargetID}`
+  }
+}
+
 // =================== =========================
 // CREATE FUNCTIONS
 const createCreditItem = () => {
@@ -421,9 +445,16 @@ const createInvestItem = () => {
               >
             </div>
 
+            <!-- SHARER target -->
+            <div>
+              <span>
+                {{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}
+              </span>
+            </div>
+
             <!-- WALLET of BANK -->
             <div>
-              <span>walletID: {{ transactionItem.walletBankID }}</span>
+              <span>{{ translateWalletBank(transactionItem.walletBankID) }}</span>
             </div>
           </div>
         </div>
@@ -444,10 +475,10 @@ const createInvestItem = () => {
     <!-- Кредиты -->
     <div v-if="currentTitle === 'credit'">
 
-      <div v-if="computedCredits">
+      <div v-if="computedCredits.length">
 
         <!--  -->
-        <div class="transaction-item_wrapper" v-for="transactionItem in computedCredits">
+        <div class="transaction-item_wrapper" v-for="transactionItem in computedCredits.reverse()">
 
           <!-- DATE of trsn -->
           <div>
@@ -488,7 +519,7 @@ const createInvestItem = () => {
                     return el
                   }
                 }).reverse()">
-                  <p>{{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointment }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ transactionItem.walletBankID }}</p>
+                  <p>{{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointment }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ translateWalletBank(transactionItem.walletBankID) }} - {{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</p>
                 </div>
               </div>
             </div> 
@@ -502,9 +533,14 @@ const createInvestItem = () => {
             >
           </div>
 
+          <!-- SHARER target -->
+           <div>
+            <span>{{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</span>
+           </div>
+
           <!-- WALLET of BANK -->
           <div>
-            <span>walletID: {{ transactionItem.walletBankID }}</span>
+            <span>{{ translateWalletBank(transactionItem.walletBankID) }}</span>
           </div>
         </div>
       </div>
@@ -515,10 +551,10 @@ const createInvestItem = () => {
     <!-- Инвестиции -->
     <div v-if="currentTitle === 'invested'">
       
-      <div v-if="computedInvested">
+      <div v-if="computedInvested.length">
 
         <!--  -->
-        <div class="transaction-item_wrapper" v-for="transactionItem in computedInvested">
+        <div class="transaction-item_wrapper" v-for="transactionItem in computedInvested.reverse()">
           <!-- DATE of trsn -->
           <div>
             <span>{{
@@ -557,7 +593,7 @@ const createInvestItem = () => {
                     return el
                   }
                 }).reverse()">
-                  <p>{{ item.appointment }} - {{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ transactionItem.walletBankID }}</p>
+                  <p>{{ item.appointment }} - {{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ translateWalletBank(transactionItem.walletBankID) }} - {{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</p>
                 </div>
               </div>  
             </div>
@@ -571,9 +607,14 @@ const createInvestItem = () => {
             >
           </div>
 
+          <!-- SHARE target -->
+           <div>
+            <span>{{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</span>
+           </div>
+
           <!-- WALLET of BANK -->
           <div>
-            <span>walletID: {{ transactionItem.walletBankID }}</span>
+            <span>{{ translateWalletBank(transactionItem.walletBankID) }}</span>
           </div>  
         </div>
       </div>
@@ -621,7 +662,7 @@ const createInvestItem = () => {
 
 .transaction-item_wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 3fr 1fr 1fr 1fr;
   margin-top: 1rem;
 }
 .balance_container {

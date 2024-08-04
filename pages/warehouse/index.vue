@@ -132,6 +132,15 @@ const measureTypes = ref([
   },
 ]);
 
+// Фильтры принадлежности предметов
+const whoIsOwnerFilterTypes = ref([
+  {
+    id: 0,
+    type: 'myOwn',
+    title: 'Личные'
+  }
+])
+
 // Для действий по редактированию предметов (добавление, вычитание, перемещение редактирование конкретного)
 const currentItem = ref(null);
 const editedActionType = ref(null);
@@ -151,6 +160,39 @@ onMounted(async () => {
       (item: any) => item.location !== "archive" && item.location !== "deleted"
     );
   }
+
+  window.addEventListener('scroll', () => {
+    let searchFilterContainer = document.getElementById('searchFilterContainer')
+    const scrollPosition = window.scrollY;
+    console.log(window.screen.width)
+    if(searchFilterContainer && (window.screen.width >= 768 && window.screen.width <= 991)) {
+
+      if(scrollPosition > 1) {
+        searchFilterContainer.style.display = 'none'
+      } else {
+        searchFilterContainer.style.display = 'block'
+      }
+    }
+  })
+  // Создаем массив элементов для фильтра checkbox по принадлежности редмета
+  // if(organizations.value) {
+  //   let myBands = [...organizations.value].filter(item => item.ownerID === user.value.id)
+    
+  //   if(myBands.length) {
+
+  //     for(let i = 0; i <= myBands.length - 1; i++) {
+
+  //       // 
+
+  //       whoIsOwnerFilterTypes.value.push({
+  //         id: myBands[i].id,
+  //         type: 'band',
+  //         title: myBands[i].title
+  //       })
+  //     }
+  //   }
+    
+  // }
   refreshProjects();
   refreshLocations();
   refreshOrganizations();
@@ -2278,7 +2320,7 @@ watch(tempCreateItemOwner, () => {
         </div>
 
         <!-- my, myBand -->
-        <div style="margin-top: 1rem; margin-left: 0.5rem">
+        <!-- <div style="margin-top: 1rem; margin-left: 0.5rem">
           <ul style="list-style: none; padding: 0; display: flex; gap: 2rem">
             <li>
               <input id="radio-item_my" type="checkbox" />
@@ -2298,11 +2340,14 @@ watch(tempCreateItemOwner, () => {
                 >Я в банде 1</label
               >
             </li>
+            <li v-for="(el, idx) in whoIsOwnerFilterTypes">
+              <p>{{ el.title }}</p>
+            </li>
           </ul>
-        </div>
+        </div> -->
       </div>
 
-      <div class="search-and-filter_container">
+      <div id="searchFilterContainer" class="search-and-filter_container">
         <!-- SEARCH -->
         <div class="search-wrapper">
           <!-- <div class="search_input"> -->
@@ -2318,7 +2363,6 @@ watch(tempCreateItemOwner, () => {
             <Icon
               name="ic:baseline-search"
               size="24px"
-              color="var(--bs-body-color)"
             />
           </label>
           <!-- </div> -->
@@ -2347,7 +2391,7 @@ watch(tempCreateItemOwner, () => {
     </div>
 
     <!-- data is loaded -->
-    <div v-else>
+    <div v-else class="table_container">
       <table class="table">
         <thead class="item-table_header">
           <tr>
@@ -2745,6 +2789,22 @@ label #expend-item:checked + .expand-item_icon {
   /* position: relative; */
   align-items: center;
 }
+#search-input_icon {
+  border-radius: unset;
+  border: unset;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  margin-right: 1rem;
+  padding-left: 0;
+}
+#search-input_icon:focus {
+  border-radius: unset;
+  border: unset;
+  outline-width: 0 !important;
+  outline: none !important;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+}
 
 @media screen and (max-width: 575px) {
   .set-categoty-type_wrapper {
@@ -2998,6 +3058,11 @@ label #expend-item:checked + .expand-item_icon {
   #search-input_icon {
     opacity: 0;
     width: 0;
+    /* outline-width: 0 !important;
+    outline: none !important;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none; */
     /* transition: all 0.3s ease-in-out;  */
   }
   #search-input_icon + label {
@@ -3024,14 +3089,14 @@ label #expend-item:checked + .expand-item_icon {
     opacity: 1;
     padding: 2rem;
     border: unset;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    /* border-bottom: 1px solid rgba(0, 0, 0, 0.2); */
     border-radius: unset;
     /* background-color: red; */
-    outline-width: 0 !important;
+    /* outline-width: 0 !important;
     outline: none !important;
     box-shadow: none;
     -moz-box-shadow: none;
-    -webkit-box-shadow: none;
+    -webkit-box-shadow: none; */
   }
   /* #search-input_icon:focus + label { */
   /* display: absolute;
@@ -3051,11 +3116,20 @@ label #expend-item:checked + .expand-item_icon {
   .table-row_wrapper {
     grid-template-columns: 50px 1fr 100px 1fr;
   }
+  .switch-type_container {
+    /* z-index: -2; */
+    background-color: var(--bs-body-bg) 
+    /* background-color: red; */
+  }
   .search-and-filter_container {
     position: fixed;
     right: 0;
     margin-right: 1rem;
+    /* z-index: -1; */
   }
+  /* .table_container {
+    z-index: 999;
+  } */
   /* .expended-item_content {
     margin-top: 1rem;
     display: flex;
@@ -3089,6 +3163,55 @@ label #expend-item:checked + .expand-item_icon {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+  }
+
+  /*  */
+  .filter-archive_container {
+    display: none;
+  }
+  .search-wrapper {
+    /* background-color: red; */
+  }
+  #search-input_icon {
+    position: relative;
+    padding: 0;
+    width: 0;
+    border: unset;
+  }
+  /* #search-input_icon + label:hover #search-input-icon + label:before {
+    content: '123';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+  } */
+  #search-input_icon + label:hover {
+    cursor: pointer;
+  }
+  #search-input_icon + label:hover svg path{
+    color: var(--bs-primary)
+  }
+  /* #search-input_icon + label:hover #search-input_icon + label:after {
+    content: '';
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+  } */
+  #search-input_icon:focus {
+    /* position: fixed;
+    left: 0;
+    top: 5rem; */
+    width: 350px;
+    border-radius: unset;
+    outline-width: 0 !important;
+    outline: none !important;
+    box-shadow: none;
+    -moz-box-shadow: none;
+    -webkit-box-shadow: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    margin-right: 1rem;
   }
 }
 </style>

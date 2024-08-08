@@ -9,7 +9,6 @@ import { Container } from "@/shared/container";
 // ЮС 2021-05-13
 // AC 2020-11-16
 
-
 // SHARER TARGETS
 // Взнос - bank / company / user id
 // Ссуда (займ банка) - bank id
@@ -17,7 +16,6 @@ import { Container } from "@/shared/container";
 // Возврат - bank / user / company id
 // Выдача кредита - bank / user / company id
 // Вывод средств - bank id
-
 
 const route = useRoute();
 
@@ -59,30 +57,29 @@ const { user } = useUserSession();
 // stuff
 
 // toggle title data
-const currentTitle = ref('partners')
+const currentTitle = ref("partners");
 const titles = ref([
   {
-    title: 'Партнеры',
-    name: 'partners',
-    guard: false
+    title: "Партнеры",
+    name: "partners",
+    guard: false,
   },
   {
-    title: 'Операции',
-    name: 'transaction',
-    guard: true
+    title: "Операции",
+    name: "transaction",
+    guard: true,
   },
   {
-    title: 'Кредиты',
-    name: 'credit',
-    guard: true
+    title: "Кредиты",
+    name: "credit",
+    guard: true,
   },
   {
-    title: 'Инвестиции',
-    name: 'invested',
-    guard: true
+    title: "Инвестиции",
+    name: "invested",
+    guard: true,
   },
-])
-
+]);
 
 const trns_toggle_type = ref("all");
 const trns_toggle_type_array = ref([
@@ -123,22 +120,21 @@ const computedBank_ledger = computed(() =>
     if (trns_toggle_type.value === "all") {
       return item;
     }
-    if(trns_toggle_type.value === "expense") {
-      if(item.type === 'expense' || item.type === 'invest') {
-
-        return item
+    if (trns_toggle_type.value === "expense") {
+      if (item.type === "expense" || item.type === "invest") {
+        return item;
       }
     }
     if (item.type === trns_toggle_type.value) {
       return item.type === trns_toggle_type.value;
     }
   })
-
 );
 
 const { data: transactions } = await useFetch("/api/funds/partnerLedger", {
   lazy: false,
   transform: (trns) => {
+    trns.reverse();
     return trns.filter((trn) => trn.bankID === +route.params.id);
   },
 });
@@ -148,20 +144,20 @@ const computedBalance = computed(() => {
     let result = 0;
 
     result = [...transactions.value].reduce((acc, current) => {
-      if(current.bankID === +route.params.id) {
-        if(current.type === "income") {
-          return (acc += current.price * current.qty);  
-        } else if (current.type === 'expense') {
-          acc -= current.price * current.qty
-        } else if (current.type === 'invest') {
-          acc -= current.price * current.qty
+      if (current.bankID === +route.params.id) {
+        if (current.type === "income") {
+          return (acc += current.price * current.qty);
+        } else if (current.type === "expense") {
+          acc -= current.price * current.qty;
+        } else if (current.type === "invest") {
+          acc -= current.price * current.qty;
         } else {
-          acc += 0
+          acc += 0;
         }
       } else {
-        acc += 0  
+        acc += 0;
       }
-      return acc
+      return acc;
     }, 0);
 
     let calcFormatted = new Intl.NumberFormat("ru-RU", {
@@ -177,28 +173,29 @@ const computedBalance = computed(() => {
 });
 
 const computedCredits = computed(() => {
-  if(transactions.value) {
+  if (transactions.value) {
     let array = [];
-    transactions.value.filter(el => {
-      if(el.appointment === 'Ссуда') {
-        array.push(el)
-      } else if (el.appointment === 'Выдача кредита') {
-        array.push(el)
+    transactions.value.filter((el) => {
+      if (el.appointment === "Ссуда") {
+        array.push(el);
+      } else if (el.appointment === "Выдача кредита") {
+        array.push(el);
       }
-    })
+    });
 
-    return array
+    return array;
   } else {
-
-    return []
+    return [];
   }
-})
+});
 const computedInvested = computed(() => {
-  if(transactions.value) {
-    return transactions.value.filter(el => el.type === 'invest' && el.appointment !== 'Выдача кредита')
+  if (transactions.value) {
+    return transactions.value.filter(
+      (el) => el.type === "invest" && el.appointment !== "Выдача кредита"
+    );
   }
-  return []
-})
+  return [];
+});
 
 // TRANSFORM
 const setTrnsSign = (type) => {
@@ -222,110 +219,117 @@ const transformTransactionDate = (date) => {
 };
 const transformToRUB = (number) => {
   let calcFormatted = new Intl.NumberFormat("ru-RU", {
-      style: "currency",
-      currency: "RUB",
-      // currencyDisplay: "code",
-    }).format(number);
-  return calcFormatted
-}
+    style: "currency",
+    currency: "RUB",
+    // currencyDisplay: "code",
+  }).format(number);
+  return calcFormatted;
+};
 
 // CALC
 const calcWalletBanksBalance = (walletID) => {
-  if(transactions.value.length) {
+  if (transactions.value.length) {
     let result = transactions.value.reduce((acc, current) => {
-      if(current.walletBankID === walletID) {
-        if(current.type === 'income') {
-          acc += current.price * current.qty
-        } else if (current.type === 'expense') {
-          acc -= current.price * current.qty
-        } else if (current.type === 'invest') {
-          acc -= current.price * current.qty
+      if (current.walletBankID === walletID) {
+        if (current.type === "income") {
+          acc += current.price * current.qty;
+        } else if (current.type === "expense") {
+          acc -= current.price * current.qty;
+        } else if (current.type === "invest") {
+          acc -= current.price * current.qty;
         } else {
-          acc += 0
+          acc += 0;
         }
       } else {
-
-        acc += 0
+        acc += 0;
       }
-      return acc
-    }, 0)
+      return acc;
+    }, 0);
 
     let calcFormatted = new Intl.NumberFormat("ru-RU", {
       style: "currency",
       currency: "RUB",
       // currencyDisplay: "code",
     }).format(result);
-    return calcFormatted
+    return calcFormatted;
   } else {
-    return 0
+    return 0;
   }
-}
+};
 const calcReturnedInvestings = (appointmentTarget) => {
-  if(transactions.value.length) {
+  if (transactions.value.length) {
     let result;
 
-   let array = [...transactions.value].filter(item => {
-      if(item.appointmentTarget === appointmentTarget && item.appointment === 'Возврат') {
-        return item
-      } 
-    })
+    let array = [...transactions.value].filter((item) => {
+      if (
+        item.appointmentTarget === appointmentTarget &&
+        item.appointment === "Возврат"
+      ) {
+        return item;
+      }
+    });
 
-    if(array.length) {
-
+    if (array.length) {
       result = array.reduce((acc, current) => {
-        return (acc += current.price * current.qty)
-      }, 0)
+        return (acc += current.price * current.qty);
+      }, 0);
     } else {
-      result = 0
+      result = 0;
     }
     let calcFormatted = new Intl.NumberFormat("ru-RU", {
       style: "currency",
       currency: "RUB",
       // currencyDisplay: "code",
     }).format(result);
-    return calcFormatted
+    return calcFormatted;
     // return result
   } else {
-    return 0
+    return 0;
   }
-}
+};
 
 // CHECK DATA
 const sessionUserIsPartner = () => {
-  if(computedBank.value.users) {
-    let sharerIsaPatnerOfBank = [...computedBank.value.users].find(el => {
-      if(el.partnerType === 'user') {
-        if(+el.partnerID === user.value.id) {
-          return el
+  if (computedBank.value.users) {
+    let sharerIsaPatnerOfBank = [...computedBank.value.users].find((el) => {
+      if (el.partnerType === "user") {
+        if (+el.partnerID === user.value.id) {
+          return el;
         }
       }
-    })
-    return sharerIsaPatnerOfBank ? true : false
+    });
+    return sharerIsaPatnerOfBank ? true : false;
   }
-}
+};
 
-// TRANSLATERS FUNCs 
+// TRANSLATERS FUNCs
 const translateWalletBank = (walletBankID) => {
-  if(walletBankID) {
-    let bank = computedBank.value.walletBank.find(current => current.id === walletBankID)
-    return bank.name
+  if (walletBankID) {
+    let bank = computedBank.value.walletBank.find(
+      (current) => current.id === walletBankID
+    );
+    return bank.name;
   }
-}
+};
 const translateSharerTarget = (sharerTargetType, sharerTargetID) => {
-  if(sharerTargetType && sharerTargetID) {
-    return `${sharerTargetType} - ${sharerTargetID}`
+  if (sharerTargetType && sharerTargetID) {
+    return `${sharerTargetType} - ${sharerTargetID}`;
   }
-}
+};
 
 // =================== =========================
 // CREATE FUNCTIONS
 const createCreditItem = () => {
-  alert('Создание кредита в разработке...')
-}
+  alert("Создание кредита в разработке...");
+};
 const createInvestItem = () => {
-  alert('Создание инвестиции в разработке...')
-}
+  alert("Создание инвестиции в разработке...");
+};
 
+// ========================= WATHERS ============================
+// watch(currentTitle, () => {
+//   console.log(currentTitle.value);
+// });
 </script>
 
 <template>
@@ -345,12 +349,15 @@ const createInvestItem = () => {
     <div class="balance_container">
       <!-- total -->
       <div class="balance-item_wrapper">
-        <h3 style="color: var(--bs-success);">Свободные средства</h3>
+        <h3 style="color: var(--bs-success)">Свободные средства</h3>
         <h4>{{ computedBalance }}</h4>
       </div>
 
       <!-- banks acccounts / wallets in the bank-->
-      <div class="balance-item_wrapper" v-for="(wallet, idx) in computedBank.walletBank">
+      <div
+        class="balance-item_wrapper"
+        v-for="(wallet, idx) in computedBank.walletBank"
+      >
         <h3>{{ wallet.name }}</h3>
         <h4>{{ calcWalletBanksBalance(wallet.id) }}</h4>
       </div>
@@ -358,17 +365,30 @@ const createInvestItem = () => {
 
     <!-- Переключатель заголовков -->
     <div class="toggle-title">
-      <div v-for="(title, index) in titles.filter((el) => {
-        if(computedBank) {
-          if(el.guard && (computedBank.creatorID === user.id || sessionUserIsPartner())) {
-            return el
-          } else if (!el.guard) {
-            return el
+      <div
+        v-for="(title, index) in titles.filter((el) => {
+          if (computedBank) {
+            if (
+              el.guard &&
+              (computedBank.creatorID === user.id || sessionUserIsPartner())
+            ) {
+              return el;
+            } else if (!el.guard) {
+              return el;
+            }
           }
-        }
-      })" class="switch-title_el">
-        <input type="radio" :id="`${index}_bank_wallet`" :value="title.name" v-model="currentTitle">
-        <label :for="`${index}_bank_wallet`"><h2>{{ title.title }}</h2></label>
+        })"
+        class="switch-title_el"
+      >
+        <input
+          type="radio"
+          :id="`${index}_bank_wallet`"
+          :value="title.name"
+          v-model="currentTitle"
+        />
+        <label :for="`${index}_bank_wallet`"
+          ><h2>{{ title.title }}</h2></label
+        >
       </div>
     </div>
 
@@ -411,7 +431,7 @@ const createInvestItem = () => {
         <div v-if="computedBank_ledger.length">
           <div
             class="transaction-item_wrapper"
-            v-for="transactionItem in computedBank_ledger.reverse()"
+            v-for="transactionItem in computedBank_ledger"
           >
             <!-- DATE of trsn -->
             <div>
@@ -448,13 +468,20 @@ const createInvestItem = () => {
             <!-- SHARER target -->
             <div>
               <span>
-                {{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}
+                {{
+                  translateSharerTarget(
+                    transactionItem.sharerTargetType,
+                    transactionItem.sharerTargetID
+                  )
+                }}
               </span>
             </div>
 
             <!-- WALLET of BANK -->
             <div>
-              <span>{{ translateWalletBank(transactionItem.walletBankID) }}</span>
+              <span>{{
+                translateWalletBank(transactionItem.walletBankID)
+              }}</span>
             </div>
           </div>
         </div>
@@ -474,12 +501,12 @@ const createInvestItem = () => {
 
     <!-- Кредиты -->
     <div v-if="currentTitle === 'credit'">
-
       <div v-if="computedCredits.length">
-
         <!--  -->
-        <div class="transaction-item_wrapper" v-for="transactionItem in computedCredits.reverse()">
-
+        <div
+          class="transaction-item_wrapper"
+          v-for="transactionItem in computedCredits"
+        >
           <!-- DATE of trsn -->
           <div>
             <span>{{
@@ -491,17 +518,26 @@ const createInvestItem = () => {
           <div>
             <div>
               <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
-              <span>Тело кредита: {{ transformToRUB(transactionItem.price * transactionItem.qty) }}</span>
+              <span
+                >Тело кредита:
+                {{
+                  transformToRUB(transactionItem.price * transactionItem.qty)
+                }}</span
+              >
               <!-- calcReturnedInvestings -->
             </div>
             <div>
               <span>Процент:ххх</span>
             </div>
             <div>
-              <span>Вернулось: {{ calcReturnedInvestings(transactionItem.appointmentTarget) }}</span>
+              <span
+                >Вернулось:
+                {{
+                  calcReturnedInvestings(transactionItem.appointmentTarget)
+                }}</span
+              >
             </div>
           </div>
-
 
           <!-- APPOINTMENT, APPOINTMENT TARGET -->
           <div>
@@ -512,17 +548,40 @@ const createInvestItem = () => {
               - {{ transactionItem.desc }}</span
             >
             <!--  -->
-            <div v-if="transactionItem.appointment === 'Выдача кредита' || transactionItem.appointment === 'Ссуда'">
+            <div
+              v-if="
+                transactionItem.appointment === 'Выдача кредита' ||
+                transactionItem.appointment === 'Ссуда'
+              "
+            >
               <div v-if="transactions">
-                <div v-for="item in transactions.filter(el => {
-                  if(el.type === 'income' && el.appointment === 'Возврат' && transactionItem.appointmentTarget === el.appointmentTarget) {
-                    return el
-                  }
-                }).reverse()">
-                  <p>{{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointment }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ translateWalletBank(transactionItem.walletBankID) }} - {{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</p>
+                <div
+                  v-for="item in transactions.filter((el) => {
+                    if (
+                      el.type === 'income' &&
+                      el.appointment === 'Возврат' &&
+                      transactionItem.appointmentTarget === el.appointmentTarget
+                    ) {
+                      return el;
+                    }
+                  })"
+                >
+                  <p>
+                    {{ transformTransactionDate(item.created_at) }} -
+                    {{ item.qty * item.price }} - {{ item.appointment }} -
+                    {{ item.appointmentTarget }} - {{ item.authorType }} -
+                    {{ item.authorID }} -
+                    {{ translateWalletBank(transactionItem.walletBankID) }} -
+                    {{
+                      translateSharerTarget(
+                        transactionItem.sharerTargetType,
+                        transactionItem.sharerTargetID
+                      )
+                    }}
+                  </p>
                 </div>
               </div>
-            </div> 
+            </div>
           </div>
 
           <!-- AUTHOR of trsn -->
@@ -534,9 +593,14 @@ const createInvestItem = () => {
           </div>
 
           <!-- SHARER target -->
-           <div>
-            <span>{{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</span>
-           </div>
+          <div>
+            <span>{{
+              translateSharerTarget(
+                transactionItem.sharerTargetType,
+                transactionItem.sharerTargetID
+              )
+            }}</span>
+          </div>
 
           <!-- WALLET of BANK -->
           <div>
@@ -545,16 +609,18 @@ const createInvestItem = () => {
         </div>
       </div>
       <div v-else>
-        Нет кредитов. <span class="link" @click="createCreditItem()">Начать</span>
+        Нет кредитов.
+        <span class="link" @click="createCreditItem()">Начать</span>
       </div>
     </div>
     <!-- Инвестиции -->
     <div v-if="currentTitle === 'invested'">
-      
       <div v-if="computedInvested.length">
-
         <!--  -->
-        <div class="transaction-item_wrapper" v-for="transactionItem in computedInvested.reverse()">
+        <div
+          class="transaction-item_wrapper"
+          v-for="transactionItem in computedInvested"
+        >
           <!-- DATE of trsn -->
           <div>
             <span>{{
@@ -566,14 +632,23 @@ const createInvestItem = () => {
           <div>
             <div>
               <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
-              <span>Тело инвестиции: {{ transformToRUB(transactionItem.price * transactionItem.qty) }}</span>
+              <span
+                >Тело инвестиции:
+                {{
+                  transformToRUB(transactionItem.price * transactionItem.qty)
+                }}</span
+              >
               <!-- <span>{{ transactionItem.currency }}</span> -->
             </div>
             <!-- <div>
               <span>Процент:ххх</span>
             </div> -->
             <div>
-              <span>Вернулось:{{ calcReturnedInvestings(transactionItem.appointmentTarget) }}</span>
+              <span
+                >Вернулось:{{
+                  calcReturnedInvestings(transactionItem.appointmentTarget)
+                }}</span
+              >
             </div>
           </div>
 
@@ -588,14 +663,32 @@ const createInvestItem = () => {
             <!--  -->
             <div>
               <div v-if="transactions">
-                <div v-for="item in transactions.filter((el) => {
-                  if(el.type === 'income' && el.appointment === 'Возврат' && transactionItem.appointmentTarget === el.appointmentTarget) {
-                    return el
-                  }
-                }).reverse()">
-                  <p>{{ item.appointment }} - {{ transformTransactionDate(item.created_at) }} - {{  item.qty * item.price  }} - {{ item.appointmentTarget }} - {{ item.authorType }} - {{ item.authorID }} - {{ translateWalletBank(transactionItem.walletBankID) }} - {{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</p>
+                <div
+                  v-for="item in transactions.filter((el) => {
+                    if (
+                      el.type === 'income' &&
+                      el.appointment === 'Возврат' &&
+                      transactionItem.appointmentTarget === el.appointmentTarget
+                    ) {
+                      return el;
+                    }
+                  })"
+                >
+                  <p>
+                    {{ item.appointment }} -
+                    {{ transformTransactionDate(item.created_at) }} -
+                    {{ item.qty * item.price }} - {{ item.appointmentTarget }} -
+                    {{ item.authorType }} - {{ item.authorID }} -
+                    {{ translateWalletBank(transactionItem.walletBankID) }} -
+                    {{
+                      translateSharerTarget(
+                        transactionItem.sharerTargetType,
+                        transactionItem.sharerTargetID
+                      )
+                    }}
+                  </p>
                 </div>
-              </div>  
+              </div>
             </div>
           </div>
 
@@ -608,18 +701,24 @@ const createInvestItem = () => {
           </div>
 
           <!-- SHARE target -->
-           <div>
-            <span>{{ translateSharerTarget(transactionItem.sharerTargetType, transactionItem.sharerTargetID) }}</span>
-           </div>
+          <div>
+            <span>{{
+              translateSharerTarget(
+                transactionItem.sharerTargetType,
+                transactionItem.sharerTargetID
+              )
+            }}</span>
+          </div>
 
           <!-- WALLET of BANK -->
           <div>
             <span>{{ translateWalletBank(transactionItem.walletBankID) }}</span>
-          </div>  
+          </div>
         </div>
       </div>
       <div v-else>
-        Нет инвестиций. <span class="link" @click="createInvestItem()">Начать</span>
+        Нет инвестиций.
+        <span class="link" @click="createInvestItem()">Начать</span>
       </div>
     </div>
   </Container>

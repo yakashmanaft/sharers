@@ -1582,8 +1582,17 @@ watch(tempCreateItemOwner, () => {
 </script>
 <template>
   <Container>
-    <div class="mt-5rem">
-      <h1 class="header-h1">ТМЦ</h1>
+    <div class="header_container" style="display: flex;">
+      <h1 class="header_title">ТМЦ</h1>
+      <!-- Button trigger modal create item -->
+      <button
+        type="button"
+        class="btn btn-primary btn-create-modal-open-767"
+        data-bs-toggle="modal"
+        data-bs-target="#newWarehouseItemModal"
+      >
+        <span> Создать </span>
+      </button>
     </div>
 
     <!-- EDIT ITEM MODAL-->
@@ -1885,17 +1894,8 @@ watch(tempCreateItemOwner, () => {
       </div>
     </div>
 
-    <!-- ******** ADD NEW ITEM MODAL ******** -->
-    <!-- Button trigger modal create item -->
-    <button
-      type="button"
-      class="btn btn-primary btn-create-modal-open-767"
-      data-bs-toggle="modal"
-      data-bs-target="#newWarehouseItemModal"
-    >
-      <span> Создать </span>
-    </button>
-
+ 
+    <!-- ******** ADD NEW ITEM MODAL ******** --><!-- ******** ADD NEW ITEM MODAL ******** -->
     <!-- Modal create item-->
     <div
       class="modal fade"
@@ -2562,8 +2562,18 @@ watch(tempCreateItemOwner, () => {
 </template>
 
 <style scoped>
-.mt-5rem {
+/* .mt-5rem {
   margin-top: 5rem;
+} */
+.header_container {
+  margin-top: 6rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.header_container .header_title {
+  margin: unset
 }
 table {
   margin-top: 1rem;
@@ -2833,7 +2843,7 @@ label #expend-item:checked + .expand-item_icon {
 } */
 
 @media screen and (max-width: 767px) {
-  .header-h1 {
+  .header_title {
     display: none;
   }
   .btn-create-modal-open-767 {
@@ -2902,6 +2912,7 @@ label #expend-item:checked + .expand-item_icon {
     justify-content: flex-start;
     align-items: flex-start;
     scrollbar-width: none;
+    margin-top: 2rem;
   }
   .set-categoty-type_wrapper::-webkit-scrollbar {
     display: none;
@@ -3087,7 +3098,7 @@ label #expend-item:checked + .expand-item_icon {
     top: 3rem;
     width: 100%;
     opacity: 1;
-    padding: 2rem;
+    padding: 3rem 2rem;
     border: unset;
     /* border-bottom: 1px solid rgba(0, 0, 0, 0.2); */
     border-radius: unset;
@@ -3103,6 +3114,36 @@ label #expend-item:checked + .expand-item_icon {
     background-color: blue;
     display: none; */
   /* } */
+}
+
+@media screen and (min-width: 768px) {
+  .header_container .btn {
+    position: relative;
+    /* background-color: red; */
+    border: unset;
+    /* background-color: unset */
+    border-radius: 2rem;
+  }
+  /* .header_container .btn::after,
+  .header_container .btn::before {
+    content: '';
+    position: absolute;
+    background-color: var(--bs-primary);
+  }
+  .header_container .btn::after {
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    height: 2px;
+    width: 100%;
+  }
+  .header_container .btn::before {
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    height: 100%;
+    width: 2px;
+  } */
 }
 
 @media screen and (min-width: 768px) and (max-width: 991px) {

@@ -1198,12 +1198,20 @@
         <div>
           <div v-if="items.length">
             <div
-              v-for="(item, index) in items"
+              v-for="(item, index) in items.filter((el) => {
+                if(organization) {
+                  if(
+                    (organization.ownerID === user.id || sessionUserIsInTheBand())
+                  ) {
+                    return el;
+                  }
+                }
+              })"
               :key="index"
               style="display: flex"
             >
               <div>{{ item.title }}</div>
-              <div>-{{ item.qty }} {{ item.measure }}</div>
+              <div style="background-color: var(--bs-primary-bg-subtle)">{{ item.qty }} {{ item.measure }} * {{item.price }} RUB = {{ item.qty * item.price }} RUB</div>
               <div>-{{ item.location }}_{{ item.ownerID }}</div>
             </div>
           </div>
@@ -1289,6 +1297,7 @@ const titles = ref([
   {
     title: "ТМЦ",
     name: "warehouse-items",
+    guard: true,
   },
 ]);
 const currentTitle = ref("sharers");

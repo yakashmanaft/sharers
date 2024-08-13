@@ -732,6 +732,9 @@ const createInvestItem = () => {
   cursor: pointer;
   color: var(--bs-primary);
 }
+h1 {
+  margin-top: 6rem;
+}
 .filter-toggle-type_container {
   margin-top: 1rem;
   display: flex;

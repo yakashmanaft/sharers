@@ -318,6 +318,7 @@
 
     <!-- Заголовок - Переключатель -->
     <!-- TOGGLE TITLE -->
+    {{sessionUserAliancePart()}}
     <!-- таблица ФОТ / Табель учета рабочего времени -->
     <div class="toggle-title">
       <div
@@ -1529,6 +1530,18 @@ const sessionUserIsInTheBand = () => {
     }
   }
 };
+// 
+const sessionUserAliancePart = () => {
+  // Узнаем, в какие альянсы входит текущая банды
+  if(organizations.value) {
+    for(let i = 0; i <= organizations.value.length; i++) {
+      let aliances = [];
+
+      return 1233
+
+    }
+  }
+}
 
 // ========================= SORT =========================
 

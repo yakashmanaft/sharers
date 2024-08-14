@@ -315,19 +315,17 @@
         <p>{{ organization }}</p>
       </div> -->
     </div>
+
     <!-- Заголовок - Переключатель -->
     <!-- TOGGLE TITLE -->
     <!-- таблица ФОТ / Табель учета рабочего времени -->
-
     <div class="toggle-title">
       <div
         v-for="(title, index) in titles.filter((el) => {
           if (organization) {
             if (
               el.guard &&
-              (organization.ownerID === user.id ||
-                sessionUserIsInTheBand() ||
-                sessionUserIsInAliance())
+              (organization.ownerID === user.id || sessionUserIsInTheBand())
             ) {
               return el;
             } else if (!el.guard) {
@@ -1201,11 +1199,9 @@
           <div v-if="items.length">
             <div
               v-for="(item, index) in items.filter((el) => {
-                if (organization) {
-                  if (
-                    organization.ownerID === user.id ||
-                    sessionUserIsInTheBand() ||
-                    sessionUserIsInAliance()
+                if(organization) {
+                  if(
+                    (organization.ownerID === user.id || sessionUserIsInTheBand())
                   ) {
                     return el;
                   }
@@ -1215,10 +1211,7 @@
               style="display: flex"
             >
               <div>{{ item.title }}</div>
-              <div style="background-color: var(--bs-primary-bg-subtle)">
-                {{ item.qty }} {{ item.measure }} * {{ item.price }} RUB =
-                {{ item.qty * item.price }} RUB
-              </div>
+              <div style="background-color: var(--bs-primary-bg-subtle)">{{ item.qty }} {{ item.measure }} * {{item.price }} RUB = {{ item.qty * item.price }} RUB</div>
               <div>-{{ item.location }}_{{ item.ownerID }}</div>
             </div>
           </div>
@@ -1533,31 +1526,6 @@ const sessionUserIsInTheBand = () => {
       return true;
     } else {
       return false;
-    }
-  }
-};
-// check session user in current band aliance
-const sessionUserIsInAliance = () => {
-  if (organizations.value) {
-    for (let i = 0; i <= organizations.value.length - 1; i++) {
-      // let orgInAliance = organizations.value[i].sharers.find(
-      //   (el) => el.userType === "company" && el.userID === +route.params.id
-      // );
-      // console.log(orgInAliance);
-
-      let userInCurrentBand = organizations.value[i].sharers.find(
-        (el) => {
-          if(organizations.value[i].id === +route.params.id && el.userType === "user" && el.userID === user.value.id) {
-            return el
-          }
-        }
-      );
-
-
-
-      if (userInCurrentBand) {
-        return true;
-      }
     }
   }
 };

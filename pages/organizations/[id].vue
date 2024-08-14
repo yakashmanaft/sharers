@@ -327,7 +327,7 @@
               el.guard &&
               (organization.ownerID === user.id ||
                 sessionUserIsInTheBand() ||
-                sessionUserAliancePart())
+                sessionUserAliancePartMainSharer())
             ) {
               return el;
             } else if (
@@ -1539,7 +1539,7 @@ const sessionUserIsInTheBand = () => {
     }
   }
 };
-//
+// check session user is a part of aliance
 const sessionUserAliancePart = () => {
   if (computedOragnizationsInBand.value || organizations.value) {
     // какие банды входят в current band
@@ -1585,6 +1585,31 @@ const sessionUserAliancePart = () => {
     // Ну и прочее
     else {
       return false;
+    }
+  }
+};
+const sessionUserAliancePartMainSharer = () => {
+  if (organizations.value.length) {
+    // Пробегаемся по всем бандам на сервисе
+    for (let i = 0; i <= organizations.value.length; i++) {
+      // и смотрим где в sharers есть текущая банда в качестве участника
+      let array = organizations.value[i].sharers.filter(
+        (el) => el.userType === "company" && el.userID === organization.value.id
+      );
+      if (array.length) {
+        // Убдимся что session user является участников головной банды в альянсе
+        if (
+          organizations.value[i].sharers.find(
+            (el) => el.userType === "user" && el.userID === user.value.id
+          )
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      } else {
+        return false;
+      }
     }
   }
 };

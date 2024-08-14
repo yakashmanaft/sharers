@@ -462,21 +462,21 @@ useHead({
 // toggle title data// toggle title data
 const titles = ref([
   {
-    title: "Заявки",
-    name: "demands",
-    guard: true,
-  },
-  {
     title: "Проекты",
     name: "projects",
     guard: false,
+  },
+  {
+    title: "Заявки",
+    name: "demands",
+    guard: true,
   },
   {
     title: "Банды",
     name: "organizations",
     guard: false,
   },
-    {
+  {
     title: "Фонды",
     name: "funds",
     guard: true,
@@ -487,7 +487,7 @@ const titles = ref([
     guard: true,
   },
 ]);
-const currentTitle = ref("demands");
+const currentTitle = ref("projects");
 
 // TRANSFORMERS
 const transformEndingTheWord = (length, string) => {
@@ -522,7 +522,6 @@ const createMyNewBand = () => {
 
 <template>
   <Container v-if="user">
-
     <!-- PAGE TITLE -->
     <div class="page-title">
       <h1>
@@ -544,13 +543,16 @@ const createMyNewBand = () => {
     <!-- Заголовок - Переключатель -->
     <!-- TOGGLE TITLE -->
     <div class="toggle-title">
-      <div v-for="(title, index) in titles.filter(el => {
-        if(el.guard && +route.params.id === sessionUser.id) {
-          return el
-        } else if (!el.guard) {
-          return el
-        }
-      })" class="switch-title_el">
+      <div
+        v-for="(title, index) in titles.filter((el) => {
+          if (el.guard && +route.params.id === sessionUser.id) {
+            return el;
+          } else if (!el.guard) {
+            return el;
+          }
+        })"
+        class="switch-title_el"
+      >
         <input
           type="radio"
           :id="`${index}_fund_hours`"
@@ -737,26 +739,16 @@ const createMyNewBand = () => {
     <!-- ФОНДЫ соучастника или банды, к которым допущен соучастник -->
     <div v-if="currentTitle === 'funds'">
       <router-link to="/fundsharers/1">Фонд</router-link>
-      <br>
+      <br />
       <ul>
         фонды:
-        <li>
-          балансовая стоимость ТМЦ
-        </li>
-        <li>
-          банды, где соучастник - creator
-        </li>
-        <li>
-          афилирован к конкретному фонду банды по статусу
-        </li>
-        <li>
-          свои кошельки
-        </li>
-        <li>
-          где соучастчник в какой либо доле
-        </li>
+        <li>балансовая стоимость ТМЦ</li>
+        <li>банды, где соучастник - creator</li>
+        <li>афилирован к конкретному фонду банды по статусу</li>
+        <li>свои кошельки</li>
+        <li>где соучастчник в какой либо доле</li>
       </ul>
-      <br>
+      <br />
       <div>Нет фондов</div>
     </div>
 
@@ -806,7 +798,7 @@ const createMyNewBand = () => {
 }
 .sharer-info_wrapper {
   margin-top: 1rem;
-} 
+}
 /* .btn__disabled {
   color: gray;
   opacity: 0.3;
@@ -893,8 +885,8 @@ const createMyNewBand = () => {
   .toggle-title {
     margin-top: 1rem;
     /* margin: 1rem 1rem 0 1rem; */
-    padding: unset!important;
-    border: unset
+    padding: unset !important;
+    border: unset;
   }
   .switch-title_el:first-child {
     margin-left: 1rem;
@@ -908,12 +900,12 @@ const createMyNewBand = () => {
   }
 }
 
-@media screen and (min-width: 576) and (max-width: 767px){
+@media screen and (min-width: 576) and (max-width: 767px) {
   .switch-title_el:first-child {
     margin-left: unset;
-  }  
+  }
   .toggle-title {
-    padding-left: unset!important;
+    padding-left: unset !important;
     /* padding-left: 0.5rem; */
     padding-right: 0.5rem;
   }

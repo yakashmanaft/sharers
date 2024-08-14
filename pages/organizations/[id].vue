@@ -318,7 +318,6 @@
 
     <!-- Заголовок - Переключатель -->
     <!-- TOGGLE TITLE -->
-    {{sessionUserAliancePart()}}
     <!-- таблица ФОТ / Табель учета рабочего времени -->
     <div class="toggle-title">
       <div
@@ -326,10 +325,15 @@
           if (organization) {
             if (
               el.guard &&
-              (organization.ownerID === user.id || sessionUserIsInTheBand())
+              (organization.ownerID === user.id ||
+                sessionUserIsInTheBand() ||
+                sessionUserAliancePart())
             ) {
               return el;
-            } else if (!el.guard || (el.name === 'warehouse-items' && sessionUserAliancePart())) {
+            } else if (
+              !el.guard ||
+              (el.name === 'warehouse-items' && sessionUserAliancePart())
+            ) {
               return el;
             }
           }
@@ -1200,9 +1204,11 @@
           <div v-if="items.length">
             <div
               v-for="(item, index) in items.filter((el) => {
-                if(organization) {
-                  if(
-                    (organization.ownerID === user.id || sessionUserIsInTheBand() || sessionUserAliancePart())
+                if (organization) {
+                  if (
+                    organization.ownerID === user.id ||
+                    sessionUserIsInTheBand() ||
+                    sessionUserAliancePart()
                   ) {
                     return el;
                   }
@@ -1212,7 +1218,10 @@
               style="display: flex"
             >
               <div>{{ item.title }}</div>
-              <div style="background-color: var(--bs-primary-bg-subtle)">{{ item.qty }} {{ item.measure }} * {{item.price }} RUB = {{ item.qty * item.price }} RUB</div>
+              <div style="background-color: var(--bs-primary-bg-subtle)">
+                {{ item.qty }} {{ item.measure }} * {{ item.price }} RUB =
+                {{ item.qty * item.price }} RUB
+              </div>
               <div>-{{ item.location }}_{{ item.ownerID }}</div>
             </div>
           </div>
@@ -1530,18 +1539,55 @@ const sessionUserIsInTheBand = () => {
     }
   }
 };
-// 
+//
 const sessionUserAliancePart = () => {
-  // Узнаем, в какие альянсы входит текущая банды
-  if(organizations.value) {
-    for(let i = 0; i <= organizations.value.length; i++) {
-      let aliances = [];
-
-      return true
-
+  if (computedOragnizationsInBand.value || organizations.value) {
+    // какие банды входят в current band
+    if (computedOragnizationsInBand.value.length) {
+      // Ищем в участниках session user
+      for (let i = 0; i <= computedOragnizationsInBand.value.length; i++) {
+        if (
+          computedOragnizationsInBand.value[i].sharers.find(
+            (el) => el.userType === "user" && el.userID === user.value.id
+          )
+        ) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    }
+    // От обратного, найти куда входит current band
+    else if (organizations.value.length) {
+      // Пробегаемся по всем бандам на сервисе
+      for (let i = 0; i <= organizations.value.length; i++) {
+        // и смотрим где в sharers есть текущая банда в качестве участника
+        let array = organizations.value[i].sharers.filter(
+          (el) =>
+            el.userType === "company" && el.userID === organization.value.id
+        );
+        if (array.length) {
+          // Убдимся что session user является участников головной банды в альянсе
+          if (
+            organizations.value[i].sharers.find(
+              (el) => el.userType === "user" && el.userID === user.value.id
+            )
+          ) {
+            return true;
+          } else {
+            return false;
+          }
+        } else {
+          return false;
+        }
+      }
+    }
+    // Ну и прочее
+    else {
+      return false;
     }
   }
-}
+};
 
 // ========================= SORT =========================
 

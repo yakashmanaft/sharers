@@ -430,7 +430,7 @@
         data-bs-target="#userCreateModal"
         v-if="sessionUser.role === 'SUPER_ADMIN' && currentTitle === 'sharers'"
       >
-        Соучастник +
+        Добавить
       </button>
 
       <!-- КНОПКА СОЗДАТЬ ПОЛЬЗОВАТЕЛЯ if user session role === 'SUPER_ADMIN' -->
@@ -441,7 +441,7 @@
         data-bs-target="#companyCreateModal"
         v-if="currentTitle === 'organizations'"
       >
-        Банда +
+        Добавить
       </button>
     </div>
 
@@ -1051,6 +1051,9 @@ useHead({
 </script>
 
 <style scoped>
+.btn {
+  border-radius: 2rem;
+}
 .link {
   cursor: pointer;
 }

@@ -136,10 +136,10 @@ const measureTypes = ref([
 const whoIsOwnerFilterTypes = ref([
   {
     id: 0,
-    type: 'myOwn',
-    title: 'Личные'
-  }
-])
+    type: "myOwn",
+    title: "Личные",
+  },
+]);
 
 // Для действий по редактированию предметов (добавление, вычитание, перемещение редактирование конкретного)
 const currentItem = ref(null);
@@ -151,6 +151,9 @@ const editedItem = ref({
 });
 const { user } = useUserSession();
 
+const { data: organizations } = useLazyAsyncData("organizations", () =>
+  $fetch("/api/organizations/organizations")
+);
 onMounted(async () => {
   // makes refetching
   await refresh();
@@ -161,38 +164,25 @@ onMounted(async () => {
     );
   }
 
-  window.addEventListener('scroll', () => {
-    let searchFilterContainer = document.getElementById('searchFilterContainer')
+  window.addEventListener("scroll", () => {
+    let searchFilterContainer = document.getElementById(
+      "searchFilterContainer"
+    );
     const scrollPosition = window.scrollY;
-    console.log(window.screen.width)
-    if(searchFilterContainer && (window.screen.width >= 768 && window.screen.width <= 991)) {
-
-      if(scrollPosition > 1) {
-        searchFilterContainer.style.display = 'none'
+    console.log(window.screen.width);
+    if (
+      searchFilterContainer &&
+      window.screen.width >= 768 &&
+      window.screen.width <= 991
+    ) {
+      if (scrollPosition > 1) {
+        searchFilterContainer.style.display = "none";
       } else {
-        searchFilterContainer.style.display = 'block'
+        searchFilterContainer.style.display = "block";
       }
     }
-  })
-  // Создаем массив элементов для фильтра checkbox по принадлежности редмета
-  // if(organizations.value) {
-  //   let myBands = [...organizations.value].filter(item => item.ownerID === user.value.id)
-    
-  //   if(myBands.length) {
+  });
 
-  //     for(let i = 0; i <= myBands.length - 1; i++) {
-
-  //       // 
-
-  //       whoIsOwnerFilterTypes.value.push({
-  //         id: myBands[i].id,
-  //         type: 'band',
-  //         title: myBands[i].title
-  //       })
-  //     }
-  //   }
-    
-  // }
   refreshProjects();
   refreshLocations();
   refreshOrganizations();
@@ -288,52 +278,54 @@ const {
           }
           // ищем пользовательские предметы из банды или альянса
           else {
-            // if user is a sharer in band which is an owner of item
-            let sessionUserIsASharerOfBands = [...organizations.value].filter(
-              (org) => {
-                let userInBands = org.sharers.filter(
-                  (sharer) => sharer.userID === user.value.id
-                );
+            if (organizations.value) {
+              // if user is a sharer in band which is an owner of item
+              let sessionUserIsASharerOfBands = [...organizations.value].filter(
+                (org) => {
+                  let userInBands = org.sharers.filter(
+                    (sharer) => sharer.userID === user.value.id
+                  );
 
-                if (userInBands.length) {
-                  return org;
-                }
-              }
-            );
-            if (sessionUserIsASharerOfBands.length) {
-              // console.log(sessionUserIsASharerOfBands);
-              for (
-                let i = 0;
-                i <= sessionUserIsASharerOfBands.length - 1;
-                i++
-              ) {
-                // показываем предметы альянса, в которых состоит банда, соучастником которой является сессионый пользователь
-                let bandsArray = [...organizations.value].filter((org) => {
-                  if (org.sharers.length) {
-                    org.sharers.filter(
-                      (sharer) =>
-                        sharer.userID === sessionUserIsASharerOfBands[i].id &&
-                        sharer.userType === "company"
-                    );
-
+                  if (userInBands.length) {
                     return org;
                   }
-                });
+                }
+              );
+              if (sessionUserIsASharerOfBands.length) {
+                // console.log(sessionUserIsASharerOfBands);
+                for (
+                  let i = 0;
+                  i <= sessionUserIsASharerOfBands.length - 1;
+                  i++
+                ) {
+                  // показываем предметы альянса, в которых состоит банда, соучастником которой является сессионый пользователь
+                  let bandsArray = [...organizations.value].filter((org) => {
+                    if (org.sharers.length) {
+                      org.sharers.filter(
+                        (sharer) =>
+                          sharer.userID === sessionUserIsASharerOfBands[i].id &&
+                          sharer.userType === "company"
+                      );
 
-                if (bandsArray.length) {
-                  for (let i = 0; i <= bandsArray.length - 1; i++) {
-                    // if (
-                    //   item.ownerID === bandsArray[i].id &&
-                    //   item.ownerType === "company"
-                    // ) {
-                    //   return item;
-                    // }
-                    if (
-                      item.ownerID !== bandsArray[i].id &&
-                      item.ownerType === "user" &&
-                      item.showToAll
-                    ) {
-                      return item;
+                      return org;
+                    }
+                  });
+
+                  if (bandsArray.length) {
+                    for (let i = 0; i <= bandsArray.length - 1; i++) {
+                      // if (
+                      //   item.ownerID === bandsArray[i].id &&
+                      //   item.ownerType === "company"
+                      // ) {
+                      //   return item;
+                      // }
+                      if (
+                        item.ownerID !== bandsArray[i].id &&
+                        item.ownerType === "user" &&
+                        item.showToAll
+                      ) {
+                        return item;
+                      }
                     }
                   }
                 }
@@ -343,7 +335,7 @@ const {
         }
 
         // COMPANY
-        else if (item.ownerType === "company") {
+        else if (item.ownerType === "company" && organizations.value) {
           // if user is a leader of a band which is an owner of item
           let sessionUserIsALeaderOfBands = [...organizations.value].filter(
             (org) => {
@@ -541,9 +533,6 @@ const { data: projects } = useLazyAsyncData("projects", () =>
 );
 const { data: locations } = useLazyAsyncData("locations", () =>
   $fetch("api/locations/locations")
-);
-const { data: organizations } = useLazyAsyncData("organizations", () =>
-  $fetch("/api/organizations/organizations")
 );
 
 //
@@ -1438,8 +1427,7 @@ const checkAndCreate = async (item) => {
 
 // CONVERT TO PDF
 const convertListToPDF = () => {
-  if(computedItems.length) {
-
+  if (computedItems.length) {
     const element = document.getElementById("element-to-print");
     const options = {
       margin: 0.3,
@@ -1452,14 +1440,13 @@ const convertListToPDF = () => {
     // html2pdf().set(options).from(element).save();
   } else {
     alert("Список пустой... распечатывать нечего..");
-
   }
 };
 
 // HIDE
 const toggleShowToAll = () => {
-  alert('Скрытие в разработке')
-}
+  alert("Скрытие в разработке");
+};
 
 // ******** WATCHERS ********
 
@@ -1582,7 +1569,7 @@ watch(tempCreateItemOwner, () => {
 </script>
 <template>
   <Container>
-    <div class="header_container" style="display: flex;">
+    <div class="header_container" style="display: flex">
       <h1 class="header_title">ТМЦ</h1>
       <!-- Button trigger modal create item -->
       <button
@@ -1894,7 +1881,6 @@ watch(tempCreateItemOwner, () => {
       </div>
     </div>
 
- 
     <!-- ******** ADD NEW ITEM MODAL ******** --><!-- ******** ADD NEW ITEM MODAL ******** -->
     <!-- Modal create item-->
     <div
@@ -2360,10 +2346,7 @@ watch(tempCreateItemOwner, () => {
             v-model="searchInput"
           />
           <label for="search-input_icon">
-            <Icon
-              name="ic:baseline-search"
-              size="24px"
-            />
+            <Icon name="ic:baseline-search" size="24px" />
           </label>
           <!-- </div> -->
         </div>
@@ -2451,7 +2434,11 @@ watch(tempCreateItemOwner, () => {
               <span class="link" @click="$router.push(`/warehouse/${item.id}`)">
                 {{ item.title }}
               </span>
-              <span v-if="!item.showToAll" style="margin-left: 0.5rem;" @click="toggleShowToAll()">
+              <span
+                v-if="!item.showToAll"
+                style="margin-left: 0.5rem"
+                @click="toggleShowToAll()"
+              >
                 <Icon
                   name="ic:twotone-disabled-visible"
                   size="16px"
@@ -2573,7 +2560,7 @@ watch(tempCreateItemOwner, () => {
   gap: 1rem;
 }
 .header_container .header_title {
-  margin: unset
+  margin: unset;
 }
 table {
   margin-top: 1rem;
@@ -3159,7 +3146,7 @@ label #expend-item:checked + .expand-item_icon {
   }
   .switch-type_container {
     /* z-index: -2; */
-    background-color: var(--bs-body-bg) 
+    background-color: var(--bs-body-bg);
     /* background-color: red; */
   }
   .search-and-filter_container {
@@ -3231,8 +3218,8 @@ label #expend-item:checked + .expand-item_icon {
   #search-input_icon + label:hover {
     cursor: pointer;
   }
-  #search-input_icon + label:hover svg path{
-    color: var(--bs-primary)
+  #search-input_icon + label:hover svg path {
+    color: var(--bs-primary);
   }
   /* #search-input_icon + label:hover #search-input_icon + label:after {
     content: '';

@@ -464,7 +464,7 @@ const titles = ref([
   {
     title: "Заявки",
     name: "demands",
-    guard: false,
+    guard: true,
   },
   {
     title: "Проекты",
@@ -484,7 +484,7 @@ const titles = ref([
   {
     title: "ТМЦ",
     name: "warehouse-items",
-    guard: false,
+    guard: true,
   },
 ]);
 const currentTitle = ref("demands");

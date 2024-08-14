@@ -329,7 +329,7 @@
               (organization.ownerID === user.id || sessionUserIsInTheBand())
             ) {
               return el;
-            } else if (!el.guard) {
+            } else if (!el.guard || (el.name === 'warehouse-items' && sessionUserAliancePart())) {
               return el;
             }
           }
@@ -1202,7 +1202,7 @@
               v-for="(item, index) in items.filter((el) => {
                 if(organization) {
                   if(
-                    (organization.ownerID === user.id || sessionUserIsInTheBand())
+                    (organization.ownerID === user.id || sessionUserIsInTheBand() || sessionUserAliancePart())
                   ) {
                     return el;
                   }
@@ -1537,7 +1537,7 @@ const sessionUserAliancePart = () => {
     for(let i = 0; i <= organizations.value.length; i++) {
       let aliances = [];
 
-      return 1233
+      return true
 
     }
   }

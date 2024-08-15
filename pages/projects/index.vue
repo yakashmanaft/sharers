@@ -119,15 +119,15 @@ const clearModalInputs = (project: any) => {
 //
 const translateCurator = (curatorID: number, curatorType: string) => {
   if (curatorID && curatorType) {
-    if(curatorType === 'user') {
+    if (curatorType === "user") {
       let curator = [...users.value].find((user) => user.id === curatorID);
       return `${curator?.surname} ${curator?.name[0]}. ${curator?.middleName[0]}`;
-
-    } else if (curatorType === 'company') {
-      if(organizations.value) {
-
-        let curator = [...organizations.value].find(company => company.id === curatorID)
-        return `${curator?.title}`
+    } else if (curatorType === "company") {
+      if (organizations.value) {
+        let curator = [...organizations.value].find(
+          (company) => company.id === curatorID
+        );
+        return `${curator?.title}`;
       }
     }
   }
@@ -166,7 +166,7 @@ watch(project.value, () => {
 });
 </script>
 <template>
-  <Container style="padding-top: 5rem" >
+  <Container style="padding-top: 5rem">
     <h1 class="show-max-767">Проекты</h1>
 
     <!-- fetch data is error -->
@@ -354,7 +354,10 @@ watch(project.value, () => {
           </div>
         </div>
         <div class="project-item_right">
-          <span>Куратор: {{ translateCurator(project.curator, project.curatorType) }}</span>
+          <span
+            >Куратор:
+            {{ translateCurator(project.curator, project.curatorType) }}</span
+          >
           <span
             >Заказчик:
             {{ translatePartner(project.partnerID, project.partnerType) }}</span
@@ -378,7 +381,7 @@ watch(project.value, () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
   /* margin-top: 1rem; */
   padding: 1rem;
   cursor: pointer;
@@ -422,7 +425,7 @@ watch(project.value, () => {
   .project-item_container {
     flex-direction: column;
     align-items: flex-start;
-    gap: 1rem;  
+    gap: 1rem;
   }
   .project-item_right {
     align-items: unset;

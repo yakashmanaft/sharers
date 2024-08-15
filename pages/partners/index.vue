@@ -1124,7 +1124,7 @@ useHead({
   align-items: center;
   /* margin: 1rem 0; */
   padding: 1rem;
-  box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
 }
 .list_item:hover {
   background-color: rgba(0, 0, 0, 0.05);

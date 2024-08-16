@@ -2205,7 +2205,7 @@ watch(tempCreateItemOwner, () => {
 
     <!-- FILTERS RADIO BTN -->
     <div class="switch-type_container">
-      <div>
+      <div class="switch-type_wrapper">
         <!--  -->
         <div style="display: flex; align-items: center">
           <!-- set location & project -->
@@ -2638,6 +2638,11 @@ td {
   justify-content: space-between;
   margin-top: 1rem;
   gap: 1rem;
+  width: 100% !important;
+}
+
+.switch-type_wrapper {
+  width: 100%;
 }
 
 .switch-type_el {
@@ -2780,7 +2785,12 @@ label #expend-item:checked + .expand-item_icon {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
+  overflow-y: scroll;
+  scrollbar-width: none;
 }
+/* .set-categoty-type_wrapper::-webkit-scrollbar {
+  display: none;
+} */
 .search-wrapper {
   display: flex;
   /* position: relative; */
@@ -2817,6 +2827,9 @@ label #expend-item:checked + .expand-item_icon {
     position: absolute;
     right: 0.5rem;
   }
+  /* .set-categoty-type_wrapper {
+    width: 100%;
+  } */
   /* .search-and-filter_container .search_input {
     max-width: 120px;
   } */
@@ -2891,18 +2904,16 @@ label #expend-item:checked + .expand-item_icon {
   .filter-archive_container {
     display: none;
   }
+  /* .switch-type_container {
+    max-width: 767px;
+  } */
   .set-categoty-type_wrapper {
-    width: 100%;
+    /* width: 500px; */
     gap: 0 !important;
-    overflow-x: scroll;
     flex-direction: row;
     justify-content: flex-start;
     align-items: flex-start;
-    scrollbar-width: none;
     margin-top: 2rem;
-  }
-  .set-categoty-type_wrapper::-webkit-scrollbar {
-    display: none;
   }
   .item-table_header {
     display: none;
@@ -3143,11 +3154,6 @@ label #expend-item:checked + .expand-item_icon {
   .item-table_header tr,
   .table-row_wrapper {
     grid-template-columns: 50px 1fr 100px 1fr;
-  }
-  .switch-type_container {
-    /* z-index: -2; */
-    background-color: var(--bs-body-bg);
-    /* background-color: red; */
   }
   .search-and-filter_container {
     position: fixed;

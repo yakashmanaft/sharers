@@ -2,6 +2,7 @@
   <!-- https://www.youtube.com/watch?v=3MPlTDgQaaE -->
   <Container style="padding-top: 5rem">
     <!-- Modal EDIT USER-->
+    <!-- userEditModal -->
     <div
       class="modal fade"
       id="userEditModal"
@@ -174,11 +175,12 @@
     </div>
 
     <!-- MODAL CREATE USER -->
+    <!-- userCreateModal -->
     <div
       class="modal fade"
       id="userCreateModal"
       tabindex="-1"
-      aria-labelledby="userCreateModal"
+      aria-labelledby="userCreateModalLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog">
@@ -192,7 +194,7 @@
             ></button>
           </div>
           <div class="modal-body">
-            <h1>Добавить соучастника</h1>
+            <h1 id="userCreateModalLabel">Добавить соучастника</h1>
 
             <!-- Фамилия -->
             <div class="mb-3">
@@ -337,11 +339,12 @@
     </div>
 
     <!-- MODAL CREATE COMPANY -->
+    <!-- companyCreateModal -->
     <div
       class="modal fade createModal"
       id="companyCreateModal"
       tabindex="-1"
-      aria-labelledby="companyCreateModal"
+      aria-labelledby="companyCreateModalLabel"
       aria-hidden="true"
     >
       <div class="modal-dialog">
@@ -355,7 +358,7 @@
             ></button>
           </div>
           <div class="modal-body">
-            <h1>Добавить банду</h1>
+            <h1 id="companyCreateModalLabel">Добавить банду</h1>
             <div class="mb-3">
               <label for="userName" class="form-label">Название</label>
               <input
@@ -421,7 +424,7 @@
     </div>
 
     <!-- BTNS OPEN MODAL CREATE -->
-    <div style="display: flex; align-items: center; gap: 1rem">
+    <div class="add-btn_container">
       <!-- КНОПКА СОЗДАТЬ Банду NeeD TO CHOOSE ROLE WITH ACCES -->
       <button
         type="button"
@@ -1086,6 +1089,11 @@ useHead({
 .switch-title_el input[type="radio"]:checked + label h1 {
   color: unset;
 }
+.add-btn_container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
 /* SEARCH */
 .partners-search_wrapper {
@@ -1224,6 +1232,10 @@ useHead({
     margin: 0.5rem;
   }
   .toggle-title {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+  .add-btn_container {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
   }

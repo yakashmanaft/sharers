@@ -318,15 +318,15 @@ const computedSharerOrganizations = computed(() => {
   // Users - id
   // organizations.value.sharers
 });
-const computedMyOrganizations = computed(() => {
-  if (organizations.value) {
-    return [...organizations.value].filter((organization) => {
-      if (organization.ownerID === +route.params.id) {
-        return organization;
-      }
-    });
-  }
-});
+// const computedMyOrganizations = computed(() => {
+//   if (organizations.value) {
+//     return [...organizations.value].filter((organization) => {
+//       if (organization.ownerID === +route.params.id) {
+//         return organization;
+//       }
+//     });
+//   }
+// });
 const { data: organizations } = await useFetch(
   "/api/organizations/organizations",
   {
@@ -490,29 +490,29 @@ const titles = ref([
 const currentTitle = ref("projects");
 
 // TRANSFORMERS
-const transformEndingTheWord = (length, string) => {
-  if (string === "соучастник") {
-    if (length) {
-      if (length % 10 === 4 || length % 10 === 3 || length % 10 === 2) {
-        return "соучастника";
-      } else if (
-        length % 10 === 5 ||
-        length % 10 === 6 ||
-        length % 10 === 7 ||
-        length % 10 === 8 ||
-        length % 10 === 9
-      ) {
-        return "соучастников";
-      } else if (length % 10 === 0) {
-        return "cоучастник";
-      } else {
-        return string;
-      }
-    } else {
-      return "соучастников";
-    }
-  }
-};
+// const transformEndingTheWord = (length, string) => {
+//   if (string === "соучастник") {
+//     if (length) {
+//       if (length % 10 === 4 || length % 10 === 3 || length % 10 === 2) {
+//         return "соучастника";
+//       } else if (
+//         length % 10 === 5 ||
+//         length % 10 === 6 ||
+//         length % 10 === 7 ||
+//         length % 10 === 8 ||
+//         length % 10 === 9
+//       ) {
+//         return "соучастников";
+//       } else if (length % 10 === 0) {
+//         return "cоучастник";
+//       } else {
+//         return string;
+//       }
+//     } else {
+//       return "соучастников";
+//     }
+//   }
+// };
 
 // CREATE
 const createMyNewBand = () => {
@@ -567,96 +567,24 @@ const createMyNewBand = () => {
 
     <!-- Demands -->
     <div v-if="currentTitle === 'demands'">
-      <div>Ничего нет</div>
+      <div class="demands_container">
+        <div>Ничего нет</div>
+      </div>
     </div>
 
-    <!-- Demands -->
+    <!-- Projects -->
     <div v-if="currentTitle === 'projects'">
-      <div>Ничего нет</div>
+      <!--  -->
+      <div class="projects_container">
+        <div>Ничего нет</div>
+      </div>
     </div>
 
     <!-- ORGANIZATIONS -->
     <div v-if="currentTitle === 'organizations'">
-      <!-- user is owner -->
-      <div v-if="computedMyOrganizations.length" style="margin-top: 1rem">
-        <!-- title -->
-        <div class="org_title">
-          <p style="margin: 0"><span>Организовал</span></p>
-          <Icon name="mdi:crown" size="24px" color="var(--bs-warning)" />
-        </div>
-
-        <div class="org_container">
-          <!-- List -->
-          <div
-            v-for="organization in computedMyOrganizations"
-            class="org_wrapper"
-          >
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <!-- TITLE -->
-              <div
-                style="display: flex; align-items: space-between"
-                @click="$router.push(`/organizations/${organization.id}`)"
-                class="link"
-              >
-                <p style="margin: 0">
-                  <span style="font-weight: bold">{{
-                    organization.title
-                  }}</span>
-                </p>
-              </div>
-              <!-- BTN DISOLVE BAND -->
-              <span
-                v-if="organization.ownerID === sessionUser.id"
-                class="link"
-                @click="disolveMyOrganization(organization.id)"
-                >Распустить</span
-              >
-            </div>
-            <!-- INFO -->
-            <div style="margin-top: 1rem">
-              <p style="margin: 0">
-                {{ organization.sharers.length }}
-                {{
-                  transformEndingTheWord(
-                    organization.sharers.length,
-                    "соучастник"
-                  )
-                }}
-              </p>
-            </div>
-          </div>
-
-          <!-- Добавить -->
-          <button
-            v-if="+route.params.id === sessionUser.id"
-            type="button"
-            class="btn btn-primary org_btn-new-band"
-            style="text-align: start; padding: 1rem"
-            @click.prevent="createMyNewBand()"
-          >
-            <p style="margin: 0">
-              <span style="font-weight: bold">Организовать</span><br />новую
-              банду
-            </p>
-            <Icon
-              name="material-symbols:add-rounded"
-              size="32px"
-              color="var(--bs-primary)"
-            />
-          </button>
-        </div>
-      </div>
-
-      <!-- user is participant -->
-      <div v-if="computedSharerOrganizations.length" style="margin-top: 1rem">
+      <div v-if="computedSharerOrganizations.length">
         <!-- Titie -->
-        <p class="org_title"><span>Соучастник в бандах:</span></p>
+        <!-- <p class="org_title"><span>Соучастник в бандах:</span></p> -->
 
         <div class="org_container">
           <!-- List -->
@@ -664,50 +592,55 @@ const createMyNewBand = () => {
             v-for="organization in computedSharerOrganizations"
             class="org_wrapper"
           >
-            <!-- Item Header -->
-            <div
-              style="
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-              "
-            >
-              <!-- Title -->
+            <!-- ORG HEADER -->
+            <div class="org_header">
+              <!-- ORG TITLE -->
               <div
-                style="
-                  display: flex;
-                  align-items: center;
-                  justify-content: space-between;
-                "
-                class="link"
+                class="org_title link"
                 @click="$router.push(`/organizations/${organization.id}`)"
               >
-                <p style="margin: 0">
-                  <span style="font-weight: bold">{{
-                    organization.title
-                  }}</span>
-                </p>
+                <span style="font-weight: bold">{{ organization.title }}</span>
               </div>
-              <!-- BTN EXIT FROM BAND -->
-              <span
-                v-if="+route.params.id === sessionUser.id"
-                class="link"
-                @click="leaveCurrentBand(organization.id)"
-                >Выйти</span
-              >
+
+              <!-- ACTION BTN -->
+              <div>
+                <!-- DISSOLVE -->
+                <span
+                  v-if="organization.ownerID === sessionUser.id"
+                  class="link"
+                  @click="disolveMyOrganization(organization.id)"
+                  >Распустить</span
+                >
+
+                <!-- EXIT-->
+                <span
+                  v-if="
+                    +route.params.id === sessionUser.id &&
+                    organization.ownerID !== sessionUser.id
+                  "
+                  class="link"
+                  @click="leaveCurrentBand(organization.id)"
+                  >Выйти</span
+                >
+              </div>
             </div>
 
-            <!-- INFO -->
-            <div style="margin-top: 1rem">
-              <p style="margin: 0">
-                {{ organization.sharers.length }}
-                {{
-                  transformEndingTheWord(
-                    organization.sharers.length,
-                    "соучастник"
-                  )
-                }}
-              </p>
+            <!-- ORG BODY -->
+            <div class="org_body">
+              <!-- ORG INFO -->
+              <div class="org_info">
+                <Icon
+                  name="material-symbols-light:group"
+                  size="32px"
+                  color="var(--bs-border-color)"
+                />
+                <p style="margin: 0">x</p>
+                <p style="margin: 0">{{ organization.sharers.length }}</p>
+              </div>
+              <!-- ORG LEADER ICON -->
+              <div v-if="organization.ownerID === sessionUser.id">
+                <Icon name="mdi:crown" size="24px" color="var(--bs-warning)" />
+              </div>
             </div>
 
             <!-- <p>
@@ -720,6 +653,24 @@ const createMyNewBand = () => {
             >
           </p> -->
           </div>
+          <!-- Создать банду-->
+          <button
+            v-if="+route.params.id === sessionUser.id"
+            type="button"
+            class="btn btn-primary org_btn-new-band"
+            style="text-align: start; padding: 1rem"
+            @click.prevent="createMyNewBand()"
+          >
+            <p style="margin: 0" class="org_btn-title">
+              <span style="font-weight: bold">Организовать</span><br />новую
+              банду
+            </p>
+            <Icon
+              name="material-symbols:add-rounded"
+              size="32px"
+              color="var(--bs-primary)"
+            />
+          </button>
         </div>
       </div>
 
@@ -738,31 +689,35 @@ const createMyNewBand = () => {
 
     <!-- ФОНДЫ соучастника или банды, к которым допущен соучастник -->
     <div v-if="currentTitle === 'funds'">
-      <router-link to="/fundsharers/1">Фонд</router-link>
-      <br />
-      <ul>
-        фонды:
-        <li>балансовая стоимость ТМЦ</li>
-        <li>банды, где соучастник - creator</li>
-        <li>афилирован к конкретному фонду банды по статусу</li>
-        <li>свои кошельки</li>
-        <li>где соучастчник в какой либо доле</li>
-      </ul>
-      <br />
-      <div>Нет фондов</div>
+      <div class="funds_container">
+        <router-link to="/fundsharers/1">Фонд</router-link>
+        <br />
+        <ul>
+          фонды:
+          <li>балансовая стоимость ТМЦ</li>
+          <li>банды, где соучастник - creator</li>
+          <li>афилирован к конкретному фонду банды по статусу</li>
+          <li>свои кошельки</li>
+          <li>где соучастчник в какой либо доле</li>
+        </ul>
+        <br />
+        <div>Нет фондов</div>
+      </div>
     </div>
 
     <!-- ТМЦ соучастника-->
     <div v-if="currentTitle === 'warehouse-items'">
-      <!--  -->
-      <div v-if="items.length">
-        <div v-for="(item, index) in items" :key="index">
-          {{ item }}
+      <div class="warehouse-items_container">
+        <!--  -->
+        <div v-if="items.length">
+          <div v-for="(item, index) in items" :key="index">
+            {{ item }}
+          </div>
         </div>
-      </div>
-      <!-- { "id": 159, "uuid": "ac07b3c9-c0f2-45dc-a400-b6005d70c098", "title": "Щит опалубочный 1200х3000", "type": "stuff", "qty": 1, "measure": "шт.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T04:46:12.000Z", "update_at": "2024-05-29T04:46:11.784Z" } -->
-      <div v-else>
-        <p style="margin: 0">Ничего нет</p>
+        <!-- { "id": 159, "uuid": "ac07b3c9-c0f2-45dc-a400-b6005d70c098", "title": "Щит опалубочный 1200х3000", "type": "stuff", "qty": 1, "measure": "шт.", "location": "project", "locationID": 1, "position": null, "serial": null, "productionDate": null, "ownerID": 1, "ownerType": "company", "responsible": 1, "created_at": "2024-05-29T04:46:12.000Z", "update_at": "2024-05-29T04:46:11.784Z" } -->
+        <div v-else>
+          <p style="margin: 0">Ничего нет</p>
+        </div>
       </div>
     </div>
 
@@ -834,6 +789,15 @@ const createMyNewBand = () => {
 }
 
 /*  */
+.org_container,
+.warehouse-items_container,
+.funds_container,
+.demands_container,
+.projects_container {
+  margin-top: 1rem;
+}
+
+/*  */
 .org_title {
   margin-bottom: 1rem;
   display: flex;
@@ -844,15 +808,38 @@ const createMyNewBand = () => {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
+  margin-top: 2rem;
 }
 .org_wrapper {
   padding: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--bs-border-color);
   border-radius: 1rem;
 }
 .org_wrapper:hover {
   cursor: pointer;
   background-color: var(--bs-tertiary-bg);
+}
+.org_header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.org_title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+}
+.org_body {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.org_info {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
 }
 
 .org_btn-new-band {
@@ -896,6 +883,13 @@ const createMyNewBand = () => {
   }
   .org_container {
     grid-template-columns: 1fr !important;
+    margin-top: 1rem !important;
+  }
+  .org_container,
+  .warehouse-items_container,
+  .funds_container,
+  .demands_container,
+  .projects_container {
     margin: 0 1rem;
   }
 }
@@ -921,6 +915,23 @@ const createMyNewBand = () => {
   }
   .org_container {
     grid-template-columns: repeat(2, 1fr);
+  }
+  .org_btn-new-band {
+    z-index: 100;
+    position: fixed;
+    background-color: var(--bs-primary) !important;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 100%;
+    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+  }
+  .org_btn-title {
+    display: none;
+  }
+  .org_btn-new-band svg {
+    color: white !important;
   }
 }
 @media screen and (min-width: 768px) and (max-width: 991px) {

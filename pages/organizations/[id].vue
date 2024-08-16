@@ -306,9 +306,51 @@
       </div>
     </div>
 
+    <!-- BTN ADD -->
+    <div
+      v-if="organization && organization.ownerID === user.id"
+      class="add-btn_wrapper"
+      @click="addMenuIsOpened = !addMenuIsOpened"
+    >
+      <Icon
+        name="material-symbols:add-rounded"
+        size="32px"
+        color="var(--bs-primary)"
+      />
+    </div>
+    <!-- BTN ADD MENU -->
+    <div v-if="addMenuIsOpened" class="add-btn_menu">
+      <div class="add-btn_menu-content">
+        <!-- Кнопка add band to aliance -->
+        <div class="add-btn_menu-item" @click.prevent="inviteBandToBand()">
+          <p style="margin: 0">
+            <span style="font-weight: bold">Пригласить</span><br />банду
+          </p>
+          <Icon
+            name="material-symbols:add-rounded"
+            size="32px"
+            color="var(--bs-primary)"
+          />
+        </div>
+
+        <!-- Кнопка add sharer to current band -->
+        <div class="add-btn_menu-item" @click.prevent="inviteUserToBand()">
+          <p style="margin: 0">
+            <span style="font-weight: bold">Пригласить</span>
+            <br />соучастника
+          </p>
+          <Icon
+            name="material-symbols:add-rounded"
+            size="32px"
+            color="var(--bs-primary)"
+          />
+        </div>
+      </div>
+    </div>
+
     <h1 class="show-max-767">Банда #{{ $route.params.id }}</h1>
 
-    <div v-if="organization" class="padding-left-right-1rem">
+    <div v-if="organization" class="band-info_wrapper">
       <p>{{ organization.title }}</p>
       <p>Дата создания: {{ organization.created_at }}</p>
       <!-- <div>
@@ -356,11 +398,7 @@
     <!-- v-if="user.role === 'MASTER' -->
 
     <!-- USERS IN BAND -->
-    <div
-      class="padding-left-right-1rem"
-      style="margin-top: 1rem"
-      v-if="currentTitle === 'sharers'"
-    >
+    <div style="margin-top: 1rem" v-if="currentTitle === 'sharers'">
       <!-- <h2>Соучастники</h2> -->
 
       <!--  -->
@@ -369,173 +407,166 @@
         <!-- Список участников -->
         <div class="sharers-list_container">
           <!-- LIST -->
+
+          <!-- Соучастники в банде сессионного пользователя -->
           <div>
-            <!--  -->
-            <div>
-              <!-- title -->
-              <div
-                v-if="
-                  !computedOragnizationsInBand.length &&
-                  organization.ownerID !== user.id
-                "
-                style="margin-top: 1rem"
-              >
-                <p>В составе нет банд</p>
-              </div>
-              <div v-else style="margin-top: 1rem">
-                <p>Банды-соучастники</p>
-              </div>
-              <!-- Банды-соучастники -->
-              <div class="sharers-list_wrapper">
-                <div
-                  v-for="company in computedOragnizationsInBand"
-                  class="sharers-list_item"
-                >
-                  <!-- TITLE -->
-                  <div
-                    class="link"
-                    style="display: flex; align-items: space-between"
-                    @click="$router.push(`/organizations/${company.id}`)"
-                  >
-                    <p style="margin: 0">
-                      <span style="font-weight: bold">{{ company.title }}</span>
-                    </p>
-                  </div>
-                  <!-- INFO -->
-                  <div style="margin-top: 1rem">
-                    <p style="margin: 0">
-                      {{ company.sharers.length }}
-                      {{
-                        transformEndingTheWord(
-                          company.sharers.length,
-                          "соучастник"
-                        )
-                      }}
-                    </p>
-                  </div>
-                </div>
-                <!-- Добавить -->
-                <button
-                  v-if="organization.ownerID === user.id"
-                  type="button"
-                  class="btn btn-primary sharers-list_item-button"
-                  style="text-align: start; padding: 1rem"
-                  @click.prevent="inviteBandToBand()"
-                >
-                  <p style="margin: 0">
-                    <span style="font-weight: bold">Пригласить</span><br />банду
-                  </p>
-                  <Icon
-                    name="material-symbols:add-rounded"
-                    size="32px"
-                    color="var(--bs-primary)"
-                  />
-                </button>
-              </div>
+            <!-- title -->
+            <div
+              v-if="
+                !computedUsersInBand.length && organization.ownerID !== user.id
+              "
+              style="margin-top: 1rem"
+            >
+              <p>В банде нет соучастников</p>
             </div>
 
-            <!-- Соучастники-пользователи -->
-            <div>
-              <!-- title -->
+            <div class="sharers-list_wrapper">
               <div
-                v-if="
-                  !computedUsersInBand.length &&
-                  organization.ownerID !== user.id
-                "
-                style="margin-top: 1rem"
+                v-for="(sharer, index) in computedUsersInBand"
+                class="sharers-list_item"
               >
-                <p>В банде нет соучастников</p>
-              </div>
-              <div v-else style="margin-top: 1rem">
-                <p>Cоучастники</p>
-              </div>
-              <!-- Соучастники -->
-              <div class="sharers-list_wrapper">
-                <div
-                  v-for="(sharer, index) in computedUsersInBand"
-                  class="sharers-list_item"
-                >
-                  <!-- NAME -->
+                <!-- NAME -->
+                <div class="list-item_name">
+                  <p
+                    style="margin: 0"
+                    class="link"
+                    @click="$router.push(`/partners/${sharer.id}`)"
+                  >
+                    <span style="font-weight: bold; display: block">{{
+                      sharer.surname
+                    }}</span>
+                    <span>{{ sharer.name }} {{ sharer.middleName }}</span>
+                  </p>
+
                   <div
                     style="
                       display: flex;
+                      flex-direction: column;
                       align-items: center;
-                      justify-content: space-between;
                     "
                   >
-                    <p
-                      style="margin: 0"
-                      class="link"
-                      @click="$router.push(`/partners/${sharer.id}`)"
-                    >
-                      <span style="font-weight: bold; display: block">{{
-                        sharer.surname
-                      }}</span>
-                      <span>{{ sharer.name }} {{ sharer.middleName }}</span>
-                    </p>
+                    <!-- ICON -->
 
+                    <!-- Status -->
                     <div
-                      style="
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                      "
+                      v-if="organization.ownerID === user.id"
+                      style="font-size: 0.8rem; color: var(--bs-tertiary-color)"
                     >
-                      <!-- ICON -->
-                      <Icon
-                        v-if="organization.ownerID === sharer.id"
-                        name="mdi:crown"
-                        size="24px"
-                        color="var(--bs-warning)"
-                      />
-                      <!-- Status -->
-                      <div
-                        v-if="organization.ownerID === user.id"
-                        style="
-                          font-size: 0.8rem;
-                          color: var(--bs-tertiary-color);
-                        "
-                      >
-                        {{ sharer.groupStatus }}
-                      </div>
+                      {{ sharer.groupStatus }}
                     </div>
-                  </div>
-
-                  <!-- PHONE -->
-                  <div class="item_phone">
-                    <!-- style="pointer-events: none;" -->
-                    <nuxt-link :to="`tel:${sharer.phone}`">{{
-                      sharer.phone
-                    }}</nuxt-link>
                   </div>
                 </div>
 
-                <!-- Добавить -->
-                <button
-                  v-if="organization.ownerID === user.id"
-                  type="button"
-                  class="btn btn-primary sharers-list_item-button"
-                  @click.prevent="inviteUserToBand()"
+                <!-- PHONE -->
+                <div class="item_phone">
+                  <!-- style="pointer-events: none;" -->
+                  <nuxt-link :to="`tel:${sharer.phone}`">{{
+                    sharer.phone
+                  }}</nuxt-link>
+                </div>
+              </div>
+
+              <!-- Добавить -->
+              <button
+                v-if="organization.ownerID === user.id"
+                type="button"
+                class="btn btn-primary sharers-list_item-button"
+                @click.prevent="inviteUserToBand()"
+              >
+                <p style="margin: 0">
+                  <span style="font-weight: bold">Пригласить</span>
+                  <br />соучастника
+                </p>
+                <Icon
+                  name="material-symbols:add-rounded"
+                  size="32px"
+                  color="var(--bs-primary)"
+                />
+              </button>
+            </div>
+          </div>
+          <!-- Банды в альянсе сессионного пользователя -->
+          <div>
+            <!-- title -->
+            <div
+              v-if="
+                !computedOragnizationsInBand.length &&
+                organization.ownerID !== user.id
+              "
+              style="margin-top: 1rem"
+            >
+              <p>В составе нет банд</p>
+            </div>
+            <!-- <div v-else style="margin-top: 1rem">
+                <p>Банды-соучастники</p>
+              </div> -->
+            <!-- Банды-соучастники -->
+            <div class="sharers-list_wrapper">
+              <div
+                v-for="company in computedOragnizationsInBand"
+                class="sharers-list_item"
+              >
+                <!-- TITLE -->
+                <div
+                  class="link"
+                  style="display: flex; align-items: space-between"
+                  @click="$router.push(`/organizations/${company.id}`)"
                 >
                   <p style="margin: 0">
-                    <span style="font-weight: bold">Пригласить</span>
-                    <br />соучастника в банду
+                    <span style="font-weight: bold">{{ company.title }}</span>
                   </p>
+                </div>
+                <!-- INFO -->
+                <div class="list-item_info">
                   <Icon
-                    name="material-symbols:add-rounded"
+                    name="material-symbols-light:group"
                     size="32px"
-                    color="var(--bs-primary)"
+                    color="var(--bs-border-color)"
                   />
-                </button>
+                  <p style="margin: 0">x</p>
+                  <p style="margin: 0">
+                    {{ company.sharers.length }}
+                  </p>
+                </div>
+                <!-- ICON -->
+                <div class="list-item_icon" v-if="company.ownerID === user.id">
+                  <Icon
+                    name="mdi:crown"
+                    size="24px"
+                    color="var(--bs-warning)"
+                  />
+                </div>
               </div>
+              <!-- Добавить -->
+              <button
+                v-if="organization.ownerID === user.id"
+                type="button"
+                class="btn btn-primary sharers-list_item-button"
+                style="text-align: start; padding: 1rem"
+                @click.prevent="inviteBandToBand()"
+              >
+                <p style="margin: 0">
+                  <span style="font-weight: bold">Пригласить</span><br />банду
+                </p>
+                <Icon
+                  name="material-symbols:add-rounded"
+                  size="32px"
+                  color="var(--bs-primary)"
+                />
+              </button>
             </div>
-            <!--  -->
-            <!-- <div v-else style="margin-top: 1rem;">Соучастников не найдено</div> -->
+          </div>
+          <!-- Если вобще никорго -->
+          <div
+            class="no-sharers_wrapper"
+            v-if="
+              !computedUsersInBand.length && !computedOragnizationsInBand.length
+            "
+          >
+            Нет соучастников
           </div>
         </div>
       </div>
-
-      <!-- <div v-else style="margin-top: 1rem">Нет соучастников</div> -->
     </div>
 
     <!-- ТАБЕЛЬ И ФОТ -->
@@ -1135,7 +1166,9 @@
                   </tbody>
                 </table>
               </div>
+
               <div
+                class="production-none_wrapper"
                 v-if="
                   currentTitle === 'band_production' && !fund.listProduction
                 "
@@ -1178,56 +1211,62 @@
 
     <!-- ФОНДЫ организации -->
     <div v-if="currentTitle === 'funds'">
-      <div>
-        <nuxt-link to="/fundbands/1">к Фондам</nuxt-link>
-        <br />
-        <ul>
-          фонды:
-          <li>балансовая стоимость ТМЦ</li>
-          <li>банки соучастников, где банда в доле</li>
-          <li>банда афилирована к конкретному фонду другой банды по статусу</li>
-          <li>свои кошельки</li>
-        </ul>
-        <br />
+      <div class="fund_container">
+        <div>
+          <nuxt-link to="/fundbands/1">к Фондам</nuxt-link>
+          <br />
+          <ul>
+            фонды:
+            <li>балансовая стоимость ТМЦ</li>
+            <li>банки соучастников, где банда в доле</li>
+            <li>
+              банда афилирована к конкретному фонду другой банды по статусу
+            </li>
+            <li>свои кошельки</li>
+          </ul>
+          <br />
+        </div>
+        <div>Нет фондов...</div>
       </div>
-      <div>Нет фондов...</div>
     </div>
 
     <!-- ТМЦ организации -->
     <div v-if="currentTitle === 'warehouse-items'">
-      <div v-if="items.length">
-        <!-- Заголовок -->
-        <!-- <h2>ТМЦ</h2> -->
-        <!--  -->
-        <!-- <div v-if="pending">Loading...</div> -->
-        <div>
-          <div v-if="items.length">
-            <div
-              v-for="(item, index) in items.filter((el) => {
-                if (organization) {
-                  if (
-                    organization.ownerID === user.id ||
-                    sessionUserIsInTheBand() ||
-                    sessionUserAliancePart()
-                  ) {
-                    return el;
+      <div class="warehouse-items_container">
+        <div v-if="items.length">
+          <!-- Заголовок -->
+          <!-- <h2>ТМЦ</h2> -->
+          <!--  -->
+          <!-- <div v-if="pending">Loading...</div> -->
+          <div>
+            <div v-if="items.length">
+              <div
+                v-for="(item, index) in items.filter((el) => {
+                  if (organization) {
+                    if (
+                      organization.ownerID === user.id ||
+                      sessionUserIsInTheBand() ||
+                      sessionUserAliancePart()
+                    ) {
+                      return el;
+                    }
                   }
-                }
-              })"
-              :key="index"
-              style="display: flex"
-            >
-              <div>{{ item.title }}</div>
-              <div style="background-color: var(--bs-primary-bg-subtle)">
-                {{ item.qty }} {{ item.measure }} * {{ item.price }} RUB =
-                {{ item.qty * item.price }} RUB
+                })"
+                :key="index"
+                style="display: flex"
+              >
+                <div>{{ item.title }}</div>
+                <div style="background-color: var(--bs-primary-bg-subtle)">
+                  {{ item.qty }} {{ item.measure }} * {{ item.price }} RUB =
+                  {{ item.qty * item.price }} RUB
+                </div>
+                <div>-{{ item.location }}_{{ item.ownerID }}</div>
               </div>
-              <div>-{{ item.location }}_{{ item.ownerID }}</div>
             </div>
           </div>
         </div>
+        <div v-else>Нет ценностей...</div>
       </div>
-      <div v-else>Нет ценностей...</div>
     </div>
 
     <br />
@@ -1404,6 +1443,17 @@ const tempNewFund = ref({
     date: "",
     status: "working",
   },
+});
+
+// ADD MENU
+const addMenuIsOpened = ref(false);
+window.addEventListener("click", (e) => {
+  if (e.target.classList && addMenuIsOpened.value) {
+    if (e.target.classList.contains("add-btn_menu")) {
+      addMenuIsOpened.value = !addMenuIsOpened.value;
+      // console.log(e.target);
+    }
+  }
 });
 
 // COMPUTED
@@ -2252,9 +2302,11 @@ const addSharerToFund = (fundID, fundList, ownerID) => {
   // console.log(user.value.id);
 };
 const inviteUserToBand = () => {
+  addMenuIsOpened.value = false;
   alert("Приглашение соучастник... В разработке...");
 };
 const inviteBandToBand = () => {
+  addMenuIsOpened.value = false;
   alert("Приглашениее банды в банду... В разработке...");
 };
 const checkAndAddFund = (ownerID) => {
@@ -2595,9 +2647,13 @@ watch(periodList, () => {
 .sharers-list_count {
   cursor: pointer;
 } */
+.add-btn_wrapper,
+.add-btn_menu {
+  display: none;
+}
 
 .sharers-list_wrapper {
-  margin-top: 1rem;
+  margin-top: 2rem;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 1rem;
@@ -2611,9 +2667,29 @@ watch(periodList, () => {
   border-radius: 1rem;
 } */
 .sharers-list_item {
+  position: relative;
   padding: 1rem;
-  border: 1px solid rgba(0, 0, 0, 0.05);
+  border: 1px solid var(--bs-border-color);
   border-radius: 1rem;
+}
+.list-item_name {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.list-item_info {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+.list-item_info p {
+  margin: 0;
+}
+.list-item_icon {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
 }
 
 .sharers-list_item:hover {
@@ -2971,7 +3047,11 @@ watch(periodList, () => {
 }
 
 @media screen and (max-width: 575px) {
-  .padding-left-right-1rem {
+  .band-info_wrapper {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
+  .sharers-list_container {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
   }
@@ -2985,6 +3065,12 @@ watch(periodList, () => {
     grid-template-columns: 1fr;
     /* margin: 0 1rem; */
   }
+  .fund_container,
+  .production-none_wrapper,
+  .warehouse-items_container {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+  }
 }
 
 @media screen and (min-width: 576px) {
@@ -2997,6 +3083,66 @@ watch(periodList, () => {
   .show-max-767 {
     display: none;
   }
+  .toggle-title {
+    border: unset;
+    padding-bottom: unset;
+  }
+  .sharers-list_wrapper {
+    margin-top: 1rem;
+  }
+  .sharers-list_item-button {
+    display: none;
+  }
+  .add-btn_wrapper {
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    background-color: var(--bs-primary) !important;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 100%;
+    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+  }
+  .add-btn_wrapper svg {
+    color: var(--bs-body-bg) !important;
+  }
+  .add-btn_menu {
+    z-index: 100;
+    display: flex;
+    align-items: flex-end;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .add-btn_menu-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    /* height: 25%; */
+    padding: 1rem;
+    padding-top: 2rem;
+    background-color: var(--bs-body-bg);
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+  }
+  .add-btn_menu-item {
+    background-color: var(--bs-primary-bg-subtle);
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 1rem;
+    padding: 1rem;
+  }
 }
 
 @media screen and (min-width: 768px) {
@@ -3006,6 +3152,9 @@ watch(periodList, () => {
   /* .fund-hours_container {
     margin-top: 1rem;
   } */
+  .no-sharers_wrapper {
+    display: none;
+  }
 }
 
 @media screen and (min-width: 992px) {

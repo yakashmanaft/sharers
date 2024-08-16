@@ -931,7 +931,7 @@ const createMyNewBand = () => {
     display: none;
   }
   .org_btn-new-band svg {
-    color: white !important;
+    color: var(	--bs-body-bg) !important;
   }
 }
 @media screen and (min-width: 768px) and (max-width: 991px) {

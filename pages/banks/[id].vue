@@ -325,6 +325,9 @@ const createCreditItem = () => {
 const createInvestItem = () => {
   alert("Создание инвестиции в разработке...");
 };
+const addWalletBank = () => {
+  alert("Создание wallet bank в разработке...");
+};
 
 // ========================= WATHERS ============================
 // watch(currentTitle, () => {
@@ -360,6 +363,16 @@ const createInvestItem = () => {
       >
         <h3>{{ wallet.name }}</h3>
         <h4>{{ calcWalletBanksBalance(wallet.id) }}</h4>
+      </div>
+      <div
+        class="balance-item_wrapper balance-item_add"
+        @click="addWalletBank()"
+      >
+        <Icon
+          name="material-symbols:add-rounded"
+          size="32px"
+          color="var(--bs-primary)"
+        />
       </div>
     </div>
 
@@ -493,232 +506,247 @@ const createInvestItem = () => {
 
     <!-- Партнеры -->
     <div v-if="currentTitle === 'partners'">
-      <!-- <h2>Партнеры</h2> -->
-      <div v-for="partner in computedBank.users">
-        {{ partner }}
+      <!--  -->
+      <div class="partners_container">
+        <div v-for="partner in computedBank.users">
+          {{ partner }}
+        </div>
       </div>
     </div>
 
     <!-- Кредиты -->
     <div v-if="currentTitle === 'credit'">
-      <div v-if="computedCredits.length">
-        <!--  -->
-        <div
-          class="transaction-item_wrapper"
-          v-for="transactionItem in computedCredits"
-        >
-          <!-- DATE of trsn -->
-          <div>
-            <span>{{
-              transformTransactionDate(transactionItem.created_at)
-            }}</span>
-          </div>
+      <!--  -->
+      <div class="credit_container">
+        <div v-if="computedCredits.length">
+          <!--  -->
+          <div
+            class="transaction-item_wrapper"
+            v-for="transactionItem in computedCredits"
+          >
+            <!-- DATE of trsn -->
+            <div>
+              <span>{{
+                transformTransactionDate(transactionItem.created_at)
+              }}</span>
+            </div>
 
-          <!-- TYPE, QTY, CURRENCY -->
-          <div>
+            <!-- TYPE, QTY, CURRENCY -->
             <div>
-              <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
-              <span
-                >Тело кредита:
-                {{
-                  transformToRUB(transactionItem.price * transactionItem.qty)
-                }}</span
-              >
-              <!-- calcReturnedInvestings -->
-            </div>
-            <div>
-              <span>Процент:ххх</span>
-            </div>
-            <div>
-              <span
-                >Вернулось:
-                {{
-                  calcReturnedInvestings(transactionItem.appointmentTarget)
-                }}</span
-              >
-            </div>
-          </div>
-
-          <!-- APPOINTMENT, APPOINTMENT TARGET -->
-          <div>
-            <span>{{ transactionItem.type }} - </span>
-            <span>{{ transactionItem.appointment }} - </span>
-            <span>{{ transactionItem.appointmentTarget }}</span>
-            <span v-if="transactionItem.desc">
-              - {{ transactionItem.desc }}</span
-            >
-            <!--  -->
-            <div
-              v-if="
-                transactionItem.appointment === 'Выдача кредита' ||
-                transactionItem.appointment === 'Ссуда'
-              "
-            >
-              <div v-if="transactions">
-                <div
-                  v-for="item in transactions.filter((el) => {
-                    if (
-                      el.type === 'income' &&
-                      el.appointment === 'Возврат' &&
-                      transactionItem.appointmentTarget === el.appointmentTarget
-                    ) {
-                      return el;
-                    }
-                  })"
+              <div>
+                <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
+                <span
+                  >Тело кредита:
+                  {{
+                    transformToRUB(transactionItem.price * transactionItem.qty)
+                  }}</span
                 >
-                  <p>
-                    {{ transformTransactionDate(item.created_at) }} -
-                    {{ item.qty * item.price }} - {{ item.appointment }} -
-                    {{ item.appointmentTarget }} - {{ item.authorType }} -
-                    {{ item.authorID }} -
-                    {{ translateWalletBank(transactionItem.walletBankID) }} -
-                    {{
-                      translateSharerTarget(
-                        transactionItem.sharerTargetType,
-                        transactionItem.sharerTargetID
-                      )
-                    }}
-                  </p>
+                <!-- calcReturnedInvestings -->
+              </div>
+              <div>
+                <span>Процент:ххх</span>
+              </div>
+              <div>
+                <span
+                  >Вернулось:
+                  {{
+                    calcReturnedInvestings(transactionItem.appointmentTarget)
+                  }}</span
+                >
+              </div>
+            </div>
+
+            <!-- APPOINTMENT, APPOINTMENT TARGET -->
+            <div>
+              <span>{{ transactionItem.type }} - </span>
+              <span>{{ transactionItem.appointment }} - </span>
+              <span>{{ transactionItem.appointmentTarget }}</span>
+              <span v-if="transactionItem.desc">
+                - {{ transactionItem.desc }}</span
+              >
+              <!--  -->
+              <div
+                v-if="
+                  transactionItem.appointment === 'Выдача кредита' ||
+                  transactionItem.appointment === 'Ссуда'
+                "
+              >
+                <div v-if="transactions">
+                  <div
+                    v-for="item in transactions.filter((el) => {
+                      if (
+                        el.type === 'income' &&
+                        el.appointment === 'Возврат' &&
+                        transactionItem.appointmentTarget ===
+                          el.appointmentTarget
+                      ) {
+                        return el;
+                      }
+                    })"
+                  >
+                    <p>
+                      {{ transformTransactionDate(item.created_at) }} -
+                      {{ item.qty * item.price }} - {{ item.appointment }} -
+                      {{ item.appointmentTarget }} - {{ item.authorType }} -
+                      {{ item.authorID }} -
+                      {{ translateWalletBank(transactionItem.walletBankID) }} -
+                      {{
+                        translateSharerTarget(
+                          transactionItem.sharerTargetType,
+                          transactionItem.sharerTargetID
+                        )
+                      }}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- AUTHOR of trsn -->
-          <div>
-            <span
-              >{{ transactionItem.authorType }} -
-              {{ transactionItem.authorID }}</span
-            >
-          </div>
+            <!-- AUTHOR of trsn -->
+            <div>
+              <span
+                >{{ transactionItem.authorType }} -
+                {{ transactionItem.authorID }}</span
+              >
+            </div>
 
-          <!-- SHARER target -->
-          <div>
-            <span>{{
-              translateSharerTarget(
-                transactionItem.sharerTargetType,
-                transactionItem.sharerTargetID
-              )
-            }}</span>
-          </div>
+            <!-- SHARER target -->
+            <div>
+              <span>{{
+                translateSharerTarget(
+                  transactionItem.sharerTargetType,
+                  transactionItem.sharerTargetID
+                )
+              }}</span>
+            </div>
 
-          <!-- WALLET of BANK -->
-          <div>
-            <span>{{ translateWalletBank(transactionItem.walletBankID) }}</span>
+            <!-- WALLET of BANK -->
+            <div>
+              <span>{{
+                translateWalletBank(transactionItem.walletBankID)
+              }}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-else>
-        Нет кредитов.
-        <span class="link" @click="createCreditItem()">Начать</span>
+        <div v-else>
+          Нет кредитов.
+          <span class="link" @click="createCreditItem()">Начать</span>
+        </div>
       </div>
     </div>
     <!-- Инвестиции -->
     <div v-if="currentTitle === 'invested'">
-      <div v-if="computedInvested.length">
-        <!--  -->
-        <div
-          class="transaction-item_wrapper"
-          v-for="transactionItem in computedInvested"
-        >
-          <!-- DATE of trsn -->
-          <div>
-            <span>{{
-              transformTransactionDate(transactionItem.created_at)
-            }}</span>
-          </div>
-
-          <!-- TYPE, QTY, CURRENCY -->
-          <div>
+      <!--  -->
+      <div class="invested_container">
+        <div v-if="computedInvested.length">
+          <!--  -->
+          <div
+            class="transaction-item_wrapper"
+            v-for="transactionItem in computedInvested"
+          >
+            <!-- DATE of trsn -->
             <div>
-              <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
-              <span
-                >Тело инвестиции:
-                {{
-                  transformToRUB(transactionItem.price * transactionItem.qty)
-                }}</span
-              >
-              <!-- <span>{{ transactionItem.currency }}</span> -->
+              <span>{{
+                transformTransactionDate(transactionItem.created_at)
+              }}</span>
             </div>
-            <!-- <div>
+
+            <!-- TYPE, QTY, CURRENCY -->
+            <div>
+              <div>
+                <!-- <span>{{ setTrnsSign(transactionItem.type) }}</span> -->
+                <span
+                  >Тело инвестиции:
+                  {{
+                    transformToRUB(transactionItem.price * transactionItem.qty)
+                  }}</span
+                >
+                <!-- <span>{{ transactionItem.currency }}</span> -->
+              </div>
+              <!-- <div>
               <span>Процент:ххх</span>
             </div> -->
-            <div>
-              <span
-                >Вернулось:{{
-                  calcReturnedInvestings(transactionItem.appointmentTarget)
-                }}</span
-              >
-            </div>
-          </div>
-
-          <!-- APPOINTMENT, APPOINTMENT TARGET -->
-          <div>
-            <span>{{ transactionItem.type }} - </span>
-            <span>{{ transactionItem.appointment }} - </span>
-            <span>{{ transactionItem.appointmentTarget }}</span>
-            <span v-if="transactionItem.desc">
-              - {{ transactionItem.desc }}</span
-            >
-            <!--  -->
-            <div>
-              <div v-if="transactions">
-                <div
-                  v-for="item in transactions.filter((el) => {
-                    if (
-                      el.type === 'income' &&
-                      el.appointment === 'Возврат' &&
-                      transactionItem.appointmentTarget === el.appointmentTarget
-                    ) {
-                      return el;
-                    }
-                  })"
+              <div>
+                <span
+                  >Вернулось:{{
+                    calcReturnedInvestings(transactionItem.appointmentTarget)
+                  }}</span
                 >
-                  <p>
-                    {{ item.appointment }} -
-                    {{ transformTransactionDate(item.created_at) }} -
-                    {{ item.qty * item.price }} - {{ item.appointmentTarget }} -
-                    {{ item.authorType }} - {{ item.authorID }} -
-                    {{ translateWalletBank(transactionItem.walletBankID) }} -
-                    {{
-                      translateSharerTarget(
-                        transactionItem.sharerTargetType,
-                        transactionItem.sharerTargetID
-                      )
-                    }}
-                  </p>
+              </div>
+            </div>
+
+            <!-- APPOINTMENT, APPOINTMENT TARGET -->
+            <div>
+              <span>{{ transactionItem.type }} - </span>
+              <span>{{ transactionItem.appointment }} - </span>
+              <span>{{ transactionItem.appointmentTarget }}</span>
+              <span v-if="transactionItem.desc">
+                - {{ transactionItem.desc }}</span
+              >
+              <!--  -->
+              <div>
+                <div v-if="transactions">
+                  <div
+                    v-for="item in transactions.filter((el) => {
+                      if (
+                        el.type === 'income' &&
+                        el.appointment === 'Возврат' &&
+                        transactionItem.appointmentTarget ===
+                          el.appointmentTarget
+                      ) {
+                        return el;
+                      }
+                    })"
+                  >
+                    <p>
+                      {{ item.appointment }} -
+                      {{ transformTransactionDate(item.created_at) }} -
+                      {{ item.qty * item.price }} -
+                      {{ item.appointmentTarget }} - {{ item.authorType }} -
+                      {{ item.authorID }} -
+                      {{ translateWalletBank(transactionItem.walletBankID) }} -
+                      {{
+                        translateSharerTarget(
+                          transactionItem.sharerTargetType,
+                          transactionItem.sharerTargetID
+                        )
+                      }}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- AUTHOR of trsn -->
-          <div>
-            <span
-              >{{ transactionItem.authorType }} -
-              {{ transactionItem.authorID }}</span
-            >
-          </div>
+            <!-- AUTHOR of trsn -->
+            <div>
+              <span
+                >{{ transactionItem.authorType }} -
+                {{ transactionItem.authorID }}</span
+              >
+            </div>
 
-          <!-- SHARE target -->
-          <div>
-            <span>{{
-              translateSharerTarget(
-                transactionItem.sharerTargetType,
-                transactionItem.sharerTargetID
-              )
-            }}</span>
-          </div>
+            <!-- SHARE target -->
+            <div>
+              <span>{{
+                translateSharerTarget(
+                  transactionItem.sharerTargetType,
+                  transactionItem.sharerTargetID
+                )
+              }}</span>
+            </div>
 
-          <!-- WALLET of BANK -->
-          <div>
-            <span>{{ translateWalletBank(transactionItem.walletBankID) }}</span>
+            <!-- WALLET of BANK -->
+            <div>
+              <span>{{
+                translateWalletBank(transactionItem.walletBankID)
+              }}</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div v-else>
-        Нет инвестиций.
-        <span class="link" @click="createInvestItem()">Начать</span>
+        <div v-else>
+          Нет инвестиций.
+          <span class="link" @click="createInvestItem()">Начать</span>
+        </div>
       </div>
     </div>
   </Container>
@@ -791,6 +819,24 @@ h1 {
   font-weight: unset;
 }
 
+.balance-item_add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease-in;
+}
+.balance-item_add svg {
+  transition: all 0.2s ease-in;
+}
+.balance-item_add:hover {
+  cursor: pointer;
+  background-color: var(--bs-primary);
+}
+
+.balance-item_add:hover svg {
+  color: var(--bs-body-bg) !important;
+}
+
 /* TOGGLle TITLE */
 .toggle-title {
   display: flex;
@@ -829,6 +875,20 @@ h1 {
     } */
   .show-max-767 {
     display: none;
+  }
+  .toggle-title {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  .filter-toggle-type_container {
+    margin: 0 1rem;
+  }
+  .partners_container,
+  .transaction-list_container,
+  .credit_container,
+  .invested_container {
+    margin-left: 1rem;
+    margin-right: 1rem;
   }
 }
 @media screen and (min-width: 768px) {

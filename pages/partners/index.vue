@@ -428,23 +428,33 @@
       <!-- КНОПКА СОЗДАТЬ Банду NeeD TO CHOOSE ROLE WITH ACCES -->
       <button
         type="button"
-        class="btn btn-primary"
+        class="btn btn-primary add-btn"
         data-bs-toggle="modal"
         data-bs-target="#userCreateModal"
         v-if="sessionUser.role === 'SUPER_ADMIN' && currentTitle === 'sharers'"
       >
-        Добавить
+        <span>Добавить</span>
+        <Icon
+          name="material-symbols:add-rounded"
+          size="32px"
+          color="var(--bs-primary)"
+        />
       </button>
 
       <!-- КНОПКА СОЗДАТЬ ПОЛЬЗОВАТЕЛЯ if user session role === 'SUPER_ADMIN' -->
       <button
         type="button"
-        class="btn btn-primary"
+        class="btn btn-primary add-btn"
         data-bs-toggle="modal"
         data-bs-target="#companyCreateModal"
         v-if="currentTitle === 'organizations'"
       >
-        Добавить
+        <span>Добавить</span>
+        <Icon
+          name="material-symbols:add-rounded"
+          size="32px"
+          color="var(--bs-primary)"
+        />
       </button>
     </div>
 
@@ -623,6 +633,11 @@
           </tr>
         </tbody>
       </table> -->
+
+      <br />
+      <br />
+      <br />
+      <br />
     </div>
   </Container>
 </template>
@@ -1094,6 +1109,9 @@ useHead({
   align-items: center;
   gap: 1rem;
 }
+.add-btn svg {
+  display: none;
+}
 
 /* SEARCH */
 .partners-search_wrapper {
@@ -1246,6 +1264,28 @@ useHead({
   }
   .toggle-title {
     margin-top: -1rem;
+  }
+  .add-btn {
+    z-index: 100;
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    width: 64px;
+    height: 64px;
+    border-radius: 100%;
+    text-align: center;
+    /* color: transparent; */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 4px 8px 0px rgba(0, 0, 0, 0.2);
+  }
+  .add-btn span {
+    display: none;
+  }
+  .add-btn svg {
+    display: block !important;
+    color: var(--bs-body-bg) !important;
   }
 }
 @media screen and (min-width: 768px) {

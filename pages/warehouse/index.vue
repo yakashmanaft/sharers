@@ -2785,12 +2785,12 @@ label #expend-item:checked + .expand-item_icon {
   display: flex;
   gap: 1rem;
   margin-top: 1rem;
-  overflow-y: scroll;
+  overflow-x: scroll;
   scrollbar-width: none;
 }
-/* .set-categoty-type_wrapper::-webkit-scrollbar {
+.set-categoty-type_wrapper::-webkit-scrollbar {
   display: none;
-} */
+}
 .search-wrapper {
   display: flex;
   /* position: relative; */

@@ -1427,7 +1427,7 @@ const checkAndCreate = async (item) => {
 
 // CONVERT TO PDF
 const convertListToPDF = () => {
-  if (computedItems.length) {
+  if (computedItems.value.length) {
     const element = document.getElementById("element-to-print");
     const options = {
       margin: 0.3,

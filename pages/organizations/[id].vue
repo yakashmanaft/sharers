@@ -2828,7 +2828,7 @@ watch(periodList, () => {
   color: var(--bs-primary);
 }
 .fund-hours_container {
-  margin-top: 2rem;
+  margin-top: 1rem;
 }
 .filter-fund_wrapper {
   overflow-x: scroll;

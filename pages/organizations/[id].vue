@@ -307,8 +307,9 @@
     </div>
 
     <!-- BTN ADD -->
+    <!-- IF currentTitle === SHARERS -->
     <div
-      v-if="organization && organization.ownerID === user.id"
+      v-if="organization && organization.ownerID === user.id && currentTitle === 'sharers'"
       class="add-btn_wrapper"
       @click="addMenuIsOpened = !addMenuIsOpened"
     >
@@ -348,6 +349,10 @@
       </div>
     </div>
 
+    <!-- BTN ADD -->
+    <!-- IF currentTitle === ??? -->
+
+    <!-- PAGE TITLE -->
     <h1 class="show-max-767">Банда #{{ $route.params.id }}</h1>
 
     <div v-if="organization" class="band-info_wrapper">

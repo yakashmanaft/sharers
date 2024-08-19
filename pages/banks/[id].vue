@@ -287,6 +287,30 @@ const calcReturnedInvestings = (appointmentTarget) => {
     return 0;
   }
 };
+const calcPercentOfReturn = (price, qty, appointmentTarget) => {
+  if (transactions.value.length) {
+    let result;
+
+    let array = [...transactions.value].filter((item) => {
+      if (
+        item.appointmentTarget === appointmentTarget &&
+        item.appointment === "Возврат"
+      ) {
+        return item;
+      }
+    });
+    if (array.length) {
+      result = array.reduce((acc, current) => {
+        return (acc += current.price * current.qty);
+      }, 0);
+    } else {
+      result = 0;
+    }
+    return ((result / (price * qty)) * 100).toFixed(2);
+  } else {
+    return 0;
+  }
+};
 
 // CHECK DATA
 const sessionUserIsPartner = () => {
@@ -471,15 +495,13 @@ const addWalletBank = () => {
             </div>
 
             <!-- AUTHOR of trsn -->
-            <div>
+            <div style="text-wrap: nowrap; margin-right: 1rem">
+              Автор:
               <span
                 >{{ transactionItem.authorType }} -
                 {{ transactionItem.authorID }}</span
               >
-            </div>
-
-            <!-- SHARER target -->
-            <div>
+              Цель:
               <span>
                 {{
                   translateSharerTarget(
@@ -544,7 +566,7 @@ const addWalletBank = () => {
                 <!-- calcReturnedInvestings -->
               </div>
               <div>
-                <span>Процент:ххх</span>
+                <span>Ставка:ххх</span>
               </div>
               <div>
                 <span
@@ -554,6 +576,24 @@ const addWalletBank = () => {
                   }}</span
                 >
               </div>
+              <span
+                :style="
+                  calcPercentOfReturn(
+                    transactionItem.price,
+                    transactionItem.qty,
+                    transactionItem.appointmentTarget
+                  ) < 100
+                    ? 'color: red;'
+                    : ''
+                "
+                >{{
+                  calcPercentOfReturn(
+                    transactionItem.price,
+                    transactionItem.qty,
+                    transactionItem.appointmentTarget
+                  )
+                }}%</span
+              >
             </div>
 
             <!-- APPOINTMENT, APPOINTMENT TARGET -->
@@ -602,16 +642,16 @@ const addWalletBank = () => {
               </div>
             </div>
 
-            <!-- AUTHOR of trsn -->
+            <!-- AUTHOR & SHARER of trsn -->
             <div>
+              <!-- AUTHOR -->
               <span
                 >{{ transactionItem.authorType }} -
                 {{ transactionItem.authorID }}</span
               >
-            </div>
-
-            <!-- SHARER target -->
-            <div>
+              <!-- TO -->
+              ->
+              <!-- SHARER TARGET -->
               <span>{{
                 translateSharerTarget(
                   transactionItem.sharerTargetType,
@@ -622,6 +662,7 @@ const addWalletBank = () => {
 
             <!-- WALLET of BANK -->
             <div>
+              wallet:
               <span>{{
                 translateWalletBank(transactionItem.walletBankID)
               }}</span>
@@ -717,16 +758,13 @@ const addWalletBank = () => {
               </div>
             </div>
 
-            <!-- AUTHOR of trsn -->
-            <div>
+            <!-- AUTHOR & SHARER of trsn -->
+            <div style="text-wrap: nowrap; margin-right: 1rem">
               <span
                 >{{ transactionItem.authorType }} -
                 {{ transactionItem.authorID }}</span
               >
-            </div>
-
-            <!-- SHARE target -->
-            <div>
+              ->
               <span>{{
                 translateSharerTarget(
                   transactionItem.sharerTargetType,
@@ -737,6 +775,7 @@ const addWalletBank = () => {
 
             <!-- WALLET of BANK -->
             <div>
+              wallet:
               <span>{{
                 translateWalletBank(transactionItem.walletBankID)
               }}</span>
@@ -792,8 +831,10 @@ h1 {
 
 .transaction-item_wrapper {
   display: grid;
-  grid-template-columns: 1fr 1fr 3fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 3fr 1fr 1fr;
   margin-top: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--bs-border-color);
 }
 .balance_container {
   display: flex;

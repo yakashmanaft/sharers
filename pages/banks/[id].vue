@@ -206,8 +206,20 @@ const handleScroll = () => {
   // ДОБАВИТЬ УСЛОВИЕ С ЗАВИСИМОСТЬЮ ОТ Ш РИНЫ ЭКРАНА ЕСЛИ  КРИВО НА РАЗНЫХ УСТРОЙСТВАХ БУДЕТ ОКАЗЫВАТЬСЯ
   // console.log(window.scrollY)
   let blockToFix = document.getElementById('toggle-title_block')
-  console.log(blockToFix)
-  // if(window.scrollY >= 210) {
+  let underBlockEl = document.querySelector('.balance_container')
+  if(blockToFix && underBlockEl) {
+    if(window.scrollY >= 210) {
+      blockToFix.classList.add('toggle-title_block_FIXED')
+      if(window.innerWidth >= 576) {
+        underBlockEl.style.paddingBottom = '5.3rem'
+      } else {
+        underBlockEl.style.paddingBottom = '6rem'
+      }
+    } else {
+      blockToFix.classList.remove('toggle-title_block_FIXED')
+      underBlockEl.style.paddingBottom = 'unset'
+    }
+  }
   //   blockToFix.classList.add('toggle-title_block_FIXED ')
   // } else {
   //   blockToFix.classList.remove('toggle-title_block_FIXED ')
@@ -959,7 +971,14 @@ h1 {
 }
 
 .toggle-title_block_FIXED {
-  background-color: red;
+  background-color: var(--bs-body-bg);
+  position: fixed;
+  width: 100%;
+  top: 1rem;
+  left: 0;
+  padding-top: 1rem; 
+  /* padding: 1rem; */
+  border-bottom: 1px solid var(--bs-border-color)
 }
 
 @media screen and (max-width: 767px) {
@@ -983,10 +1002,28 @@ h1 {
     margin-left: 1rem;
     margin-right: 1rem;
   }
+  /* .toggle-title_block_FIXED {
+    padding-left: 2rem;
+    padding-right: 2rem;
+  } */
+}
+@media scrren and (min-width: 576px) {
+
 }
 @media screen and (min-width: 768px) {
   /* h1 {
     margin-top: 6rem;
   } */
+  .toggle-title_block_FIXED {
+    padding-top: 1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    top: 2.5rem;
+  }
+}
+@media screen and (min-width: 1200px) {
+  .toggle-title_block_FIXED {
+    padding-left: 11rem;
+  }
 }
 </style>

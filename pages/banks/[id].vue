@@ -102,6 +102,12 @@ const trns_toggle_type_array = ref([
 
 const computedBank = computed(() => banks.value[0]);
 
+window.onload = () => {
+
+  const el = document.getElementById('toggle-title_block')
+  observer.observe(el)
+}
+
 const {
   pending,
   error,
@@ -401,7 +407,7 @@ const addWalletBank = () => {
     </div>
 
     <!-- Переключатель заголовков -->
-    <div class="toggle-title">
+    <div id="toggle-title_block" class="toggle-title">
       <div
         v-for="(title, index) in titles.filter((el) => {
           if (computedBank) {

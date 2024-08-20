@@ -102,12 +102,6 @@ const trns_toggle_type_array = ref([
 
 const computedBank = computed(() => banks.value[0]);
 
-window.onload = () => {
-
-  const el = document.getElementById('toggle-title_block')
-  observer.observe(el)
-}
-
 const {
   pending,
   error,
@@ -202,6 +196,54 @@ const computedInvested = computed(() => {
   }
   return [];
 });
+
+
+onMounted(async () => {
+  window.addEventListener('scroll', handleScroll)
+})
+// FIXED BY SCROLL
+const handleScroll = () => {
+  // ДОБАВИТЬ УСЛОВИЕ С ЗАВИСИМОСТЬЮ ОТ Ш РИНЫ ЭКРАНА ЕСЛИ  КРИВО НА РАЗНЫХ УСТРОЙСТВАХ БУДЕТ ОКАЗЫВАТЬСЯ
+  // console.log(window.scrollY)
+  let blockToFix = document.getElementById('toggle-title_block')
+  console.log(blockToFix)
+  // if(window.scrollY >= 210) {
+  //   blockToFix.classList.add('toggle-title_block_FIXED ')
+  // } else {
+  //   blockToFix.classList.remove('toggle-title_block_FIXED ')
+  // }
+}
+
+// onBeforeMount(() => {
+//   // window.addEventListener('scroll', handleScroll)
+//   window.addEventListener('scroll', (e) => {
+//     console.log(e.scrollingElement)
+//   })
+// })
+// window.onload = () => {
+//   const options = {
+//     // root: documet.querySelector('#toggle-title_block'),
+//     root: null,
+//     rootMargin: '0px',
+//     threshold: 0.5
+//   }
+
+//   const observer = new IntersectionObserver((entries, observer) => {
+//     entries.forEach(entry => {
+//       if(entry.isIntersecting) {
+//         let target = entry.target
+//         console.log(target)
+//         observer.unobserve(target)
+//       } 
+//     })
+//   }, options)
+
+//   const arr = document.querySelector('toggle-title')
+//   arr.forEach(i => {
+//     observer.observe(i)
+//   })
+// }
+
 
 // TRANSFORM
 const setTrnsSign = (type) => {
@@ -914,6 +956,10 @@ h1 {
 
 .switch-title_el input[type="radio"]:checked + label h2 {
   color: unset;
+}
+
+.toggle-title_block_FIXED {
+  background-color: red;
 }
 
 @media screen and (max-width: 767px) {

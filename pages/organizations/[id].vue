@@ -65,7 +65,7 @@
       aria-labelledby="addSharerToFundModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <!-- MODAL HEADER -->
           <div class="modal-header">
@@ -81,13 +81,41 @@
           </div>
           <!-- MODAL BODY -->
           <div class="modal-body">
-            currentFundID: {{ currentFundID }}
+            <!-- search block -->
+            <div class="partners-search_wrapper">
+              <input
+                type="text"
+                class="form-control"
+                placeholder="Поиск по фамилии"
+                v-model="searchInput"
+              />
+              <Icon
+                name="ic:baseline-search"
+                size="24px"
+                color="var(--bs-body-color)"
+              />
+            </div>
+            <span>ФОНД ID</span>
+            {{ currentFundID }}
             <br />
-            Общий список
-            {{ computedUsersInBand }}
-            {{ computedTempListOfSharers }}
+            <!-- sharer list block -->
+            <span>Кого можно добавить</span>
+            <div>
+              <div v-for="sharer in computedSharersToAddToFund">
+                {{ sharer }}
+              </div>
+            </div>
             <br />
-            Добавляем к этому массиву: {{ tempSelectedFund }}
+            <!-- currentFundID: {{ currentFundID }} -->
+            <br />
+            <!-- Общий список -->
+            <!-- {{ computedUsersInBand }} -->
+            <!-- {{ computedTempListOfSharers }} -->
+            <br />
+            <span>Кто в конкретном фонде</span>
+            <div v-for="sharer in tempSelectedFund">
+              {{ sharer }}
+            </div>
           </div>
           <!-- MODAL FOTER -->
           <div class="modal-footer">
@@ -309,7 +337,11 @@
     <!-- BTN ADD -->
     <!-- IF currentTitle === SHARERS -->
     <div
-      v-if="organization && organization.ownerID === user.id && currentTitle === 'sharers'"
+      v-if="
+        organization &&
+        organization.ownerID === user.id &&
+        currentTitle === 'sharers'
+      "
       class="add-btn_wrapper"
       @click="addMenuIsOpened = !addMenuIsOpened"
     >
@@ -1379,20 +1411,20 @@ const items = ref([]);
 
 // add sharer to selected fund list
 const tempSelectedFund = ref([]);
-const computedTempListOfSharers = computed(() => {
-  let result = [];
-  // if (computedOragnizationsInBand.value) {
-  //   // [...computedOragnizationsInBand.value].forEach(company =>
-  //   //   result = [...company.sharers]
-  //   // )
-  //   // result = [...computedOragnizationsInBand.value]
-  // } else if (computedUsersInBand.value) {
-  //   [...computedUsersInBand.value].forEach((sharer) =>
-  //     result.push({ sharerID: sharer.id })
-  //   );
-  // }
-  return result;
-});
+// const computedTempListOfSharers = computed(() => {
+//   let result = [];
+//   // if (computedOragnizationsInBand.value) {
+//   //   // [...computedOragnizationsInBand.value].forEach(company =>
+//   //   //   result = [...company.sharers]
+//   //   // )
+//   //   // result = [...computedOragnizationsInBand.value]
+//   // } else if (computedUsersInBand.value) {
+//   //   [...computedUsersInBand.value].forEach((sharer) =>
+//   //     result.push({ sharerID: sharer.id })
+//   //   );
+//   // }
+//   return result;
+// });
 // set hours obj
 const tempSetSharerHour = ref({
   userID: null,
@@ -1449,6 +1481,8 @@ const tempNewFund = ref({
     status: "working",
   },
 });
+
+const searchInput = ref("");
 
 // ADD MENU
 const addMenuIsOpened = ref(false);
@@ -1576,6 +1610,21 @@ const computedOragnizationsInBand = computed(() => {
       });
     }
     return companiesInBand;
+  }
+});
+
+// Список sharers для добавления в фонд
+const computedSharersToAddToFund = computed(() => {
+  if (
+    computedUsersInBand.value &&
+    tempSelectedFund.value &&
+    currentFundID.value
+  ) {
+    // console.log(computedUsersInBand.value)
+    // console.log(Array.from(tempSelectedFund.value))
+    let result_array = []
+
+    return result_array;
   }
 });
 
@@ -1791,6 +1840,7 @@ onMounted(async () => {
   if (addSharerToFundEl) {
     addSharerToFundEl.addEventListener("hidden.bs.modal", (event) => {
       console.log("Модалка #addSharerToFundModal закрыта");
+      searchInput.value = "";
       // console.log(tempSetSharerHour.value);
     });
   }
@@ -2301,7 +2351,7 @@ const addSharerToFund = (fundID, fundList, ownerID) => {
     tempSelectedFund.value = fundList;
     // console.log(funList);
   } else {
-    alert("Только орагнизатор банды может добавить соучастника к ФОТ");
+    alert("Только организатор банды может добавить соучастника к ФОТ");
   }
   // console.log(ownerID);
   // console.log(user.value.id);
@@ -2769,7 +2819,7 @@ watch(periodList, () => {
   gap: 1rem;
   overflow-x: scroll;
   scrollbar-width: none;
-  border-bottom: 1px solid var(--bs-tertiary-color);
+  border-bottom: 1px solid var(--bs-border-color);
   padding-bottom: 1rem;
 }
 .toggle-title::-webkit-scrollbar {
@@ -3049,6 +3099,20 @@ watch(periodList, () => {
 }
 .production-body_wrapper tr td {
   border: unset;
+}
+
+/* SEARCH ADDING SHARER TO FUND */
+.partners-search_wrapper {
+  position: relative;
+}
+.partners-search_wrapper input {
+  padding-left: 2.2rem;
+}
+.partners-search_wrapper svg {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 0.5rem;
 }
 
 @media screen and (max-width: 575px) {

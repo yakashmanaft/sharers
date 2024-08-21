@@ -2154,10 +2154,10 @@ watch(tempCreateItemOwner, () => {
             </div>
 
             <!-- SHOW TO ALL TOGGLE -->
-            <div style="display: flex; align-items: center">
+            <div class="show-all-btn_warpper">
               <input id="showToAll" type="checkbox" v-model="item.showToAll" />
               <label for="showToAll" class="form-label"
-                >Премет виден участникам банды</label
+                >Предмет виден участникам банды</label
               >
             </div>
 
@@ -2811,6 +2811,15 @@ label #expend-item:checked + .expand-item_icon {
   box-shadow: none;
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
+}
+
+.show-all-btn_warpper {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.show-all-btn_warpper label {
+  margin: 0;
 }
 
 @media screen and (max-width: 575px) {

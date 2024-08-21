@@ -531,7 +531,7 @@ const createMyNewBand = () => {
     </div>
 
     <!-- SHARER INFO -->
-    <div class="sharer-info_wrapper">
+    <div v-if="user.phone !== ''" class="sharer-info_wrapper">
       <!-- PHONE -->
       <div class="item_phone">
         <nuxt-link :to="`tel:${user.phone}`">
@@ -541,7 +541,7 @@ const createMyNewBand = () => {
       </div>
 
       <!-- EMAIL -->
-      <div class="item_email">
+      <div v-if="user.email !== ''" class="item_email">
         <nuxt-link :to="`mailto:${user.email}`">
           <Icon name="ic:outline-email" size="24px" />
           <span>{{ user.email }}</span>

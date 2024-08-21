@@ -197,34 +197,43 @@ const computedInvested = computed(() => {
   return [];
 });
 
-
 onMounted(async () => {
-  window.addEventListener('scroll', handleScroll)
-})
+  window.addEventListener("scroll", handleScroll);
+});
 // FIXED BY SCROLL
 const handleScroll = () => {
   // ДОБАВИТЬ УСЛОВИЕ С ЗАВИСИМОСТЬЮ ОТ Ш РИНЫ ЭКРАНА ЕСЛИ  КРИВО НА РАЗНЫХ УСТРОЙСТВАХ БУДЕТ ОКАЗЫВАТЬСЯ
   // console.log(window.scrollY)
-  let blockToFix = document.getElementById('toggle-title_block')
-  let underBlockEl = document.querySelector('.balance_container')
-  if(blockToFix && underBlockEl) {
-    if(window.scrollY >= 210) {
-      blockToFix.classList.add('toggle-title_block_FIXED')
-      if(window.innerWidth >= 576) {
-        underBlockEl.style.paddingBottom = '5.3rem'
-      } else {
-        underBlockEl.style.paddingBottom = '6rem'
+  let blockToFix = document.getElementById("toggle-title_block");
+  let underBlockEl = document.querySelector(".balance_container");
+  if (blockToFix && underBlockEl) {
+    if (window.scrollY >= 210) {
+      blockToFix.classList.add("toggle-title_block_FIXED");
+      if (window.innerWidth <= 575) {
+        underBlockEl.style.paddingBottom = "7rem";
+      } else if (window.innerWidth >= 576 && window.innerWidth < 767) {
+        underBlockEl.style.paddingBottom = "5.3rem";
+      } else if (window.innerWidth >= 768) {
+        underBlockEl.style.paddingBottom = "6rem";
+      } else if (window.innerWidth >= 1200) {
+        // blockToFix.style.width = `${window.innerWidth}px`
+        // blockToFix.style.paddingLeft = `${window.innerWidth - 1000}px`
+        // console.log(blockToFix.style.paddingLeft)
+        console.log(blockToFix.style);
       }
+      // else {
+      //   underBlockEl.style.paddingBottom = "6rem";
+      // }
     } else {
-      blockToFix.classList.remove('toggle-title_block_FIXED')
-      underBlockEl.style.paddingBottom = 'unset'
+      blockToFix.classList.remove("toggle-title_block_FIXED");
+      underBlockEl.style.paddingBottom = "unset";
     }
   }
   //   blockToFix.classList.add('toggle-title_block_FIXED ')
   // } else {
   //   blockToFix.classList.remove('toggle-title_block_FIXED ')
   // }
-}
+};
 
 // onBeforeMount(() => {
 //   // window.addEventListener('scroll', handleScroll)
@@ -246,7 +255,7 @@ const handleScroll = () => {
 //         let target = entry.target
 //         console.log(target)
 //         observer.unobserve(target)
-//       } 
+//       }
 //     })
 //   }, options)
 
@@ -255,7 +264,6 @@ const handleScroll = () => {
 //     observer.observe(i)
 //   })
 // }
-
 
 // TRANSFORM
 const setTrnsSign = (type) => {
@@ -461,31 +469,33 @@ const addWalletBank = () => {
     </div>
 
     <!-- Переключатель заголовков -->
-    <div id="toggle-title_block" class="toggle-title">
-      <div
-        v-for="(title, index) in titles.filter((el) => {
-          if (computedBank) {
-            if (
-              el.guard &&
-              (computedBank.creatorID === user.id || sessionUserIsPartner())
-            ) {
-              return el;
-            } else if (!el.guard) {
-              return el;
+    <div id="toggle-title_block">
+      <div class="toggle-title">
+        <div
+          v-for="(title, index) in titles.filter((el) => {
+            if (computedBank) {
+              if (
+                el.guard &&
+                (computedBank.creatorID === user.id || sessionUserIsPartner())
+              ) {
+                return el;
+              } else if (!el.guard) {
+                return el;
+              }
             }
-          }
-        })"
-        class="switch-title_el"
-      >
-        <input
-          type="radio"
-          :id="`${index}_bank_wallet`"
-          :value="title.name"
-          v-model="currentTitle"
-        />
-        <label :for="`${index}_bank_wallet`"
-          ><h2>{{ title.title }}</h2></label
+          })"
+          class="switch-title_el"
         >
+          <input
+            type="radio"
+            :id="`${index}_bank_wallet`"
+            :value="title.name"
+            v-model="currentTitle"
+          />
+          <label :for="`${index}_bank_wallet`"
+            ><h2>{{ title.title }}</h2></label
+          >
+        </div>
       </div>
     </div>
 
@@ -626,7 +636,7 @@ const addWalletBank = () => {
                 <!-- calcReturnedInvestings -->
               </div>
               <div>
-                <span>Ставка: {{ transactionItem.bet * 100}}%</span>
+                <span>Ставка: {{ transactionItem.bet * 100 }}%</span>
               </div>
               <div>
                 <span
@@ -976,9 +986,26 @@ h1 {
   width: 100%;
   top: 1rem;
   left: 0;
-  padding-top: 1rem; 
+  padding-top: 1rem;
   /* padding: 1rem; */
-  border-bottom: 1px solid var(--bs-border-color)
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+@media screen and (max-width: 575px) {
+  .partners_container,
+  .transaction-list_container,
+  .credit_container,
+  .invested_container {
+    margin-left: 1rem;
+    margin-right: 1rem;
+  }
+  .toggle-title {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  /* .toggle-title_block_FIXED {
+    padding-left: -1rem !important;
+  } */
 }
 
 @media screen and (max-width: 767px) {
@@ -988,27 +1015,33 @@ h1 {
   .show-max-767 {
     display: none;
   }
-  .toggle-title {
+  /* .toggle-title {
     padding-left: 1rem;
     padding-right: 1rem;
-  }
+  } */
   .filter-toggle-type_container {
     margin: 0 1rem;
   }
-  .partners_container,
+  /* .partners_container,
   .transaction-list_container,
   .credit_container,
   .invested_container {
     margin-left: 1rem;
     margin-right: 1rem;
-  }
-  /* .toggle-title_block_FIXED {
-    padding-left: 2rem;
-    padding-right: 2rem;
   } */
 }
-@media scrren and (min-width: 576px) {
+@media screen and (min-width: 576px) and (max-width: 767px) {
+  .toggle-title_block_FIXED {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 
+  /* .credit_container {
+    margin-left: 0!important;
+  } */
+  /* .toggle-title {
+    padding-left: 0!important;
+   } */
 }
 @media screen and (min-width: 768px) {
   /* h1 {
@@ -1023,7 +1056,18 @@ h1 {
 }
 @media screen and (min-width: 1200px) {
   .toggle-title_block_FIXED {
-    padding-left: 11rem;
+    width: 100%;
+    /* margin-left: auto;
+    margin-right: auto; */
+  }
+  .toggle-title_block_FIXED .toggle-title {
+    /* width: 75%; */
+    max-width: 1399px;
+
+    padding-left: 1rem;
+    padding-right: 1rem;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 </style>

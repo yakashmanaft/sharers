@@ -626,7 +626,7 @@ const addWalletBank = () => {
                 <!-- calcReturnedInvestings -->
               </div>
               <div>
-                <span>Ставка:ххх</span>
+                <span>Ставка: {{ transactionItem.bet * 100}}%</span>
               </div>
               <div>
                 <span

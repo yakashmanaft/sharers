@@ -121,21 +121,22 @@ model Banks {
 // authorType: user / company
 // currency: 'RUB'
 model BanksLedger {
-  id                Int      @id @default(autoincrement())
-  type              String   @db.VarChar(60)
-  appointment       String   @db.VarChar(255)
-  appointmentTarget String?  @db.VarChar(255)
-  desc              String?  @db.VarChar(255)
-  authorID          Int      @default(0)
-  authorType        String   @db.VarChar(60)
-  bankID            Int      @default(0)
-  price             Float?   @default(0.00)
-  qty               Float?   @default(0.00)
-  currency          String?  @db.VarChar(60)
-  walletBankID      Int?     @default(0)
-  sharerTargetID    Int?     @default(0)
-  sharerTargetType  String?  @db.VarChar(60)
-  created_at        DateTime @default(now()) @db.DateTime(0)
+  id                Int       @id @default(autoincrement())
+  type              String    @db.VarChar(60)
+  appointment       String    @db.VarChar(255)
+  appointmentTarget String?   @db.VarChar(255)
+  desc              String?   @db.VarChar(255)
+  authorID          Int       @default(0)
+  authorType        String    @db.VarChar(60)
+  bankID            Int       @default(0)
+  price             Float?    @default(0.00)
+  qty               Float?    @default(0.00)
+  currency          String?   @db.VarChar(60)
+  bet               Decimal?  @db.Decimal(3,2) @default(0.00)
+  walletBankID      Int?      @default(0)
+  sharerTargetID    Int?      @default(0)
+  sharerTargetType  String?   @db.VarChar(60)
+  created_at        DateTime  @default(now()) @db.DateTime(0)
 }
 
 model BanksStockInvestFunds {

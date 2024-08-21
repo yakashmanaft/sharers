@@ -643,8 +643,8 @@ const addWalletBank = () => {
                     transactionItem.qty,
                     transactionItem.appointmentTarget
                   ) < 100
-                    ? 'color: red;'
-                    : ''
+                    ? 'color: var(--bs-danger);'
+                    : 'color: var(--bs-success)'
                 "
                 >{{
                   calcPercentOfReturn(

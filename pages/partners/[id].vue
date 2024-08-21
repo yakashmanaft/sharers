@@ -534,10 +534,29 @@ const createMyNewBand = () => {
     <div class="sharer-info_wrapper">
       <!-- PHONE -->
       <div class="item_phone">
-        <!-- style="pointer-events: none;" -->
-        <nuxt-link :to="`tel:${user.phone}`">{{ user.phone }}</nuxt-link>
+        <nuxt-link :to="`tel:${user.phone}`">
+          <Icon name="ic:round-call" size="24px" />
+          <span>{{ user.phone }}</span>
+        </nuxt-link>
       </div>
-      <p>{{ user }}</p>
+
+      <!-- EMAIL -->
+      <div class="item_email">
+        <nuxt-link :to="`mailto:${user.email}`">
+          <Icon name="ic:outline-email" size="24px" />
+          <span>{{ user.email }}</span>
+        </nuxt-link>
+      </div>
+
+      <!-- ROLE -->
+      <div class="item_role" v-if="sessionUser.role === 'SUPER_ADMIN'">
+        <span>role: {{ user.role }}</span>
+      </div>
+
+      <!-- user obj -->
+      <div v-if="sessionUser.role === 'SUPER_ADMIN'">
+        <span>{{ user }}</span>
+      </div>
     </div>
 
     <!-- Заголовок - Переключатель -->
@@ -753,6 +772,31 @@ const createMyNewBand = () => {
 }
 .sharer-info_wrapper {
   margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+.item_phone {
+}
+.item_email a,
+.item_phone a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--bs-body-color);
+}
+/* .item_phone a svg,
+.item_email a svg {
+  color: var(--bs-body-color);
+} */
+.item_email {
+  margin-top: 1rem;
+}
+.item_role {
+  margin-top: 1rem;
+}
+.item_phone a:hover,
+.item_email a:hover {
+  color: var(--bs-primary);
 }
 /* .btn__disabled {
   color: gray;
@@ -931,7 +975,7 @@ const createMyNewBand = () => {
     display: none;
   }
   .org_btn-new-band svg {
-    color: var(	--bs-body-bg) !important;
+    color: var(--bs-body-bg) !important;
   }
 }
 @media screen and (min-width: 768px) and (max-width: 991px) {

@@ -1819,7 +1819,7 @@ async function getOrganizations() {
 }
 
 const { data: projects } = await useFetch("/api/projects/projects", {
-  lze: false,
+  lazy: false,
 });
 
 async function getAllUsers() {

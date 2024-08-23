@@ -606,6 +606,20 @@
       </div>
     </div>
 
+    <!-- BAND PROJECTS -->
+    <div v-if="currentTitle === 'projects'">
+      <!-- container -->
+      <div class="projects_container">
+        <!--  -->
+        <div v-if="projects.length">
+          <div v-for="project in projects">
+            {{project}}
+          </div>
+        </div>
+        <div v-else>Ничего нет</div>
+      </div>
+    </div>
+
     <!-- ТАБЕЛЬ И ФОТ -->
     <div v-if="computedUsersInBand" class="fund-hours_container">
       <div v-if="computedSalaryFund.length !== 0">
@@ -613,6 +627,7 @@
         <div
           v-if="
             currentTitle !== 'sharers' &&
+            currentTitle !== 'projects' &&
             currentTitle !== 'warehouse-items' &&
             currentTitle !== 'funds'
           "
@@ -1359,6 +1374,11 @@ const titles = ref([
     title: "Соучастники",
     name: "sharers",
     guard: false,
+  },
+  {
+    title: 'Проекты',
+    name: 'projects',
+    guard: true,
   },
   {
     title: "ФОТ",
@@ -2949,6 +2969,11 @@ watch(periodList, () => {
 }
 .list-el_wrapper > p {
   margin: 0;
+}
+
+/* PROJECTS */
+.projects_container {
+  margin-top: 1rem;
 }
 
 /* Таблица ФОТ */

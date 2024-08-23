@@ -54,7 +54,7 @@ const titles = ref([
   {
     title: "Соучастники",
     name: "sharers",
-    guard: false,
+    guard: true,
   },
   {
     title: "ТМЦ",
@@ -70,6 +70,12 @@ const titles = ref([
 
 const currentTitle = ref("schedule");
 
+// DB SCHEDULE
+const schedules = ref([
+  {
+    a: 1
+  }
+]);
 // DB PROJECTS
 const { data: projects } = await useFetch("/api/projects/projects", {
   lazy: false,
@@ -90,6 +96,7 @@ const { data: items } = await useFetch("/api/warehouse/item", {
 
 // CHECK FUNC
 const isRelated = (obj) => {
+  // console.log(band.value);
   if (sessionUser && obj) {
     // console.log(obj)
     // console.log(sessionUser)
@@ -103,7 +110,9 @@ const isRelated = (obj) => {
         ))
     ) {
       return true;
-    } else if (
+    }
+    // session user in the band
+    else if (
       obj.sharers &&
       obj.sharers.find(
         (el) => el.sharerType === "user" && el.sharerID === sessionUser.value.id
@@ -111,12 +120,24 @@ const isRelated = (obj) => {
     ) {
       return true;
     }
+    // session user is a part of band, which is a sharer in the main band
+    // else if (
+    //   obj.sharers &&
+    //   obj.sharers.find(
+    //     (el) => el.sharerType === "company" && el.sharerID === 2
+    //   )
+    // ) {
+    //   return true
+    // }
     // else if (band.value && band.value.sharers.find(el => el.userType === 'user' && el.userID === sessionUser.value.id)) {
     //   console.log(band.value)
     //   return true
     // }
     else if (sessionUser.value.role === "SUPER_ADMIN") {
       return true;
+    } else {
+      currentTitle.value = ''
+      return false;
     }
   }
 };
@@ -129,8 +150,7 @@ onBeforeMount(async () => {
 });
 
 onMounted(async () => {
-
-  // CHECK if session user is not ine the band, but in sharer of project...
+  // CHECK if session user is not ine the band, but is a sharer of project...
   if (
     band.value &&
     band.value.sharers.find(
@@ -194,7 +214,12 @@ onMounted(async () => {
       <!-- SCHEDULE -->
       <div v-if="currentTitle === 'schedule'">
         <div class="schedule_container">
-          <div>Ничего нет</div>
+          <div v-if="schedules.length">
+            <div v-for="schedule in schedules">
+              schedule {{schedule}}
+            </div>
+          </div>
+          <div v-else>Ничего нет</div>
         </div>
       </div>
 

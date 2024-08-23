@@ -611,9 +611,10 @@
       <!-- container -->
       <div class="projects_container">
         <!--  -->
-        <div v-if="projects.length">
+        <div v-if="projects">
           <div v-for="project in projects">
-            {{project}}
+            {{ project.title }} <br>
+            {{ project }}
           </div>
         </div>
         <div v-else>Ничего нет</div>
@@ -1376,8 +1377,8 @@ const titles = ref([
     guard: false,
   },
   {
-    title: 'Проекты',
-    name: 'projects',
+    title: "Проекты",
+    name: "projects",
     guard: true,
   },
   {
@@ -1642,7 +1643,7 @@ const computedSharersToAddToFund = computed(() => {
   ) {
     // console.log(computedUsersInBand.value)
     // console.log(Array.from(tempSelectedFund.value))
-    let result_array = []
+    let result_array = [];
 
     return result_array;
   }
@@ -1840,6 +1841,24 @@ async function getOrganizations() {
 
 const { data: projects } = await useFetch("/api/projects/projects", {
   lazy: false,
+  transform: (projects) => {
+    return projects.filter((el) => {
+      //
+      if (el.bandID === +route.params.id) {
+        return el;
+      }
+      //
+      else if (
+        el.sharers &&
+        el.sharers.find(
+          (el) =>
+            el.sharerType === "company" && el.sharerID === +route.params.id
+        )
+      ) {
+        return el;
+      }
+    });
+  },
 });
 
 async function getAllUsers() {

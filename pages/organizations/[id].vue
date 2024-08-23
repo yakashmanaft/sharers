@@ -611,7 +611,7 @@
       <!-- container -->
       <div class="projects_container">
         <!--  -->
-        <div v-if="projects">
+        <div v-if="projects.length">
           <div v-for="project in projects">
             {{ project.title }} <br />
             {{ project }}
@@ -1165,9 +1165,7 @@
 
               <div
                 class="production-none_wrapper"
-                v-if="
-                  currentTitle === 'band_production' && !fund.listProduction
-                "
+                v-if="currentTitle === 'band_production' && !fund.listProductio"
               >
                 <p>
                   Здесь нет выполненных задач.
@@ -1175,14 +1173,13 @@
                 </p>
               </div>
             </div>
-            <!-- <p>{{ fund.list }}</p> -->
           </div>
         </div>
       </div>
       <div
         v-if="
           !computedSalaryFund.length &&
-          (currentTitle === 'fund' || currentTitle === 'working-hours')
+          (currentTitle === 'fund' || currentTitle === 'working-hours' || currentTitle === 'band_production')
         "
       >
         Ни одной таблицы ФОТ...

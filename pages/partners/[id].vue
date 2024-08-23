@@ -595,7 +595,7 @@ const createMyNewBand = () => {
     <div v-if="currentTitle === 'projects'">
       <!--  -->
       <div class="projects_container">
-        <div>Ничего нет</div>
+        <div>Ничего нет (в разработке...)</div>
       </div>
     </div>
 

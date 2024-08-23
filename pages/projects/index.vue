@@ -34,6 +34,26 @@ const {
   status,
 } = useFetch("api/projects/projects", {
   lazy: false,
+  transform: (projects) => {
+    return projects.filter((el) => {
+      // CREATOR
+      if (el.creator === user.value.id) {
+        return el;
+      }
+      // PARTNER
+      else if (el.partnerType === 'user' && el.partnerID === user.value.id) {
+        return el
+      }
+      // SHARER in project
+      else if (el.sharers && el.sharers.find((item) => item.sharerType === 'user' && item.sharerID === user.value.id)) {
+        return el
+      }
+      // SHARER in band (by bandID in project)
+      else if (isRelated(el)){
+        return el
+      }
+    });
+  },
 });
 
 // tmp project item
@@ -51,6 +71,7 @@ const project = ref({
 
 const { users } = storeToRefs(useUsersStore());
 const { loadData } = useUsersStore();
+const { user } = useUserSession();
 
 const { data: organizations } = useLazyAsyncData("organizations", () =>
   $fetch("api/organizations/organizations")
@@ -62,6 +83,24 @@ onMounted(async () => {
   await refreshOrganizations();
   await loadData();
 });
+
+// CHECK
+const isRelated = (obj) => {
+  if(obj.bandID) {
+    
+    if(organizations.value) {
+      
+      let band = organizations.value.find(band => band.id === obj.bandID)
+      
+      if(band && band.sharers.find(el => el.userType === 'user' && el.userID === user.value.id)) {
+        return true
+      } else {
+        return false
+      }
+
+    }
+  }
+}
 
 // *********** ДОБАВЛЯЕМ New Project newProjectModal ***********
 // флаг disabled для кнопки submit
@@ -363,6 +402,11 @@ watch(project.value, () => {
             {{ translatePartner(project.partnerID, project.partnerType) }}</span
           >
         </div>
+      </div>
+
+      <!--  -->
+      <div v-if="!projects.length">
+        У вас нет проектов...
       </div>
     </div>
 

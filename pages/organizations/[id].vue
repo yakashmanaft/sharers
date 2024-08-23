@@ -612,9 +612,14 @@
       <div class="projects_container">
         <!--  -->
         <div v-if="projects.length">
-          <div v-for="project in projects">
+          <div
+            v-for="project in projects"
+            class="project_wrapper"
+            @click="$router.push(`/projects/${project.id}`)"
+          >
             {{ project.title }} <br />
-            {{ project }}
+            {{ project.address }} <br />
+            {{ project.sharers }}
           </div>
         </div>
         <div v-else>Ничего нет</div>
@@ -1179,7 +1184,9 @@
       <div
         v-if="
           !computedSalaryFund.length &&
-          (currentTitle === 'fund' || currentTitle === 'working-hours' || currentTitle === 'band_production')
+          (currentTitle === 'fund' ||
+            currentTitle === 'working-hours' ||
+            currentTitle === 'band_production')
         "
       >
         Ни одной таблицы ФОТ...
@@ -2928,6 +2935,16 @@ watch(periodList, () => {
 /* PROJECTS */
 .projects_container {
   margin-top: 1rem;
+}
+.project_wrapper {
+  padding: 1rem;
+}
+/* .project_wrapper:not(:first-child) {
+  margin-top: 1rem;
+} */
+.project_wrapper:hover {
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* Таблица ФОТ */

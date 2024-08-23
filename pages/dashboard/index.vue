@@ -60,7 +60,9 @@
             size="24px"
             color="var(--bs-warning)"
           />
-          <span style="white-space: nowrap;">{{ myBand.sharers.length }} чел</span>
+          <span style="white-space: nowrap"
+            >{{ myBand.sharers.length }} чел</span
+          >
         </div>
       </div>
       <!-- ******** -->
@@ -229,9 +231,36 @@ const { data: banks } = await useFetch("/api/banks/bank", {
 // COUNTS
 const currentProjectsCount = (projects) => {
   if (projects) {
-    let currentProjects = [...projects].filter(
-      (project) => project.completion !== 1
-    );
+    let currentProjects = [...projects].filter((project) => {
+      if (project.completion !== 1) {
+        // CREATOR
+        if (project.creator === sessionUser.value.id) {
+          return project;
+        }
+        // PARTNER
+        else if (
+          project.partnerType === "user" &&
+          project.partnerID === sessionUser.value.id
+        ) {
+          return project;
+        }
+        // SHARER in project
+        else if (
+          project.sharers &&
+          project.sharers.find(
+            (item) =>
+              item.sharerType === "user" &&
+              item.sharerID === sessionUser.value.id
+          )
+        ) {
+          return project;
+        }
+        // SHARER in band (by bandID in project)
+        else if (isRelated(project)) {
+          return project;
+        }
+      }
+    });
 
     let signature;
 
@@ -309,6 +338,23 @@ const banksCount = () => {
 };
 
 // HELPERS
+// CHECK
+const isRelated = (obj) => {
+  if(obj.bandID) {
+    
+    if(organizations.value) {
+      
+      let band = organizations.value.find(band => band.id === obj.bandID)
+      
+      if(band && band.sharers.find(el => el.userType === 'user' && el.userID === sessionUser.value.id)) {
+        return true
+      } else {
+        return false
+      }
+
+    }
+  }
+}
 
 // display link to modules if has access
 const userAccesedLink = (moduleName) => {

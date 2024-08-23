@@ -613,7 +613,7 @@
         <!--  -->
         <div v-if="projects">
           <div v-for="project in projects">
-            {{ project.title }} <br>
+            {{ project.title }} <br />
             {{ project }}
           </div>
         </div>
@@ -1098,18 +1098,12 @@
                 <table class="table" v-if="currentTitle === 'band_production'">
                   <thead class="production-header_wrapper">
                     <tr>
-                      <th style="display: flex; align-items: center">
-                        <p style="margin: 0">Дата</p>
+                      <th class="production-header_date">
+                        <p>Дата</p>
                       </th>
-                      <th scope="col" style="display: flex">
-                        <div
-                          style="
-                            display: flex;
-                            align-items: center;
-                            justify-content: flex-start;
-                          "
-                        >
-                          <p style="margin: 0"><span>Выполнение</span></p>
+                      <th scope="col" class="production-header_desc">
+                        <div>
+                          <p><span>Выполнение</span></p>
                           <div
                             class="add_production_btn"
                             @click="addProduction()"
@@ -1122,23 +1116,10 @@
                           </div>
                         </div>
                       </th>
-                      <th
-                        style="
-                          display: flex;
-                          align-items: center;
-                          justify-content: flex-end;
-                        "
-                      >
-                        <div
-                          style="
-                            display: flex;
-                            flex-direction: column;
-                            align-items: flex-end;
-                            justify-content: center;
-                          "
-                        >
-                          <p style="margin: 0">Объем</p>
-                          <p style="margin: 0">
+                      <th class="production-header_value">
+                        <div>
+                          <p>Объем</p>
+                          <p>
                             {{ countProductionSalary(fund.listProduction) }}
                           </p>
                         </div>
@@ -1156,66 +1137,28 @@
                       )"
                     >
                       <!-- data -->
-                      <td
-                        style="
-                          white-space: nowrap;
-                          display: flex;
-                          align-items: center;
-                        "
-                      >
-                        <p style="margin: 0">{{ item.date }}</p>
+                      <td class="production-body_date">
+                        <p>{{ item.date }}</p>
                       </td>
-                      <td>
-                        <p style="margin: 0">
+                      <td class="production-body_desc">
+                        <p>
                           <span>{{ item.title }}</span
-                          ><span
-                            style="
-                              font-size: 0.8rem;
-                              margin-left: 0.5rem;
-                              padding: 0.1rem 0.3rem;
-                              color: var(--bs-success);
-                              background-color: var(--bs-success-bg-subtle);
-                            "
-                            >{{ translateProject(item.projectID) }}</span
-                          >
+                          ><span class="production-body_desc-project">{{
+                            translateProject(item.projectID)
+                          }}</span>
                         </p>
-                        <p
-                          style="
-                            margin: 0;
-                            font-size: 0.8rem;
-                            color: var(--bs-tertiary-color);
-                          "
-                        >
+                        <p class="production-body_desc-desc">
                           {{ item.desc }}
                         </p>
                       </td>
-                      <td style="text-align: end">
-                        <p style="margin: 0">{{ item.qty }}</p>
-                        <p
-                          style="
-                            margin: 0;
-                            font-size: 0.8rem;
-                            color: var(--bs-tertiary-color);
-                          "
-                        >
+                      <td class="production-body_qty">
+                        <p>{{ item.qty }}</p>
+                        <p class="production-body_qty-qty">
                           x{{ transformProductionPrice(item.price) }} =
                           {{ transformProductionPrice(item.price * item.qty) }}
                         </p>
                       </td>
                     </tr>
-                    <!-- <tr>
-                      <td style="border: unset"></td>
-                      <td style="border: unset"></td>
-                      <td
-                        style="
-                          font-weight: bold;
-                          border: unset;
-                          text-align: end;
-                        "
-                      >
-                        {{ countProductionSalary(fund.listProduction) }}
-                      </td>
-                    </tr> -->
                   </tbody>
                 </table>
               </div>
@@ -1226,14 +1169,9 @@
                   currentTitle === 'band_production' && !fund.listProduction
                 "
               >
-                <p style="margin: 0">
+                <p>
                   Здесь нет выполненных задач.
-                  <span
-                    class="link"
-                    style="color: var(--bs-primary)"
-                    @click="addProduction()"
-                    >Добавить</span
-                  >
+                  <span class="link" @click="addProduction()">Добавить</span>
                 </p>
               </div>
             </div>
@@ -3138,11 +3076,86 @@ watch(periodList, () => {
 .production-header_wrapper tr th {
   border: unset;
 }
+.production-header_date {
+  display: flex;
+  align-items: center;
+}
+.production-header_date p {
+  margin: 0;
+}
+.production-header_desc {
+  display: flex;
+}
+
+.production-header_desc div {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.production-header_desc div p {
+  margin: 0;
+}
+
+.production-header_value {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.production-header_value div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.production-header_value div p {
+  margin: 0;
+}
+
 .production-body_wrapper tr:last-child {
   border: unset;
 }
 .production-body_wrapper tr td {
   border: unset;
+}
+
+.production-body_date {
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}
+.production-body_date p {
+  margin: 0;
+}
+
+.production-body_desc p {
+  margin: 0;
+}
+.production-body_desc-project {
+  font-size: 0.8rem;
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.3rem;
+  color: var(--bs-success);
+  background-color: var(--bs-success-bg-subtle);
+}
+.production-body_desc-desc {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--bs-tertiary-color);
+}
+
+.production-body_qty {
+  text-align: end;
+}
+.production-body_qty p {
+  margin: 0;
+}
+.production-body_qty-qty {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--bs-tertiary-color);
 }
 
 /* SEARCH ADDING SHARER TO FUND */
@@ -3183,6 +3196,12 @@ watch(periodList, () => {
   .warehouse-items_container {
     margin-left: 0.5rem;
     margin-right: 0.5rem;
+  }
+  .production-none_wrapper p {
+    margin: 0;
+  }
+  .production-none_wrapper p span {
+    color: var(--bs-primary);
   }
 }
 

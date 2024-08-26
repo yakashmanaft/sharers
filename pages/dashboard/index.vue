@@ -259,7 +259,7 @@ const currentProjectsCount = (projects) => {
         else if (isRelated(project)) {
           return project;
         }
-      }
+      } 
     });
 
     let signature;

@@ -169,7 +169,7 @@ onMounted(async () => {
       "searchFilterContainer"
     );
     const scrollPosition = window.scrollY;
-    console.log(window.screen.width);
+    // console.log(window.screen.width);
     if (
       searchFilterContainer &&
       window.screen.width >= 768 &&

@@ -95,9 +95,22 @@
                 color="var(--bs-body-color)"
               />
             </div>
-            <div>
-              <div v-for="sharer in computedSharersToAddToFund">
-                {{ sharer }}
+
+            <!-- TEMP -->
+            <br />
+            <div>{{ currentFundID }}</div>
+            <div>{{ tempSharersToFund }} | {{ tempSharersToFund.length }}</div>
+            <br />
+            <!-- LIST -->
+            <div class="partners-search_list">
+              <div
+                class="search-item_wrapper"
+                v-for="(sharer, sharer_index) in computedSharersToAddToFund"
+              >
+                <label :for="`${sharer_index}`" @click="toggleAddingSharerToFund(sharer.id)">
+                  <!-- btn-check -->
+                <input class="search-add-sharer_checkbox " type="checkbox" :id="`${sharer_index}`" />
+                  {{sharer.surname}} {{sharer.name}} {{sharer.middleName}}</label>
               </div>
             </div>
           </div>
@@ -114,8 +127,9 @@
               type="button"
               class="btn btn-primary"
               data-bs-dismiss="modal"
+              :disabled="!tempSharersToFund.length"
+              @click="addSharerToFundFunc()"
             >
-              <!-- @click="setSharerHourAtDayDB()" -->
               Добавить
             </button>
           </div>
@@ -326,7 +340,7 @@
       aria-labelledby="delSharerFromFundModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog">
+      <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
           <!-- MODAL HEADER -->
           <div class="modal-header">
@@ -1024,9 +1038,9 @@
                           </div>
                         </div>
                       </th>
-                      <th scope="col">Час</th>
+                      <th scope="col">Часы всего</th>
                       <th scope="col">КТУ</th>
-                      <th scope="col">Час * КТУ</th>
+                      <th scope="col">Часы * КТУ</th>
                       <th scope="col">ЗП (static wr)</th>
                       <th scope="col">ЗП (dynamic wr)</th>
                     </tr>
@@ -1557,6 +1571,9 @@ const tempNewFund = ref({
 });
 
 //
+const tempSharersToFund = ref([]);
+
+//
 const searchAddSharerInput = ref("");
 
 // delete sharer from current fund
@@ -1714,17 +1731,54 @@ const computedSharersToAddToFund = computed(() => {
       if (searchAddSharerInput.value === "") {
         return notInFund;
       } else {
-
-        return notInFund.filter(el => {
+        return notInFund.filter((el) => {
           return el.surname
             .toLowerCase()
             .replace(/\s+/g, "")
-            .includes(searchAddSharerInput.value.toLowerCase().replace(/\s+/g, ""))
+            .includes(
+              searchAddSharerInput.value.toLowerCase().replace(/\s+/g, "")
+            );
         });
       }
     }
   }
 });
+// TOGGLE SHARER TO FUND BY CLICK
+const toggleAddingSharerToFund = (sharerID) => {
+  if (sharerID) {
+    if (tempSharersToFund.value.find((el) => el.userID === +sharerID)) {
+      // let result_array = [...tempSharersToFund.value].filter(
+      //   (el) => el.userID !== +sharerID
+      // );
+      // tempSharersToFund.value = result_array;
+    } else {
+      tempSharersToFund.value.push({
+        hours: [],
+        userID: `${sharerID}`,
+        stakeIndex: '1.0',
+      });
+    }
+    // console.log(sharerID)
+  }
+};
+// ADD SHARER TO FUND FUNC
+const addSharerToFundFunc = async () => {
+  // console.log('Добавляем:')
+  // console.log(tempSharersToFund.value)
+  // console.log('в фонд:')
+  // console.log(currentFundID.value)
+  // console.log(tempSelectedFund.value)
+
+  let result_array = [...tempSharersToFund.value, ...tempSelectedFund.value];
+  // console.log('Получилось:')
+  // console.log(result_array)
+
+  return salaryFundArray.value.map(async (fund) => {
+    fund.list = result_array;
+    await setUserFundList(currentFundID.value, result_array);
+    await refreshSalaryFundArray()
+  });
+};
 
 // check session user in current band
 const sessionUserIsInTheBand = () => {
@@ -1958,7 +2012,16 @@ onMounted(async () => {
     addSharerToFundEl.addEventListener("hidden.bs.modal", (event) => {
       console.log("Модалка #addSharerToFundModal закрыта");
       searchAddSharerInput.value = "";
-      // console.log(tempSetSharerHour.value);
+      tempSharersToFund.value = [];
+      currentFundID.value = null
+      // tempSelectedFund.value = [];
+      // Также, сбрасываем checked на false
+      let checkboxes = document.querySelectorAll(".search-add-sharer_checkbox");
+      if (checkboxes.length) {
+        checkboxes.forEach(el => {
+          el.checked = false
+        })
+      }
     });
   }
   // close modal and reset data #setSharerHourModal
@@ -3364,11 +3427,53 @@ watch(periodList, () => {
 .partners-search_wrapper input {
   padding-left: 2.2rem;
 }
+.partners-search_wrapper input {
+  border-radius: unset !important;
+  border: unset;
+}
+.partners-search_wrapper input:focus {
+  border: unset;
+  outline-width: 0 !important;
+  outline: none !important;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+}
+.partners-search_wrapper input,
+.partners-search_wrapper input:focus {
+  border-bottom: 1px solid var(--bs-border-color);
+}
 .partners-search_wrapper svg {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   left: 0.5rem;
+}
+
+.partners-search_list {
+  display: flex;
+  flex-direction: column;
+  /* gap: 1rem; */
+}
+.search-item_wrapper {
+  width: 100%;
+  display: flex;
+}
+.search-item_wrapper label {
+  /* background-color: gray; */
+  /* position: relative; */
+  width: 100%;
+  cursor: pointer;
+  border-bottom: 1px solid var(--bs-border-color);
+  padding: 1rem 0;
+}
+.search-item_wrapper input[type="checkbox"] {
+  /* position: absolute;
+  top: 1rem;
+  left: 0; */
+}
+.search-item_wrapper input[type="checkbox"]:checked + label {
+  background-color: var(--bs-success-bg-subtle);
 }
 
 @media screen and (max-width: 575px) {

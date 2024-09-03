@@ -1125,6 +1125,14 @@ useHead({
 
 .partners-search_wrapper input {
   padding-left: 2.2rem;
+  border: unset;
+  border-radius: unset;
+  outline-width: 0 !important;
+  outline: none !important;
+  box-shadow: none;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  border-bottom: 1px solid var(--bs-border-color);
 }
 
 .partners-search_wrapper svg {

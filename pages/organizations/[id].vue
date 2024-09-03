@@ -97,9 +97,9 @@
             </div>
 
             <!-- TEMP -->
-            <br />
-            <div>{{ currentFundID }}</div>
-            <div>{{ tempSharersToFund }} | {{ tempSharersToFund.length }}</div>
+            <br>
+            <!-- <div>{{ currentFundID }}</div> -->
+            <!-- <div>{{ tempSharersToFund }} | {{ tempSharersToFund.length }}</div> -->
             <br />
             <!-- LIST -->
             <div class="partners-search_list">
@@ -107,10 +107,8 @@
                 class="search-item_wrapper"
                 v-for="(sharer, sharer_index) in computedSharersToAddToFund"
               >
-                <label :for="`${sharer_index}`" @click="toggleAddingSharerToFund(sharer.id)">
-                  <!-- btn-check -->
-                <input class="search-add-sharer_checkbox " type="checkbox" :id="`${sharer_index}`" />
-                  {{sharer.surname}} {{sharer.name}} {{sharer.middleName}}</label>
+                <input class="search-add-sharer_checkbox" type="checkbox" :id="`${sharer_index}`" />
+                <label :for="`${sharer_index}`" @click="toggleAddingSharerToFund(sharer.id)">{{sharer.surname}} {{sharer.name}} {{sharer.middleName}}</label>
               </div>
             </div>
           </div>
@@ -745,7 +743,7 @@
           <!-- <div>{{computedPeriodList}}</div> -->
         </div>
 
-        <!-- Таблицы ФОТ -->
+        <!-- ABOUT FUND -->
         <div class="table-fund_container">
           <div
             v-for="fund in salaryFundArray.filter(
@@ -757,6 +755,7 @@
             :key="fund.id"
           >
             <div v-if="fund.list.length">
+
               <!-- СТАВКА, СТАТУС -->
               <div
                 class="fund-options_container"
@@ -1745,12 +1744,20 @@ const computedSharersToAddToFund = computed(() => {
 });
 // TOGGLE SHARER TO FUND BY CLICK
 const toggleAddingSharerToFund = (sharerID) => {
-  if (sharerID) {
-    if (tempSharersToFund.value.find((el) => el.userID === +sharerID)) {
+  if (sharerID && tempSharersToFund.value) {
+    console.log(sharerID)
+    if (tempSharersToFund.value.find((el) => +el.userID === +sharerID)) {
+      let result = [...tempSharersToFund.value].filter(
+        (el) => +el.userID !== +sharerID
+      )
+      if(result) {
+        // console.log(result)
+        tempSharersToFund.value = result;
+      }
       // let result_array = [...tempSharersToFund.value].filter(
       //   (el) => el.userID !== +sharerID
       // );
-      // tempSharersToFund.value = result_array;
+      // console.log()
     } else {
       tempSharersToFund.value.push({
         hours: [],
@@ -1758,7 +1765,6 @@ const toggleAddingSharerToFund = (sharerID) => {
         stakeIndex: '1.0',
       });
     }
-    // console.log(sharerID)
   }
 };
 // ADD SHARER TO FUND FUNC
@@ -1774,9 +1780,12 @@ const addSharerToFundFunc = async () => {
   // console.log(result_array)
 
   return salaryFundArray.value.map(async (fund) => {
-    fund.list = result_array;
-    await setUserFundList(currentFundID.value, result_array);
-    await refreshSalaryFundArray()
+    if(fund.list) {
+
+      fund.list = result_array;
+      await setUserFundList(currentFundID.value, result_array);
+      await refreshSalaryFundArray()
+    }
   });
 };
 
@@ -2015,7 +2024,7 @@ onMounted(async () => {
       tempSharersToFund.value = [];
       currentFundID.value = null
       // tempSelectedFund.value = [];
-      // Также, сбрасываем checked на false
+      // Также, сбрасываем checked в листе к добавлению на false
       let checkboxes = document.querySelectorAll(".search-add-sharer_checkbox");
       if (checkboxes.length) {
         checkboxes.forEach(el => {
@@ -2838,6 +2847,7 @@ const setRecievedStakeIndexDB = async () => {
 // BD
 
 // FUND LIST
+// Добавляем соучастников в ФОТ SALARY BD
 async function setUserFundList(salaryID, fundList) {
   let salaryFund;
 
@@ -3422,9 +3432,17 @@ watch(periodList, () => {
 
 /* SEARCH ADDING SHARER TO FUND */
 .partners-search_wrapper {
-  position: relative;
+  position: fixed;
+  /* top: 0;
+  left: 0; */
+  width: 80%;
+  overflow: scroll;
+  margin-top: -1rem;
+  margin-left: -1rem;
 }
 .partners-search_wrapper input {
+  background-color: var(--bs-light);
+  padding: 1rem;
   padding-left: 2.2rem;
 }
 .partners-search_wrapper input {
@@ -3456,24 +3474,75 @@ watch(periodList, () => {
   /* gap: 1rem; */
 }
 .search-item_wrapper {
+  position: relative;
   width: 100%;
   display: flex;
+  border-bottom: 1px solid var(--bs-border-color);
+}
+.search-item_wrapper:last-child {
+  border-bottom: none;
 }
 .search-item_wrapper label {
   /* background-color: gray; */
   /* position: relative; */
   width: 100%;
   cursor: pointer;
-  border-bottom: 1px solid var(--bs-border-color);
   padding: 1rem 0;
 }
+/* .search-item_wrapper label:before {
+  content: '';
+  position: absolute;
+  right: 1rem;
+  width: 7px;
+  height: 2rem;
+  background-color: red;
+  transform: rotate(45deg)
+} */
 .search-item_wrapper input[type="checkbox"] {
   /* position: absolute;
   top: 1rem;
   left: 0; */
+  opacity: 0;
+  z-index: -1;
+  width: 0;
+}
+.search-item_wrapper input[type="checkbox"] + label {
+  padding-left: 1rem;
 }
 .search-item_wrapper input[type="checkbox"]:checked + label {
   background-color: var(--bs-success-bg-subtle);
+  width: 100%;
+}
+.search-item_wrapper input[type="checkbox"]:checked + label:after,
+.search-item_wrapper input[type="checkbox"]:checked + label:before {
+  content: '';
+  position: absolute;
+  width: 7px;
+  background-color: var(--bs-success);
+  margin-right: 1rem;
+}
+
+.search-item_wrapper input[type="checkbox"]:checked + label:after {
+  /* \ */
+  /* content: ''; */
+  /* position: absolute; */
+  top: 1.5rem;
+  right: 2rem;
+  /* width: 7px; */
+  height: 1.2rem;
+  transform: rotate(-45deg);
+  /* background-color: var(--bs-success); */
+}
+.search-item_wrapper input[type="checkbox"]:checked + label:before {
+  /* / */
+  /* content: ''; */
+  top: 10px;
+  /* position: absolute; */
+  right: 1rem;
+  /* width: 7px; */
+  height: 2rem;
+  transform: rotate(45deg);
+  /* background-color: var(--bs-success); */
 }
 
 @media screen and (max-width: 575px) {

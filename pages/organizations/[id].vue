@@ -318,6 +318,58 @@
       </div>
     </div>
 
+    <!-- MODAL DELETE SHARE FROM FUND -->
+    <div
+      class="modal fade"
+      id="delSharerFromFundModal"
+      tabindex="-1"
+      aria-labelledby="delSharerFromFundModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="delSharerFromFundModalLabel">
+              Удалить соучастника из фонда?
+            </h2>
+            <!-- <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button> -->
+          </div>
+          <!-- MODAL BODY -->
+          <!-- <div class="modal-body">
+            Фонд: {{ tempDelSharerFromFund.fundID }}
+            <br />
+            Список: {{ tempDelSharerFromFund.list }}
+            <br />
+            Соучастник: {{ tempDelSharerFromFund.userID }}
+          </div> -->
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+              @click="delSharerFromCurrentFundFunc"
+            >
+              Удалить
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- BTN ADD -->
     <!-- IF currentTitle === SHARERS -->
     <div
@@ -734,6 +786,7 @@
                   <!-- <p style="margin: 0">Статус:</p> -->
                   <!-- <div v-if="fund.status.status === 'paid out'">Выплачено</div>
                 <div v-else>Ожидает оплаты</div> -->
+                  <!-- {{ fund.status.status }} -->
                   <div
                     style="
                       display: flex;
@@ -796,7 +849,10 @@
                             )
                           "
                           class="working-hours_add-sharer_btn"
-                          v-if="organization.ownerID === user.id"
+                          v-if="
+                            organization.ownerID === user.id &&
+                            fund.status.status !== 'paid out'
+                          "
                           :data-bs-toggle="
                             organization.ownerID === user.id ? `modal` : ''
                           "
@@ -836,13 +892,45 @@
                       <!-- № п/п -->
                       <td>{{ i + 1 }}.</td>
                       <!-- Соучастник -->
-                      <td
-                        class="working-hours_sharer link"
-                        @click="$router.push(`/partners/${el.userID}`)"
-                      >
-                        <!-- {{ translateFundListUser(el.userID) }} -->
-                        {{ el.surname }} {{ el.name[0] }}.
-                        {{ el.middleName[0] }}
+                      <td class="working-hours_sharer_wrapper">
+                        <!-- Соучастник -->
+                        <div
+                          class="working-hours_sharer link"
+                          @click="$router.push(`/partners/${el.userID}`)"
+                        >
+                          {{ el.surname }} {{ el.name[0] }}.
+                          {{ el.middleName[0] }}
+                        </div>
+                        <!-- Кпнока удалить соучастника из фонда -->
+                        <div
+                          v-if="
+                            organization.ownerID === user.id &&
+                            fund.status.status !== 'paid out'
+                          "
+                          class="working-hours_sharer_btn"
+                          @click="
+                            delSharerFromCurrentFund(
+                              fund.id,
+                              fund.list,
+                              el.userID,
+                              organization.ownerID
+                            )
+                          "
+                          :data-bs-toggle="
+                            organization.ownerID === user.id ? `modal` : ''
+                          "
+                          :data-bs-target="
+                            organization.ownerID === user.id
+                              ? `#delSharerFromFundModal`
+                              : ''
+                          "
+                        >
+                          <Icon
+                            name="ic:baseline-close"
+                            size="24px"
+                            color="var(--bs-danger)"
+                          />
+                        </div>
                       </td>
                       <td style="text-align: center; font-weight: bold">
                         {{ sumSharerHours(el.hours) }}
@@ -915,7 +1003,10 @@
                               )
                             "
                             class="working-hours_add-sharer_btn"
-                            v-if="organization.ownerID === user.id"
+                            v-if="
+                              organization.ownerID === user.id &&
+                              fund.status.status !== 'paid out'
+                            "
                             :data-bs-toggle="
                               organization.ownerID === user.id ? `modal` : ''
                             "
@@ -950,9 +1041,12 @@
                         {{ i + 1 }}.
                       </td>
                       <!-- Соучастник -->
-                      <td style="text-align: start">
+                      <td
+                        style="width: 100%"
+                        class="working-hours_sharer_wrapper"
+                      >
                         <span
-                          style="width: 100%; text-align: start"
+                          style="text-align: start"
                           class="link"
                           @click="$router.push(`/partners/${el.userID}`)"
                         >
@@ -960,6 +1054,37 @@
                           {{ el.surname }} {{ el.name[0] }}.
                           {{ el.middleName[0] }}
                         </span>
+
+                        <!-- Кпнока удалить соучастника из фонда -->
+                        <div
+                          v-if="
+                            organization.ownerID === user.id &&
+                            fund.status.status !== 'paid out'
+                          "
+                          class="working-hours_sharer_btn"
+                          @click="
+                            delSharerFromCurrentFund(
+                              fund.id,
+                              fund.list,
+                              el.userID,
+                              organization.ownerID
+                            )
+                          "
+                          :data-bs-toggle="
+                            organization.ownerID === user.id ? `modal` : ''
+                          "
+                          :data-bs-target="
+                            organization.ownerID === user.id
+                              ? `#delSharerFromFundModal`
+                              : ''
+                          "
+                        >
+                          <Icon
+                            name="ic:baseline-close"
+                            size="24px"
+                            color="var(--bs-danger)"
+                          />
+                        </div>
                       </td>
                       <!-- Отработано часов -->
                       <!-- @click="setRecievedHours(fund.id, el.userID, fund.list)" -->
@@ -1431,7 +1556,15 @@ const tempNewFund = ref({
   },
 });
 
+//
 const searchInput = ref("");
+
+// delete sharer from current fund
+const tempDelSharerFromFund = ref({
+  fundID: null,
+  list: [],
+  userID: null,
+});
 
 // ADD MENU
 const addMenuIsOpened = ref(false);
@@ -1569,16 +1702,15 @@ const computedSharersToAddToFund = computed(() => {
     tempSelectedFund.value &&
     currentFundID.value
   ) {
-    // 
-    let sharersInFund = tempSelectedFund.value.map(sharer => +sharer.userID)
-    let sharersInFundSet = new Set(sharersInFund)
-    // 
-    let notInFund = computedUsersInBand.value.filter(sharer => !sharersInFundSet.has(sharer.id))
+    //
+    let sharersInFund = tempSelectedFund.value.map((sharer) => +sharer.userID);
+    let sharersInFundSet = new Set(sharersInFund);
+    //
+    let notInFund = computedUsersInBand.value.filter(
+      (sharer) => !sharersInFundSet.has(sharer.id)
+    );
 
-    // console.log(notInFund)
-    // let result_array = [1, 2, 3]
-
-    return notInFund
+    return notInFund;
   }
 });
 
@@ -1588,8 +1720,7 @@ const sessionUserIsInTheBand = () => {
     let userInBand = [...computedUsersInBand.value].find(
       (el) => el.id === user.value.id
     );
-    // console.log(userInBand)
-
+    //
     if (userInBand) {
       return true;
     } else {
@@ -1597,6 +1728,7 @@ const sessionUserIsInTheBand = () => {
     }
   }
 };
+
 // check session user is a part of aliance
 const sessionUserAliancePart = () => {
   if (computedOragnizationsInBand.value || organizations.value) {
@@ -1646,6 +1778,7 @@ const sessionUserAliancePart = () => {
     }
   }
 };
+//
 const sessionUserAliancePartMainSharer = () => {
   if (organizations.value.length) {
     // Пробегаемся по всем бандам на сервисе
@@ -1710,7 +1843,7 @@ const sortFundSharer = (fundList) => {
     });
   }
 };
-
+//
 onBeforeMount(async () => {
   // warehouse items
   items.value = await getWarehouseItems();
@@ -1799,7 +1932,7 @@ async function getAllUsers() {
 }
 
 onMounted(async () => {
-  // close and reser data #addNewFundModal
+  // close and reseе data #addNewFundModal
   const addNewFundEl = document.getElementById("addNewFundModal");
   if (addNewFundEl) {
     addNewFundEl.addEventListener("hidden.bs.modal", (event) => {
@@ -1835,10 +1968,25 @@ onMounted(async () => {
   const setWageRateModalEl = document.getElementById("setWageRateModal");
   if (setWageRateModalEl) {
     setWageRateModalEl.addEventListener("hidden.bs.modal", (event) => {
-      console.log("Модалка #setWageRateModalEl закрыта");
+      console.log("Модалка #setWageRateModal закрыта");
       tempSetWageRate.value.rate = null;
     });
   }
+  // close modal and reset data #delSharerFromFundModal
+  const delSharerFromFundModalEl = document.getElementById(
+    "delSharerFromFundModal"
+  );
+  if (delSharerFromFundModalEl) {
+    delSharerFromFundModalEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #delSharerFromFundModal закрыта");
+      tempDelSharerFromFund.value = {
+        fundID: null,
+        list: [],
+        userID: null,
+      };
+    });
+  }
+
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
   if (computedSalaryFund.value.length) {
     // Сортируем да дате окончания отчетного периода. Может имеет смысл добавить строку created_at и по ней сортировать???
@@ -2459,6 +2607,32 @@ const setRecievedSalary = (
 //   refreshSalaryFundArray();
 // };
 
+// ================= DELETE SHARER FROM CURRENT FUND =================
+const delSharerFromCurrentFund = (fundID, fundList, userID, orgOwnerID) => {
+  // Защитку так на всякий слуай, хотя м в рендере скрываем кнопку еще...
+  if (+orgOwnerID === user.value.id) {
+    tempDelSharerFromFund.value.fundID = +fundID;
+    tempDelSharerFromFund.value.list = fundList;
+    tempDelSharerFromFund.value.userID = +userID;
+    // setUserFundList
+  } else {
+    alert("Только основатель банды может удалить соучастника из ФОТ");
+  }
+};
+const delSharerFromCurrentFundFunc = async () => {
+  let result_array = tempDelSharerFromFund.value.list.filter(
+    (el) => +el.userID !== tempDelSharerFromFund.value.userID
+  );
+
+  // console.log(result_array)
+  return salaryFundArray.value.map(async (fund) => {
+    if (fund.id === tempDelSharerFromFund.value.fundID) {
+      await setUserFundList(tempDelSharerFromFund.value.fundID, result_array);
+      fund.list = result_array;
+    }
+  });
+};
+
 // =============== set Sharer Hour At Day ======================
 const setSharerHourAtDay = (ownerID, fundID, userID, dayDate, sharerHours) => {
   if (ownerID !== user.value.id) {
@@ -2987,6 +3161,11 @@ watch(periodList, () => {
   text-align: center;
   width: max-content;
 }
+.working-hours_sharer_wrapper {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
 .working-hours_sharer {
   width: max-content;
   white-space: nowrap;
@@ -2994,6 +3173,9 @@ watch(periodList, () => {
   /* Для скролла */
   /* position: fixed; */
   /* background-color: var(--bs-body-bg); */
+}
+.working-hours_sharer_btn-del {
+  color: red;
 }
 .working-hours_add-sharer_btn {
   margin: 0 1rem;

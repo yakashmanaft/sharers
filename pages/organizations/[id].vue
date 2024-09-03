@@ -87,7 +87,7 @@
                 type="text"
                 class="form-control"
                 placeholder="Поиск по фамилии"
-                v-model="searchInput"
+                v-model="searchAddSharerInput"
               />
               <Icon
                 name="ic:baseline-search"
@@ -359,7 +359,7 @@
             </button>
             <button
               type="button"
-              class="btn btn-primary"
+              class="btn btn-danger"
               data-bs-dismiss="modal"
               @click="delSharerFromCurrentFundFunc"
             >
@@ -1557,7 +1557,7 @@ const tempNewFund = ref({
 });
 
 //
-const searchInput = ref("");
+const searchAddSharerInput = ref("");
 
 // delete sharer from current fund
 const tempDelSharerFromFund = ref({
@@ -1710,7 +1710,19 @@ const computedSharersToAddToFund = computed(() => {
       (sharer) => !sharersInFundSet.has(sharer.id)
     );
 
-    return notInFund;
+    if (notInFund.length) {
+      if (searchAddSharerInput.value === "") {
+        return notInFund;
+      } else {
+
+        return notInFund.filter(el => {
+          return el.surname
+            .toLowerCase()
+            .replace(/\s+/g, "")
+            .includes(searchAddSharerInput.value.toLowerCase().replace(/\s+/g, ""))
+        });
+      }
+    }
   }
 });
 
@@ -1945,7 +1957,7 @@ onMounted(async () => {
   if (addSharerToFundEl) {
     addSharerToFundEl.addEventListener("hidden.bs.modal", (event) => {
       console.log("Модалка #addSharerToFundModal закрыта");
-      searchInput.value = "";
+      searchAddSharerInput.value = "";
       // console.log(tempSetSharerHour.value);
     });
   }

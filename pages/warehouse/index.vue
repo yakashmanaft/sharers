@@ -92,7 +92,7 @@ const warehouseCategories = ref([
   },
   {
     type: "equipment",
-    name: "Экипировка",
+    name: "Экипировка / Оборудование",
   },
 ]);
 //

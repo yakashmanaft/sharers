@@ -95,26 +95,10 @@
                 color="var(--bs-body-color)"
               />
             </div>
-            <span>ФОНД ID</span>
-            {{ currentFundID }}
-            <br />
-            <!-- sharer list block -->
-            <span>Кого можно добавить</span>
             <div>
               <div v-for="sharer in computedSharersToAddToFund">
                 {{ sharer }}
               </div>
-            </div>
-            <br />
-            <!-- currentFundID: {{ currentFundID }} -->
-            <br />
-            <!-- Общий список -->
-            <!-- {{ computedUsersInBand }} -->
-            <!-- {{ computedTempListOfSharers }} -->
-            <br />
-            <span>Кто в конкретном фонде</span>
-            <div v-for="sharer in tempSelectedFund">
-              {{ sharer }}
             </div>
           </div>
           <!-- MODAL FOTER -->
@@ -1170,7 +1154,9 @@
 
               <div
                 class="production-none_wrapper"
-                v-if="currentTitle === 'band_production' && !fund.listProductio"
+                v-if="
+                  currentTitle === 'band_production' && !fund.listProduction
+                "
               >
                 <p>
                   Здесь нет выполненных задач.
@@ -1583,11 +1569,16 @@ const computedSharersToAddToFund = computed(() => {
     tempSelectedFund.value &&
     currentFundID.value
   ) {
-    // console.log(computedUsersInBand.value)
-    // console.log(Array.from(tempSelectedFund.value))
-    let result_array = [];
+    // 
+    let sharersInFund = tempSelectedFund.value.map(sharer => +sharer.userID)
+    let sharersInFundSet = new Set(sharersInFund)
+    // 
+    let notInFund = computedUsersInBand.value.filter(sharer => !sharersInFundSet.has(sharer.id))
 
-    return result_array;
+    // console.log(notInFund)
+    // let result_array = [1, 2, 3]
+
+    return notInFund
   }
 });
 

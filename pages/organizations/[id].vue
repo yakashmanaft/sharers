@@ -343,7 +343,7 @@
           <!-- MODAL HEADER -->
           <div class="modal-header">
             <h2 class="modal-title fs-5" id="delSharerFromFundModalLabel">
-              Удалить соучастника из фонда?
+              Удалить соучастника из ФОТ?
             </h2>
             <!-- <button
               type="button"

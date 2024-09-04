@@ -116,7 +116,7 @@
 
       <!-- WAREHOUSE -->
       <div class="dashboard-item" @click="router.push('/warehouse')">
-        <h2 class="dashboard-item_header">Склад</h2>
+        <h2 class="dashboard-item_header">ТМЦ</h2>
         <div class="dashboard-item_indicator">
           3 220 300,00 Потенциальная капитализация
         </div>

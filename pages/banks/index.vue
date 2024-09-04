@@ -76,7 +76,7 @@
       <div v-else>У вас нет фондов</div>
     </div>
 
-    <br />
+    <!-- <br />
     <p>На сумму: {{ summaryWastedValue }}</p>
     <ul>
       <li v-for="item in myBondsList">
@@ -84,8 +84,9 @@
         {{ item.accumulated_coupon_income }}) | {{ item.name }} |
         {{ item.ticker }} | {{ item.qty }}
       </li>
-    </ul>
-    <br />
+    </ul> -->
+
+    <!-- <br />
     <div style="display: flex; align-items: center; gap: 0.5rem">
       <div
         style="cursor: pointer"
@@ -94,8 +95,9 @@
         <span>Запросить котировку по тикеру</span>
       </div>
       <input type="text" v-model="promtTicker" placeholder="Впишите тикер" />
-    </div>
-    <br />
+    </div> -->
+
+    <!-- <br />
     <div @click="parser">
       <span style="cursor: pointer">Парсить котировки</span>
     </div>
@@ -106,14 +108,14 @@
         {{ item.accumulated_coupon_income }}) | {{ item.name }} |
         {{ item.ticker }} | {{ item.qty }}
       </li>
-    </ul>
+    </ul> -->
 
-    <h2>Ledger</h2>
+    <!-- <h2>Ledger</h2>
     <ul>
       <li v-for="transaction in bondsLedger">
         {{ transaction }}
       </li>
-    </ul>
+    </ul> -->
   </Container>
 </template>
 

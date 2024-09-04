@@ -70,7 +70,7 @@
           <!-- MODAL HEADER -->
           <div class="modal-header">
             <h2 class="modal-title fs-5" id="addSharerToFundModalLabel">
-              Добавляем соучастника в ФОТ
+              Добавляем соучастника банды в ФОТ
             </h2>
             <button
               type="button"
@@ -79,8 +79,7 @@
               aria-label="Close"
             ></button>
           </div>
-          <!-- MODAL BODY -->
-          <div class="modal-body">
+          <div class="modal-header" style="padding-bottom: 0; padding-left: 0; padding-right: 0;">
             <!-- search block -->
             <div class="partners-search_wrapper">
               <input
@@ -95,20 +94,31 @@
                 color="var(--bs-body-color)"
               />
             </div>
-
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
             <!-- TEMP -->
-            <br>
+            <!-- <br /> -->
             <!-- <div>{{ currentFundID }}</div> -->
             <!-- <div>{{ tempSharersToFund }} | {{ tempSharersToFund.length }}</div> -->
-            <br />
+            <!-- <br /> -->
             <!-- LIST -->
             <div class="partners-search_list">
               <div
                 class="search-item_wrapper"
                 v-for="(sharer, sharer_index) in computedSharersToAddToFund"
               >
-                <input class="search-add-sharer_checkbox" type="checkbox" :id="`${sharer_index}`" />
-                <label :for="`${sharer_index}`" @click="toggleAddingSharerToFund(sharer.id)">{{sharer.surname}} {{sharer.name}} {{sharer.middleName}}</label>
+                <input
+                  class="search-add-sharer_checkbox"
+                  type="checkbox"
+                  :id="`${sharer_index}`"
+                />
+                <label
+                  :for="`${sharer_index}`"
+                  @click="toggleAddingSharerToFund(sharer.id)"
+                  >{{ sharer.surname }} {{ sharer.name }}
+                  {{ sharer.middleName }}</label
+                >
               </div>
             </div>
           </div>
@@ -755,7 +765,6 @@
             :key="fund.id"
           >
             <div v-if="fund.list.length">
-
               <!-- СТАВКА, СТАТУС -->
               <div
                 class="fund-options_container"
@@ -1745,12 +1754,12 @@ const computedSharersToAddToFund = computed(() => {
 // TOGGLE SHARER TO FUND BY CLICK
 const toggleAddingSharerToFund = (sharerID) => {
   if (sharerID && tempSharersToFund.value) {
-    console.log(sharerID)
+    console.log(sharerID);
     if (tempSharersToFund.value.find((el) => +el.userID === +sharerID)) {
       let result = [...tempSharersToFund.value].filter(
         (el) => +el.userID !== +sharerID
-      )
-      if(result) {
+      );
+      if (result) {
         // console.log(result)
         tempSharersToFund.value = result;
       }
@@ -1762,7 +1771,7 @@ const toggleAddingSharerToFund = (sharerID) => {
       tempSharersToFund.value.push({
         hours: [],
         userID: `${sharerID}`,
-        stakeIndex: '1.0',
+        stakeIndex: "1.0",
       });
     }
   }
@@ -1780,11 +1789,10 @@ const addSharerToFundFunc = async () => {
   // console.log(result_array)
 
   return salaryFundArray.value.map(async (fund) => {
-    if(fund.list) {
-
+    if (fund.list) {
       fund.list = result_array;
       await setUserFundList(currentFundID.value, result_array);
-      await refreshSalaryFundArray()
+      await refreshSalaryFundArray();
     }
   });
 };
@@ -2022,14 +2030,14 @@ onMounted(async () => {
       console.log("Модалка #addSharerToFundModal закрыта");
       searchAddSharerInput.value = "";
       tempSharersToFund.value = [];
-      currentFundID.value = null
+      currentFundID.value = null;
       // tempSelectedFund.value = [];
       // Также, сбрасываем checked в листе к добавлению на false
       let checkboxes = document.querySelectorAll(".search-add-sharer_checkbox");
       if (checkboxes.length) {
-        checkboxes.forEach(el => {
-          el.checked = false
-        })
+        checkboxes.forEach((el) => {
+          el.checked = false;
+        });
       }
     });
   }
@@ -3432,18 +3440,21 @@ watch(periodList, () => {
 
 /* SEARCH ADDING SHARER TO FUND */
 .partners-search_wrapper {
-  position: fixed;
+  position: relative;
   /* top: 0;
   left: 0; */
-  width: 80%;
-  overflow: scroll;
+  /* width: 50%; */
+  /* overflow: scroll; */
   margin-top: -1rem;
-  margin-left: -1rem;
+  /* margin-left: -1rem; */
+  /* z-index: 1; */
+  width: 100%;
 }
 .partners-search_wrapper input {
   background-color: var(--bs-light);
   padding: 1rem;
   padding-left: 2.2rem;
+  width: 100%;
 }
 .partners-search_wrapper input {
   border-radius: unset !important;
@@ -3457,10 +3468,10 @@ watch(periodList, () => {
   -moz-box-shadow: none;
   -webkit-box-shadow: none;
 }
-.partners-search_wrapper input,
+/* .partners-search_wrapper input,
 .partners-search_wrapper input:focus {
   border-bottom: 1px solid var(--bs-border-color);
-}
+} */
 .partners-search_wrapper svg {
   position: absolute;
   top: 50%;
@@ -3515,18 +3526,19 @@ watch(periodList, () => {
 }
 .search-item_wrapper input[type="checkbox"]:checked + label:after,
 .search-item_wrapper input[type="checkbox"]:checked + label:before {
-  content: '';
+  content: "";
   position: absolute;
-  width: 7px;
+  width: 5px;
   background-color: var(--bs-success);
   margin-right: 1rem;
+  border-radius: 1rem;
 }
 
 .search-item_wrapper input[type="checkbox"]:checked + label:after {
   /* \ */
   /* content: ''; */
   /* position: absolute; */
-  top: 1.5rem;
+  top: 1.4rem;
   right: 2rem;
   /* width: 7px; */
   height: 1.2rem;
@@ -3536,7 +3548,7 @@ watch(periodList, () => {
 .search-item_wrapper input[type="checkbox"]:checked + label:before {
   /* / */
   /* content: ''; */
-  top: 10px;
+  top: 12px;
   /* position: absolute; */
   right: 1rem;
   /* width: 7px; */

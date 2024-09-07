@@ -392,6 +392,55 @@
       </div>
     </div>
 
+    <!-- MODAL SHOW CURRENT PROJECT HOT ACTIONS INFO-->
+     <!-- projects_container -->
+    <div
+      class="modal fade"
+      id="showProjectInfoModal"
+      tabindex="-1"
+      aria-labelledby="showProjectInfoModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="showProjectInfoModalLabel">
+              {{tempChoosenProject.title}}
+            </h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body">
+            {{tempChoosenProject}}
+          </div>
+          <!-- MODAL FOOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <!-- <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-dismiss="modal"
+              >
+              Удалить
+            </button> -->
+            <!-- @click="delSharerFromCurrentFundFunc" -->
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- BTN ADD -->
     <!-- IF currentTitle === SHARERS -->
     <div
@@ -673,8 +722,11 @@
           <div
             v-for="project in projects"
             class="project_wrapper"
-            @click="$router.push(`/projects/${project.id}`)"
+            :data-bs-toggle="`modal`"
+            :data-bs-target="`#showProjectInfoModal`"
+            @click="showProjectInfo(project)"
           >
+            <!-- @click="$router.push(`/projects/${project.id}`)" -->
             {{ project.title }} <br />
             {{ project.address }} <br />
             {{ project.sharers }}
@@ -1591,6 +1643,9 @@ const tempDelSharerFromFund = ref({
   userID: null,
 });
 
+// show project info
+const tempChoosenProject = ref({})
+
 // ADD MENU
 const addMenuIsOpened = ref(false);
 window.addEventListener("click", (e) => {
@@ -2077,6 +2132,16 @@ onMounted(async () => {
         userID: null,
       };
     });
+  }
+
+  // close modal and reset data #showProjectInfoModal
+  const showProjectInfoModalEl = document.getElementById(
+    "showProjectInfoModal"
+  );
+  if(showProjectInfoModalEl) {
+    showProjectInfoModalEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #showProjectInfoModal закрыта");
+    })
   }
 
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
@@ -2852,6 +2917,11 @@ const setRecievedStakeIndexDB = async () => {
   console.log(sharer_hours_obj);
 };
 
+// =============== show project info ===========================
+const showProjectInfo = (choosenProject: any) => {
+  tempChoosenProject.value = choosenProject
+}
+
 // BD
 
 // FUND LIST
@@ -3555,6 +3625,27 @@ watch(periodList, () => {
   height: 2rem;
   transform: rotate(45deg);
   /* background-color: var(--bs-success); */
+}
+
+/* SHOW CHOOSEN PROJECT INFO */
+#showProjectInfoModal{
+  --bs-modal-width: 60%;
+}
+#showProjectInfoModal .modal-dialog{
+  margin-top: 0;
+  margin-right: 0;
+  margin-bottom: 0!important;
+}
+#showProjectInfoModal .modal-dialog-centered{
+  align-items: unset;
+  min-height: 100%;
+}
+#showProjectInfoModal .modal-content{
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 @media screen and (max-width: 575px) {

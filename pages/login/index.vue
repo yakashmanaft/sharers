@@ -61,7 +61,8 @@ const login = async () => {
   if (tempUser.value.email) {
     await useAuthStore().signIn(tempUser.value);
     if (useAuthStore().loggedIn) {
-      router.push("/dashboard");
+      // router.push("/dashboard");
+      router.push("/calendar");
     }
   } else {
     alert("Вы не указали email");

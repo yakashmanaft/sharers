@@ -22,6 +22,10 @@ onMounted(() => {
   ) {
     router.replace("/login");
   }
+  // Отключаем перезагрузку страницы при смахивании
+  window.addEventListener('contextmenu', function (e) {
+      e.preventDefault();
+  }, false);
 });
 
 watch(session, () => {

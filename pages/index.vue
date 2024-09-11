@@ -45,9 +45,16 @@ const { loggedIn, user, session, clear } = useUserSession();
     <br /> -->
     <h1 style="margin-top: 5rem">Landing page about "СОУЧАСТНИКИ"</h1>
     <br />
-    <div v-if="user">
-      <router-link to="/dashboard">Доска</router-link>
-    </div>
+    <ul v-if="user">
+      <li>
+
+        <router-link to="/dashboard">Доска</router-link>
+      </li>
+      <li>
+
+        <router-link to="/calendar">Календарь</router-link>
+      </li>
+    </ul>
     <div v-else>
       <router-link to="/login">Войти</router-link>
     </div>

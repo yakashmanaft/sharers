@@ -10,6 +10,11 @@ const accountMenuIsOpened = ref(false);
 
 // FEATURES LISTS
 const featuresListAuth = ref([
+{
+    path: "/calendar",
+    title: "Календарь",
+    auth: true,
+  },
   {
     path: "/dashboard",
     title: "Доска",

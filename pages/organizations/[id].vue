@@ -79,7 +79,10 @@
               aria-label="Close"
             ></button>
           </div>
-          <div class="modal-header" style="padding-bottom: 0; padding-left: 0; padding-right: 0;">
+          <div
+            class="modal-header"
+            style="padding-bottom: 0; padding-left: 0; padding-right: 0"
+          >
             <!-- search block -->
             <div class="partners-search_wrapper">
               <input
@@ -393,7 +396,7 @@
     </div>
 
     <!-- MODAL SHOW CURRENT PROJECT HOT ACTIONS INFO-->
-     <!-- projects_container -->
+    <!-- projects_container -->
     <div
       class="modal fade"
       id="showProjectInfoModal"
@@ -406,7 +409,7 @@
           <!-- MODAL HEADER -->
           <div class="modal-header">
             <h2 class="modal-title fs-5" id="showProjectInfoModalLabel">
-              {{tempChoosenProject.title}}
+              {{ tempChoosenProject.title }}
             </h2>
             <button
               type="button"
@@ -417,7 +420,15 @@
           </div>
           <!-- MODAL BODY -->
           <div class="modal-body">
-            {{tempChoosenProject}}
+            {{ tempChoosenProject }}
+
+            <!-- CALENDAR -->
+            <div class="calendar_container">
+              <!-- https://vanilla-calendar.pro/ru -->
+              <div id="calendar"></div>
+              <div v-if="calendarSelectedDates">{{ calendarSelectedDates }}</div>
+              <div v-else>Выберите даты</div>
+            </div>
           </div>
           <!-- MODAL FOOTER -->
           <div class="modal-footer">
@@ -713,7 +724,7 @@
       </div>
     </div>
 
-    <!-- BAND PROJECTS -->
+    <!-- PROJECTS -->
     <div v-if="currentTitle === 'projects'">
       <!-- container -->
       <div class="projects_container">
@@ -729,7 +740,9 @@
             <!-- @click="$router.push(`/projects/${project.id}`)" -->
             {{ project.title }} <br />
             {{ project.address }} <br />
-            {{ project.sharers }}
+            <!-- {{ project.sharers }} <br> -->
+            {{ project.workType }} <br />
+            {{ (project.completion * 100).toFixed(2) }}%
           </div>
         </div>
         <div v-else>Ничего нет</div>
@@ -1458,6 +1471,9 @@
 <script lang="ts" setup>
 import { Container } from "@/shared/container";
 import { onBeforeMount } from "vue";
+import VanillaCalendar from "vanilla-calendar-pro";
+import { type IOptions } from "vanilla-calendar-pro/types";
+import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
 
 useHead({
   title: "Банда # ",
@@ -1549,6 +1565,9 @@ const choosenFundPeriod = ref({
 // Модалка созданя нового ФОТ
 const choosenStartDate = ref();
 const choosenEndDate = ref();
+
+//
+const calendarSelectedDates: any = ref();
 // Массив salary funds
 const salaryFundArray = ref([]);
 // pseudo object of Fund Salary
@@ -1644,7 +1663,7 @@ const tempDelSharerFromFund = ref({
 });
 
 // show project info
-const tempChoosenProject = ref({})
+const tempChoosenProject = ref({});
 
 // ADD MENU
 const addMenuIsOpened = ref(false);
@@ -2070,6 +2089,35 @@ async function getAllUsers() {
 }
 
 onMounted(async () => {
+
+  // ======================= CALENDAR ====================
+  const options: IOptions = {
+    jumpToSelectedDate: true,
+    settings: {
+      selection: {
+        day: "multiple-ranged",
+      },
+      selected: {
+        dates: [new Date()],
+      },
+    },
+    actions: {
+      clickDay(event, self) {
+        if (self) {
+          if (self.selectedDates[0] == null) {
+            calendarSelectedDates.value = null
+          } else {
+            calendarSelectedDates.value = self.selectedDates;
+            // console.log(self.selectedDates)
+          }
+        }
+      },
+    },
+  };
+  const calendar = new VanillaCalendar("#calendar", options);
+  calendar.init();
+  calendarSelectedDates.value = calendar.selectedDates;
+
   // close and reseе data #addNewFundModal
   const addNewFundEl = document.getElementById("addNewFundModal");
   if (addNewFundEl) {
@@ -2138,10 +2186,20 @@ onMounted(async () => {
   const showProjectInfoModalEl = document.getElementById(
     "showProjectInfoModal"
   );
-  if(showProjectInfoModalEl) {
+  if (showProjectInfoModalEl) {
     showProjectInfoModalEl.addEventListener("hidden.bs.modal", (event) => {
       console.log("Модалка #showProjectInfoModal закрыта");
-    })
+      // console.log(calendar)
+      if (calendar) {
+        calendar.update({
+          dates: true,
+        });
+        // console.log(calendar.selectedDates);
+
+        calendarSelectedDates.value = calendar.selectedDates;
+        console.log(calendarSelectedDates.value)
+      }
+    });
   }
 
   // При монтирвоаниии всегда показываем самую свежу таблицу ФОТ
@@ -2919,8 +2977,8 @@ const setRecievedStakeIndexDB = async () => {
 
 // =============== show project info ===========================
 const showProjectInfo = (choosenProject: any) => {
-  tempChoosenProject.value = choosenProject
-}
+  tempChoosenProject.value = choosenProject;
+};
 
 // BD
 
@@ -3628,24 +3686,28 @@ watch(periodList, () => {
 }
 
 /* SHOW CHOOSEN PROJECT INFO */
-#showProjectInfoModal{
+#showProjectInfoModal {
   --bs-modal-width: 60%;
 }
-#showProjectInfoModal .modal-dialog{
+#showProjectInfoModal .modal-dialog {
   margin-top: 0;
   margin-right: 0;
-  margin-bottom: 0!important;
+  margin-bottom: 0 !important;
 }
-#showProjectInfoModal .modal-dialog-centered{
+#showProjectInfoModal .modal-dialog-centered {
   align-items: unset;
   min-height: 100%;
 }
-#showProjectInfoModal .modal-content{
+#showProjectInfoModal .modal-content {
   border-top: none;
   border-bottom: none;
   border-right: none;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+}
+
+/* ============================ CALENDAR ============================== */
+.calendar_container {
 }
 
 @media screen and (max-width: 575px) {

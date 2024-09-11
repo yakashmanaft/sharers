@@ -25,6 +25,7 @@
     "pinia": "^2.1.7",
     "prisma": "^5.10.1",
     "uuid": "^9.0.1",
+    "vanilla-calendar-pro": "^2.9.10",
     "vue": "^3.4.19",
     "vue-router": "^4.2.5"
   },

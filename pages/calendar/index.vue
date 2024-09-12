@@ -105,7 +105,7 @@ import { Tabs } from "@/shared/tabs";
 // Plugins
 import VanillaCalendar from "vanilla-calendar-pro";
 import { type IOptions } from "vanilla-calendar-pro/types";
-import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
+// import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
 
 // variables
 
@@ -164,6 +164,9 @@ const options: IOptions = {
       }
     },
   },
+  //   CSSClasses: {
+  //     vanillaCalendarDay: 'vanilla-calendar-day_custom'
+  //   }
 };
 
 // On Mounted
@@ -202,6 +205,7 @@ useHead({
       type: "text/css",
     },
   ],
+  style: ["~/assets/css/vanilla-calendar.min.css"],
   script: [
     {
       src: "https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js",
@@ -235,9 +239,11 @@ useHead({
 .vanilla-calendar-day {
   height: 100% !important;
 }
+/* .vanilla-calendar-day__btn_selected {
+} */
 .calendar-btn_today {
   position: absolute;
-  top: 1.25rem;
+  top: 0.25rem;
   left: 3rem;
 }
 .calendar-btn_today:hover {
@@ -245,8 +251,8 @@ useHead({
 }
 
 /* TITTLES */
-.titles_container {
-}
+/* .titles_container {
+} */
 
 /* MODAL SHOW DATE DETAILS */
 .show-date-details_btn {
@@ -278,27 +284,40 @@ useHead({
   color: var(--bs-primary);
 }
 
+.vanilla-calendar {
+  padding: 0 !important;
+}
 @media screen and (max-width: 575px) {
-  .container {
-  }
+  /* .container {
+  } */
   .calendar_container {
-    padding: 0 !important;
-  }
-  .vanilla-calendar {
+    margin-top: 4rem;
     padding: 0 !important;
   }
   .calendar-btn_today {
     top: 0.25rem;
     left: 2rem;
   }
+  .show-date-details_btn {
+    bottom: 3rem;
+  }
 }
 @media screen and (min-width: 576px) and (max-width: 768px) {
   .calendar_container {
-    margin-top: 3rem;
+    margin-top: 4rem;
     height: 100vh;
   }
   .show-date-details_btn {
-    bottom: 3rem;
+    bottom: 4rem;
+  }
+}
+
+@media screen and (min-width: 769px) {
+  .calendar_container {
+    margin-top: 6rem;
+  }
+  .show-date-details_btn {
+    bottom: 4.7rem;
   }
 }
 </style>

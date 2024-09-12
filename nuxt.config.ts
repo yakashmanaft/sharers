@@ -20,6 +20,9 @@ export default defineNuxtConfig({
       
     }
   },
+  css: [
+    '@/assets/css/vanilla-calendar.min.css',
+  ],
   // components: [
   //   {
   //     path: '~/components',

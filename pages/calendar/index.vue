@@ -32,20 +32,46 @@
               aria-label="Close"
             ></button>
           </div>
+          <div
+            class="modal-header"
+            style="padding-bottom: unset; border-bottom: unset"
+          >
+            <!-- TABS TITLE -->
+            <Tabs
+              :tabs="titles"
+              :default="current_title_name"
+              @name_changed="emittedName"
+            ></Tabs>
+          </div>
 
           <!-- MODAL BODY -->
-          <div class="modal-body">
+          <div class="modal-body" style="scrollbar-width: none">
             <!-- Tabs -->
             <div v-if="calendarSelectedDates" class="title_tabs">
-              <!-- TABS TITLE -->
-              <Tabs
-                :tabs="titles"
-                :default="'demands'"
-                @name_changed="emittedName"
-              ></Tabs>
               <!-- CONTENT -->
               <div v-if="calendarSelectedDates" class="content">
-                {{ current_title_name }}
+                <!-- demands content -->
+                <div v-if="current_title_name === 'demands'">Заявочки</div>
+
+                <!-- production content -->
+                <div v-if="current_title_name === 'production'">
+                  <div>
+                    Фильтры: (запланировано / в процессе / выполнено) : (банда)
+                    : (проект)
+                  </div>
+                  <div
+                    v-for="el in computedProductionList"
+                    style="margin-bottom: 1rem"
+                  >
+                    {{ el }}
+                    <!-- {{ el.date }} | {{  el.title  }} | {{ el.desc }} | {{ el.price }} * {{ el.qty }} = {{ el.price * el.qty }} | project: {{  el.projectID  }} | band: {{  el.bandID  }} (В процессе / Выполнено) -->
+                  </div>
+                </div>
+
+                <!-- production content -->
+                <div v-if="current_title_name === 'working-hours'">
+                  Отработанные часы соучастников
+                </div>
               </div>
             </div>
           </div>
@@ -98,9 +124,15 @@
                 }}</span
               >
             </p>
-            <span>Развернуть</span>
+            <span>Смотреть</span>
           </div>
-          <div v-else class="btn_wrapper">Выберите дату в календаре</div>
+          <div
+            v-else
+            class="btn_wrapper"
+            style="padding-top: 0.25rem; padding-bottom: 0.25rem"
+          >
+            Выберите дату в календаре
+          </div>
         </div>
       </div>
     </div>
@@ -119,6 +151,8 @@ import { type IOptions } from "vanilla-calendar-pro/types";
 
 // variables
 
+// = session user
+const { user } = useUserSession();
 // = titles
 const titles = ref([
   {
@@ -183,6 +217,16 @@ const options: IOptions = {
 onMounted(async () => {
   // = Calendar
   setDateToday();
+  //   close modal and reset data #showDateDetailsModal
+  const showDateDetailsModalEl = document.getElementById(
+    "showDateDetailsModal"
+  );
+  if (showDateDetailsModalEl) {
+    showDateDetailsModalEl.addEventListener("hidden.bs.modal", (event) => {
+      console.log("Модалка #showDateDetailsModal закрыта");
+    //   current_title_name.value = "demands";
+    });
+  }
 });
 
 // FUNCs
@@ -196,18 +240,66 @@ const setDateToday = () => {
   calendarSelectedDates.value = [date_today.value];
 };
 
+// COMPUTED
+// = computed production
+const computedProductionList = computed(() => {
+  let result: any = [];
+  if (salary.value) {
+    [...salary.value].forEach((item) => {
+      if (item.listProduction) {
+        item.listProduction.forEach((element) => {
+          result.push({
+            // id: item.id,
+            bandID: item.bandID,
+            projectID: element.projectID,
+            date: element.date,
+            title: element.title,
+            desc: element.desc,
+            price: element.price,
+            qty: element.qty,
+          });
+        });
+      }
+    });
+
+    return result;
+  }
+});
+
 // EMITS FUNC
 // = title name
 const emittedName = (name: string) => {
   current_title_name.value = name;
 };
 
-watch(calendarSelectedDates, () => {
-  // Пришлось костыль воткнуть, когда сбарсываем дату в null, не сбрасывалась переменная текущего заголовка...
-  if (calendarSelectedDates.value === null) {
-    current_title_name.value = titles.value[0].name;
-  }
+// DB
+// = salary
+const { data: salary } = await useFetch("/api/funds/salary", {
+  lazy: false,
+  transform: (salary) => {
+    return salary;
+  },
 });
+// = organizations
+const { data: organizations } = await useFetch(
+  "/api/organizations/organizations",
+  {
+    lazy: false,
+  }
+);
+// users
+const { data: users } = await useFetch("/api/usersList/users", {
+  lazy: false,
+});
+
+// WATCH
+// = следим за выобором дат в календаре
+// watch(calendarSelectedDates, () => {
+
+//   if (calendarSelectedDates.value === null) {
+
+//   }
+// });
 
 // page head
 useHead({
@@ -298,8 +390,8 @@ useHead({
 /* .btn_wrapper p {
 } */
 .btn_wrapper p span {
-    color: unset;
-    background-color: unset;
+  color: unset;
+  background-color: unset;
 }
 
 .btn_wrapper span {
@@ -354,9 +446,14 @@ useHead({
   }
   #showDateDetailsModal .modal-body {
     padding: 1rem 0;
+    /* overflow-y: hidden!important; */
+    /* scrollbar-width: none; */
   }
+  /* #showDateDetailsModal .modal-body::-webkit-scrollbar {
+    width: 0!important;;
+  } */
   #showDateDetailsModal .modal-body .content {
-    padding: 0 1rem
+    padding: 0 1rem;
   }
 }
 @media screen and (min-width: 576px) and (max-width: 768px) {

@@ -37,6 +37,7 @@ const emit_TitleName = (name: string) => {
   
 <style scoped>
 .tab_wrapper {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 1rem;

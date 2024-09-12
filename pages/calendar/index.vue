@@ -113,11 +113,14 @@
       >
         <div>
           <div class="btn_wrapper" v-if="calendarSelectedDates">
-            <p style="margin: 0">
-              <span v-if="calendarSelectedDates.length === 1">{{
-                calendarSelectedDates[0]
-              }}</span>
-              <span v-else
+            <!--  -->
+            <p v-if="calendarSelectedDates.length === 1" style="margin: 0;">
+                <span v-if="calendarSelectedDates[0] === date_today">Сегодня</span>
+                <span v-else>{{ calendarSelectedDates[0] }}</span>
+            </p>
+            <!--  -->
+            <p v-else style="margin: 0;">
+              <span
                 >{{ calendarSelectedDates[0] }} -
                 {{
                   calendarSelectedDates[calendarSelectedDates.length - 1]
@@ -142,8 +145,8 @@
 <script lang="ts" setup>
 // Components
 import { Container } from "@/shared/container";
-import { Tabs } from "@/shared/tabs";
-
+import { Tabs } from "@/components/tabs";
+ 
 // Plugins
 import VanillaCalendar from "vanilla-calendar-pro";
 import { type IOptions } from "vanilla-calendar-pro/types";
@@ -175,7 +178,6 @@ const current_title_name = ref("demands");
 
 // = date_today
 const date = new Date();
-// const date_today = ref((new Date()).toISOString().split('T')[0])
 const date_today = ref(
   new Date(date.getTime() - date.getTimezoneOffset() * 60000)
     .toISOString()
@@ -183,13 +185,22 @@ const date_today = ref(
 );
 
 // = Calendar
-const calendarSelectedDates: any = ref([date_today.value]);
+const calendarSelectedDates: any = ref();
 const options: IOptions = {
+    type: 'multiple',
+    months: 3,
   jumpToSelectedDate: true,
+  jumpMonths: 1,
   settings: {
+    range: {
+      disablePast: false,
+    },
     selection: {
       day: "multiple-ranged",
       // time: 24,
+    },
+    visibility: {
+      daysOutside: false,
     },
     selected: {
       dates: [date_today.value],
@@ -232,12 +243,12 @@ onMounted(async () => {
 // FUNCs
 // = set
 const setDateToday = () => {
-  const calendar = new VanillaCalendar("#calendar", options);
-  calendar.init();
+    const calendar = new VanillaCalendar("#calendar", options);
+    calendar.init();
   calendar.update({
     dates: true,
   });
-  calendarSelectedDates.value = [date_today.value];
+  calendarSelectedDates.value = [date_today.value]; 
 };
 
 // COMPUTED
@@ -332,7 +343,6 @@ useHead({
   margin-top: 5rem;
   position: fixed;
   left: 0;
-  height: 98vh;
   width: 100vw;
   display: flex;
 }
@@ -342,11 +352,17 @@ useHead({
 }
 .vanilla-calendar {
   width: 100%;
-  height: 85%;
+  height: 100vh;
   border-radius: unset;
+  margin-bottom: 10rem;
+  /* overflow-x: scroll!important; */
+  /* scrollbar-width: none!important; */
 }
+/* .vanilla-calendar::-webkit-scrollbar {
+  display: none;
+} */
 .vanilla-calendar-day {
-  height: 100% !important;
+  /* height: 100% !important; */
 }
 /* .vanilla-calendar-day__btn_selected {
 } */
@@ -355,6 +371,9 @@ useHead({
   top: 0.25rem;
   left: 3rem;
   color: var(--bs-primary);
+  background-color: var(--bs-body-bg);
+  padding: 2px 8px;
+  border-radius: 1rem;
 }
 .calendar-btn_today:hover {
   cursor: pointer;
@@ -366,8 +385,8 @@ useHead({
 
 /* MODAL SHOW DATE DETAILS */
 .show-date-details_btn {
-  position: absolute;
-  bottom: 4rem;
+  position: fixed;
+  bottom: 3rem;
   left: 0;
   width: 100%;
   background-color: var(--bs-primary);
@@ -385,7 +404,7 @@ useHead({
   justify-content: space-between;
   align-items: center;
   color: var(--bs-body-bg);
-  padding: 0 1rem;
+  padding: 0 0.5rem;
 }
 /* .btn_wrapper p {
 } */
@@ -396,7 +415,7 @@ useHead({
 
 .btn_wrapper span {
   color: var(--bs-primary);
-  padding: 4px 12px;
+  padding: 2px 8px;  
   background-color: var(--bs-primary-bg-subtle);
   border-radius: 1rem;
 }
@@ -432,14 +451,15 @@ useHead({
   .calendar_container {
     margin-top: 4rem;
     padding: 0 !important;
+    padding-bottom: 15rem;
   }
   .calendar-btn_today {
-    top: 0.25rem;
-    left: 2rem;
+    top: 0.2rem;
+    left: 1.2rem;
   }
-  .show-date-details_btn {
+  /* .show-date-details_btn {
     bottom: 3rem;
-  }
+  } */
   /* modal show date info */
   .btn_wrapper {
     padding: 0 0.5rem;
@@ -461,17 +481,20 @@ useHead({
     margin-top: 4rem;
     height: 100vh;
   }
-  .show-date-details_btn {
-    bottom: 4rem;
+  .calendar-btn_today {
+    top: 0.15rem;
   }
+  /* .show-date-details_btn {
+    bottom: 4rem;
+  } */
 }
 
 @media screen and (min-width: 769px) {
   .calendar_container {
     margin-top: 6rem;
   }
-  .show-date-details_btn {
+  /* .show-date-details_btn {
     bottom: 4.7rem;
-  }
+  } */
 }
 </style>

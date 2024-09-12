@@ -1473,7 +1473,7 @@ import { Container } from "@/shared/container";
 import { onBeforeMount } from "vue";
 import VanillaCalendar from "vanilla-calendar-pro";
 import { type IOptions } from "vanilla-calendar-pro/types";
-import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
+// import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
 
 useHead({
   title: "Банда # ",

@@ -1,0 +1,39 @@
+<script lang="ts" setup>
+import { Container } from "@/shared/container";
+
+</script>
+<template>
+    <div class="footer_container"">
+        <Container>
+            <div class="footer_wrapper">
+                <Icon
+                    name="material-symbols-light:account-balance-wallet"
+                    size="48px"
+                    color="var(--bs-primary)"
+                />
+                <Icon
+                    name="material-symbols-light:account-balance-wallet-outline"
+                    size="48px"
+                    color="var(--bs-primary)"
+                />
+            </div>
+        </Container>
+    </div>
+</template>
+
+<style scoped>
+    .footer_container {
+        position: fixed;
+        bottom: 0;
+        /* background-color: red; */
+        width: 100%;
+        box-shadow: -2px -2px 8px 0px rgba(0, 0, 0, 0.2);
+    }
+    .footer_wrapper {
+        padding: 0 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: var(--bs-body-bg);
+    }
+</style>

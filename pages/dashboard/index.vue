@@ -479,6 +479,7 @@ const transformEndingTheWord = (string) => {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
+  margin-bottom: 5rem;
 }
 .dashboard-item_group {
   display: flex;

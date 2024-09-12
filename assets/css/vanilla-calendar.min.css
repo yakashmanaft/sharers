@@ -14,6 +14,9 @@
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 0.15s;
 }
+.vanilla-calendar::-webkit-scrollbar {
+  display: none;
+}
 @supports ((width: -webkit-max-content) or (width: max-content)) and
   ((height: -webkit-max-content) or (height: max-content)) {
   .vanilla-calendar {
@@ -74,7 +77,13 @@
   justify-content: space-between;
   padding-left: 1rem;
   padding-right: 1rem;
-  padding-top: 1.25rem;
+  padding-top: 0.3rem;
+}
+@media screen and (max-width: 575px) {
+  .vanilla-calendar-controls {
+    padding-left: 0;
+    padding-right: 0;
+  }
 }
 .vanilla-calendar-arrow {
   pointer-events: auto;
@@ -104,11 +113,18 @@
   transform: rotate(-90deg);
 }
 .vanilla-calendar-grid {
-  display: flex;
+  /* display: flex; */
+  /* flex-direction: column; */
   flex-grow: 1;
   flex-wrap: wrap;
   justify-content: center;
   gap: 1.75rem;
+  overflow-y: scroll;
+  scrollbar-width: none; 
+  margin-bottom: 10rem;
+}
+.vanilla-calendar-grid::-webkit-scrollbar {
+  display: none;
 }
 .vanilla-calendar-grid.vanilla-calendar-grid_disabled .vanilla-calendar-column {
   pointer-events: none;
@@ -127,6 +143,11 @@
   min-width: min-content;
   flex-direction: column;
 }
+/* @media screen and (max-width: 575px) {
+  .vanilla-calendar-column {
+    flex-direction: column!important;
+  }
+} */
 .vanilla-calendar-header {
   position: relative;
   margin-bottom: 0.75rem;
@@ -290,10 +311,16 @@
   position: relative;
   display: flex;
   width: 100%;
-  height: 100%;
+  height: 100px;
   align-items: center;
   justify-content: center;
   border: .5px solid var(--bs-border-color);
+}
+@media screen and (max-width: 575px) {
+
+  .vanilla-calendar-day {
+    height: 50px;
+  }
 }
 .vanilla-calendar-day_hover-intermediate .vanilla-calendar-day__btn {
   border-radius: 0;

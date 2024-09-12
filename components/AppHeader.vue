@@ -128,8 +128,12 @@ const translateRoutePath = (path: string) => {
     return "Соглашение";
   } else if (path === "/account") {
     return "Настройки";
-  } else if (path === "/dashboard") {
+  } 
+  // DASHBOARD
+  else if (path === "/dashboard") {
     return "Доска";
+  } else if (path === "/calendar") {
+    return 'Календарь'
   }
   // WALLET
   else if (path === "/wallet") {

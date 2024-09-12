@@ -1,35 +1,106 @@
 <template>
-    <Container>
-        
-        <!-- Calendar container-->
-        <div class="calendar_container">
+  <Container>
+    <!-- Modal show date details -->
+    <div
+      class="modal"
+      id="showDateDetailsModal"
+      tabindex="-1"
+      aria-labelledby="showDateDetailsModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-scrollable">
+        <div class="modal-content">
+          <!-- MODAL HEADER -->
+          <div class="modal-header">
+            <h2 class="modal-title fs-5" id="showDateDetailsModalLabel">
+              Период дат
+            </h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
 
-            <!-- Calendar wrapper -->
-            <div class="calendar_wrapper">
-                <div id="calendar"></div>
-                <div class="calendar-btn_today" @click="setDateToday">Сегодня</div>
-            </div>
+          <!-- MODAL BODY -->
+          <div class="modal-body"></div>
 
-            <!-- List of events -->
-            <div v-if="calendarSelectedDates">{{ calendarSelectedDates }}</div>
-            <div v-else>Выберите даты</div>
-
-            <!-- Tabs -->
-            <div v-if="calendarSelectedDates" class="title_tabs">
-                <Tabs :tabs="titles" :default="'demands'" @name_changed="emittedName"></Tabs>
-            </div>
-
-            <!-- Content -->
-            <div v-if="calendarSelectedDates">{{ current_title_name }}</div> 
+          <!-- MODAL FOTER -->
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              Отменить
+            </button>
+            <button
+              type="button"
+              class="btn btn-primary"
+              data-bs-dismiss="modal"
+            >
+              Добавить
+            </button>
+          </div>
         </div>
+      </div>
+    </div>
 
-    </Container>
+    <!-- Calendar container-->
+    <div class="calendar_container">
+      <!-- Calendar wrapper -->
+      <div class="calendar_wrapper">
+        <div id="calendar"></div>
+        <div class="calendar-btn_today" @click="setDateToday">Сегодня</div>
+      </div>
+
+      <!-- BTN open modal #showDateDetailsModal-->
+      <div
+        v-if="calendarSelectedDates"
+        class="show-date-details_btn"
+        data-bs-toggle="modal"
+        data-bs-target="#showDateDetailsModal"
+      >
+        <div class="btn_wrapper">
+          <p style="margin: 0">
+            <span v-if="calendarSelectedDates.length === 1">{{
+              calendarSelectedDates[0]
+            }}</span>
+            <span v-else
+              >{{ calendarSelectedDates[0] }} -
+              {{
+                calendarSelectedDates[calendarSelectedDates.length - 1]
+              }}</span
+            >
+          </p>
+          <span>Развернуть</span>
+        </div>
+      </div>
+
+      <!-- List of events -->
+      <!-- <div v-if="calendarSelectedDates">{{ calendarSelectedDates }}</div>
+      <div v-else>Выберите даты</div> -->
+
+      <!-- Tabs -->
+      <!-- <div v-if="calendarSelectedDates" class="title_tabs">
+        <Tabs
+          :tabs="titles"
+          :default="'demands'"
+          @name_changed="emittedName"
+        ></Tabs>
+      </div> -->
+
+      <!-- Content -->
+      <!-- <div v-if="calendarSelectedDates">{{ current_title_name }}</div> -->
+    </div>
+  </Container>
 </template>
 
 <script lang="ts" setup>
 // Components
 import { Container } from "@/shared/container";
-import { Tabs } from "@/shared/tabs"
+import { Tabs } from "@/shared/tabs";
 
 // Plugins
 import VanillaCalendar from "vanilla-calendar-pro";
@@ -40,81 +111,83 @@ import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
 
 // = titles
 const titles = ref([
-    {
-        title: "Заявки",
-        name: "demands",
-        guard: false,
-    },
-    {
-        title: "План-график",
-        name: "production",
-        guard: false,
-    },
-    {
-        title: "Учет времени",
-        name: "working-hours",
-        guard: false,   
-    },
-])
-const current_title_name = ref('demands')
+  {
+    title: "Заявки",
+    name: "demands",
+    guard: false,
+  },
+  {
+    title: "План-график",
+    name: "production",
+    guard: false,
+  },
+  {
+    title: "Учет времени",
+    name: "working-hours",
+    guard: false,
+  },
+]);
+const current_title_name = ref("demands");
 
 // = date_today
-const date = new Date()
+const date = new Date();
 // const date_today = ref((new Date()).toISOString().split('T')[0])
-const date_today = ref(new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
+const date_today = ref(
+  new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split("T")[0]
+);
 
 // = Calendar
-const calendarSelectedDates:any = ref([date_today.value])
+const calendarSelectedDates: any = ref([date_today.value]);
 const options: IOptions = {
-    jumpToSelectedDate: true,
-    settings: {
-        selection: {
-            day: 'multiple-ranged',
-            // time: 24,
-        },
-        selected: {
-            dates: [date_today.value]
-            // dates: ['2022-01-09:2022-01-13', '2022-01-22'],
-        },
-        lang: 'ru',
+  jumpToSelectedDate: true,
+  settings: {
+    selection: {
+      day: "multiple-ranged",
+      // time: 24,
     },
-    actions: {
-        clickDay(e, self) {
-            if(self) {
-                if(self.selectedDates[0]) {
-                    calendarSelectedDates.value = self.selectedDates
-                } else {
-                    calendarSelectedDates.value = null
-                }
-            }
-        },
-    }
-}
-
+    selected: {
+      dates: [date_today.value],
+      // dates: ['2022-01-09:2022-01-13', '2022-01-22'],
+    },
+    lang: "ru",
+  },
+  actions: {
+    clickDay(e, self) {
+      if (self) {
+        if (self.selectedDates[0]) {
+          calendarSelectedDates.value = self.selectedDates;
+        } else {
+          calendarSelectedDates.value = null;
+        }
+      }
+    },
+  },
+};
 
 // On Mounted
 onMounted(async () => {
-    // = Calendar
-    setDateToday()
-})
+  // = Calendar
+  setDateToday();
+});
 
 // FUNCs
 // = set
 const setDateToday = () => {
-
-    const calendar = new VanillaCalendar("#calendar", options);
-    calendar.init()
-    calendar.update({
-        dates: true
-    })
-    calendarSelectedDates.value = [date_today.value]
-}
+  const calendar = new VanillaCalendar("#calendar", options);
+  calendar.init();
+  calendar.update({
+    dates: true,
+  });
+  calendarSelectedDates.value = [date_today.value];
+};
 
 // EMITS FUNC
 // = title name
 const emittedName = (name: string) => {
-    current_title_name.value = name
-}
+  current_title_name.value = name;
+};
 
 // page head
 useHead({
@@ -141,38 +214,91 @@ useHead({
 </script>
 
 <style scoped>
+/* CALENDAR */
+.calendar_container {
+  margin-top: 5rem;
+  position: fixed;
+  left: 0;
+  height: 98vh;
+  width: 100vw;
+  display: flex;
+}
+.calendar_wrapper {
+  flex-grow: 1;
+  position: relative;
+}
+.vanilla-calendar {
+  width: 100%;
+  height: 85%;
+  border-radius: unset;
+}
+.vanilla-calendar-day {
+  height: 100% !important;
+}
+.calendar-btn_today {
+  position: absolute;
+  top: 1.25rem;
+  left: 3rem;
+}
+.calendar-btn_today:hover {
+  cursor: pointer;
+}
 
-    /* CALENDAR */
-    .calendar_container {
-        margin-top: 4rem;
-        background-color: var(--bs-tertiary-bg);
-        position: fixed;
-        left: 0;
-        height: 100vh;
-        width: 100vw;
-    }
-    .vanilla-calendar {
-        width: 100%;
-        border-radius: unset;
-    }
-    .calendar-btn_today:hover {
-        cursor: pointer;
-    }
+/* TITTLES */
+.titles_container {
+}
 
-    /* TITTLES */
-    .titles_container {
-        
-    }
+/* MODAL SHOW DATE DETAILS */
+.show-date-details_btn {
+  position: absolute;
+  bottom: 4rem;
+  left: 0;
+  width: 100%;
+  background-color: var(--bs-primary);
+  padding: 1rem 0;
+}
+.show-date-details_btn:hover {
+  cursor: pointer;
+}
+.btn_wrapper {
+  max-width: 1399px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--bs-body-bg);
+  padding: 0 1rem;
+}
+/* .btn_wrapper p {
+} */
+.btn_wrapper p span {
+  background-color: var(--bs-primary-bg-subtle);
+  padding: 4px 8px;
+  border-radius: 1rem;
+  color: var(--bs-primary);
+}
 
-
-    @media screen and (max-width: 575px) {
-        .container {
-        }
-        .calendar_container {
-            padding: 0!important;
-        }
-        .vanilla-calendar {
-            padding: 0!important;
-        }
-    }
+@media screen and (max-width: 575px) {
+  .container {
+  }
+  .calendar_container {
+    padding: 0 !important;
+  }
+  .vanilla-calendar {
+    padding: 0 !important;
+  }
+  .calendar-btn_today {
+    top: 0.25rem;
+    left: 2rem;
+  }
+}
+@media screen and (min-width: 576px) and (max-width: 768px) {
+  .calendar_container {
+    margin-top: 3rem;
+    height: 100vh;
+  }
+  .show-date-details_btn {
+    bottom: 3rem;
+  }
+}
 </style>

@@ -274,7 +274,8 @@
   grid-template-columns: repeat(7, 1fr);
   align-items: center;
   justify-items: center;
-  gap: 0.1rem;
+  border-collapse: collapse;
+  /* gap: 0.1rem; */
 }
 .vanilla-calendar-days_selecting .vanilla-calendar-day__btn {
   cursor: pointer;
@@ -292,7 +293,7 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--bs-border-color);
+  border: .5px solid var(--bs-border-color);
 }
 .vanilla-calendar-day_hover-intermediate .vanilla-calendar-day__btn {
   border-radius: 0;

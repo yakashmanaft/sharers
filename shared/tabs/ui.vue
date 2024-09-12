@@ -68,8 +68,8 @@ const emit_TitleName = (name: string) => {
 
 @media screen and (max-width: 575px) {
     .tab_wrapper {
-        padding-left: 0.5rem;
-        padding-right: 0.5rem;
+        /* padding-left: 0.5rem;
+        padding-right: 0.5rem; */
     }
 }
 

@@ -8,12 +8,22 @@
       aria-labelledby="showDateDetailsModalLabel"
       aria-hidden="true"
     >
-      <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
           <!-- MODAL HEADER -->
           <div class="modal-header">
             <h2 class="modal-title fs-5" id="showDateDetailsModalLabel">
-              Период дат
+              <div v-if="calendarSelectedDates">
+                <span v-if="calendarSelectedDates.length === 1">{{
+                  calendarSelectedDates[0]
+                }}</span>
+                <span v-else
+                  >{{ calendarSelectedDates[0] }} -
+                  {{
+                    calendarSelectedDates[calendarSelectedDates.length - 1]
+                  }}</span
+                >
+              </div>
             </h2>
             <button
               type="button"
@@ -24,7 +34,21 @@
           </div>
 
           <!-- MODAL BODY -->
-          <div class="modal-body"></div>
+          <div class="modal-body">
+            <!-- Tabs -->
+            <div v-if="calendarSelectedDates" class="title_tabs">
+              <!-- TABS TITLE -->
+              <Tabs
+                :tabs="titles"
+                :default="'demands'"
+                @name_changed="emittedName"
+              ></Tabs>
+              <!-- CONTENT -->
+              <div v-if="calendarSelectedDates" style="margin-top: 1rem">
+                {{ current_title_name }}
+              </div>
+            </div>
+          </div>
 
           <!-- MODAL FOTER -->
           <div class="modal-footer">
@@ -57,24 +81,26 @@
 
       <!-- BTN open modal #showDateDetailsModal-->
       <div
-        v-if="calendarSelectedDates"
         class="show-date-details_btn"
-        data-bs-toggle="modal"
-        data-bs-target="#showDateDetailsModal"
+        :data-bs-toggle="calendarSelectedDates ? `modal` : ''"
+        :data-bs-target="calendarSelectedDates ? `#showDateDetailsModal` : ''"
       >
-        <div class="btn_wrapper">
-          <p style="margin: 0">
-            <span v-if="calendarSelectedDates.length === 1">{{
-              calendarSelectedDates[0]
-            }}</span>
-            <span v-else
-              >{{ calendarSelectedDates[0] }} -
-              {{
-                calendarSelectedDates[calendarSelectedDates.length - 1]
-              }}</span
-            >
-          </p>
-          <span>Развернуть</span>
+        <div>
+          <div class="btn_wrapper" v-if="calendarSelectedDates">
+            <p style="margin: 0">
+              <span v-if="calendarSelectedDates.length === 1">{{
+                calendarSelectedDates[0]
+              }}</span>
+              <span v-else
+                >{{ calendarSelectedDates[0] }} -
+                {{
+                  calendarSelectedDates[calendarSelectedDates.length - 1]
+                }}</span
+              >
+            </p>
+            <span>Развернуть</span>
+          </div>
+          <div v-else class="btn_wrapper">Выберите дату в календаре</div>
         </div>
       </div>
 
@@ -192,6 +218,13 @@ const emittedName = (name: string) => {
   current_title_name.value = name;
 };
 
+watch(calendarSelectedDates, () => {
+  // Пришлось костыль воткнуть, когда сбарсываем дату в null, не сбрасывалась переменная текущего заголовка...
+  if (calendarSelectedDates.value === null) {
+    current_title_name.value = titles.value[0].name;
+  }
+});
+
 // page head
 useHead({
   title: "Календарь",
@@ -245,6 +278,7 @@ useHead({
   position: absolute;
   top: 0.25rem;
   left: 3rem;
+  color: var(--bs-primary);
 }
 .calendar-btn_today:hover {
   cursor: pointer;
@@ -262,9 +296,11 @@ useHead({
   width: 100%;
   background-color: var(--bs-primary);
   padding: 1rem 0;
+  transition: all 0.2s ease-in;
 }
 .show-date-details_btn:hover {
   cursor: pointer;
+  filter: brightness(90%);
 }
 .btn_wrapper {
   max-width: 1399px;
@@ -287,6 +323,28 @@ useHead({
 .vanilla-calendar {
   padding: 0 !important;
 }
+
+/* MODAL SHOW DATE DETAILS */
+#showDateDetailsModal {
+  --bs-modal-width: 60%;
+}
+#showDateDetailsModal .modal-dialog {
+  margin-top: 0;
+  margin-right: 0;
+  margin-bottom: 0 !important;
+}
+#showDateDetailsModal .modal-dialog-centered {
+  align-items: unset;
+  min-height: 100%;
+}
+#showDateDetailsModal .modal-content {
+  border-top: none;
+  border-bottom: none;
+  border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 @media screen and (max-width: 575px) {
   /* .container {
   } */

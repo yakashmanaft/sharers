@@ -3707,8 +3707,8 @@ watch(periodList, () => {
 }
 
 /* ============================ CALENDAR ============================== */
-.calendar_container {
-}
+/* .calendar_container {
+} */
 
 @media screen and (max-width: 575px) {
   .band-info_wrapper {

@@ -292,7 +292,7 @@
   height: 100%;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--bs-border-color)
+  border: 1px solid var(--bs-border-color);
 }
 .vanilla-calendar-day_hover-intermediate .vanilla-calendar-day__btn {
   border-radius: 0;
@@ -620,6 +620,8 @@
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   color: #64748b;
+  height: 100%;
+  border: 1px solid var(--bs-border-color);
 }
 [data-calendar-theme="light"] .vanilla-calendar-months__month:hover {
   --tw-bg-opacity: 1;
@@ -643,6 +645,8 @@
   --tw-bg-opacity: 1;
   background-color: rgb(255 255 255 / var(--tw-bg-opacity));
   color: #64748b;
+  height: 100%;
+  border: 1px solid var(--bs-border-color);
 }
 [data-calendar-theme="light"] .vanilla-calendar-years__year:hover {
   --tw-bg-opacity: 1;

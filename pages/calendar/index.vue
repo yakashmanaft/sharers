@@ -44,7 +44,7 @@
                 @name_changed="emittedName"
               ></Tabs>
               <!-- CONTENT -->
-              <div v-if="calendarSelectedDates" style="margin-top: 1rem">
+              <div v-if="calendarSelectedDates" class="content">
                 {{ current_title_name }}
               </div>
             </div>
@@ -103,22 +103,6 @@
           <div v-else class="btn_wrapper">Выберите дату в календаре</div>
         </div>
       </div>
-
-      <!-- List of events -->
-      <!-- <div v-if="calendarSelectedDates">{{ calendarSelectedDates }}</div>
-      <div v-else>Выберите даты</div> -->
-
-      <!-- Tabs -->
-      <!-- <div v-if="calendarSelectedDates" class="title_tabs">
-        <Tabs
-          :tabs="titles"
-          :default="'demands'"
-          @name_changed="emittedName"
-        ></Tabs>
-      </div> -->
-
-      <!-- Content -->
-      <!-- <div v-if="calendarSelectedDates">{{ current_title_name }}</div> -->
     </div>
   </Container>
 </template>
@@ -314,10 +298,15 @@ useHead({
 /* .btn_wrapper p {
 } */
 .btn_wrapper p span {
-  background-color: var(--bs-primary-bg-subtle);
-  padding: 4px 8px;
-  border-radius: 1rem;
+    color: unset;
+    background-color: unset;
+}
+
+.btn_wrapper span {
   color: var(--bs-primary);
+  padding: 4px 12px;
+  background-color: var(--bs-primary-bg-subtle);
+  border-radius: 1rem;
 }
 
 .vanilla-calendar {
@@ -358,6 +347,16 @@ useHead({
   }
   .show-date-details_btn {
     bottom: 3rem;
+  }
+  /* modal show date info */
+  .btn_wrapper {
+    padding: 0 0.5rem;
+  }
+  #showDateDetailsModal .modal-body {
+    padding: 1rem 0;
+  }
+  #showDateDetailsModal .modal-body .content {
+    padding: 0 1rem
   }
 }
 @media screen and (min-width: 576px) and (max-width: 768px) {

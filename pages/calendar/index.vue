@@ -102,7 +102,9 @@
       <!-- Calendar wrapper -->
       <div class="calendar_wrapper">
         <div id="calendar"></div>
-        <div class="calendar-btn_today" @click="setDateToday">Сегодня</div>
+        <div class="calendar-btn_today" @click="setDateToday(date_today)">
+          Сегодня
+        </div>
       </div>
 
       <!-- BTN open modal #showDateDetailsModal-->
@@ -113,12 +115,12 @@
       >
         <div class="btn_wrapper" v-if="calendarSelectedDates">
           <!--  -->
-          <p v-if="calendarSelectedDates.length === 1" style="margin: 0;">
-              <span v-if="calendarSelectedDates[0] === date_today">Сегодня</span>
-              <span v-else>{{ calendarSelectedDates[0] }}</span>
+          <p v-if="calendarSelectedDates.length === 1" style="margin: 0">
+            <span v-if="calendarSelectedDates[0] === date_today">Сегодня</span>
+            <span v-else>{{ calendarSelectedDates[0] }}</span>
           </p>
           <!--  -->
-          <p v-else style="margin: 0;">
+          <p v-else style="margin: 0">
             <span
               >{{ calendarSelectedDates[0] }} -
               {{
@@ -128,7 +130,7 @@
           </p>
           <span>Смотреть</span>
         </div>
-      <!-- <div
+        <!-- <div
         v-else
         class="btn_wrapper"
         style="padding-top: 0.25rem; padding-bottom: 0.25rem"
@@ -144,7 +146,7 @@
 // Components
 import { Container } from "@/shared/container";
 import { Tabs } from "@/components/tabs";
- 
+
 // Plugins
 import VanillaCalendar from "vanilla-calendar-pro";
 import { type IOptions } from "vanilla-calendar-pro/types";
@@ -185,8 +187,8 @@ const date_today = ref(
 // = Calendar
 const calendarSelectedDates: any = ref();
 const options: IOptions = {
-    type: 'multiple',
-    months: 3,
+  type: "multiple",
+  months: 3,
   jumpToSelectedDate: true,
   jumpMonths: 1,
   settings: {
@@ -201,7 +203,7 @@ const options: IOptions = {
       daysOutside: false,
     },
     selected: {
-      dates: [date_today.value],
+      dates: [],
       // dates: ['2022-01-09:2022-01-13', '2022-01-22'],
     },
     lang: "ru",
@@ -225,7 +227,7 @@ const options: IOptions = {
 // On Mounted
 onMounted(async () => {
   // = Calendar
-  setDateToday();
+  setDateToday(null);
   //   close modal and reset data #showDateDetailsModal
   const showDateDetailsModalEl = document.getElementById(
     "showDateDetailsModal"
@@ -233,20 +235,24 @@ onMounted(async () => {
   if (showDateDetailsModalEl) {
     showDateDetailsModalEl.addEventListener("hidden.bs.modal", (event) => {
       console.log("Модалка #showDateDetailsModal закрыта");
-    //   current_title_name.value = "demands";
+      //   current_title_name.value = "demands";
     });
   }
 });
 
 // FUNCs
 // = set
-const setDateToday = () => {
-    const calendar = new VanillaCalendar("#calendar", options);
-    calendar.init();
-  calendar.update({
-    dates: true,
-  });
-  calendarSelectedDates.value = [date_today.value]; 
+const setDateToday = (today: any) => {
+  const calendar = new VanillaCalendar("#calendar", options);
+  calendar.init();
+  if (today) {
+    calendarSelectedDates.value = [date_today.value];
+    calendar.update({
+      dates: true,
+    });
+  } else {
+    calendarSelectedDates.value = null;
+  }
 };
 
 // COMPUTED
@@ -415,7 +421,7 @@ useHead({
 
 .btn_wrapper span {
   color: var(--bs-primary);
-  padding: 2px 8px;  
+  padding: 2px 8px;
   background-color: var(--bs-primary-bg-subtle);
   border-radius: 1rem;
 }
@@ -491,6 +497,9 @@ useHead({
 @media screen and (min-width: 769px) {
   .calendar_container {
     margin-top: 6rem;
+  }
+  .show-date-details_btn {
+    bottom: 0;
   }
   /* .show-date-details_btn {
     bottom: 4.7rem;

@@ -7,7 +7,12 @@ import { Container } from "@/shared/container";
         <Container>
             <div class="footer_wrapper">
                 <Icon
-                    name="material-symbols-light:account-balance-wallet"
+                    name="material-symbols-light:dashboard-customize-outline"
+                    size="48px"
+                    color="var(--bs-primary)"
+                />
+                <Icon
+                    name="material-symbols-light:account-balance-wallet-outline"
                     size="48px"
                     color="var(--bs-primary)"
                 />
@@ -17,6 +22,9 @@ import { Container } from "@/shared/container";
                     color="var(--bs-primary)"
                 />
             </div>
+            <div v-if="!useAuthStore().user">
+                Тарифы
+            </div>
         </Container>
     </div>
 </template>
@@ -25,7 +33,7 @@ import { Container } from "@/shared/container";
     .footer_container {
         position: fixed;
         bottom: 0;
-        /* background-color: red; */
+        background-color: var(	--bs-body-bg);
         width: 100%;
         box-shadow: -2px -2px 8px 0px rgba(0, 0, 0, 0.2);
     }

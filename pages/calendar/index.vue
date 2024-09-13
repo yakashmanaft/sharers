@@ -111,32 +111,30 @@
         :data-bs-toggle="calendarSelectedDates ? `modal` : ''"
         :data-bs-target="calendarSelectedDates ? `#showDateDetailsModal` : ''"
       >
-        <div>
-          <div class="btn_wrapper" v-if="calendarSelectedDates">
-            <!--  -->
-            <p v-if="calendarSelectedDates.length === 1" style="margin: 0;">
-                <span v-if="calendarSelectedDates[0] === date_today">Сегодня</span>
-                <span v-else>{{ calendarSelectedDates[0] }}</span>
-            </p>
-            <!--  -->
-            <p v-else style="margin: 0;">
-              <span
-                >{{ calendarSelectedDates[0] }} -
-                {{
-                  calendarSelectedDates[calendarSelectedDates.length - 1]
-                }}</span
-              >
-            </p>
-            <span>Смотреть</span>
-          </div>
-          <div
-            v-else
-            class="btn_wrapper"
-            style="padding-top: 0.25rem; padding-bottom: 0.25rem"
-          >
-            Выберите дату в календаре
-          </div>
+        <div class="btn_wrapper" v-if="calendarSelectedDates">
+          <!--  -->
+          <p v-if="calendarSelectedDates.length === 1" style="margin: 0;">
+              <span v-if="calendarSelectedDates[0] === date_today">Сегодня</span>
+              <span v-else>{{ calendarSelectedDates[0] }}</span>
+          </p>
+          <!--  -->
+          <p v-else style="margin: 0;">
+            <span
+              >{{ calendarSelectedDates[0] }} -
+              {{
+                calendarSelectedDates[calendarSelectedDates.length - 1]
+              }}</span
+            >
+          </p>
+          <span>Смотреть</span>
         </div>
+      <!-- <div
+        v-else
+        class="btn_wrapper"
+        style="padding-top: 0.25rem; padding-bottom: 0.25rem"
+      >
+        Выберите дату в календаре
+      </div> -->
       </div>
     </div>
   </Container>
@@ -349,6 +347,8 @@ useHead({
 .calendar_wrapper {
   flex-grow: 1;
   position: relative;
+  max-width: 1399px;
+  margin: 0 auto;
 }
 .vanilla-calendar {
   width: 100%;
@@ -390,7 +390,7 @@ useHead({
   left: 0;
   width: 100%;
   background-color: var(--bs-primary);
-  padding: 1rem 0;
+  /* padding: 1rem 0; */
   transition: all 0.2s ease-in;
 }
 .show-date-details_btn:hover {
@@ -404,7 +404,7 @@ useHead({
   justify-content: space-between;
   align-items: center;
   color: var(--bs-body-bg);
-  padding: 0 0.5rem;
+  padding: 1rem 0.5rem;
 }
 /* .btn_wrapper p {
 } */
@@ -451,7 +451,6 @@ useHead({
   .calendar_container {
     margin-top: 4rem;
     padding: 0 !important;
-    padding-bottom: 15rem;
   }
   .calendar-btn_today {
     top: 0.2rem;
@@ -462,7 +461,7 @@ useHead({
   } */
   /* modal show date info */
   .btn_wrapper {
-    padding: 0 0.5rem;
+    padding: 1rem 0.5rem;
   }
   #showDateDetailsModal .modal-body {
     padding: 1rem 0;

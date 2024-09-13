@@ -44,6 +44,8 @@ const clickBy = (el: any) => {
     if (el.name === el.target) {
       router.push(`/${el.target}`);
       // router.push(`/projects/${object.locationID}`);
+    } else {
+        alert(`${el.name} в разработке`)
     }
   }
 };

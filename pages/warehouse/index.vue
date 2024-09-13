@@ -2852,13 +2852,16 @@ label #expend-item:checked + .expand-item_icon {
 } */
 
 @media screen and (max-width: 767px) {
+  .header_container {
+    margin-top: 4rem;
+  }
   .header_title {
     display: none;
   }
   .btn-create-modal-open-767 {
     z-index: 100;
     position: fixed;
-    bottom: 1.5rem;
+    bottom: 4rem;
     right: 1.5rem;
     width: 64px;
     height: 64px;
@@ -2928,7 +2931,7 @@ label #expend-item:checked + .expand-item_icon {
     display: none;
   }
   .table {
-    margin-bottom: 6rem;
+    margin-bottom: 8rem;
   }
   .table-row_wrapper {
     padding: 0;

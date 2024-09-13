@@ -27,7 +27,7 @@ const featuresListAuth = ref([
   },
   {
     path: "/partners",
-    title: "Соучастники",
+    title: "Контакты",
     auth: true,
   },
   {

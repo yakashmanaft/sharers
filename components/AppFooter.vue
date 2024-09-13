@@ -75,12 +75,8 @@ watch(
           :name="
             currentRoute === el.target ? el.icon_clicked_name : el.icon_name
           "
-          size="48px"
-          :color="
-            currentRoute === el.target
-              ? 'var(--bs-success)'
-              : 'var(--bs-primary)'
-          "
+          size="32px"
+          color="var(--bs-primary)"
         />
       </div>
     </Container>
@@ -96,7 +92,7 @@ watch(
   box-shadow: -2px -2px 8px 0px rgba(0, 0, 0, 0.2);
 }
 .footer_wrapper {
-  padding: 0 1rem;
+  padding: 0.5rem 0;
   display: flex;
   align-items: center;
   justify-content: space-around;

@@ -422,11 +422,30 @@
           <div class="modal-body">
             {{ tempChoosenProject }}
 
+            <!--  -->
+            <div>
+              Фильтры: (запланировано / в процессе / выполнено) : (банда) :
+              (проект)
+            </div>
+            <div>
+              <div>
+                Задача 1 (Захватка 1)
+                ------------------------------------------------- deadline
+              </div>
+              <div>Подзадача 1 ------------- deadline</div>
+              <div>
+                Подзадача 2 --------------------------------------- deadline
+              </div>
+              <div>Заявка --------------------------------------- deadline</div>
+            </div>
+
             <!-- CALENDAR -->
             <div class="calendar_container">
               <!-- https://vanilla-calendar.pro/ru -->
               <div id="calendar"></div>
-              <div v-if="calendarSelectedDates">{{ calendarSelectedDates }}</div>
+              <div v-if="calendarSelectedDates">
+                {{ calendarSelectedDates }}
+              </div>
               <div v-else>Выберите даты</div>
             </div>
           </div>
@@ -2089,7 +2108,6 @@ async function getAllUsers() {
 }
 
 onMounted(async () => {
-
   // ======================= CALENDAR ====================
   const options: IOptions = {
     jumpToSelectedDate: true,
@@ -2105,7 +2123,7 @@ onMounted(async () => {
       clickDay(event, self) {
         if (self) {
           if (self.selectedDates[0] == null) {
-            calendarSelectedDates.value = null
+            calendarSelectedDates.value = null;
           } else {
             calendarSelectedDates.value = self.selectedDates;
             // console.log(self.selectedDates)
@@ -2197,7 +2215,7 @@ onMounted(async () => {
         // console.log(calendar.selectedDates);
 
         calendarSelectedDates.value = calendar.selectedDates;
-        console.log(calendarSelectedDates.value)
+        console.log(calendarSelectedDates.value);
       }
     });
   }

@@ -73,8 +73,8 @@ const currentTitle = ref("schedule");
 // DB SCHEDULE
 const schedules = ref([
   {
-    a: 1
-  }
+    a: 1,
+  },
 ]);
 // DB PROJECTS
 const { data: projects } = await useFetch("/api/projects/projects", {
@@ -136,7 +136,7 @@ const isRelated = (obj) => {
     else if (sessionUser.value.role === "SUPER_ADMIN") {
       return true;
     } else {
-      currentTitle.value = ''
+      currentTitle.value = "";
       return false;
     }
   }
@@ -216,7 +216,23 @@ onMounted(async () => {
         <div class="schedule_container">
           <div v-if="schedules.length">
             <div v-for="schedule in schedules">
-              schedule {{schedule}}
+              <div>
+                Фильтры: (запланировано / в процессе / выполнено) : (банда) :
+                (проект)
+              </div>
+              <div>
+                <div>
+                  Задача 1 (Захватка 1)
+                  ------------------------------------------------- deadline
+                </div>
+                <div>Подзадача 1 ------------- deadline</div>
+                <div>
+                  Подзадача 2 --------------------------------------- deadline
+                </div>
+                <div>
+                  Заявка --------------------------------------- deadline
+                </div>
+              </div>
             </div>
           </div>
           <div v-else>Ничего нет</div>

@@ -30,10 +30,11 @@ const hotBtnList = ref([
     target: "partners",
   },
   {
-    name: "favorite",
-    icon_name: "material-symbols-light:favorite-outline-rounded",
-    icon_clicked_name: "material-symbols-light:favorite-rounded",
-    target: "modal",
+    name: "wallet",
+    icon_name: "material-symbols-light:account-balance-wallet-outline",
+    icon_clicked_name: "material-symbols-light:account-balance-wallet",
+    // target: "modal",
+    target: 'wallet'
   },
 ]);
 

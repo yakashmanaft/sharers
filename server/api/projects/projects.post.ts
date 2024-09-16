@@ -12,11 +12,16 @@ export default defineEventHandler(async (event) => {
         uuid: body.uuid,
         title: body.title,
         address: body.address,
-        partner: body.partner,
+        bandID: body.bandID,
+        partnerID: body.partnerID,
+        partnerType: body.partnerType,
         creator: body.creator,
         curator: body.curator,
+        curatorType: body.curatorType,
         workType: body.workType,
         completion: body.completion,
+        sharers: body.sharers,
+        stages: body.stages
       },
     }).then((response) => {
       project = response

@@ -59,13 +59,27 @@
                     Фильтры: (запланировано / в процессе / выполнено) : (банда)
                     : (проект)
                   </div>
-                  <div
+                  <div>
+                    <div>
+                      Задача 1 (Захватка 1) ------------------------------------------------- deadline
+                    </div>
+                    <div>
+                      Подзадача 1 ------------- deadline
+                    </div>
+                    <div>
+                      Подзадача 2 --------------------------------------- deadline
+                    </div>
+                    <div>
+                      Заявка --------------------------------------- deadline
+                    </div>
+                  </div>
+                  <!-- <div
                     v-for="el in computedProductionList"
                     style="margin-bottom: 1rem"
                   >
                     {{ el }}
-                    <!-- {{ el.date }} | {{  el.title  }} | {{ el.desc }} | {{ el.price }} * {{ el.qty }} = {{ el.price * el.qty }} | project: {{  el.projectID  }} | band: {{  el.bandID  }} (В процессе / Выполнено) -->
-                  </div>
+                  </div> -->
+                  <!-- {{ el.date }} | {{  el.title  }} | {{ el.desc }} | {{ el.price }} * {{ el.qty }} = {{ el.price * el.qty }} | project: {{  el.projectID  }} | band: {{  el.bandID  }} (В процессе / Выполнено) -->
                 </div>
 
                 <!-- production content -->
@@ -257,29 +271,29 @@ const setDateToday = (today: any) => {
 
 // COMPUTED
 // = computed production
-const computedProductionList = computed(() => {
-  let result: any = [];
-  if (salary.value) {
-    [...salary.value].forEach((item) => {
-      if (item.listProduction) {
-        item.listProduction.forEach((element) => {
-          result.push({
-            // id: item.id,
-            bandID: item.bandID,
-            projectID: element.projectID,
-            date: element.date,
-            title: element.title,
-            desc: element.desc,
-            price: element.price,
-            qty: element.qty,
-          });
-        });
-      }
-    });
+// const computedProductionList = computed(() => {
+//   let result: any = [];
+//   if (salary.value) {
+//     [...salary.value].forEach((item) => {
+//       if (item.listProduction) {
+//         item.listProduction.forEach((element) => {
+//           result.push({
+//             // id: item.id,
+//             bandID: item.bandID,
+//             projectID: element.projectID,
+//             date: element.date,
+//             title: element.title,
+//             desc: element.desc,
+//             price: element.price,
+//             qty: element.qty,
+//           });
+//         });
+//       }
+//     });
 
-    return result;
-  }
-});
+//     return result;
+//   }
+// });
 
 // EMITS FUNC
 // = title name

@@ -61,12 +61,16 @@ const project = ref({
   uuid: null,
   title: null,
   address: null,
+  bandID: null,
   partnerID: null,
   partnerType: null,
   creator: null,
   curator: null,
+  curatorType: null,
   workType: null,
-  completion: null,
+  completion: 0,
+  sharers: null,
+  stages: null
 });
 
 const { users } = storeToRefs(useUsersStore());
@@ -106,7 +110,7 @@ const isRelated = (obj) => {
 // флаг disabled для кнопки submit
 const createNewProjectBtnIsDisabled = ref(true);
 
-async function addProject(project) {
+async function addProject(project: any) {
   let addedProject = null;
 
   if (
@@ -116,8 +120,8 @@ async function addProject(project) {
     project.partnerType &&
     project.creator &&
     project.curator &&
-    project.workType &&
-    project.completion
+    project.workType
+    // project.completion
   ) {
     addedProject = await $fetch("api/projects/projects", {
       method: "POST",
@@ -152,7 +156,7 @@ const clearModalInputs = (project: any) => {
   project.creator = null;
   project.curator = null;
   project.workType = null;
-  project.completion = null;
+  project.completion = 0;
 };
 
 //
@@ -195,8 +199,8 @@ watch(project.value, () => {
     project.value.partnerType &&
     project.value.creator &&
     project.value.curator &&
-    project.value.workType &&
-    project.value.completion
+    project.value.workType
+    // project.value.completion
   ) {
     createNewProjectBtnIsDisabled.value = false;
   } else {

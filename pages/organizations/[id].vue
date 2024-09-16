@@ -423,6 +423,8 @@
             {{ tempChoosenProject }}
 
             <!--  -->
+            <!-- https://webdesign.tutsplus.com/solving-problems-with-css-grid-the-gantt-chart--cms-33837t -->
+             <!-- https://frappe.io/gantt -->
             <div>
               Фильтры: (запланировано / в процессе / выполнено) : (банда) :
               (проект)

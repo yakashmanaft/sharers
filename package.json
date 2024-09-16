@@ -13,11 +13,14 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@infectoone/vue-ganttastic": "^2.3.2",
     "@nuxtjs/axios": "^5.13.6",
     "@pinia/nuxt": "^0.5.1",
     "@prisma/client": "^5.10.1",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
+    "d3": "^7.9.0",
+    "dayjs": "^1.11.13",
     "html2pdf.js": "^0.10.2",
     "i": "^0.3.7",
     "npm": "^10.5.0",
@@ -27,7 +30,8 @@
     "uuid": "^9.0.1",
     "vanilla-calendar-pro": "^2.9.10",
     "vue": "^3.4.19",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vue3-gantt": "^1.1.8-7"
   },
   "devDependencies": {
     "@kevinmarrec/nuxt-pwa": "^0.17.0",

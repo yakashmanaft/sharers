@@ -17,7 +17,6 @@ export default defineNuxtConfig({
       titleTemplate: "%s - stepbuild",
       charset: 'utf-8',
       viewport: 'user-scalable=no, width=device-width, initial-scale=1.0'
-      
     }
   },
   css: [

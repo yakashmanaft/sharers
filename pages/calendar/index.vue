@@ -242,38 +242,6 @@ const options: IOptions = {
 onMounted(async () => {
   // = Calendar
   setDateToday(null);
-  //
-  // let gantt_chart = new Gantt('.gantt-target', tasks, {
-      // on_click: (task) => {
-          // console.log('Click', task);
-      // },
-      // on_double_click: (task) => {
-      //   console.log("Double Click", task);
-      // },
-      // on_date_change: (task, start, end) => {
-      //   console.log("Date change", task, start, end);
-      // },
-      // on_progress_change: (task, progress) => {
-      //   console.log("Progress Change", task, progress);
-      // },
-      // on_view_change: (mode) => {
-      //   console.log("View Change", mode);
-      // },
-      // on_hover: (task, x, y) => {
-      //   console.log("Hover", x, y);
-      // },
-      // view_mode: 'Day',
-      // view_mode_padding: { DAY: '3d' },
-      // popup: false,
-      // scroll_to: 'today',
-      // view_mode_select: true,
-      // dates_readonly: true,
-      // today_button: false,
-      // readonly: true,
-      // lines: 'vertical',
-      // lower_text: (date) => date.getDay(),
-      // upper_text: (date, view_mode, def) => def,
-  // });
   //   close modal and reset data #showDateDetailsModal
   const showDateDetailsModalEl = document.getElementById(
     "showDateDetailsModal"
@@ -478,7 +446,7 @@ useHead({
 
 /* MODAL SHOW DATE DETAILS */
 #showDateDetailsModal {
-  --bs-modal-width: 80%;
+  --bs-modal-width: 60%;
 }
 #showDateDetailsModal .modal-dialog {
   margin-top: 0;

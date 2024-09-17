@@ -1,14 +1,12 @@
 <template>
   <Container style="padding-top: 5rem">
-
     GanttChart
-    <br>
+    <br />
 
-    <GanttChart/>
-    <br>
+    <GanttChart />
+    <br />
 
     <div>
-
       <Gantt
         :data="data"
         :activeDate="activeDate"
@@ -22,7 +20,6 @@
   </Container>
 </template>
 
-
 <script lang="ts" setup>
 // Components
 import { Container } from "@/shared/container";
@@ -32,95 +29,108 @@ import { GanttChart } from "@/components/ganttchart";
 // https://blog.ddamy.com/assets/demo/gantt/https://blog.ddamy.com/assets/demo/gantt/
 // https://github.com/ddmy/vue3-gantt/blob/master/src/App.vue
 
-import Gantt from 'vue3-gantt'
-import 'vue3-gantt/dist/style.css'
+import Gantt from "vue3-gantt";
+import "vue3-gantt/dist/style.css";
 
 // Variables
-const activeDate = ref('2022-02-14')
-const dateRangeList = ref(['2022-01-03', '2022-07-05'])
+const activeDate = ref("2022-02-14");
+const dateRangeList = ref(["2022-01-03", "2022-07-05"]);
 const data = ref([
   {
-    type: 'normal',
-    color: '',
-    name: 'М1.0',
+    type: "normal",
+    color: "",
+    name: "М1.0",
     schedule: [
       {
         id: 333331,
-        name: 'Подготовительные действия',
-        desc: 'This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!',
-        backgroundColor: 'rgb(253, 211, 172)',
-        textColor: 'rgb(245, 36, 9)',
-        days: ["2022-01-12","2022-01-15"]
+        name: "Подготовительные действия",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "rgb(253, 211, 172)",
+        textColor: "rgb(245, 36, 9)",
+        days: ["2022-01-12", "2022-01-15"],
       },
       {
         id: 333330,
-        name: 'Откоппать котлован М1.0',
-        desc: 'This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!',
-        backgroundColor: 'rgb(253, 211, 172)',
-        textColor: 'rgb(245, 36, 9)',
-        days: ["2022-01-15","2022-01-24"]
+        name: "Откоппать котлован М1.0",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "rgb(253, 211, 172)",
+        textColor: "rgb(245, 36, 9)",
+        days: ["2022-01-15", "2022-01-24"],
       },
       {
         id: 555550,
-        name: 'Высртраивание обпалубки М1.0',
-        desc: 'This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!',
-        backgroundColor: '#28f',
-        textColor: '#fff',
-        days: ["2022-01-24","2022-02-02"]
+        name: "Высртраивание обпалубки М1.0",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "#28f",
+        textColor: "#fff",
+        days: ["2022-01-24", "2022-02-02"],
       },
       {
         id: 555551,
-        name: 'Заливка бетона М1.0',
-        desc: 'This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!',
-        backgroundColor: '#28f',
-        textColor: '#fff',
-        days: ["2022-02-02","2022-02-07"]
+        name: "Заливка бетона М1.0",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "#28f",
+        textColor: "#fff",
+        days: ["2022-02-02", "2022-02-07"],
       },
     ],
   },
   {
-    type: 'normal',
-    color: '',
-    name: 'M13.8',
+    type: "normal",
+    color: "",
+    name: "M13.8",
     schedule: [
       {
         id: 222221,
-        name: 'Обустройство опулубки оси е05',
-        desc: 'This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!',
-        backgroundColor: '#482',
-        textColor: '#fff',
-        days: ["2022-02-08","2022-02-22"]
-      }
+        name: "Обустройство опулубки оси е05",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "#482",
+        textColor: "#fff",
+        days: ["2022-02-08", "2022-02-22"],
+      },
     ],
   },
   {
-    type: 'normal',
-    color: '',
-    name: 'Meteor Butterfly Sword',
+    type: "normal",
+    color: "",
+    name: "Meteor Butterfly Sword",
     schedule: [
       {
         id: 222223,
-        name: 'Chinese New Year Event',
-        desc: 'This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!',
-        backgroundColor: '#482',
-        textColor: '#fff',
-        days: ["2022-02-25","2022-03-10"]
+        name: "Chinese New Year Event",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "#482",
+        textColor: "#fff",
+        days: ["2022-02-25", "2022-03-10"],
       },
       {
         id: 222224,
-        name: 'Подготовительные действия',
-        desc: 'This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!',
-        backgroundColor: 'rgb(253, 211, 172)',
-        textColor: 'rgb(245, 36, 9)',
-        days: ["2022-01-12","2022-01-15"]
+        name: "Подготовительные действия",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "rgb(253, 211, 172)",
+        textColor: "rgb(245, 36, 9)",
+        days: ["2022-01-12", "2022-01-15"],
       },
     ],
-  }
-])
+  },
+]);
 
 // CODE
-const width = ref(80)
-const height = ref(50)
+const width = ref(80);
+const height = ref(50);
+onMounted(() => {
+  // Horizontal scroll by mouse wheel
+  const scrollContainer = document.querySelector(".inner");
+  if (scrollContainer) {
+    scrollContainer.addEventListener("wheel", function (event) {
+      // останавливаем поведение по умолчанию, то есть прокрутку
+      if (event) {
+        // console.log(event);
+        scrollContainer.scrollLeft += event.deltaY;
+      }
+    });
+  }
+});
 
 useHead({
   title: "GantChart # ",
@@ -143,35 +153,33 @@ useHead({
     },
   ],
 });
-
 </script>
-
 
 <style>
 .gantt .guide {
-  width: unset!important;
+  width: unset !important;
 }
 .gantt .guide .item-name-list {
-  max-height: unset!important;
+  max-height: unset !important;
 }
 .gantt .guide .guide-name {
   text-wrap: nowrap;
 }
 .gantt .inner .schedule-box {
-  max-height: unset!important;
-  bottom: unset!important;
+  max-height: unset !important;
+  bottom: unset !important;
 }
 .date-item {
-  opacity: .7;
+  opacity: 0.7;
 }
 .date-item:hover {
   opacity: 1;
 }
 .inner::-webkit-scrollbar {
-  width: 0!important;
-   height: 0!important;
+  width: 0 !important;
+  height: 0 !important;
 }
 .schedule-box::-webkit-scrollbar {
-  width: 0!important;
+  width: 0 !important;
 }
 </style>

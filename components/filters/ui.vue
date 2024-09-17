@@ -1,11 +1,11 @@
 <template>
     <div class="tab_wrapper">
 
-        <div class="tab" v-for="(tab, index) in tabs">
-            <input type="radio" :id="`tab-title_item_${index}`" :value="tab.name" v-model="currentTitle"/>
-                <label :for="`tab-title_item_${index}`" @click="emit_TitleName(tab.name)"><h2>
+        <div class="tab" v-for="(tab, j) in tabs">
+            <input type="radio" :id="`tab-radio_item_${j}`" :value="tab.name" v-model="currentTitle"/>
+                <label :for="`tab-radio_item_${j}`" @click="emit_TitleName(tab.name)"><p>
                     {{ tab.title }}
-                </h2></label>
+                </p></label>
         </div>
     </div>
 </template>
@@ -22,7 +22,7 @@ const currentTitle = ref(props?.default)
 // EMITS
 // = variables
 const emit = defineEmits(['name_changed'])
-// = emits
+// = emits  
 const emit_TitleName = (name: string) => {
     if(name) {
 
@@ -44,7 +44,7 @@ const emit_TitleName = (name: string) => {
     overflow-x: scroll;
     scrollbar-width: none;
     /* border-bottom: 1px solid var(--bs-border-color); */
-    /* padding-bottom: 1rem; */
+    /* padding-bottom: 1rem;  */
 }
 .tab_wrapper::-webkit-scrollbar {
   display: none;
@@ -54,22 +54,32 @@ const emit_TitleName = (name: string) => {
     position: fixed;
     width: 0;
 }
-.tab label h2 {
-  color: var(--bs-tertiary-color);
-  white-space: nowrap;
+.tab label p {
+    border: 1px solid var(--bs-primary);
+    padding: 2px 8px;
+    border-radius: 2rem;
+    color: var(--bs-primary);
+    white-space: nowrap;
 }
-.tab label h2:hover {
+ .tab label p {
+    margin: 0;
+ }
+.tab label p:hover {
   cursor: pointer;
 }
 
-.tab input[type="radio"]:checked + label h2 {
+/* .tab input[type="radio"]:checked + label h2 {
   color: unset;
+} */
+.tab input[type="radio"]:checked + label p {
+    color: var(--bs-body-bg);
+    background-color: var(--bs-primary);
 }
 
 @media screen and (max-width: 575px) {
     .tab_wrapper {
-        /* padding-left: 0.5rem;
-        padding-right: 0.5rem; */
+        padding-left: 1rem;
+        padding-right: 1rem; 
     }
 }
 

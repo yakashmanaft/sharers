@@ -48,13 +48,20 @@
           <div class="modal-body" style="scrollbar-width: none">
             <!-- Tabs -->
             <div v-if="calendarSelectedDates" class="title_tabs">
+
+              <!--  -->
+              <filter_radio_group :tabs="tabs_filter_by_project" :default="curret_choosen_project" @name_changed="emittedProject"/>
+              <!--  -->
+              <!-- {{ curret_choosen_project }} -->
+
               <!-- CONTENT -->
-              <div v-if="calendarSelectedDates" class="content">
+              <div class="content" style="margin-top: 1rem;">
                 <!-- demands content -->
                 <div v-if="current_title_name === 'demands'">Заявочки</div>
 
                 <!-- production content -->
                 <div v-if="current_title_name === 'production'">
+                  <!--  -->
                   <div>
                     Фильтры: (запланировано / в процессе / выполнено) : (банда)
                     : (проект)
@@ -84,7 +91,54 @@
 
                 <!-- production content -->
                 <div v-if="current_title_name === 'working-hours'">
-                  Отработанные часы соучастников
+
+                  <!--  -->
+                  <div>
+                    <ul>
+                      <p>Техника</p>
+                      <li>JCB погрузчик</li>
+                    </ul>
+                    <ul>
+                      <p>Соучастники</p>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      <li>Байкалов Денис Олегович</li>
+                      <li>Клименко Вячеслав Николаевич</li>
+                      <li>Майер Сергей Александрович</li>
+                      
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
@@ -160,6 +214,7 @@
 // Components
 import { Container } from "@/shared/container";
 import { Tabs } from "@/components/tabs";
+import { filter_radio_group } from "@/components/filters";
 
 // Plugins
 import VanillaCalendar from "vanilla-calendar-pro";
@@ -189,6 +244,22 @@ const titles = ref([
   },
 ]);
 const current_title_name = ref("demands");
+
+// tabs_radio_select
+const tabs_filter_by_project = ref(null)
+const projectsInfo = ref([
+  {
+    title: 'Ярино',
+    name: 'project_Yarino',
+    id: 7
+  },
+  {
+    title: 'U11',
+    name: 'project_U11',
+    id: 4
+  }
+])
+const curret_choosen_project = ref('project_U11')
 
 // = date_today
 const date = new Date();
@@ -242,6 +313,15 @@ const options: IOptions = {
 onMounted(async () => {
   // = Calendar
   setDateToday(null);
+  // computed project filter tabs
+  
+  tabs_filter_by_project.value = computedProjects.value?.map((el) => {
+    return {
+      title: el.title,
+      name: `project_${el.id}`,
+      id: el.id
+    }
+  })
   //   close modal and reset data #showDateDetailsModal
   const showDateDetailsModalEl = document.getElementById(
     "showDateDetailsModal"
@@ -270,6 +350,16 @@ const setDateToday = (today: any) => {
 };
 
 // COMPUTED
+// = computed projects
+const computedProjects = computed(() => {
+  let result = []
+  if(projects.value) {
+    result = [...projects.value]
+    return result
+  }
+})
+
+
 // = computed production
 // const computedProductionList = computed(() => {
 //   let result: any = [];
@@ -300,6 +390,10 @@ const setDateToday = (today: any) => {
 const emittedName = (name: string) => {
   current_title_name.value = name;
 };
+// 
+const emittedProject = (project: string) => {
+  curret_choosen_project.value = project
+}
 
 // DB
 // = salary
@@ -316,6 +410,13 @@ const { data: organizations } = await useFetch(
     lazy: false,
   }
 );
+// = projects
+const { data: projects } = await useFetch(
+  "/api/projects/projects",
+  {
+    lazy: false
+  }
+)
 // users
 const { data: users } = await useFetch("/api/usersList/users", {
   lazy: false,
@@ -446,7 +547,7 @@ useHead({
 
 /* MODAL SHOW DATE DETAILS */
 #showDateDetailsModal {
-  --bs-modal-width: 60%;
+  --bs-modal-width: 80%;
 }
 #showDateDetailsModal .modal-dialog {
   margin-top: 0;

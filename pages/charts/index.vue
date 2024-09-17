@@ -93,7 +93,7 @@ const data = ref([
   {
     type: "normal",
     color: "",
-    name: "Meteor Butterfly Sword",
+    name: "Meteor Butterfly Sword Meteor",
     schedule: [
       {
         id: 222223,
@@ -161,9 +161,20 @@ useHead({
 }
 .gantt .guide .item-name-list {
   max-height: unset !important;
+  overflow-y: hidden!important;
+}
+.gantt .guide .item-name-list::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
 }
 .gantt .guide .guide-name {
-  text-wrap: nowrap;
+  width: 150px!important;
+  word-break: normal!important;
+  padding: 0!important;
+  text-align: center!important;
+}
+.gantt .guide .desc {
+  width: unset !important;
 }
 .gantt .inner .schedule-box {
   max-height: unset !important;

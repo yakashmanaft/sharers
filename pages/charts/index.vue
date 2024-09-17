@@ -116,8 +116,8 @@ const data = ref([
 ]);
 
 // CODE
-const width = ref(80);
-const height = ref(50);
+const width = ref(60);
+const height = ref(40);
 onMounted(() => {
   // Horizontal scroll by mouse wheel
   const scrollContainer = document.querySelector(".inner");

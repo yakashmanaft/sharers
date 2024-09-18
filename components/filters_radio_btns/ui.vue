@@ -3,8 +3,7 @@
   <br />
   currentTitle: {{ currentTitle }}
   <br /> -->
-  <div class="tab_wrapper">
-
+  <div class="tab_wrapper scroll-wheel-container">
     <!-- Кнопка ALL -->
     <div class="tab" v-if="props.btn_all_exist">
       <input
@@ -13,10 +12,7 @@
         v-model="currentTitle"
         :value="default"
       />
-      <label
-        :for="`tab-radio_item_null`"
-        @click="emit_object(props.default)"
-      >
+      <label :for="`tab-radio_item_null`" @click="emit_object(props.default)">
         <p>Все</p>
       </label>
     </div>
@@ -43,7 +39,7 @@
 const props = defineProps({
   tabs: Array,
   default: Object,
-  btn_all_exist: Boolean
+  btn_all_exist: Boolean,
 });
 const currentTitle = ref(props?.default);
 
@@ -51,12 +47,26 @@ const currentTitle = ref(props?.default);
 // = variables
 const emit = defineEmits(["changed"]);
 // = emits
-const emit_object = (obj : any) => {
+const emit_object = (obj: any) => {
   if (obj) {
     emit("changed", obj);
     // console.log(name)
   }
 };
+
+// Mounted
+onMounted(() => {
+  const scrollContainer = document.querySelector(".scroll-wheel-container");
+  if (scrollContainer) {
+    scrollContainer.addEventListener("wheel", function (event) {
+      // останавливаем поведение по умолчанию, то есть прокрутку
+      if (event) {
+        // console.log(event);
+        scrollContainer.scrollLeft += event.deltaY;
+      }
+    });
+  }
+});
 
 // WATCHERS
 // = titles
@@ -83,7 +93,7 @@ const emit_object = (obj : any) => {
 }
 .tab label p {
   border: 1px solid var(--bs-primary);
-  padding: 2px 8px;
+  padding: 2px 10px;
   border-radius: 2rem;
   color: var(--bs-primary);
   white-space: nowrap;

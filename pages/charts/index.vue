@@ -3,10 +3,18 @@
     GanttChart
     <br />
 
-    <GanttChart />
+    <GanttChart
+      :data="data"
+      itemText="Project"
+      dateText="Date"
+      :dateRangeList="dateRangeList"
+    />
     <br />
 
     <div>
+      <div @click="today">
+        <span style="cursor: pointer; color: var(--bs-primary)">Сегодня</span>
+      </div>
       <Gantt
         :data="data"
         :activeDate="activeDate"
@@ -15,6 +23,10 @@
         :dateRangeList="dateRangeList"
         :itemWidth="width"
         :itemHeight="height"
+        :repeatMode="{
+          mode: 'cover',
+        }"
+        @scheduleClick="onScheduleClick"
       />
     </div>
   </Container>
@@ -28,6 +40,14 @@ import { GanttChart } from "@/components/ganttchart";
 // https://www.npmjs.com/package/vue3-gantt
 // https://blog.ddamy.com/assets/demo/gantt/https://blog.ddamy.com/assets/demo/gantt/
 // https://github.com/ddmy/vue3-gantt/blob/master/src/App.vue
+
+import {
+  fethDaysRange,
+  fetchThreeDays,
+  fetchTodayMonthRange,
+  fetchPrevMonthRange,
+  fetchNextMonthRange,
+} from "~/utils/gantt/index";
 
 import Gantt from "vue3-gantt";
 import "vue3-gantt/dist/style.css";
@@ -132,6 +152,19 @@ onMounted(() => {
   }
 });
 
+const onScheduleClick = (item: any) => {
+  console.log(item);
+};
+
+const today = () => {
+  const now = new Date();
+  const arr = fetchTodayMonthRange();
+  activeDate.value = `${now.getFullYear()}-${String(
+    now.getMonth() + 1
+  ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  dateRangeList.value = [arr[0], arr.at(-1)];
+};
+
 useHead({
   title: "GantChart # ",
   link: [
@@ -161,17 +194,17 @@ useHead({
 }
 .gantt .guide .item-name-list {
   max-height: unset !important;
-  overflow-y: hidden!important;
+  overflow-y: hidden !important;
 }
 .gantt .guide .item-name-list::-webkit-scrollbar {
   width: 0 !important;
   height: 0 !important;
 }
 .gantt .guide .guide-name {
-  width: 150px!important;
-  word-break: normal!important;
-  padding: 0!important;
-  text-align: center!important;
+  width: 150px !important;
+  word-break: normal !important;
+  padding: 0 !important;
+  text-align: center !important;
 }
 .gantt .guide .desc {
   width: unset !important;

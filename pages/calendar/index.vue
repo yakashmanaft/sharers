@@ -102,13 +102,28 @@
                 <div v-if="current_title_name === 'working-hours'">
                   <!--  -->
                   <div class="projects-sharers_container">
-                    <div v-if="computedProjectSharerList.length" class="project-sharer_wrapper">
-
+                    <div
+                      v-if="computedProjectSharerList.length"
+                      class="project-sharer_wrapper"
+                    >
                       <div class="projects-sharers-list">
-
-                        <div v-for="sharer in computedProjectSharerList" class="sharers-list_item">
-                          {{ sharer}}
+                        <div
+                          v-for="sharer in computedProjectSharerList"
+                          class="sharers-list_item"
+                        >
+                          {{ sharer }}
                         </div>
+
+                        <!-- GANTT -->
+                        <Gantt
+                          :data="data"
+                          :activeDate="activeDate"
+                          itemText="Sharers"
+                          dateText="Date"
+                          :dateRangeList="dateRangeList"
+                          :itemWidth="width"
+                          :itemHeight="height"
+                        />
                       </div>
                     </div>
                     <div v-else class="project-sharer_wrapper">
@@ -197,6 +212,9 @@ import VanillaCalendar from "vanilla-calendar-pro";
 import { type IOptions } from "vanilla-calendar-pro/types";
 // import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
 
+import Gantt from "vue3-gantt";
+import "vue3-gantt/dist/style.css";
+
 // variables
 
 // = session user
@@ -281,6 +299,20 @@ const options: IOptions = {
   //     vanillaCalendarDay: 'vanilla-calendar-day_custom'
   //   }
 };
+
+// GANTT
+const width = ref(60);
+const height = ref(40);
+const activeDate = ref(date_today.value);
+const dateRangeList = ref(["2024-03-21", date_today.value]);
+const data = ref([
+  {
+    type: "normal",
+    color: "",
+    name: "Иванов И.И.",
+    schedule: [],
+  },
+]);
 
 // On Mounted
 onMounted(async () => {
@@ -558,10 +590,53 @@ useHead({
 }
 
 /* Projects sharer list */
-.projects-sharers_container {}
-.project-sharer_wrapper {}
-.projects-sharers-list {}
-.sharers-list_item {}
+.projects-sharers_container {
+}
+.project-sharer_wrapper {
+}
+.projects-sharers-list {
+}
+.sharers-list_item {
+}
+
+/* GANTT */
+/* .gantt .guide {
+  width: unset !important;
+}
+.gantt .guide .item-name-list {
+  max-height: unset !important;
+  overflow-y: hidden !important;
+}
+.gantt .guide .item-name-list::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+.gantt .guide .guide-name {
+  width: 150px !important;
+  word-break: normal !important;
+  padding: 0 !important;
+  text-align: center !important;
+}
+.gantt .guide .desc {
+  width: unset !important;
+}
+.gantt .inner .schedule-box {
+  max-height: unset !important;
+  bottom: unset !important;
+}
+.date-item {
+  opacity: 0.7;
+}
+.date-item:hover {
+  opacity: 1;
+}
+.inner::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+.schedule-box::-webkit-scrollbar {
+  width: 0 !important;
+} */
 
 @media screen and (max-width: 575px) {
   /* .container {

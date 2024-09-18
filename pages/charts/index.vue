@@ -55,8 +55,8 @@ import Gantt from "vue3-gantt";
 import "vue3-gantt/dist/style.css";
 
 // Variables
-const activeDate = ref("2022-02-14");
-const dateRangeList = ref(["2022-01-03", "2022-07-05"]);
+const activeDate = ref("2024-09-18");
+const dateRangeList = ref(["2022-01-03", "2024-09-30"]);
 const data = ref([
   {
     type: "normal",
@@ -118,7 +118,15 @@ const data = ref([
     name: "Meteor Butterfly Sword Meteor",
     schedule: [
       {
-        id: 222223,
+        id: 222224,
+        name: "Подготовительные действия",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "rgb(253, 211, 172)",
+        textColor: "rgb(245, 36, 9)",
+        days: ["2022-01-12", "2022-01-15"],
+      },
+      {
+        id: 222225,
         name: "Chinese New Year Event",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#482",
@@ -126,12 +134,12 @@ const data = ref([
         days: ["2022-02-25", "2022-03-10"],
       },
       {
-        id: 222224,
-        name: "Подготовительные действия",
+        id: 222225,
+        name: "Chinese New Year Event",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
-        backgroundColor: "rgb(253, 211, 172)",
-        textColor: "rgb(245, 36, 9)",
-        days: ["2022-01-12", "2022-01-15"],
+        backgroundColor: "#482",
+        textColor: "#fff",
+        days: ["2024-02-25", "2024-03-10"],
       },
     ],
   },
@@ -142,14 +150,16 @@ const width = ref(60);
 const height = ref(40);
 onMounted(() => {
   // Horizontal scroll by mouse wheel
-  const scrollContainer = document.querySelector(".inner");
-  if (scrollContainer) {
-    scrollContainer.addEventListener("wheel", function (event) {
-      // останавливаем поведение по умолчанию, то есть прокрутку
-      if (event) {
-        // console.log(event);
-        scrollContainer.scrollLeft += event.deltaY;
-      }
+  const scrollContainers = document.querySelectorAll(".inner");
+  if (scrollContainers) {
+    scrollContainers.forEach((item) => {
+      item.addEventListener("wheel", function (event) {
+        // останавливаем поведение по умолчанию, то есть прокрутку
+        if (event) {
+          // console.log(event);
+          item.scrollLeft += event.deltaY;
+        }
+      });
     });
   }
 });

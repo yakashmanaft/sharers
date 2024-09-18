@@ -8,6 +8,8 @@
       itemText="Project"
       dateText="Date"
       :dateRangeList="dateRangeList"
+      :itemWidth="width"
+      :itemHeight="height"
     />
     <br />
 

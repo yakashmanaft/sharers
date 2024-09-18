@@ -48,14 +48,23 @@
           <div class="modal-body" style="scrollbar-width: none">
             <!-- Tabs -->
             <div v-if="calendarSelectedDates" class="title_tabs">
-
               <!--  -->
-              <filter_radio_group :tabs="tabs_filter_by_project" :default="curret_choosen_project" @name_changed="emittedProject"/>
+              <filter_radio_group
+                :tabs="tabs_filter_by_project"
+                :default="{
+                  title: 'Все',
+                  name: 'all',
+                  id: null,
+                }"
+                :btn_all_exist="true"
+                @changed="emittedProject"
+              />
               <!--  -->
-              <!-- {{ curret_choosen_project }} -->
+              <!-- <br />
+              {{ curret_choosen_project }} -->
 
               <!-- CONTENT -->
-              <div class="content" style="margin-top: 1rem;">
+              <div class="content" style="margin-top: 1rem">
                 <!-- demands content -->
                 <div v-if="current_title_name === 'demands'">Заявочки</div>
 
@@ -68,13 +77,13 @@
                   </div>
                   <div>
                     <div>
-                      Задача 1 (Захватка 1) ------------------------------------------------- deadline
+                      Задача 1 (Захватка 1)
+                      ------------------------------------------------- deadline
                     </div>
+                    <div>Подзадача 1 ------------- deadlineGantt</div>
                     <div>
-                      Подзадача 1 ------------- deadlineGantt
-                    </div>
-                    <div>
-                      Подзадача 2 --------------------------------------- deadline
+                      Подзадача 2 ---------------------------------------
+                      deadline
                     </div>
                     <div>
                       Заявка --------------------------------------- deadline
@@ -91,53 +100,20 @@
 
                 <!-- production content -->
                 <div v-if="current_title_name === 'working-hours'">
-
                   <!--  -->
-                  <div>
-                    <ul>
-                      <p>Техника</p>
-                      <li>JCB погрузчик</li>
-                    </ul>
-                    <ul>
-                      <p>Соучастники</p>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      <li>Байкалов Денис Олегович</li>
-                      <li>Клименко Вячеслав Николаевич</li>
-                      <li>Майер Сергей Александрович</li>
-                      
-                    </ul>
+                  <div class="projects-sharers_container">
+                    <div v-if="computedProjectSharerList.length" class="project-sharer_wrapper">
+
+                      <div class="projects-sharers-list">
+
+                        <div v-for="sharer in computedProjectSharerList" class="sharers-list_item">
+                          {{ sharer}}
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else class="project-sharer_wrapper">
+                      В проекте нет соучастников
+                    </div>
                   </div>
                 </div>
               </div>
@@ -214,7 +190,7 @@
 // Components
 import { Container } from "@/shared/container";
 import { Tabs } from "@/components/tabs";
-import { filter_radio_group } from "@/components/filters";
+import { filter_radio_group } from "~/components/filters_radio_btns";
 
 // Plugins
 import VanillaCalendar from "vanilla-calendar-pro";
@@ -225,6 +201,10 @@ import { type IOptions } from "vanilla-calendar-pro/types";
 
 // = session user
 const { user } = useUserSession();
+// = session user projects
+const { loadProjectsData } = useProjectsStore();
+const { projects } = storeToRefs(useProjectsStore());
+
 // = titles
 const titles = ref([
   {
@@ -245,21 +225,14 @@ const titles = ref([
 ]);
 const current_title_name = ref("demands");
 
-// tabs_radio_select
-const tabs_filter_by_project = ref(null)
-const projectsInfo = ref([
-  {
-    title: 'Ярино',
-    name: 'project_Yarino',
-    id: 7
-  },
-  {
-    title: 'U11',
-    name: 'project_U11',
-    id: 4
-  }
-])
-const curret_choosen_project = ref('project_U11')
+// filter_radio_select
+const tabs_filter_by_project = ref([]);
+
+const curret_choosen_project = ref({
+  title: "Все",
+  name: "all",
+  id: null,
+});
 
 // = date_today
 const date = new Date();
@@ -311,17 +284,19 @@ const options: IOptions = {
 
 // On Mounted
 onMounted(async () => {
+  await loadProjectsData();
+  console.log(projects.value);
   // = Calendar
   setDateToday(null);
   // computed project filter tabs
-  
+
   tabs_filter_by_project.value = computedProjects.value?.map((el) => {
     return {
       title: el.title,
       name: `project_${el.id}`,
-      id: el.id
-    }
-  })
+      id: el.id,
+    };
+  });
   //   close modal and reset data #showDateDetailsModal
   const showDateDetailsModalEl = document.getElementById(
     "showDateDetailsModal"
@@ -352,13 +327,32 @@ const setDateToday = (today: any) => {
 // COMPUTED
 // = computed projects
 const computedProjects = computed(() => {
-  let result = []
-  if(projects.value) {
-    result = [...projects.value]
-    return result
+  let result = [];
+  if (projects.value) {
+    result = [...projects.value];
+    return result;
   }
-})
+});
 
+const computedProjectSharerList = computed(() => {
+  let result = [];
+  if (projects.value) {
+    if (curret_choosen_project.value.name === "all") {
+      result.push({ a: "показываем соучастников по всем проектам" });
+    } else {
+      let current_project = [...projects.value].find(
+        (el) => el.id === curret_choosen_project.value.id
+      );
+      if (current_project) {
+        if (current_project.sharers) {
+          result = [...current_project.sharers];
+        }
+      }
+      // result.push({a: 'показываем соучатсников по выбранному проекту'}, { b: curret_choosen_project.value})
+    }
+    return result;
+  }
+});
 
 // = computed production
 // const computedProductionList = computed(() => {
@@ -390,10 +384,10 @@ const computedProjects = computed(() => {
 const emittedName = (name: string) => {
   current_title_name.value = name;
 };
-// 
+//
 const emittedProject = (project: string) => {
-  curret_choosen_project.value = project
-}
+  curret_choosen_project.value = project;
+};
 
 // DB
 // = salary
@@ -411,12 +405,9 @@ const { data: organizations } = await useFetch(
   }
 );
 // = projects
-const { data: projects } = await useFetch(
-  "/api/projects/projects",
-  {
-    lazy: false
-  }
-)
+// const { data: projects } = await useFetch("/api/projects/projects", {
+//   lazy: false,
+// });
 // users
 const { data: users } = await useFetch("/api/usersList/users", {
   lazy: false,
@@ -565,6 +556,12 @@ useHead({
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
 }
+
+/* Projects sharer list */
+.projects-sharers_container {}
+.project-sharer_wrapper {}
+.projects-sharers-list {}
+.sharers-list_item {}
 
 @media screen and (max-width: 575px) {
   /* .container {

@@ -4,14 +4,15 @@
     <br />
     <div class="actions_wrapper">
       <div class="action_btn">
-        <a :href="`#${activeDate}`">Сегодня</a>
+        <!-- <a :href="`#${activeDate}`">Сегодня</a> -->
+         <span :href="`#${activeDate}`" @click="scrollToNowDate()">Сегодня</span>
       </div>
       <div class="action_btn">
         <span @click="exportGanttExcel">Скачать excel</span>
       </div>
-      <div class="action_btn">
+      <!-- <div class="action_btn">
         <span @click="exportImg">Сделать снимок</span>
-      </div>
+      </div> -->
     </div>
     <GanttChart
       ref="gantt"
@@ -177,7 +178,9 @@ const data = ref([
 const width = ref(60);
 const height = ref(40);
 onMounted(() => {
-  location.hash = "#" + activeDate.value;
+  scrollToNowDate()
+  // location.hash = "#" + activeDate.value;
+  // scrollToNowDate()
   // Horizontal scroll by mouse wheel
   // inner
   const scrollContainers = document.querySelectorAll(".inner");
@@ -206,9 +209,22 @@ onMounted(() => {
   }
 });
 
+// CLICK EVENT
 const onScheduleClick = (item: any) => {
   console.log(item);
 };
+const scrollToNowDate = () => {
+  const smoothLinks = document.querySelectorAll('span[href^="#"]');
+  for(let smoothLink of smoothLinks) {
+    let id = smoothLink.getAttribute('href').substring(1);
+    document.getElementById(id).scrollIntoView({
+      // behavior: 'smooth',
+      block: 'center',
+      inline: 'center'
+    });
+    // console.log(document.getElementById(id))  
+  }
+}
 
 // const today = () => {
 //   const now = new Date();
@@ -297,9 +313,9 @@ useHead({
   align-items: center;
   gap: 0.5rem;
 }
-.action_btn a {
+/* .action_btn a {
   text-decoration: none;
-}
+} */
 .action_btn span {
   cursor: pointer;
   color: var(--bs-primary);

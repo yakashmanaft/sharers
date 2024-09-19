@@ -1,8 +1,8 @@
 <template>
   <Container style="padding-top: 5rem">
-    GanttChart
+    <h1>GanttChart</h1>
     <br />
-
+    <a :href="`#${activeDate}`">Сегодня</a>
     <GanttChart
       ref="gantt"
       :data="data"
@@ -17,10 +17,9 @@
     <br />
 
     <div>
-      <a :href="`#${activeDate}`">anchor</a>
-      <div @click="today">
+      <!-- <div>
         <span style="cursor: pointer; color: var(--bs-primary)">Сегодня</span>
-      </div>
+      </div> -->
       <Gantt
         :data="data"
         :activeDate="activeDate"
@@ -60,7 +59,13 @@ import "vue3-gantt/dist/style.css";
 
 // Variables
 const gantt = ref(null);
-const activeDate = ref("2024-09-18");
+const date = new Date();
+const date_today = ref(
+  new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+    .toISOString()
+    .split("T")[0]
+);
+const activeDate = ref(date_today.value);
 const dateRangeList = ref(["2022-01-03", "2024-09-30"]);
 const data = ref([
   {
@@ -146,6 +151,14 @@ const data = ref([
         textColor: "#fff",
         days: ["2023-02-26", "2023-03-07"],
       },
+      {
+        id: 9,
+        name: "Chinese New Year Event",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "#482",
+        textColor: "#fff",
+        days: ["2024-09-18", "2024-09-22"],
+      },
     ],
   },
 ]);
@@ -154,6 +167,7 @@ const data = ref([
 const width = ref(60);
 const height = ref(40);
 onMounted(() => {
+  location.hash = "#" + activeDate.value;
   // Horizontal scroll by mouse wheel
   // inner
   const scrollContainers = document.querySelectorAll(".inner");
@@ -186,17 +200,17 @@ const onScheduleClick = (item: any) => {
   console.log(item);
 };
 
-const today = () => {
-  const now = new Date();
-  const arr = fetchTodayMonthRange();
-  activeDate.value = `${now.getFullYear()}-${String(
-    now.getMonth() + 1
-  ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  // dateRangeList.value = [arr[0], arr.at(-1)];
-  console.log(dateRangeList.value)
-  console.log(activeDate.value)
-  // 2024-09-19
-};
+// const today = () => {
+//   const now = new Date();
+//   const arr = fetchTodayMonthRange();
+//   activeDate.value = `${now.getFullYear()}-${String(
+//     now.getMonth() + 1
+//   ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+//   // dateRangeList.value = [arr[0], arr.at(-1)];
+//   console.log(dateRangeList.value)
+//   console.log(activeDate.value)
+//   // 2024-09-19
+// };
 
 useHead({
   title: "GanttChart",

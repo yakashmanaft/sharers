@@ -1,4 +1,4 @@
-// 加工日期范围
+// Диапазон дат обработки
 export const computedDaysRange = (daysArr, endDay = null) => {
     let result = daysArr
     if (typeof endDay === 'string') {
@@ -7,7 +7,7 @@ export const computedDaysRange = (daysArr, endDay = null) => {
     return result.map(item => fetchDayDetail(item))
   }
   
-  // 获取指定日期详细信息
+  // Получить подробную информацию на указанную дату
   export const fetchDayDetail = (current) => {
     let currentDate = null
     if (typeof current === 'string') {
@@ -15,7 +15,7 @@ export const computedDaysRange = (daysArr, endDay = null) => {
     } else if (current instanceof Date) {
       currentDate = current
     }
-    const weekName = ["日", "一", "二", "三", "四", "五", "六"]
+    const weekName = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"]
   
     return {
       year: String(currentDate.getFullYear()).padStart(4, '0'),

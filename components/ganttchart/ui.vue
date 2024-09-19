@@ -18,17 +18,87 @@
         </div>
       </div>
     </div>
-    <div class="inner">123</div>
+    <div class="inner" ref="innerRef">
+      <div class="date-list first-date-list">
+        <div
+          v-for="monthItem in rangeDate"
+          :key="monthItem.year + '-' + monthItem.month"
+          class="month-item"
+        >
+          <div class="month">
+            <slot
+              name="month"
+              :data="{ year: monthItem[0].year, month: monthItem[0].month }"
+              >{{ monthItem[0].year + "-" + monthItem[0].month }}</slot
+            >
+          </div>
+          <div class="day-box">
+            <div
+              v-for="(dayItem, dayIndex) in monthItem"
+              :key="dayItem.day + dayItem.week"
+              :class="{
+                'day-item': true,
+                'first-day-item': dayIndex === 0,
+                'date-active':
+                  props.activeDate ===
+                  dayItem.year + '-' + dayItem.month + '-' + dayItem.day,
+              }"
+            >
+              <div class="day">
+                <slot
+                  name="day"
+                  :data="{
+                    ...dayItem,
+                    active:
+                      props.activeDate ===
+                      dayItem.year + '-' + dayItem.month + '-' + dayItem.day,
+                  }"
+                  >{{ dayItem.day }}</slot
+                >
+              </div>
+              <div class="week">
+                <slot
+                  name="week"
+                  :data="{
+                    ...dayItem,
+                    active:
+                      props.activeDate ===
+                      dayItem.year + '-' + dayItem.month + '-' + dayItem.day,
+                  }"
+                  >{{ dayItem.week }}</slot
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
+import {
+  computedDaysRange,
+  fethDaysRange,
+  splitDaysForMonth,
+  todayInRange,
+  fetchToday,
+  workListSplitForRepeat,
+} from "@/utils/gantt/index";
 //
 const props = defineProps({
   data: {
     type: Array,
     required: true,
     default: [],
+  },
+  dateRangeList: {
+    type: Array,
+    required: true,
+    default: [],
+    validator(value) {
+      return value[0] && value.at(-1);
+    },
   },
   dateText: {
     type: String,
@@ -60,11 +130,25 @@ const props = defineProps({
 
 //
 // const emit = defineEmits(['scheduleClick', 'scrollXEnd', 'scrollYEnd'])
-// const data = ref([]);
-//
+
 let rangeDate = ref([]);
+// const data = ref([]);
+
+//
 const ganttMaxWidth = ref("2000px");
 const ganttInnerHeight = ref("0px");
+
+//
+const innerRef = ref(null);
+
+watchEffect(() => {
+  rangeDate.value = splitDaysForMonth(
+    computedDaysRange(props.dateRangeList[0], props.dateRangeList.at(-1))
+  );
+  console.log("rangeDate.value", rangeDate.value);
+  ganttMaxWidth.value =
+    props.itemWidth * rangeDate.value.flat(1).length + 122 + "px";
+});
 </script>
 
 <style scoped>
@@ -177,5 +261,66 @@ const ganttInnerHeight = ref("0px");
   /*Общий стиль полосы прокрутки*/
   width: 5px; /*Высота и ширина соответствуют размеру горизонтальной и вертикальной полос прокрутки*/
   height: 5px;
+}
+/* date list */
+.date-list {
+  width: 100%;
+  height: 120px;
+  display: flex;
+}
+.first-date-list {
+  border-left: none;
+}
+.month-item {
+  background-color: blue;
+  width: auto;
+  height: 100%;
+  border-bottom: var(--border);
+  display: flex;
+  flex-direction: column;
+}
+.month {
+  flex: 1;
+  border-left: var(--border);
+  border-bottom: var(--border);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.month:first-child {
+  border-left: none;
+}
+.day-box {
+  flex: 2;
+  display: flex;
+}
+.day-item {
+  width: var(--itemWidth);
+}
+.day {
+  width: var(--itemWidth);
+  height: 50%;
+  border-left: var(--border);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.day:first-child {
+  border-left: none;
+}
+.week {
+  width: var(--itemWidth);
+  height: 50%;
+  flex-shrink: 0;
+  border-left: var(--border);
+  border-top: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.week:first-child {
+  border-left: none;
 }
 </style>

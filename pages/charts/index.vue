@@ -4,12 +4,15 @@
     <br />
 
     <GanttChart
+      ref="gantt"
       :data="data"
+      :activeDate="activeDate"
       itemText="Project"
       dateText="Date"
       :dateRangeList="dateRangeList"
       :itemWidth="width"
       :itemHeight="height"
+      @scheduleClick="onScheduleClick"
     />
     <br />
 
@@ -55,6 +58,7 @@ import Gantt from "vue3-gantt";
 import "vue3-gantt/dist/style.css";
 
 // Variables
+const gantt = ref(null);
 const activeDate = ref("2024-09-18");
 const dateRangeList = ref(["2022-01-03", "2024-09-30"]);
 const data = ref([
@@ -64,23 +68,23 @@ const data = ref([
     name: "М1.0",
     schedule: [
       {
-        id: 333331,
+        id: 1,
         name: "Подготовительные действия",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "rgb(253, 211, 172)",
         textColor: "rgb(245, 36, 9)",
-        days: ["2022-01-12", "2022-01-15"],
+        days: ["2022-01-15", "2022-01-19"],
       },
       {
-        id: 333330,
+        id: 2,
         name: "Откоппать котлован М1.0",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "rgb(253, 211, 172)",
         textColor: "rgb(245, 36, 9)",
-        days: ["2022-01-15", "2022-01-24"],
+        days: ["2022-01-19", "2022-01-23"],
       },
       {
-        id: 555550,
+        id: 3,
         name: "Высртраивание обпалубки М1.0",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#28f",
@@ -88,12 +92,12 @@ const data = ref([
         days: ["2022-01-24", "2022-02-02"],
       },
       {
-        id: 555551,
+        id: 4,
         name: "Заливка бетона М1.0",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#28f",
         textColor: "#fff",
-        days: ["2022-02-02", "2022-02-07"],
+        days: ["2022-02-02", "2022-02-08"],
       },
     ],
   },
@@ -103,12 +107,12 @@ const data = ref([
     name: "M13.8",
     schedule: [
       {
-        id: 222221,
+        id: 5,
         name: "Обустройство опулубки оси е05",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#482",
         textColor: "#fff",
-        days: ["2022-02-08", "2022-02-22"],
+        days: ["2022-01-08", "2022-02-22"],
       },
     ],
   },
@@ -118,7 +122,7 @@ const data = ref([
     name: "Meteor Butterfly Sword Meteor",
     schedule: [
       {
-        id: 222224,
+        id: 6,
         name: "Подготовительные действия",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "rgb(253, 211, 172)",
@@ -126,7 +130,7 @@ const data = ref([
         days: ["2022-01-12", "2022-01-15"],
       },
       {
-        id: 222225,
+        id: 7,
         name: "Chinese New Year Event",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#482",
@@ -134,12 +138,12 @@ const data = ref([
         days: ["2022-02-25", "2022-03-10"],
       },
       {
-        id: 222225,
+        id: 8,
         name: "Chinese New Year Event",
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#482",
         textColor: "#fff",
-        days: ["2024-02-25", "2024-03-10"],
+        days: ["2023-02-26", "2023-03-07"],
       },
     ],
   },
@@ -150,6 +154,7 @@ const width = ref(60);
 const height = ref(40);
 onMounted(() => {
   // Horizontal scroll by mouse wheel
+  // inner
   const scrollContainers = document.querySelectorAll(".inner");
   if (scrollContainers) {
     scrollContainers.forEach((item) => {
@@ -160,6 +165,18 @@ onMounted(() => {
           item.scrollLeft += event.deltaY;
         }
       });
+    });
+  }
+
+  // gantt-chart_inner
+  const scrollChartContainer = document.querySelector(".gantt-chart_inner");
+  if (scrollChartContainer) {
+    scrollChartContainer.addEventListener("wheel", function (event) {
+      // останавливаем поведение по умолчанию, то есть прокрутку
+      if (event) {
+        // console.log(event);
+        scrollChartContainer.scrollLeft += event.deltaY;
+      }
     });
   }
 });

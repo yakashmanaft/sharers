@@ -26,7 +26,6 @@
           v-for="monthItem in rangeDate"
           :key="monthItem.year + '-' + monthItem.month"
           class="month-item"
-          
         >
           <div class="month">
             <slot
@@ -120,7 +119,6 @@
 
 <script lang="ts" setup>
 import cloneDeep from "lodash/cloneDeep";
-import {exportExcel} from '@/utils/gantt/excel.js'
 import {
   computedDaysRange,
   fethDaysRange,
@@ -160,7 +158,13 @@ const props = defineProps({
     // extract 将重叠部分抽取，单独生成独立的日程
     // cover 重叠部分按照征程日期排序覆盖
     type: Object,
-    default: () => ({ mode: 'cover', backgroundColor: '#FFFFCC', textColor: '#336666', name: 'Перекрывающиеся графики', desc: 'Это несколько расписаний' })
+    default: () => ({
+      mode: "cover",
+      backgroundColor: "#FFFFCC",
+      textColor: "#336666",
+      name: "Перекрывающиеся графики",
+      desc: "Это несколько расписаний",
+    }),
   },
   itemWidth: {
     type: Number,
@@ -195,8 +199,7 @@ const data = ref([]);
 //
 const ganttMaxWidth = ref("2000px");
 const ganttInnerHeight = ref("0px");
-// Диаграмма Ганта, дом
-const gantt = ref()
+
 //
 const innerRef = ref(null);
 //
@@ -530,27 +533,6 @@ watchEffect(() => {
 const scheduleClick = (item) => {
   emit("scheduleClick", item);
 };
-
-const exportGanttExcel = (file) => {
-  const excelData = cloneDeep(data.value).map(item => {
-    item.renderWorks = renderWorks(item)
-    // if (item.type === 'alike' && props.alikeName) {
-    //   item.name = props.alikeName(item)
-    // }
-    if (item.type === 'normal' && props.scheduleTitle) {
-      item.renderWorks.forEach(renderItem => {
-        renderItem.name = props.scheduleTitle(renderItem)
-      })
-    }
-    return item
-  })
-  exportExcel(file, rangeDate.value, excelData, props.dateText, props.itemText)
-}
-
-defineExpose({
-  // exportImg,
-  exportGanttExcel
-})
 </script>
 
 <style scoped>
@@ -598,7 +580,7 @@ defineExpose({
   background: #ededed;
 }
 .guide {
-  background-color: #EAB3C9;
+  background-color: #eab3c9;
   flex-shrink: 0;
   width: 120px;
   height: 100%;
@@ -674,7 +656,7 @@ defineExpose({
   border-left: none;
 }
 .month-item {
-  background-color: #C9ACCD;
+  background-color: #c9accd;
   width: auto;
   height: 100%;
   border-bottom: var(--border);
@@ -690,8 +672,8 @@ defineExpose({
   align-items: center;
   justify-content: center;
 }
-.month-item:first-child .month{
-  border-left: none; 
+.month-item:first-child .month {
+  border-left: none;
 }
 .day-box {
   flex: 2;
@@ -709,7 +691,7 @@ defineExpose({
   align-items: center;
   justify-content: center;
 }
-.first-day-item .day:first-child  {
+.first-day-item .day:first-child {
   border-left: none;
 }
 .week {
@@ -722,7 +704,7 @@ defineExpose({
   align-items: center;
   justify-content: center;
 }
-.day-item:first-child .week{
+.day-item:first-child .week {
   border-left: none;
 }
 /* schedule */

@@ -224,7 +224,6 @@ const onScheduleClick = (item: any) => {
 
 const exportGanttExcel = () => {
   console.log("load excel");
-  gantt.value.exportGanttExcel({ fileName: 'Тест эксель' })
 };
 const exportImg = () => {
   console.log("Сделать снимок");
@@ -303,6 +302,6 @@ useHead({
 }
 .action_btn span {
   cursor: pointer;
-  color: var(--bs-primary)
+  color: var(--bs-primary);
 }
 </style>

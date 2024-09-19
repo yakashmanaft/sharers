@@ -67,7 +67,7 @@ export const computedDaysRange = (daysArr, endDay = null) => {
     return fethDaysRange(...range).includes(today)
   }
   
-  // 获取指定月份日期列表
+  // Получить список дат в указанном месяце
   export const fetchMonthRangeDay = (str) => {
     const dateList = String(str).replace('/', '-').split('-')
     return fethDays(str).map(item => {

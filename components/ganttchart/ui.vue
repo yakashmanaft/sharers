@@ -13,7 +13,7 @@
             'guide-name': true,
             'last-guide-name': index === data.length - 1,
           }"
-          :style="computedStyle(item)"
+          :style="computedStyle(item, null)"
         >
           {{ item.name }}
         </div>
@@ -26,6 +26,7 @@
           v-for="monthItem in rangeDate"
           :key="monthItem.year + '-' + monthItem.month"
           class="month-item"
+          
         >
           <div class="month">
             <slot
@@ -45,6 +46,7 @@
                   props.activeDate ===
                   dayItem.year + '-' + dayItem.month + '-' + dayItem.day,
               }"
+              :id="dayItem.year + '-' + dayItem.month + '-' + dayItem.day"
             >
               <div class="day">
                 <slot
@@ -573,7 +575,7 @@ const scheduleClick = (item) => {
   background: #ededed;
 }
 .guide {
-  background-color: red;
+  background-color: #EAB3C9;
   flex-shrink: 0;
   width: 120px;
   height: 100%;
@@ -649,7 +651,7 @@ const scheduleClick = (item) => {
   border-left: none;
 }
 .month-item {
-  background-color: blue;
+  background-color: #C9ACCD;
   width: auto;
   height: 100%;
   border-bottom: var(--border);
@@ -665,8 +667,8 @@ const scheduleClick = (item) => {
   align-items: center;
   justify-content: center;
 }
-.month:first-child {
-  border-left: none;
+.month-item:first-child .month{
+  border-left: none; 
 }
 .day-box {
   flex: 2;
@@ -684,7 +686,7 @@ const scheduleClick = (item) => {
   align-items: center;
   justify-content: center;
 }
-.day:first-child {
+.first-day-item .day:first-child  {
   border-left: none;
 }
 .week {
@@ -697,7 +699,7 @@ const scheduleClick = (item) => {
   align-items: center;
   justify-content: center;
 }
-.week:first-child {
+.day-item:first-child .week{
   border-left: none;
 }
 /* schedule */
@@ -716,6 +718,9 @@ const scheduleClick = (item) => {
 .date-box {
   height: var(--itemHeight);
   display: flex;
+}
+.date-box .date-item:first-child {
+  border-left: none;
 }
 .date-item {
   flex-shrink: 0;

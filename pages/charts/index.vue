@@ -17,6 +17,7 @@
     <br />
 
     <div>
+      <a :href="`#${activeDate}`">anchor</a>
       <div @click="today">
         <span style="cursor: pointer; color: var(--bs-primary)">Сегодня</span>
       </div>
@@ -191,11 +192,14 @@ const today = () => {
   activeDate.value = `${now.getFullYear()}-${String(
     now.getMonth() + 1
   ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-  dateRangeList.value = [arr[0], arr.at(-1)];
+  // dateRangeList.value = [arr[0], arr.at(-1)];
+  console.log(dateRangeList.value)
+  console.log(activeDate.value)
+  // 2024-09-19
 };
 
 useHead({
-  title: "GantChart # ",
+  title: "GanttChart",
   link: [
     {
       rel: "stylesheet",

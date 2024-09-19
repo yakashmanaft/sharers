@@ -2,7 +2,17 @@
   <Container style="padding-top: 5rem">
     <h1>GanttChart</h1>
     <br />
-    <a :href="`#${activeDate}`">Сегодня</a>
+    <div class="actions_wrapper">
+      <div class="action_btn">
+        <a :href="`#${activeDate}`">Сегодня</a>
+      </div>
+      <div class="action_btn">
+        <span @click="exportGanttExcel">Скачать excel</span>
+      </div>
+      <div class="action_btn">
+        <span @click="exportImg">Сделать снимок</span>
+      </div>
+    </div>
     <GanttChart
       ref="gantt"
       :data="data"
@@ -212,6 +222,14 @@ const onScheduleClick = (item: any) => {
 //   // 2024-09-19
 // };
 
+const exportGanttExcel = () => {
+  console.log("load excel");
+  gantt.value.exportGanttExcel({ fileName: 'Тест эксель' })
+};
+const exportImg = () => {
+  console.log("Сделать снимок");
+};
+
 useHead({
   title: "GanttChart",
   link: [
@@ -272,5 +290,19 @@ useHead({
 }
 .schedule-box::-webkit-scrollbar {
   width: 0 !important;
+}
+
+/*  */
+.actions_wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.action_btn a {
+  text-decoration: none;
+}
+.action_btn span {
+  cursor: pointer;
+  color: var(--bs-primary)
 }
 </style>

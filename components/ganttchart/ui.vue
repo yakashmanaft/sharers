@@ -120,6 +120,7 @@
 
 <script lang="ts" setup>
 import cloneDeep from "lodash/cloneDeep";
+import {exportExcel} from '@/utils/gantt/excel.js'
 import {
   computedDaysRange,
   fethDaysRange,
@@ -194,7 +195,8 @@ const data = ref([]);
 //
 const ganttMaxWidth = ref("2000px");
 const ganttInnerHeight = ref("0px");
-
+// Диаграмма Ганта, дом
+const gantt = ref()
 //
 const innerRef = ref(null);
 //
@@ -528,6 +530,27 @@ watchEffect(() => {
 const scheduleClick = (item) => {
   emit("scheduleClick", item);
 };
+
+const exportGanttExcel = (file) => {
+  const excelData = cloneDeep(data.value).map(item => {
+    item.renderWorks = renderWorks(item)
+    // if (item.type === 'alike' && props.alikeName) {
+    //   item.name = props.alikeName(item)
+    // }
+    if (item.type === 'normal' && props.scheduleTitle) {
+      item.renderWorks.forEach(renderItem => {
+        renderItem.name = props.scheduleTitle(renderItem)
+      })
+    }
+    return item
+  })
+  exportExcel(file, rangeDate.value, excelData, props.dateText, props.itemText)
+}
+
+defineExpose({
+  // exportImg,
+  exportGanttExcel
+})
 </script>
 
 <style scoped>

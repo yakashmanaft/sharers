@@ -115,7 +115,7 @@
                         </div>
 
                         <!-- GANTT -->
-                        <Gantt
+                        <!-- <Gantt
                           :data="data"
                           :activeDate="activeDate"
                           itemText="Sharers"
@@ -123,7 +123,7 @@
                           :dateRangeList="dateRangeList"
                           :itemWidth="width"
                           :itemHeight="height"
-                        />
+                        /> -->
                       </div>
                     </div>
                     <div v-else class="project-sharer_wrapper">
@@ -212,8 +212,8 @@ import VanillaCalendar from "vanilla-calendar-pro";
 import { type IOptions } from "vanilla-calendar-pro/types";
 // import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
 
-import Gantt from "vue3-gantt";
-import "vue3-gantt/dist/style.css";
+// import Gantt from "vue3-gantt";
+// import "vue3-gantt/dist/style.css";
 
 // variables
 
@@ -301,18 +301,18 @@ const options: IOptions = {
 };
 
 // GANTT
-const width = ref(60);
-const height = ref(40);
-const activeDate = ref(date_today.value);
-const dateRangeList = ref(["2024-03-21", date_today.value]);
-const data = ref([
-  {
-    type: "normal",
-    color: "",
-    name: "Иванов И.И.",
-    schedule: [],
-  },
-]);
+// const width = ref(60);
+// const height = ref(40);
+// const activeDate = ref(date_today.value);
+// const dateRangeList = ref(["2024-03-21", date_today.value]);
+// const data = ref([
+//   {
+//     type: "normal",
+//     color: "",
+//     name: "Иванов И.И.",
+//     schedule: [],
+//   },
+// ]);
 
 // On Mounted
 onMounted(async () => {

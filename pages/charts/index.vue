@@ -68,7 +68,7 @@ import { GanttChart } from "@/components/ganttchart";
 // } from "~/utils/gantt/index";
 
 // import Gantt from "vue3-gantt";
-import "vue3-gantt/dist/style.css";
+// import "vue3-gantt/dist/style.css";
 
 // Variables
 // const gantt = ref(null);

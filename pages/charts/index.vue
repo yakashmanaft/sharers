@@ -15,7 +15,7 @@
       </div> -->
     </div>
     <GanttChart
-      ref="gantt"
+      ref="gantt_chart"
       :data="data"
       :activeDate="activeDate"
       itemText="Project"
@@ -24,6 +24,7 @@
       :itemWidth="width"
       :itemHeight="height"
       @scheduleClick="onScheduleClick"
+      @scrollXEnd="onScrollXEnd"
     />
     <br />
 
@@ -70,6 +71,7 @@ import "vue3-gantt/dist/style.css";
 
 // Variables
 const gantt = ref(null);
+const gantt_chart = ref(null)
 const date = new Date();
 const date_today = ref(
   new Date(date.getTime() - date.getTimezoneOffset() * 60000)
@@ -210,9 +212,11 @@ onMounted(() => {
 });
 
 // CLICK EVENT
+// = клик по ячейке расписания
 const onScheduleClick = (item: any) => {
   console.log(item);
 };
+// = скролим inner gant до сегодняшнего дня (как при клике на кнопку Сегодня, так и при загрузке страницы)
 const scrollToNowDate = () => {
   const smoothLinks = document.querySelectorAll('span[href^="#"]');
   for(let smoothLink of smoothLinks) {
@@ -224,6 +228,11 @@ const scrollToNowDate = () => {
     });
     // console.log(document.getElementById(id))  
   }
+}
+
+const onScrollXEnd = (e) => {
+//  console.log(e)
+console.log('домотали до конца)')
 }
 
 // const today = () => {
@@ -239,11 +248,12 @@ const scrollToNowDate = () => {
 // };
 
 const exportGanttExcel = () => {
+  // gantt_chart.value
   console.log("load excel");
 };
-const exportImg = () => {
-  console.log("Сделать снимок");
-};
+// const exportImg = () => {
+//   console.log("Сделать снимок");
+// };
 
 useHead({
   title: "GanttChart",

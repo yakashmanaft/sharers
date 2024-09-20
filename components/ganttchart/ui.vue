@@ -1,5 +1,5 @@
 <template>
-  <div class="gantt" ref="gantt">
+  <div class="gantt" ref="gantt_chart">
     <div class="guide">
       <div class="desc">
         <span class="date">{{ props.dateText }}</span>
@@ -19,7 +19,7 @@
         </div>
       </div>
     </div>
-    <div class="inner gantt-chart_inner" ref="innerRef">
+    <div class="inner gantt-chart_inner" @scroll="onScrollX($event)" ref="innerRef">
       <!-- datelist -->
       <div class="date-list first-date-list">
         <div
@@ -189,7 +189,8 @@ const props = defineProps({
     default: "#eee",
   },
 });
-
+// Диаграмма Ганта DOM
+const gantt_chart = ref(null)
 //
 const emit = defineEmits(["scheduleClick", "scrollXEnd", "scrollYEnd"]);
 
@@ -201,6 +202,7 @@ const ganttMaxWidth = ref("2000px");
 const ganttInnerHeight = ref("0px");
 
 //
+let timer: any = null
 const innerRef = ref(null);
 //
 onMounted(() => {
@@ -223,9 +225,9 @@ const renderWorks = (game: any) => {
   const dateRange = _flatDateRange(rangeDate.value);
   // Если для текущего игрового проекта расписание отсутствует, данные по умолчанию будут возвращены напрямую.
   if (!game.schedule || !game.schedule.length) return dateRange;
-  let res = [];
-  game.schedule.forEach((scheduleItem) => {
-    dateRange.forEach((dayItem) => {
+  let res: any[] = [];
+  game.schedule.forEach((scheduleItem: any) => {
+    dateRange.forEach((dayItem: any) => {
       // Является ли текущая дата расписанием
       const isWork = _checkTodayIsWork(dayItem.date, scheduleItem);
       // Была ли текущая дата добавлена ​​к окончательному результату
@@ -517,6 +519,8 @@ const _updateScheduleItem = (scheduleItem, result) => {
   return result;
 };
 
+//  *****************************************
+
 watchEffect(() => {
   sortFilterData();
   if (props.repeatMode.mode === "extract") {
@@ -529,10 +533,24 @@ watchEffect(() => {
   // });
 });
 
-// Эмитим наверх клик
-const scheduleClick = (item) => {
+// EMITS
+// = Эмитим наверх клик
+const scheduleClick = (item: any) => {
   emit("scheduleClick", item);
 };
+// = Считаем что дошли до конца по x и эмитим
+const onScrollX = event => {
+  if(timer) {
+    clearTimeout(timer)
+  }
+  timer = setTimeout(() => {
+    const target = event.target
+    const width = Math.ceil(Math.max(target.clientWidth, target.scrollWidth))
+    if((target.scrollLeft + target.clientWidth) >= width) {
+      emit('scrollXEnd', event)
+    }
+  }, 200)
+}
 </script>
 
 <style scoped>

@@ -19,7 +19,11 @@
         </div>
       </div>
     </div>
-    <div class="inner gantt-chart_inner" @scroll="onScrollX($event)" ref="innerRef">
+    <div
+      class="inner gantt-chart_inner"
+      @scroll="onScrollX($event)"
+      ref="innerRef"
+    >
       <!-- datelist -->
       <div class="date-list first-date-list">
         <div
@@ -127,6 +131,7 @@ import {
   fetchToday,
   workListSplitForRepeat,
 } from "@/utils/gantt/index";
+import { exportExcel } from "@/utils/gantt/excel";
 //
 const props = defineProps({
   data: {
@@ -190,7 +195,7 @@ const props = defineProps({
   },
 });
 // Диаграмма Ганта DOM
-const gantt_chart = ref(null)
+const gantt_chart = ref(null);
 //
 const emit = defineEmits(["scheduleClick", "scrollXEnd", "scrollYEnd"]);
 
@@ -202,7 +207,7 @@ const ganttMaxWidth = ref("2000px");
 const ganttInnerHeight = ref("0px");
 
 //
-let timer: any = null
+let timer: any = null;
 const innerRef = ref(null);
 //
 onMounted(() => {
@@ -519,6 +524,28 @@ const _updateScheduleItem = (scheduleItem, result) => {
   return result;
 };
 
+// EXCEL
+const exportGanttExcel = (file) => {
+  const excelData = cloneDeep(data.value).map((item) => {
+    item.renderWorks = renderWorks(item);
+    if (item.type === "alike" && props.alikeName) {
+      item.name = props.alikeName(item);
+    }
+    if (item.type === "normal" && props.scheduleTitle) {
+      item.renderWorks.forEach((renderItem) => {
+        renderItem.name = props.scheduleTitle(renderItem);
+      });
+    }
+    return item;
+  });
+  exportExcel(file, rangeDate.value, excelData, props.dateText, props.itemText);
+};
+
+defineExpose({
+  // exportImg,
+  exportGanttExcel,
+});
+
 //  *****************************************
 
 watchEffect(() => {
@@ -539,18 +566,18 @@ const scheduleClick = (item: any) => {
   emit("scheduleClick", item);
 };
 // = Считаем что дошли до конца по x и эмитим
-const onScrollX = event => {
-  if(timer) {
-    clearTimeout(timer)
+const onScrollX = (event) => {
+  if (timer) {
+    clearTimeout(timer);
   }
   timer = setTimeout(() => {
-    const target = event.target
-    const width = Math.ceil(Math.max(target.clientWidth, target.scrollWidth))
-    if((target.scrollLeft + target.clientWidth) >= width) {
-      emit('scrollXEnd', event)
+    const target = event.target;
+    const width = Math.ceil(Math.max(target.clientWidth, target.scrollWidth));
+    if (target.scrollLeft + target.clientWidth >= width) {
+      emit("scrollXEnd", event);
     }
-  }, 200)
-}
+  }, 200);
+};
 </script>
 
 <style scoped>
@@ -600,13 +627,13 @@ const onScrollX = event => {
 .guide {
   background-color: #eab3c9;
   flex-shrink: 0;
-  width: 120px;
+  /* width: 120px; */
   height: 100%;
   border-right: var(--border);
 }
 /* .desc */
 .guide .desc {
-  width: 120px;
+  /* width: 120px; */
   height: 120px;
   border-bottom: var(--border);
   position: relative;
@@ -639,7 +666,10 @@ const onScrollX = event => {
 }
 
 .guide .guide-name {
-  width: 100%;
+  /* width: 100%; */
+  width: 150px;
+  text-align: center;
+  word-break: normal;
   height: var(--itemHeight);
   border-bottom: var(--border);
   padding: 2px 10px;
@@ -660,9 +690,10 @@ const onScrollX = event => {
   position: relative;
 }
 .inner::-webkit-scrollbar {
-  /*Общий стиль полосы прокрутки*/
-  width: 5px; /*Высота и ширина соответствуют размеру горизонтальной и вертикальной полос прокрутки*/
-  height: 5px;
+  /* width: 5px;  */
+  /* height: 5px; */
+  width: 0 !important;
+  height: 0 !important;
 }
 /* date list */
 .date-list {
@@ -727,15 +758,14 @@ const onScrollX = event => {
 }
 /* schedule */
 .schedule-box {
-  max-height: v-bind(ganttInnerHeight);
+  /* max-height: v-bind(ganttInnerHeight); */
   overflow-y: auto;
   position: absolute;
   left: 0;
   bottom: 0;
 }
 .schedule-box::-webkit-scrollbar {
-  /*Общий стиль полосы прокрутки*/
-  width: 0; /*Высота и ширина соответствуют размеру горизонтальной и вертикальной полос прокрутки*/
+  width: 0; 
   height: 0;
 }
 .date-box {
@@ -755,9 +785,10 @@ const onScrollX = event => {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  opacity: 0.7;
 }
-.date-item:first-child {
-  /* border-bottom: none; */
+.date-item:hover {
+  opacity: 1;
 }
 .work-desc {
   width: 100%;

@@ -5,7 +5,7 @@
     <div class="actions_wrapper">
       <div class="action_btn">
         <!-- <a :href="`#${activeDate}`">Сегодня</a> -->
-         <span :href="`#${activeDate}`" @click="scrollToNowDate()">Сегодня</span>
+        <span :href="`#${activeDate}`" @click="scrollToNowDate()">Сегодня</span>
       </div>
       <div class="action_btn">
         <span @click="exportGanttExcel">Скачать excel</span>
@@ -21,6 +21,7 @@
       itemText="Project"
       dateText="Date"
       :dateRangeList="dateRangeList"
+      :scheduleTitle="scheduleTitle"
       :itemWidth="width"
       :itemHeight="height"
       @scheduleClick="onScheduleClick"
@@ -32,7 +33,7 @@
       <!-- <div>
         <span style="cursor: pointer; color: var(--bs-primary)">Сегодня</span>
       </div> -->
-      <Gantt
+      <!-- <Gantt
         :data="data"
         :activeDate="activeDate"
         itemText="Project"
@@ -44,7 +45,7 @@
           mode: 'cover',
         }"
         @scheduleClick="onScheduleClick"
-      />
+      /> -->
     </div>
   </Container>
 </template>
@@ -58,20 +59,20 @@ import { GanttChart } from "@/components/ganttchart";
 // https://blog.ddamy.com/assets/demo/gantt/https://blog.ddamy.com/assets/demo/gantt/
 // https://github.com/ddmy/vue3-gantt/blob/master/src/App.vue
 
-import {
-  fethDaysRange,
-  fetchThreeDays,
-  fetchTodayMonthRange,
-  fetchPrevMonthRange,
-  fetchNextMonthRange,
-} from "~/utils/gantt/index";
+// import {
+//   fethDaysRange,
+//   fetchThreeDays,
+//   fetchTodayMonthRange,
+//   fetchPrevMonthRange,
+//   fetchNextMonthRange,
+// } from "~/utils/gantt/index";
 
-import Gantt from "vue3-gantt";
+// import Gantt from "vue3-gantt";
 import "vue3-gantt/dist/style.css";
 
 // Variables
-const gantt = ref(null);
-const gantt_chart = ref(null)
+// const gantt = ref(null);
+const gantt_chart = ref(null);
 const date = new Date();
 const date_today = ref(
   new Date(date.getTime() - date.getTimezoneOffset() * 60000)
@@ -174,29 +175,35 @@ const data = ref([
       },
     ],
   },
+  {
+    type: "normal",
+    color: "",
+    name: "Завод Машиностроитель",
+    schedule: [
+      {
+        id: 10,
+        name: "Сьезжаем с Машзавода",
+        desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
+        backgroundColor: "rgb(253, 211, 172)",
+        textColor: "rgb(245, 36, 9)",
+        days: ["2024-08-15", "2024-09-03"],
+      },
+    ],
+  },
 ]);
+const scheduleTitle = (item) => {
+  return (
+    item.name +
+    " Здесь могла бы быть ваша реклама... Здесь могла бы быть ваша реклама... Здесь могла бы быть ваша реклама..."
+  );
+};
 
 // CODE
 const width = ref(60);
 const height = ref(40);
+
 onMounted(() => {
-  scrollToNowDate()
-  // location.hash = "#" + activeDate.value;
-  // scrollToNowDate()
-  // Horizontal scroll by mouse wheel
-  // inner
-  const scrollContainers = document.querySelectorAll(".inner");
-  if (scrollContainers) {
-    scrollContainers.forEach((item) => {
-      item.addEventListener("wheel", function (event) {
-        // останавливаем поведение по умолчанию, то есть прокрутку
-        if (event) {
-          // console.log(event);
-          item.scrollLeft += event.deltaY;
-        }
-      });
-    });
-  }
+  scrollToNowDate();
 
   // gantt-chart_inner
   const scrollChartContainer = document.querySelector(".gantt-chart_inner");
@@ -219,37 +226,28 @@ const onScheduleClick = (item: any) => {
 // = скролим inner gant до сегодняшнего дня (как при клике на кнопку Сегодня, так и при загрузке страницы)
 const scrollToNowDate = () => {
   const smoothLinks = document.querySelectorAll('span[href^="#"]');
-  for(let smoothLink of smoothLinks) {
-    let id = smoothLink.getAttribute('href').substring(1);
+  for (let smoothLink of smoothLinks) {
+    let id = smoothLink.getAttribute("href").substring(1);
     document.getElementById(id).scrollIntoView({
       // behavior: 'smooth',
-      block: 'center',
-      inline: 'center'
+      block: "center",
+      inline: "center",
     });
-    // console.log(document.getElementById(id))  
+    // console.log(document.getElementById(id))
   }
-}
+};
 
 const onScrollXEnd = (e) => {
-//  console.log(e)
-console.log('домотали до конца)')
-}
+  //  console.log(e)
+  console.log("домотали до конца)");
+};
 
-// const today = () => {
-//   const now = new Date();
-//   const arr = fetchTodayMonthRange();
-//   activeDate.value = `${now.getFullYear()}-${String(
-//     now.getMonth() + 1
-//   ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-//   // dateRangeList.value = [arr[0], arr.at(-1)];
-//   console.log(dateRangeList.value)
-//   console.log(activeDate.value)
-//   // 2024-09-19
-// };
-
+// EXCEL
+// = сама логика в @/utils/gantt/excel.js
 const exportGanttExcel = () => {
   // gantt_chart.value
   console.log("load excel");
+  gantt_chart.value.exportGanttExcel({ fileName: "Название файла excel" });
 };
 // const exportImg = () => {
 //   console.log("Сделать снимок");
@@ -279,45 +277,7 @@ useHead({
 </script>
 
 <style>
-.gantt .guide {
-  width: unset !important;
-}
-.gantt .guide .item-name-list {
-  max-height: unset !important;
-  overflow-y: hidden !important;
-}
-.gantt .guide .item-name-list::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-}
-.gantt .guide .guide-name {
-  width: 150px !important;
-  word-break: normal !important;
-  padding: 0 !important;
-  text-align: center !important;
-}
-.gantt .guide .desc {
-  width: unset !important;
-}
-.gantt .inner .schedule-box {
-  max-height: unset !important;
-  bottom: unset !important;
-}
-.date-item {
-  opacity: 0.7;
-}
-.date-item:hover {
-  opacity: 1;
-}
-.inner::-webkit-scrollbar {
-  width: 0 !important;
-  height: 0 !important;
-}
-.schedule-box::-webkit-scrollbar {
-  width: 0 !important;
-}
-
-/*  */
+/* Кнопки действий с диаграммой Ганта */
 .actions_wrapper {
   display: flex;
   align-items: center;

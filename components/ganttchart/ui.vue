@@ -13,9 +13,13 @@
             'guide-name': true,
             'last-guide-name': index === data.length - 1,
           }"
-          :style="computedStyle(item, null)"
+          :style="item.type === 'alike' && computedStyle(item)"
         >
-          {{ item.name }}
+          {{
+            typeof props.alikeName === "function" && item.type === "alike"
+              ? cutString(15, props.alikeName(item))
+              : cutString(15, item.name)
+          }}
         </div>
       </div>
     </div>
@@ -84,7 +88,7 @@
         <div
           v-for="(item, index) in data"
           :key="index"
-          :class="{ 'date-box': true }"
+          :class="{ 'date-box': true, alike: item.type === 'alike' }"
         >
           <div
             v-for="(dateItem, dateIndex) in renderWorks(item)"
@@ -192,6 +196,10 @@ const props = defineProps({
   borderColor: {
     type: String,
     default: "#eee",
+  },
+  alikeName: {
+    type: Function,
+    default: null,
   },
 });
 // Диаграмма Ганта DOM
@@ -518,21 +526,24 @@ const _updateScheduleItem = (scheduleItem, result) => {
     };
   }
   // Чтобы добавить новое расписание, вам необходимо одновременно удалить и обновить список расписаний, а также удалить некоторые расписания, которые изначально были пустыми.
-  result = result.filter((item) => {
+  result = result.filter((item: any) => {
     return !(item.type === "normal" && scheduleItem.days.includes(item.date));
   });
   return result;
 };
 
+// Обрезаем заголовки задач
+const cutString = (maxLetters: number, string: string) => string.length > maxLetters ? string.slice(0, maxLetters).trim() + '...' : string
+
 // EXCEL
-const exportGanttExcel = (file) => {
-  const excelData = cloneDeep(data.value).map((item) => {
+const exportGanttExcel = (file: any) => {
+  const excelData = cloneDeep(data.value).map((item: any) => {
     item.renderWorks = renderWorks(item);
-    // if (item.type === "alike" && props.alikeName) {
-    //   item.name = props.alikeName(item);
-    // }
+    if (item.type === "alike" && props.alikeName) {
+      item.name = props.alikeName(item);
+    }
     if (item.type === "normal" && props.scheduleTitle) {
-      item.renderWorks.forEach((renderItem) => {
+      item.renderWorks.forEach((renderItem: any) => {
         renderItem.name = props.scheduleTitle(renderItem);
       });
     }
@@ -667,7 +678,7 @@ const onScrollX = (event) => {
 
 .guide .guide-name {
   /* width: 100%; */
-  width: 150px;
+  /* width: 150px; */
   text-align: center;
   word-break: normal;
   height: var(--itemHeight);
@@ -765,7 +776,7 @@ const onScrollX = (event) => {
   bottom: 0;
 }
 .schedule-box::-webkit-scrollbar {
-  width: 0; 
+  width: 0;
   height: 0;
 }
 .date-box {

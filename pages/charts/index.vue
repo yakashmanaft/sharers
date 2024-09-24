@@ -24,6 +24,7 @@
       :scheduleTitle="scheduleTitle"
       :itemWidth="width"
       :itemHeight="height"
+      :alikeName="alikeName"
       @scheduleClick="onScheduleClick"
       @scrollXEnd="onScrollXEnd"
     />
@@ -80,7 +81,7 @@ const date_today = ref(
     .split("T")[0]
 );
 const activeDate = ref(date_today.value);
-const dateRangeList = ref(["2022-01-03", "2024-09-30"]);
+const dateRangeList = ref(["2024-01-01", "2024-10-31"]);
 const data = ref([
   {
     type: "normal",
@@ -93,7 +94,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "rgb(253, 211, 172)",
         textColor: "rgb(245, 36, 9)",
-        days: ["2022-01-15", "2022-01-19"],
+        days: ["2024-01-15", "2024-01-19"],
       },
       {
         id: 2,
@@ -101,7 +102,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "rgb(253, 211, 172)",
         textColor: "rgb(245, 36, 9)",
-        days: ["2022-01-19", "2022-01-23"],
+        days: ["2024-01-20", "2024-01-23"],
       },
       {
         id: 3,
@@ -109,7 +110,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#28f",
         textColor: "#fff",
-        days: ["2022-01-24", "2022-02-02"],
+        days: ["2024-01-24", "2024-02-01"],
       },
       {
         id: 4,
@@ -117,7 +118,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#28f",
         textColor: "#fff",
-        days: ["2022-02-02", "2022-02-08"],
+        days: ["2024-02-02", "2024-02-08"],
       },
     ],
   },
@@ -132,7 +133,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#482",
         textColor: "#fff",
-        days: ["2022-01-08", "2022-02-22"],
+        days: ["2024-01-08", "2024-02-22"],
       },
     ],
   },
@@ -147,7 +148,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "rgb(253, 211, 172)",
         textColor: "rgb(245, 36, 9)",
-        days: ["2022-01-12", "2022-01-15"],
+        days: ["2024-01-12", "2024-01-15"],
       },
       {
         id: 7,
@@ -155,7 +156,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#482",
         textColor: "#fff",
-        days: ["2022-02-25", "2022-03-10"],
+        days: ["2024-02-25", "2024-03-10"],
       },
       {
         id: 8,
@@ -163,7 +164,7 @@ const data = ref([
         desc: "This event is very important, generating millions of revenue. It is a cross-departmental collaboration and a major project with the CEO personally present to command. Everyone must work together!",
         backgroundColor: "#482",
         textColor: "#fff",
-        days: ["2023-02-26", "2023-03-07"],
+        days: ["2024-02-26", "2024-03-07"],
       },
       {
         id: 9,
@@ -188,6 +189,14 @@ const data = ref([
         textColor: "rgb(245, 36, 9)",
         days: ["2024-08-15", "2024-09-03"],
       },
+    ],
+  },
+  {
+    type: "alike",
+    color: "",
+    name: "Получение хорошего настроения",
+    schedule: [
+
     ],
   },
 ]);
@@ -242,12 +251,15 @@ const onScrollXEnd = (e) => {
   console.log("домотали до конца)");
 };
 
+const alikeName = item => {
+  return '▶️'+item.name
+}
+
 // EXCEL
 // = сама логика в @/utils/gantt/excel.js
 const exportGanttExcel = () => {
   // gantt_chart.value
-  console.log("load excel");
-  gantt_chart.value.exportGanttExcel({ fileName: "Название файла excel" });
+  gantt_chart.value.exportGanttExcel({ fileName: "gantt chart excel" });
 };
 // const exportImg = () => {
 //   console.log("Сделать снимок");

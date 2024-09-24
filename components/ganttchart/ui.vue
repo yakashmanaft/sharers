@@ -1,4 +1,8 @@
 <template>
+  <div style="display: flex; justify-content: space-between">
+    <span @click="todayBtnClick" style="color: blue">Сегодня</span>
+    <span @click="emit('downloadClick', props.itemText)">download</span>
+  </div>
   <div class="gantt" ref="gantt_chart">
     <div class="guide">
       <div class="desc">
@@ -13,7 +17,7 @@
             'guide-name': true,
             'last-guide-name': index === data.length - 1,
           }"
-          :style="item.type === 'alike' && computedStyle(item)"
+          :style="item.type === 'alike' && computedStyle(null, item)"
         >
           {{
             typeof props.alikeName === "function" && item.type === "alike"
@@ -102,7 +106,7 @@
             :title="dateItem.type === `works` ? dateItem.desc : ``"
             @mousemove="(event) => dateItemMove(dateItem.type, event)"
             @mouseout="(event) => dateItemMoveOut(dateItem.type, event)"
-            @click="(event) => scheduleClick({ ...dateItem, event })"
+            @click="(event) => scheduleClick({ ...dateItem, event,  itemText})"
           >
             <slot
               v-if="dateItem.type === 'works'"
@@ -205,7 +209,12 @@ const props = defineProps({
 // Диаграмма Ганта DOM
 const gantt_chart = ref(null);
 //
-const emit = defineEmits(["scheduleClick", "scrollXEnd", "scrollYEnd"]);
+const emit = defineEmits([
+  "downloadClick",
+  "scheduleClick",
+  "scrollXEnd",
+  "scrollYEnd",
+]);
 
 let rangeDate = ref([]);
 const data = ref([]);
@@ -217,12 +226,29 @@ const ganttInnerHeight = ref("0px");
 //
 let timer: any = null;
 const innerRef = ref(null);
+
 //
 onMounted(() => {
   // const itemBox = gantt.value.querySelector(".item-name-list");
   // const innerBox = gantt.value.querySelector(".schedule-box");
+
+  // Возможность скроллить горизонтально колесом мыши
+  const scrollChartContainer = document.querySelector(".inner");
+  if (scrollChartContainer) {
+    scrollChartContainer.addEventListener("wheel", function (event) {
+      // останавливаем поведение по умолчанию, то есть прокрутку
+      if (event) {
+        // console.log(event);
+        scrollChartContainer.scrollLeft += event.deltaY;
+      }
+    });
+  }
+
+  todayBtnClick()
 });
-//
+
+// WATHERS
+// = rangeDate
 watchEffect(() => {
   rangeDate.value = splitDaysForMonth(
     computedDaysRange(props.dateRangeList[0], props.dateRangeList.at(-1))
@@ -393,9 +419,9 @@ const checkValidator = () => {
 };
 
 // Вычислить текущий стиль окна
-const computedStyle = (parent, item) => {
+const computedStyle = (parent = null, item: any) => {
   let res = {};
-  if (parent.type === "alike") {
+  if (parent && parent.type === "alike") {
     // Весь единый стиль
     res = {
       ...res,
@@ -533,9 +559,26 @@ const _updateScheduleItem = (scheduleItem, result) => {
 };
 
 // Обрезаем заголовки задач
-const cutString = (maxLetters: number, string: string) => string.length > maxLetters ? string.slice(0, maxLetters).trim() + '...' : string
+const cutString = (maxLetters: number, string: string) =>
+  string.length > maxLetters
+    ? string.slice(0, maxLetters).trim() + "..."
+    : string;
+
+// CLICK EVENTS
+// = today
+const todayBtnClick = () => {
+  let el = document.getElementById(props.activeDate);
+  if (el) {
+    el.scrollIntoView({
+      // behavior: 'smooth',
+      block: "center",
+      inline: "center",
+    });
+  }
+}
 
 // EXCEL
+// = export
 const exportGanttExcel = (file: any) => {
   const excelData = cloneDeep(data.value).map((item: any) => {
     item.renderWorks = renderWorks(item);
@@ -585,7 +628,7 @@ const onScrollX = (event) => {
     const target = event.target;
     const width = Math.ceil(Math.max(target.clientWidth, target.scrollWidth));
     if (target.scrollLeft + target.clientWidth >= width) {
-      emit("scrollXEnd", event);
+      emit("scrollXEnd", {event: event, type: props.itemText});
     }
   }, 200);
 };
@@ -678,7 +721,7 @@ const onScrollX = (event) => {
 
 .guide .guide-name {
   /* width: 100%; */
-  /* width: 150px; */
+  width: 150px;
   text-align: center;
   word-break: normal;
   height: var(--itemHeight);

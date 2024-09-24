@@ -193,14 +193,14 @@ const data = ref([
   },
   {
     type: "alike",
-    color: "",
+    color: "rgb(255,222,215)",
     name: "Получение хорошего настроения",
     schedule: [
 
     ],
   },
 ]);
-const scheduleTitle = (item) => {
+const scheduleTitle = (item: any) => {
   return (
     item.name +
     " Здесь могла бы быть ваша реклама... Здесь могла бы быть ваша реклама... Здесь могла бы быть ваша реклама..."
@@ -252,7 +252,7 @@ const onScrollXEnd = (e) => {
 };
 
 const alikeName = item => {
-  return '▶️'+item.name
+  return '∞ '+item.name
 }
 
 // EXCEL

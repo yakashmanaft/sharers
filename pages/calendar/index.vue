@@ -65,12 +65,27 @@
 
               <!-- CONTENT -->
               <div class="content" style="margin-top: 1rem">
+                <!--  -->
                 <!-- demands content -->
                 <div v-if="current_title_name === 'demands'">Заявочки</div>
 
+                <!--  -->
                 <!-- production content -->
                 <div v-if="current_title_name === 'production'">
                   <!--  -->
+                  <GanttChart
+                    :data="productionData"
+                    :dateRangeList="productionDateRangeList"
+                    :itemWidth="width"
+                    :itemHeight="height"
+                    :activeDate="activeDate"
+                    itemText="Task"
+                    dateText="Date"
+                    :alikeName="alikeName"
+                    @downloadClick="onDownloadClick"
+                    @scheduleClick="onScheduleClick"
+                    @scrollXEnd="onScrollXEnd"
+                  />
                   <div>
                     Фильтры: (запланировано / в процессе / выполнено) : (банда)
                     : (проект)
@@ -98,7 +113,8 @@
                   <!-- {{ el.date }} | {{  el.title  }} | {{ el.desc }} | {{ el.price }} * {{ el.qty }} = {{ el.price * el.qty }} | project: {{  el.projectID  }} | band: {{  el.bandID  }} (В процессе / Выполнено) -->
                 </div>
 
-                <!-- production content -->
+                <!--  -->
+                <!-- working hours-->
                 <div v-if="current_title_name === 'working-hours'">
                   <!--  -->
                   <div class="projects-sharers_container">
@@ -107,6 +123,20 @@
                       class="project-sharer_wrapper"
                     >
                       <div class="projects-sharers-list">
+                        <!-- GANTT -->
+                        <GanttChart
+                          :data="workingHoursData"
+                          :dateRangeList="dateRangeList"
+                          :itemWidth="width"
+                          :itemHeight="height"
+                          :activeDate="activeDate"
+                          itemText="Sharer"
+                          dateText="Date"
+                          :alikeName="alikeName"
+                          @downloadClick="onDownloadClick"
+                          @scheduleClick="onScheduleClick"
+                          @scrollXEnd="onScrollXEnd"
+                        />
                         <div
                           v-for="sharer in computedProjectSharerList"
                           class="sharers-list_item"
@@ -114,16 +144,6 @@
                           {{ sharer }}
                         </div>
 
-                        <!-- GANTT -->
-                        <!-- <Gantt
-                          :data="data"
-                          :activeDate="activeDate"
-                          itemText="Sharers"
-                          dateText="Date"
-                          :dateRangeList="dateRangeList"
-                          :itemWidth="width"
-                          :itemHeight="height"
-                        /> -->
                       </div>
                     </div>
                     <div v-else class="project-sharer_wrapper">
@@ -206,6 +226,7 @@
 import { Container } from "@/shared/container";
 import { Tabs } from "@/components/tabs";
 import { filter_radio_group } from "~/components/filters_radio_btns";
+import { GanttChart } from "~/components/ganttchart";
 
 // Plugins
 import VanillaCalendar from "vanilla-calendar-pro";
@@ -301,23 +322,45 @@ const options: IOptions = {
 };
 
 // GANTT
-// const width = ref(60);
-// const height = ref(40);
-// const activeDate = ref(date_today.value);
-// const dateRangeList = ref(["2024-03-21", date_today.value]);
-// const data = ref([
-//   {
-//     type: "normal",
-//     color: "",
-//     name: "Иванов И.И.",
-//     schedule: [],
-//   },
-// ]);
+const width = ref(60);
+const height = ref(40);
+const activeDate = ref(date_today.value);
+
+// = Gant production
+const productionDateRangeList = ["2024-08-01", "2024-10-15"];
+const productionData = ref([
+  {
+    type: "normal",
+    color: "",
+    name: "Ось Х",
+    schedule: [
+      {
+        id: 1,
+        name: "Завоз фанеры",
+        desc: "Неного описания",
+        backgroundColor: "rgb(253, 211, 172)",
+        textColor: "rgb(245, 36, 9)",
+        days: ["2024-09-10"],
+      },
+    ],
+  },
+]);
+
+// Gantt = working hours
+const dateRangeList = ref(["2024-03-21", date_today.value]);
+const workingHoursData = ref([
+  {
+    type: "normal",
+    color: "",
+    name: "Иванов И.И.",
+    schedule: [],
+  },
+]);
 
 // On Mounted
 onMounted(async () => {
   await loadProjectsData();
-  console.log(projects.value);
+  // console.log(projects.value);
   // = Calendar
   setDateToday(null);
   // computed project filter tabs
@@ -355,6 +398,10 @@ const setDateToday = (today: any) => {
     calendarSelectedDates.value = null;
   }
 };
+// = alike
+const alikeName = (item) => {
+  return "∞ " + item.name;
+};
 
 // COMPUTED
 // = computed projects
@@ -365,7 +412,7 @@ const computedProjects = computed(() => {
     return result;
   }
 });
-
+// = sharers of project
 const computedProjectSharerList = computed(() => {
   let result = [];
   if (projects.value) {
@@ -416,9 +463,13 @@ const computedProjectSharerList = computed(() => {
 const emittedName = (name: string) => {
   current_title_name.value = name;
 };
-//
+// = project
 const emittedProject = (project: string) => {
   curret_choosen_project.value = project;
+};
+// = download excel
+const onDownloadClick = (type: string) => {
+  console.log(`onDownloadClicked in ${type}`);
 };
 
 // DB
@@ -446,6 +497,24 @@ const { data: users } = await useFetch("/api/usersList/users", {
 });
 
 // WATCH
+// =
+// watch(current_title_name, () => {
+//   if (current_title_name.value !== "demands") {
+//     // Скроллим к сегодня в ганте
+//     let el = document.getElementById(date_today.value);
+//     if (el) {
+//       console.log(current_title_name.value);
+//       console.log(el);
+//     }
+//     // if (el) {
+//     //   el.scrollIntoView({
+//     //     // behavior: 'smooth',
+//     //     block: "center",
+//     //     inline: "center",
+//     //   });
+//     // }
+//   }
+// });
 // = следим за выобором дат в календаре
 // watch(calendarSelectedDates, () => {
 
@@ -453,6 +522,18 @@ const { data: users } = await useFetch("/api/usersList/users", {
 
 //   }
 // });
+
+// CLICK EVENTS
+// = клик по ячейке расписания
+const onScheduleClick = (item: any) => {
+  // const { itemText } = item
+  console.log(item);
+};
+// = scroll до конца
+const onScrollXEnd = (obj: any) => {
+  console.log(obj)
+  console.log("домотали до конца)");
+}
 
 // page head
 useHead({

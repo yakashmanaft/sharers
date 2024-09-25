@@ -1,7 +1,9 @@
 <template>
-  <div style="display: flex; justify-content: space-between">
-    <span @click="todayBtnClick" style="color: blue">Сегодня</span>
-    <span @click="emit('downloadClick', props.itemText)">download</span>
+  <div class="actions_wrapper">
+    <span class="actions-btn_today" @click="todayBtnClick">Сегодня</span>
+    <div class="actions-btn_excel" @click="emit('downloadClick', props.itemText)">
+      <Icon name="material-symbols-light:download-rounded" size="24px" color="var(--bs-primary)" />
+    </div>
   </div>
   <div class="gantt" ref="gantt_chart">
     <div class="guide">
@@ -635,6 +637,20 @@ const onScrollX = (event) => {
 </script>
 
 <style scoped>
+/* actions btns */
+.actions_wrapper {
+  display: flex;
+  align-items: center;
+  /* gap: 0.5rem; */
+  justify-content: space-between
+}
+.actions-btn_today {
+  color: var(--bs-primary);
+}
+.actions-btn_today,
+.actions-btn_excel {
+  cursor: pointer;
+}
 /* .gantt */
 .gantt {
   --borderWidth: 1px;
@@ -660,6 +676,7 @@ const onScrollX = (event) => {
   color: var(--fontColor);
   display: flex;
   position: relative;
+  margin-top: 0.5rem;
 }
 .gantt::-webkit-scrollbar {
   /*Общий стиль полосы прокрутки*/

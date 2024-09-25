@@ -74,6 +74,7 @@
                 <div v-if="current_title_name === 'production'">
                   <!--  -->
                   <GanttChart
+                    ref="gantt_production"
                     :data="productionData"
                     :dateRangeList="productionDateRangeList"
                     :itemWidth="width"
@@ -125,6 +126,7 @@
                       <div class="projects-sharers-list">
                         <!-- GANTT -->
                         <GanttChart
+                          ref="gantt_workingHours"
                           :data="workingHoursData"
                           :dateRangeList="dateRangeList"
                           :itemWidth="width"
@@ -143,7 +145,6 @@
                         >
                           {{ sharer }}
                         </div>
-
                       </div>
                     </div>
                     <div v-else class="project-sharer_wrapper">
@@ -327,6 +328,7 @@ const height = ref(40);
 const activeDate = ref(date_today.value);
 
 // = Gant production
+const gantt_production = ref(null)
 const productionDateRangeList = ["2024-08-01", "2024-10-15"];
 const productionData = ref([
   {
@@ -347,6 +349,7 @@ const productionData = ref([
 ]);
 
 // Gantt = working hours
+const gantt_workingHours = ref(null)
 const dateRangeList = ref(["2024-03-21", date_today.value]);
 const workingHoursData = ref([
   {
@@ -469,7 +472,15 @@ const emittedProject = (project: string) => {
 };
 // = download excel
 const onDownloadClick = (type: string) => {
-  console.log(`onDownloadClicked in ${type}`);
+  // gantt_workingHours
+  // gantt_production
+  if(type === 'Sharer') {
+    // console.log(`onDownloadClicked in gantt_workingHours`);
+    gantt_workingHours.value.exportGanttExcel({ fileName: "gantt working hours excel" });
+  } else if (type === 'Task') {
+    // console.log(`onDownloadClicked in gantt_production`);
+    gantt_production.value.exportGanttExcel({ fileName: "gantt production excel" });
+  }
 };
 
 // DB
@@ -531,9 +542,9 @@ const onScheduleClick = (item: any) => {
 };
 // = scroll до конца
 const onScrollXEnd = (obj: any) => {
-  console.log(obj)
+  console.log(obj);
   console.log("домотали до конца)");
-}
+};
 
 // page head
 useHead({

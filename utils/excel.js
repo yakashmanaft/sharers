@@ -43,8 +43,8 @@ export function exportExcel(
   dateText = "",
   itemText = ""
 ) {
-  const { fileName = "数据" } = file;
-  console.log("导出excel", rangeDate, list);
+  const { fileName = "Данные" } = file;
+  console.log("Export excel", rangeDate, list);
   // Первые три строки диапазона дат
   let data = [];
   const headArr = [{ name: `${dateText}-${itemText}` }, {}, {}];

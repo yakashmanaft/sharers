@@ -411,7 +411,7 @@ const alikeName = (item) => {
 const scheduleTitle = (item: any) => {
   return (
     item.name +
-    "scheduleTitle"
+    " 123 scheduleTitle"
   );
 };
 
@@ -479,18 +479,6 @@ const emittedName = (name: string) => {
 const emittedProject = (project: string) => {
   curret_choosen_project.value = project;
 };
-// = download excel
-const onDownloadClick = (type: string) => {
-  // gantt_workingHours
-  // gantt_production
-  if(type === 'Sharer') {
-    // console.log(`onDownloadClicked in gantt_workingHours`);
-    gantt_workingHours.value.exportGanttExcel({ fileName: "gantt working hours excel" });
-  } else if (type === 'Task') {
-    // console.log(`onDownloadClicked in gantt_production`);
-    gantt_production.value.exportGanttExcel({ fileName: "gantt production excel" });
-  }
-};
 
 // DB
 // = salary
@@ -553,6 +541,18 @@ const onScheduleClick = (item: any) => {
 const onScrollXEnd = (obj: any) => {
   console.log(obj);
   console.log("домотали до конца)");
+};
+// = download excel
+const onDownloadClick = (type: string) => {
+  // gantt_workingHours
+  // gantt_production
+  if(type === 'Sharer') {
+    // console.log(`onDownloadClicked in gantt_workingHours`);
+    gantt_workingHours.value.exportGanttExcel({ fileName: "gantt working hours excel" });
+  } else if (type === 'Task') {
+    // console.log(`onDownloadClicked in gantt_production`);
+    gantt_production.value.exportGanttExcel({ fileName: "gantt production excel" });
+  }
 };
 
 // page head

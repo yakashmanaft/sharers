@@ -54,9 +54,6 @@ const { loggedIn, user, session, clear } = useUserSession();
 
         <router-link to="/calendar">Календарь</router-link>
       </li>
-      <li>
-        <router-link to="/charts">Gantt</router-link>
-      </li>
     </ul>
     <div v-else>
       <router-link to="/login">Войти</router-link>

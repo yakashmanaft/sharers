@@ -15,11 +15,11 @@ const featuresListAuth = ref([
     title: "Календарь",
     auth: true,
   },
-  {
-    path: "/charts",
-    title: "Charts",
-    auth: true,
-  },
+  // {
+  //   path: "/charts",
+  //   title: "Charts",
+  //   auth: true,
+  // },
   {
     path: "/dashboard",
     title: "Доска",

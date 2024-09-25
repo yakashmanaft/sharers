@@ -77,6 +77,7 @@
                     ref="gantt_production"
                     :data="productionData"
                     :dateRangeList="productionDateRangeList"
+                    :scheduleTitle="scheduleTitle"
                     :itemWidth="width"
                     :itemHeight="height"
                     :activeDate="activeDate"
@@ -129,6 +130,7 @@
                           ref="gantt_workingHours"
                           :data="workingHoursData"
                           :dateRangeList="dateRangeList"
+                          :scheduleTitle="scheduleTitle"
                           :itemWidth="width"
                           :itemHeight="height"
                           :activeDate="activeDate"
@@ -404,6 +406,13 @@ const setDateToday = (today: any) => {
 // = alike
 const alikeName = (item) => {
   return "∞ " + item.name;
+};
+// = scheduleTitle 
+const scheduleTitle = (item: any) => {
+  return (
+    item.name +
+    "scheduleTitle"
+  );
 };
 
 // COMPUTED

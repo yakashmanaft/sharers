@@ -344,7 +344,7 @@ const productionData = ref([
         desc: "Неного описания",
         backgroundColor: "rgb(253, 211, 172)",
         textColor: "rgb(245, 36, 9)",
-        days: ["2024-09-10"],
+        days: ["2024-09-10", "2024-09-15"],
       },
     ],
   },
@@ -408,7 +408,7 @@ const alikeName = (item) => {
   return "∞ " + item.name;
 };
 // = scheduleTitle 
-const scheduleTitle = (item: any) => {
+const scheduleTitle = (item: any) : String => {
   return (
     item.name +
     " 123 scheduleTitle"

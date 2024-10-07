@@ -61,16 +61,16 @@
               />
               <!--  -->
               <!-- <br />
-              {{ curret_choosen_project }} -->
+              {{ current_choosen_project }} -->
 
               <!-- CONTENT -->
               <div class="content" style="margin-top: 1rem">
                 <!--  -->
-                <!-- demands content -->
+                <!-- DEMANDS content -->
                 <div v-if="current_title_name === 'demands'">Заявочки</div>
 
                 <!--  -->
-                <!-- production content -->
+                <!-- PRODUCTION content -->
                 <div v-if="current_title_name === 'production'">
                   <!--  -->
                   <GanttChart
@@ -116,7 +116,7 @@
                 </div>
 
                 <!--  -->
-                <!-- working hours-->
+                <!-- WORKING hours-->
                 <div v-if="current_title_name === 'working-hours'">
                   <!--  -->
                   <div class="projects-sharers_container">
@@ -152,6 +152,7 @@
                     <div v-else class="project-sharer_wrapper">
                       В проекте нет соучастников
                     </div>
+                    <span style="font-weight: bold;">{{ current_choosen_project }}</span>
                   </div>
                 </div>
               </div>
@@ -239,6 +240,10 @@ import { type IOptions } from "vanilla-calendar-pro/types";
 // import Gantt from "vue3-gantt";
 // import "vue3-gantt/dist/style.css";
 
+// UTILS
+// import { translateSharersInProject } from '@/utils/translators'
+import { toFormWorkingHoursDataObject } from '@/utils/toFormObject'
+
 // variables
 
 // = session user
@@ -270,7 +275,7 @@ const current_title_name = ref("demands");
 // filter_radio_select
 const tabs_filter_by_project = ref([]);
 
-const curret_choosen_project = ref({
+const current_choosen_project = ref({
   title: "Все",
   name: "all",
   id: null,
@@ -330,7 +335,7 @@ const height = ref(40);
 const activeDate = ref(date_today.value);
 
 // = Gant production
-const gantt_production = ref(null)
+const gantt_production = ref(null);
 const productionDateRangeList = ["2024-08-01", "2024-10-15"];
 const productionData = ref([
   {
@@ -351,7 +356,7 @@ const productionData = ref([
 ]);
 
 // Gantt = working hours
-const gantt_workingHours = ref(null)
+const gantt_workingHours = ref(null);
 const dateRangeList = ref(["2024-03-21", date_today.value]);
 const workingHoursData = ref([
   {
@@ -407,12 +412,9 @@ const setDateToday = (today: any) => {
 const alikeName = (item) => {
   return "∞ " + item.name;
 };
-// = scheduleTitle 
-const scheduleTitle = (item: any) : String => {
-  return (
-    item.name +
-    " 123 scheduleTitle"
-  );
+// = scheduleTitle
+const scheduleTitle = (item: any): String => {
+  return item.name + " 123 scheduleTitle";
 };
 
 // COMPUTED
@@ -426,22 +428,59 @@ const computedProjects = computed(() => {
 });
 // = sharers of project
 const computedProjectSharerList = computed(() => {
-  let result = [];
+  //
+  let result: any[] = [];
+  //
   if (projects.value) {
-    if (curret_choosen_project.value.name === "all") {
-      result.push({ a: "показываем соучастников по всем проектам" });
-    } else {
+    //
+    if (current_choosen_project.value.name === "all") {
+      projects.value.forEach((project) => {
+        if (project.sharers) {
+          project.sharers.forEach((sharer) => {
+            result.push(sharer);
+            //
+            workingHoursData.value = toFormWorkingHoursDataObject(result)
+            // workingHoursData.value = result.map((sharer) => {
+            //   return {
+            //     type: "normal",
+            //     color: "",
+            //     name: `${sharer.sharerType}-${sharer.sharerID}`,
+            //     schedule: [],
+            //     joined_date: sharer.joined_date,
+            //     exit_date: sharer.exit_date,
+            //   };
+            // });
+          });
+        }
+      });
+    }
+    //
+    else {
+      //
       let current_project = [...projects.value].find(
-        (el) => el.id === curret_choosen_project.value.id
+        (el) => el.id === current_choosen_project.value.id
       );
+      //
       if (current_project) {
         if (current_project.sharers) {
           result = [...current_project.sharers];
+          //
+          workingHoursData.value = toFormWorkingHoursDataObject(result)
+          // workingHoursData.value = result.map((sharer) => {
+          //   return {
+          //     type: "normal",
+          //     color: "",
+          //     name: `${sharer.sharerType}-${sharer.sharerID}-${translateSharersInProject()}`,
+          //     schedule: [],
+          //     joined_date: sharer.joined_date,
+          //     exit_date: sharer.exit_date,
+          //   };
+          // });
         }
       }
-      // result.push({a: 'показываем соучатсников по выбранному проекту'}, { b: curret_choosen_project.value})
     }
     return result;
+    // { "sharerID": 31, "exit_date": "2024-10-15", "sharerType": "user", "joined_date": "2024-08-21" }
   }
 });
 
@@ -476,8 +515,13 @@ const emittedName = (name: string) => {
   current_title_name.value = name;
 };
 // = project
-const emittedProject = (project: string) => {
-  curret_choosen_project.value = project;
+const emittedProject = (project: any) => {
+  current_choosen_project.value = {
+    title: project.title,
+    name: project.name,
+    id: project.id,
+  };
+  // { "title": "Вилла", "name": "project_4", "id": 4 }
 };
 
 // DB
@@ -546,12 +590,16 @@ const onScrollXEnd = (obj: any) => {
 const onDownloadClick = (type: string) => {
   // gantt_workingHours
   // gantt_production
-  if(type === 'Sharer') {
+  if (type === "Sharer") {
     // console.log(`onDownloadClicked in gantt_workingHours`);
-    gantt_workingHours.value.exportGanttExcel({ fileName: "gantt working hours excel" });
-  } else if (type === 'Task') {
+    gantt_workingHours.value.exportGanttExcel({
+      fileName: "gantt working hours excel",
+    });
+  } else if (type === "Task") {
     // console.log(`onDownloadClicked in gantt_production`);
-    gantt_production.value.exportGanttExcel({ fileName: "gantt production excel" });
+    gantt_production.value.exportGanttExcel({
+      fileName: "gantt production excel",
+    });
   }
 };
 

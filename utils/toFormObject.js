@@ -11,5 +11,13 @@ export const toFormWorkingHoursDataObject = (projectSharerResult) => {
       exit_date: sharer.exit_date,
     };
   });
-  return result;
+  return result.sort((a,b ) => {
+    if(a.name.toLowerCase() < b.name.toLowerCase()) {
+      return -1;
+    } 
+    if(a.name.toLowerCase() > b.name.toLowerCase()) {
+      return 1;
+    }
+    return 0
+  });
 };

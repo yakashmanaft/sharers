@@ -251,6 +251,8 @@ const { user } = useUserSession();
 // = session user projects
 const { loadProjectsData } = useProjectsStore();
 const { projects } = storeToRefs(useProjectsStore());
+// = organizations
+const { loadOrganizationsData }  = useOrganizationsStore()
 
 // = titles
 const titles = ref([
@@ -369,8 +371,10 @@ const workingHoursData = ref([
 
 // On Mounted
 onMounted(async () => {
+  // = тянем из стора, а там из БД
   await loadProjectsData();
-  // console.log(projects.value);
+  await loadOrganizationsData()
+
   // = Calendar
   setDateToday(null);
   // computed project filter tabs

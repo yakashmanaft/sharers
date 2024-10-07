@@ -6,11 +6,17 @@
     </div>
   </div>
   <div class="gantt" ref="gantt_chart">
+    
+    <!-- GUIDE -->
     <div class="guide">
+
+      <!-- DATE / ITEM -->
       <div class="desc">
         <span class="date">{{ props.dateText }}</span>
         <span class="item">{{ props.itemText }}</span>
       </div>
+
+      <!-- NAME LIST -->
       <div class="item-name-list">
         <div
           v-for="(item, index) in data"
@@ -29,6 +35,8 @@
         </div>
       </div>
     </div>
+
+    <!-- INNER -->
     <div
       class="inner gantt-chart_inner"
       @scroll="onScrollX($event)"

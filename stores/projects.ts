@@ -21,7 +21,7 @@ type Project = {
 }
 
 export const useProjectsStore = defineStore('Projects', () => {
-    // Create state for holding users
+    // Create state for holding projects
     const projects = ref<Project[]>([])
 
     //** Function to load projects data */
